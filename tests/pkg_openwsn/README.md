@@ -53,25 +53,25 @@ For more on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
    the converter's RXD/TXD pins to the node's PA22/PA23.
 3. flash the root node:
 
-    # SERIAL=${ROOT_NODE_SERIAL} OPENSERIAL_BAUD=19200 USEMODULE=openwsn_serial \
-         BOARD=samr21-xpro make flash -j4
+        $ SERIAL=${ROOT_NODE_SERIAL} OPENSERIAL_BAUD=19200 USEMODULE=openwsn_serial \
+              BOARD=samr21-xpro make flash -j4
 
 4. flash the leaf nodes:
 
-    # BOARD=samr21-xpro make all -j4
-    # BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make flash-only
-    # BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make flash-only
+        $ BOARD=samr21-xpro make all -j4
+        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make flash-only
+        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make flash-only
 
 5. open a shell to the leaf nodes
    so in two shell windows, do (one in each):
 
-    # BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make term
-    # BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make term
+        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make term
+        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make term
 
 6. in a third shell, launch openvisualizer:
 
-   # BOARD=samr21-xpro PORT=<USB-serial-port, e.g., /dev/ttyUSB0> BAUD=19200 \
-         make openv-termroot
+        $ BOARD=samr21-xpro PORT=<USB-serial-port, e.g., /dev/ttyUSB0> BAUD=19200 \
+              make openv-termroot
 
 To continue, please look at the iotlab documentation below.
 
