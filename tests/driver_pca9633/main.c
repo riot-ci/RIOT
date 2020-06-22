@@ -21,6 +21,7 @@
 #include "shell.h"
 
 #include "pca9633.h"
+#include "pca9633_regs.h"
 
 pca9633_t pca9633_dev;
 
