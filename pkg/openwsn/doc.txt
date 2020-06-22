@@ -215,6 +215,29 @@
  So far, this has been successfully tested on `iotlab-m3`,`nucleo-f103` and
  `samr21-xpro`, all based on at86rf23x radios.
 
+ ### Synchronization
+
+ To join a network a node must first receive EB (enhanced beacons). Once an EB
+ is received the node will  be synchronized with the network. Synchronization
+ times are not deterministic, they depend on the following:
+
+    `SLOTFRAME_LENGTH*SLOTDURATION*P_CHANNEL*P_EB`
+
+ `SLOTFRAME_LENGTH` in OpenWSN is 101, and this ports uses 20ms as the slotOffset
+ duration. `P_EB` specified the a probability for a node to transmit an EB.
+ By default its 10%, that means that on average it will take 10 tries before an
+ EB is transmitted. `P_CHANNEL` is the probability for the transmitter's and
+ receiver channel to match. If channel hopping is disabled this means that the
+ average worst case scenario is `101*20ms*10 ~= 20s`, so 20s for synchronization
+ to take place.
+
+ On the other hand if channel hopping is enabled then the joining node picks and
+ random channel to start listening on. The transmitter also picks a random
+ channel to start transmitting on and then follows a channel hopping template.
+ This would take on average ~8 tries for it to hit the correct channel for the
+ first time, and then it would hit it every 16 hops, on average this could lead
+ synchronization times of around `320s`.
+
  ### Timing
 
  Timing is essential for OpenWSN to work properly. For optimal results most

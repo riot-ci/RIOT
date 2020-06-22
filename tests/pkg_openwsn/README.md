@@ -1,4 +1,5 @@
 # OpenWSN on RIOT
+
 This test demonstrates the [OpenWSN](https://github.com/openwsn-berkeley/openwsn-fw) full
 stack (UDP, IPv6, RPL, 6TiSCH) running on RIOT. When flashed, it will initialize the stack
 and provide the user with some minimal shell commands to:
@@ -8,12 +9,15 @@ and provide the user with some minimal shell commands to:
 - change the UDP destination port `udp server start <port>`
 - send a UDP packet `udp send <addr> <port> <data>`
 
+A tun interface can also be set to allow traffic out of the network. This
+allows pinging nodes in the network from the host.
+
 Please note that this port is still in experimental status. For further information
 about the port refer to the [pkg documentation](../../pkg/openwsn/doc.txt).
 
 ## Experimental setups
 
-The following experiments act as a starting point for testing and debugging. Either
+The following setup act as a starting point for testing and debugging. Either
 build and flash local nodes or incorporate the [FIT IoT-LAB](https://www.iot-lab.info/)
 Testbed. Please check the ports [documentation](../../pkg/openwsn/doc.txt) for information
 about supported hardware platforms.
@@ -23,13 +27,33 @@ This port currently needs `openvisualizer`, please make sure you follow the
 to install a patched version of `openvisualizer`.
 
 If you want to disable channel hopping to speed up synchronization you can set
-a fix channel:
+a fix channel (see [documentation](../../pkg/openwsn/doc.txt#Synchronization)
+for more on synchronization)
 
     $ export CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=17
 
+An OpenWSN root node acts acts as a border router, it tunnels IEEE80215.4.E
+between `openvisualizer` and the network without looking at the frame content.
+This means that a node will not be reachable when 'pinging' from the host
+or if trying to send udp packets to it.
+
+Two test cases are described with different requirements:
+
+1. From host [ping](#Communicating-with-host-(IPV6)) nodes in network over ipv6:
+```
+    - 1 root node + tun interface
+    - +1 leaf node
+```
+
+2. Sending [UDP](#Communicating-over-udp) packets between nodes:
+```
+    - 1 root node
+    - +2 leaf node
+```
+
 ## IMPORTANT!
 
-OpenWSN uses source routing, this means all network traffic must go through
+OpenWSN uses source routing and  this means all network traffic must go through
 from the root node to OpenVisualizer. If the root node configuration can't
 handle the configured baudrate correctly this will lead to packet loss.
 
@@ -53,51 +77,62 @@ For more on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
    the converter's RXD/TXD pins to the node's PA22/PA23.
 3. flash the root node:
 
-        $ SERIAL=${ROOT_NODE_SERIAL} OPENSERIAL_BAUD=19200 USEMODULE=openwsn_serial \
+        $ SERIAL=${ROOT_SERIAL_NODE} OPENSERIAL_BAUD=19200 USEMODULE=openwsn_serial \
               BOARD=samr21-xpro make flash -j4
 
 4. flash the leaf nodes:
 
         $ BOARD=samr21-xpro make all -j4
-        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make flash-only
-        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make flash-only
+        $ BOARD=samr21-xpro SERIAL=${LEAF_SERIAL_NODE0} make flash-only
+        $ BOARD=samr21-xpro SERIAL=${LEAF_SERIAL_NODE1} make flash-only
 
 5. open a shell to the leaf nodes
    so in two shell windows, do (one in each):
 
-        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE0_SERIAL} make term
-        $ BOARD=samr21-xpro SERIAL=${LEAF_NODE1_SERIAL} make term
+        $ BOARD=samr21-xpro SERIAL=${LEAF_SERIAL_NODE0} make term
+        $ BOARD=samr21-xpro SERIAL=${LEAF_SERIAL_NODE1} make term
 
 6. in a third shell, launch openvisualizer:
 
         $ BOARD=samr21-xpro PORT=<USB-serial-port, e.g., /dev/ttyUSB0> BAUD=19200 \
               make openv-termroot
 
-To continue, please look at the iotlab documentation below.
-
 ## Testing configuration (b) (iotlab-m3 network on iotlab)
-### Launch an experiment
 
-Assuming you have `iotlab-cli` installed, launch an experiment booking 3+
-`iotlab-m3` nodes:
+1. Launch an experiment booking 3+ `iotlab-m3` nodes:
 
-    $ iotlab-experiment submit -d 120 -l 3,archi=m3:at86rf231+site=saclay
-    $ iotlab-experiment wait
-
-    $ iotlab-experiment get --nodes
-
-### Flash leaf node
-
+        $ iotlab-experiment submit -d 120 -l 3,archi=m3:at86rf231+site=saclay
+        $ iotlab-experiment wait
+        $ iotlab-experiment get --nodes
 
 Since multiple nodes where configured for the experiment `IOTLAB_NODE` needs
-to be specified for every node
+to be specified for every node,  `IOTLAB_NODE=m3-%.saclay.iot-lab.info`
 
-    $ IOTLAB_NODE=m3-1.saclay.iot-lab.info BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
-    $ IOTLAB_NODE=m3-2.saclay.iot-lab.info BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
+2. flash the root node
 
-You can also start a terminal for these nodes
+        $ IOTLAB_NODE={ROOT_NODE_IOTLAB} USEMODULE=openwsn_serial \
+          BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
 
-    $ IOTLAB_NODE=m3-2.saclay.iot-lab.info BOARD=iotlab-m3 make -C tests/pkg_openwsn term
+3. open a shell to the leaf nodes
+   so in two shell windows, do (one in each):
+        $ BOARD=iotlab-m3 make all -j4
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make flash-only
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make flash-only
+
+4. open a shell to the leaf nodes
+   so in two shell windows, do (one in each):
+
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make term
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make term
+
+5. in a third shell, launch openvisualizer:
+
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${ROOT_IOTLAB_NODE} make openv-termroot
+
+### Network Setup
+
+If (a) and (b) where followed then on each lead node you should be able
+to see the ipv6 address:
 
     main(): This is RIOT! (Version: 2020.04-devel-1649-g96fa9-pr_openwsn)
     OpenWSN UDP test
@@ -115,35 +150,23 @@ You can also start a terminal for these nodes
 
     NO RPL parent
 
-### Flash root node
+On the root node Openvisualizer is launched and the DAGroot is setup.
 
-Same as above but with `openwsn_serial`:
+    [OpenVisualizerServer:INFO] Extracting firmware definitions.
+    [Utils:VERBOSE] Extracting firmware component names
+    [Utils:VERBOSE] Extracting firmware log descriptions.
+    [Utils:VERBOSE] Extracting 6top return codes.
+    [Utils:VERBOSE] Extracting 6top states.
+    [OpenVisualizerServer:INFO] Starting RPC server
+    [OpenVisualizerServer:SUCCESS] Setting mote 43eb as root
+    [ParserIEC:ERROR] 43eb [IEEE802154E] wrong state 1 in startSlot, at slotOffset 1
+    [RPL:INFO] registering DAGroot 82-6b-de-ec-58-34-65-78
 
-    $ USEMODULE=openwsn_serial IOTLAB_NODE=m3-3.saclay.iot-lab.info BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
+The root node will now start sending beacons and other nodes will synchronize, and
+join. If channel hopping is enabled this can take quite some time (see
+[Synchronization](../../pkg/openwsn/doc.txt#Synchronization). Once leaf nodes
+have joined the network whe issuing `ifcofing` you should see:
 
-The code that goes into root nodes and normal nodes is mostly the same except for
-`stdio`. To be able to interface with `openvisualizer` the node will need a
-dedicated uart. For most `BOARD`s its easier to simply disable `stdio` so this
-application include `stdio_null` by default. Mind that the serial output will
-be unreadable.
-
-For the node you choose as root you can set it up with:
-
-    $ IOTLAB_NODE=m3-3.saclay.iot-lab.info make -C tests/pkg_openwsn openv-termroot
-
-This will launch openvisualizer and attach to the specified specified `PORT` or
-in this case `IOTLAB_NODE`.
-
-Your node will now start sending beacons and other nodes will synchronize, and
-join. On leaf nodes yous should see the following:
-
-    > [IEE20154E]: synchronized
-    [neighbors]: new neighbor rssi: -66
-    [cjoin]: send join request
-    [cjoin]: success
-    [icmpv6rpl]: found better parent
-    [neighbors]: new neighbor rssi: -55
-    ifconfig
     ifconfig
     inet6 bbbb::684:f665:106b:1114
     hwaddr short: 11:14    long: 06:84:F6:65:10:6B:11:14
@@ -157,30 +180,30 @@ join. On leaf nodes yous should see the following:
     RPL parent: 2A:BA:F7:65:10:6B:11:14
     RPL DODAG ID: bbbb::2aba:f765:106b:1114
 
-The root node should soon start receiving RPL DAOs:
+The root node should start receiving RPL DAOs:
 
-    received RPL DAO from bbbb:0:0:0:ab8:fc65:106b:1114
-    - parents:
-    bbbb:0:0:0:2aba:f765:106b:1114
-    - children:
-    bbbb:0:0:0:684:f665:106b:1114
+    [RPL:INFO] received RPL DAO from bbbb:0:0:0:ab8:fc65:106b:1114
+        - parents:
+        bbbb:0:0:0:2aba:f765:106b:1114
+        - children:
+        bbbb:0:0:0:684:f665:106b:1114
 
-    received RPL DAO from bbbb:0:0:0:684:f665:106b:1114
-    - parents:
-    bbbb:0:0:0:2aba:f765:106b:1114
-    - children:
-    bbbb:0:0:0:ab8:fc65:106b:1114
+    [RPL:INFO] received RPL DAO from bbbb:0:0:0:684:f665:106b:1114
+        - parents:
+        bbbb:0:0:0:2aba:f765:106b:1114
+        - children:
+        bbbb:0:0:0:ab8:fc65:106b:1114
 
-    received RPL DAO from bbbb:0:0:0:684:f665:106b:1114
-    - parents:
-    bbbb:0:0:0:2aba:f765:106b:1114
-    - children:
-    bbbb:0:0:0:ab8:fc65:106b:1114
+    [RPL:INFO] received RPL DAO from bbbb:0:0:0:684:f665:106b:1114
+        - parents:
+        bbbb:0:0:0:2aba:f765:106b:1114
+        - children:
+        bbbb:0:0:0:ab8:fc65:106b:1114
 
 Once DAOs for all nodes start being received the network is setup and you
 should be able to send packets between nodes or ping from the host.
 
-### Send UDP packets
+### Communicating over udp
 
 On one node setup a udp-server:
 
@@ -213,16 +236,22 @@ The first node should receive the message
     > Received 12 bytes on port 3000
     00000000  A6  28  00  00  00  02  00  68  65  6C  6C  6F .(.....hello
 
-### Communicating with host
+### Communicating with host (IPV6)
 
 OpenVisualizer can set up a tun interface to communicate with the host computer.
 This will require starting `OpenVisualizer` with root privileges. The only
 difference with the previous setup is that the root node must be setup as
 follows:
 
-    $ IOTLAB_NODE=m3-3.saclay.iot-lab.info make -C tests/pkg_openwsn openv-termtun
+on iotlab:
+    $ IOTLAB_NODE=${ROOT_IOTLAB_NODE}  BOARD=iotlab-m3 \
+        make -C tests/pkg_openwsn openv-termtun
 
-Once DAOs are received you can ping node in the network from your host:
+on local boards:
+    $ PORT=<USB-serial-port, e.g., /dev/ttyUSB0>  BOARD=samr21-xpro \
+        make -C tests/pkg_openwsn openv-termtun
+
+Once DAOs are received you can ping nodes in the network from your host:
 
 ```
 $ ping6 -s 40 -i 5 bbbb:0:0:0:2ab5:fc65:106b:1114
@@ -237,7 +266,7 @@ PING bbbb:0:0:0:2ab5:fc65:106b:1114(bbbb::2ab5:fc65:106b:1114) 40 data bytes
 
 ```
 
-Debug output if openserial is also used on leafnode:
+If openserial is used on the leaf node you would get the following output:
 
 ```
 16:02:38 [ParserIEC:INFO] 768f [ICMPv6ECHO] received an echo request
