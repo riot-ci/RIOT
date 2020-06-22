@@ -38,9 +38,6 @@ USEMODULE += shell_commands
 # OpenWSN modules.
 USEMODULE += ztimer_usec
 
-# Additional networking modules that can be dropped if not needed
-#USEMODULE += gnrc_icmpv6_echo
-
 include $(RIOTBASE)/Makefile.include
 
 # We want the highest possible frequency set for periph_rtt, but not all
@@ -50,5 +47,3 @@ ifneq (,$(filter stm32,$(CPU)))
   RTT_FREQUENCY ?= RTT_MAX_FREQUENCY
   CFLAGS += -DRTT_FREQUENCY=$(RTT_FREQUENCY)
 endif
-
-CFLAGS += -Wno-char-subscripts
