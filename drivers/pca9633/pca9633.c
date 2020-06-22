@@ -37,7 +37,7 @@
  * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
  * @return  -EAGAIN When a lost bus arbitration occurs
  */
-int _write_reg(pca9633_t* dev, uint8_t reg, uint8_t data);
+static int _write_reg(pca9633_t* dev, uint8_t reg, uint8_t data);
 
 /**
  * @brief Read data from a register.
@@ -55,7 +55,7 @@ int _write_reg(pca9633_t* dev, uint8_t reg, uint8_t data);
  * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
  * @return  -EAGAIN When a lost bus arbitration occurs
  */
-int _read_reg(pca9633_t* dev, uint8_t reg, uint8_t* data);
+static int _read_reg(pca9633_t* dev, uint8_t reg, uint8_t* data);
 
 int pca9633_init(pca9633_t *dev, pca9633_params_t *params)
 {
