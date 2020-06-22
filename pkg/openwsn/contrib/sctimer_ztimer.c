@@ -64,17 +64,17 @@ static ztimer_convert_shift_t _ztimer_convert_shift_32768;
 #error No suitable ZTIMER_MSEC_BASE config. Maybe add USEMODULE += ztimer_usec?
 #endif
 
-static sctimer_cbt sctimer_cb;
-static ztimer_t ztimer_sctimer;
+static sctimer_cbt _sctimer_cb;
+static ztimer_t _ztimer_sctimer;
 static ztimer_clock_t *ZTIMER_32768 = NULL;
 
 static void sctimer_isr_internal(void *arg)
 {
     (void)arg;
 
-    if (sctimer_cb != NULL) {
+    if (_sctimer_cb != NULL) {
         debugpins_isr_set();
-        sctimer_cb();
+        _sctimer_cb();
         debugpins_isr_clr();
     }
 }
@@ -111,12 +111,12 @@ void sctimer_init(void)
                                                CONFIG_ZTIMER_MSEC_BASE_FREQ));
 #endif
 
-    ztimer_sctimer.callback = sctimer_isr_internal;
+    _ztimer_sctimer.callback = sctimer_isr_internal;
 }
 
 void sctimer_set_callback(sctimer_cbt cb)
 {
-    sctimer_cb = cb;
+    _sctimer_cb = cb;
 }
 
 void sctimer_setCompare(uint32_t val)
@@ -130,15 +130,15 @@ void sctimer_setCompare(uint32_t val)
        in scheduling it, trigger the ISR right away */
     if (now > val) {
         if (now - val < SCTIMER_LOOP_THRESHOLD) {
-            ztimer_set(ZTIMER_32768, &ztimer_sctimer, 0);
+            ztimer_set(ZTIMER_32768, &_ztimer_sctimer, 0);
         }
         else {
-            ztimer_set(ZTIMER_32768, &ztimer_sctimer,
+            ztimer_set(ZTIMER_32768, &_ztimer_sctimer,
                        UINT32_MAX - now + val);
         }
     }
     else {
-        ztimer_set(ZTIMER_32768, &ztimer_sctimer, val - now);
+        ztimer_set(ZTIMER_32768, &_ztimer_sctimer, val - now);
     }
 
     irq_restore(state);

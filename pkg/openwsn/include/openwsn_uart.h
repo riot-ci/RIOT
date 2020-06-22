@@ -74,6 +74,7 @@ void    uart_init_openwsn(void);
  * @brief   OpenWSN uart tx callback type
  */
 typedef void (*uart_tx_cbt)(void);
+
 /**
  * @brief   OpenWSN uart rx callback type
  */

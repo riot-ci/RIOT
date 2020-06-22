@@ -42,11 +42,11 @@ typedef struct {
     atomic_char xonXoffEscapedByte;
 } uart_vars_t;
 
-static uart_vars_t uart_vars;
-static atomic_char uart_rx_byte;
+static uart_vars_t _uart_vars;
+static atomic_char _uart_rx_byte;
 
 #ifdef MODULE_ZTIMER_USEC
-static ztimer_t ztimer_tx_uart;
+static ztimer_t _ztimer_tx_uart;
 #endif
 
 static void _openwsn_uart_write(const uint8_t *data)
@@ -54,7 +54,7 @@ static void _openwsn_uart_write(const uint8_t *data)
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
         uart_write(OPENWSN_UART_DEV, data, 1);
 #ifdef MODULE_ZTIMER_USEC
-        ztimer_set(ZTIMER_USEC, &ztimer_tx_uart, 0);
+        ztimer_set(ZTIMER_USEC, &_ztimer_tx_uart, 0);
 #endif
     }
 }
@@ -63,9 +63,9 @@ static void _riot_rx_cb(void *arg, uint8_t data)
 {
     (void)arg;
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
-        uart_rx_byte = data;
-        if (uart_vars.rxCb) {
-            uart_vars.rxCb();
+        _uart_rx_byte = data;
+        if (_uart_vars.rxCb) {
+            _uart_vars.rxCb();
         }
     }
     else {
@@ -78,14 +78,14 @@ static void _riot_tx_cb(void *arg)
     (void)arg;
 
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
-        if (uart_vars.fXonXoffEscaping == 0x01) {
-            uart_vars.fXonXoffEscaping = 0x00;
-            uart_vars.xonXoffEscapedByte ^= XONXOFF_MASK;
-            _openwsn_uart_write((uint8_t *)&(uart_vars.xonXoffEscapedByte));
+        if (_uart_vars.fXonXoffEscaping == 0x01) {
+            _uart_vars.fXonXoffEscaping = 0x00;
+            _uart_vars.xonXoffEscapedByte ^= XONXOFF_MASK;
+            _openwsn_uart_write((uint8_t *)&(_uart_vars.xonXoffEscapedByte));
         }
         else {
-            if (uart_vars.txCb) {
-                uart_vars.txCb();
+            if (_uart_vars.txCb) {
+                _uart_vars.txCb();
             }
         }
     }
@@ -117,7 +117,7 @@ void uart_init_openwsn(void)
         uart_init(OPENWSN_UART_DEV, OPENWSN_UART_BAUDRATE, \
                   (uart_rx_cb_t)_riot_rx_cb, NULL);
 #ifdef MODULE_ZTIMER_USEC
-        ztimer_tx_uart.callback = &_riot_tx_cb;
+        _ztimer_tx_uart.callback = &_riot_tx_cb;
 #else
         (void) _riot_tx_cb;
 #endif
@@ -127,8 +127,8 @@ void uart_init_openwsn(void)
 void uart_setCallbacks(uart_tx_cbt txCb, uart_rx_cbt rxCb)
 {
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
-        uart_vars.txCb = txCb;
-        uart_vars.rxCb = rxCb;
+        _uart_vars.txCb = txCb;
+        _uart_vars.rxCb = rxCb;
     }
     else {
         (void)rxCb;
@@ -159,13 +159,12 @@ void uart_writeByte(uint8_t byteToWrite)
         if (byteToWrite == XON || byteToWrite == XOFF || \
             byteToWrite == XONXOFF_ESCAPE) {
             uint8_t byte = XONXOFF_ESCAPE;
-            uart_vars.fXonXoffEscaping = 0x01;
-            uart_vars.xonXoffEscapedByte = byteToWrite;
+            _uart_vars.fXonXoffEscaping = 0x01;
+            _uart_vars.xonXoffEscapedByte = byteToWrite;
             _openwsn_uart_write(&byte);
         }
         else {
             _openwsn_uart_write(&byteToWrite);
-
         }
     }
     else {
@@ -176,7 +175,7 @@ void uart_writeByte(uint8_t byteToWrite)
 inline uint8_t uart_readByte(void)
 {
     if (IS_USED(MODULE_OPENWSN_SERIAL)) {
-        return uart_rx_byte;
+        return _uart_rx_byte;
     }
     else {
         return 0x00;

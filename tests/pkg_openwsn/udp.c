@@ -90,11 +90,6 @@ static int udp_send(char *addr_str, char *port_str, char *data,
             return 1;
         }
 
-        // if (schedule_hasManagedTxCellToNeighbor(&parentNeighbor) == FALSE) {
-        //     puts("Error: No managed TX cell to neighbor, exit");
-        //     return 1;
-        // }
-
         /* get a free packet buffer */
         pkt = openqueue_getFreePacketBuffer(COMPONENT_UINJECT);
         if (pkt == NULL) {
@@ -106,7 +101,7 @@ static int udp_send(char *addr_str, char *port_str, char *data,
         pkt->creator = COMPONENT_UINJECT;
         pkt->l4_protocol = IANA_UDP;
         pkt->l4_destination_port = atoi(port_str);
-        pkt->l4_sourcePortORicmpv6Type = uinject_vars.port; // TODO?
+        pkt->l4_sourcePortORicmpv6Type = uinject_vars.port;
         pkt->l3_destinationAdd.type = ADDR_128B;
         memcpy(&pkt->l3_destinationAdd.addr_128b[0], (void *)&addr, 16);
         /* add payload */
@@ -126,7 +121,6 @@ static int udp_send(char *addr_str, char *port_str, char *data,
         pkt->payload[3] = asnArray[3];
         pkt->payload[4] = asnArray[4];
 
-        //push_pkt_cb();
         scheduler_push_task(push_pkt_cb, TASKPRIO_COAP);
 
         ztimer_sleep(ZTIMER_USEC, delay);
@@ -143,7 +137,7 @@ int udp_cmd(int argc, char **argv)
 
     if (strcmp(argv[1], "send") == 0) {
         uint32_t num = 1;
-        uint32_t delay = 1000000;
+        uint32_t delay = 1000000LU;
         /* don't send as root */
         if (idmanager_vars.isDAGroot) {
             puts("Error: Node is root, exit");

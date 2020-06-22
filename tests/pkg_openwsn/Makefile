@@ -34,7 +34,7 @@ USEMODULE += ps
 USEMODULE += od_string
 USEMODULE += shell
 USEMODULE += shell_commands
-# ztimer is used instead of xtimer because its a dependency of some
+# ztimer is used instead of xtimer because it's a dependency of some
 # OpenWSN modules.
 USEMODULE += ztimer_usec
 

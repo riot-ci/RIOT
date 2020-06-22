@@ -62,8 +62,8 @@
 #define SCTIMER_PRESCALER_MASK       (~SCTIMER_TIME_DIVISION_MASK)
 #define SCTIMER_PRESCALER_SHIFT      __builtin_ctz(SCTIMER_TIME_DIVISION_MASK)
 
-static PORT_TIMER_WIDTH prescaler;
-static atomic_bool enable;
+static PORT_TIMER_WIDTH _prescaler;
+static atomic_bool _enable;
 #endif
 
 static sctimer_cbt sctimer_cb;
@@ -84,8 +84,8 @@ void sctimer_init(void)
     rtt_init();
     sctimer_cb = NULL;
 #ifdef SCTIMER_TIME_DIVISION
-    prescaler = 0;
-    enable = false;
+    _prescaler = 0;
+    _enable = false;
 #endif
 }
 
@@ -100,15 +100,15 @@ PORT_TIMER_WIDTH _update_val(PORT_TIMER_WIDTH val, uint32_t now)
     now = now & SCTIMER_PRESCALER_MASK;
     val = val >> SCTIMER_PRESCALER;
     /* Check if next value would cause an overflow */
-    if ((now - val) > SCTIMER_LOOP_THRESHOLD && enable && now > val) {
-        prescaler += (1 << SCTIMER_PRESCALER_SHIFT);
-        enable = false;
+    if ((now - val) > SCTIMER_LOOP_THRESHOLD && _enable && now > val) {
+        _prescaler += (1 << SCTIMER_PRESCALER_SHIFT);
+        _enable = false;
     }
-    /* Make sure it only updates the prescaler once per overflow cycle */
+    /* Make sure it only updates the _prescaler once per overflow cycle */
     if (val > SCTIMER_LOOP_THRESHOLD && val < 2 * SCTIMER_LOOP_THRESHOLD) {
-        enable = true;
+        _enable = true;
     }
-    val |= prescaler;
+    val |= _prescaler;
 
     return val;
 }
