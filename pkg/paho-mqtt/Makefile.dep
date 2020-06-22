@@ -1,0 +1,20 @@
+USEMODULE += xtimer
+USEMODULE += ipv4_addr
+USEMODULE += ipv6_addr
+
+# paho-mqtt depends on lwip for TCP support
+USEMODULE += lwip_ipv6_autoconfig
+USEMODULE += lwip lwip_sock_ip
+USEMODULE += lwip_netdev
+USEMODULE += lwip_udp lwip_sock_udp
+USEMODULE += lwip_tcp lwip_sock_tcp
+USEMODULE += lwip_sock_async
+USEMODULE += sock_async_event
+USEMODULE += tsrb
+
+ifeq ($(BOARD),native)
+  USEMODULE += lwip_ethernet
+endif
+
+USEMODULE += paho-mqtt-contrib
+USEMODULE += paho-mqtt-packet
