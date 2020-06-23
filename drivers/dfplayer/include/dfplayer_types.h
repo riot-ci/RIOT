@@ -152,6 +152,7 @@ typedef struct {
     dfplayer_cb_done_t cb_done; /**< Function to call when playing a track completed */
     dfplayer_cb_src_t cb_src;   /**< Function to call when set of available playback sources changes */
     void *userdata;             /**< Pointer to pass to callback functions */
+    uint32_t last_event_us;     /**< Time stamp of the last event in µs */
     uint8_t buf[6];             /**< Data buffer for response from DFPlayer */
     dfplayer_track_t track;     /**< Currently played song */
     uint8_t len;                /**< Length of the frame in the buffer */
