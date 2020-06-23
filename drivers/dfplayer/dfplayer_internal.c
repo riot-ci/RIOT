@@ -76,7 +76,7 @@ static void _handle_playback_completed(dfplayer_t *dev, dfplayer_source_t src)
     dev->flags |= DFPLAYER_FLAG_NO_ACK_BUG;
 
     uint32_t now_us = xtimer_now_usec();
-    if (dev->cb_done && (now_us - dev->last_event_us > US_PER_SEC)) {
+    if (dev->cb_done && (now_us - dev->last_event_us > DFPLAYER_TIMEOUT_MS * US_PER_MS)) {
         dev->cb_done(src, track, dev->userdata);
     }
     dev->last_event_us = now_us;
