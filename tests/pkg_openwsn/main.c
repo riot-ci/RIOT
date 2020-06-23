@@ -172,6 +172,7 @@ static const struct {
     { "6topres", COMPONENT_SIXTOP_RES },
     { "bridge", COMPONENT_OPENBRIDGE },
     { "iphc", COMPONENT_IPHC },
+    { "frag", COMPONENT_FRAG },
     { "fwd", COMPONENT_FORWARDING },
     { "icmpv6", COMPONENT_ICMPv6 },
     { "icmpv6ech", COMPONENT_ICMPv6ECHO },
@@ -179,6 +180,8 @@ static const struct {
     { "icmpv6rpl", COMPONENT_ICMPv6RPL },
     { "udp", COMPONENT_OPENUDP },
     { "coap", COMPONENT_OPENCOAP },
+    { "cjoin", COMPONENT_CJOIN },
+    { "openoscoap", COMPONENT_OPENOSCOAP },
     { "c6t", COMPONENT_C6T },
     { "uinject", COMPONENT_UINJECT },
 };
