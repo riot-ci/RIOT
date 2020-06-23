@@ -151,7 +151,7 @@ static void _atwinc15x0_wifi_cb(uint8_t type, void *msg)
         case M2M_WIFI_RESP_SCAN_DONE:
             DEBUG("%s scan done, %d APs found\n", __func__,
                   event->scan_done.u8NumofCh);
-            /* read the first scane result record */
+            /* read the first scan result record */
             m2m_wifi_req_scan_result(0);
             break;
 
@@ -427,7 +427,7 @@ static int _atwinc15x0_init(netdev_t *netdev)
 
     int8_t res;
 
-    /*intilize the WINC Driver*/
+    /* initialize the WINC Driver*/
     if ((res = m2m_wifi_init(&atwinc15x0_wifi_params)) != M2M_SUCCESS) {
         DEBUG("m2m_wifi_init failed with code %d\n", res);
         if (res == M2M_ERR_FW_VER_MISMATCH) {
