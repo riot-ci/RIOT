@@ -1172,12 +1172,7 @@ int setsockopt(int socket, int level, int option_name, const void *option_value,
 
 bool posix_socket_is(int fd)
 {
-#if IS_USED(MODULE_SOCK_ASYNC)
-    return (_get_socket(fd) != NULL);
-#else
-    (void)fd;
-    return 0U;
-#endif
+    return IS_USED(MODULE_SOCK_ASYNC) && (_get_socket(fd) != NULL);
 }
 
 unsigned posix_socket_avail(int fd)
