@@ -16,16 +16,14 @@ QUIET ?= 1
 
 USEPKG += paho-mqtt
 
-CFLAGS += -DESP_WIFI_SSID=\"define yours\" -DESP_WIFI_PASS=\"secret\"
-
-ifneq (,$(filter arch_esp32,$(FEATURES_USED)))
-  USEMODULE += esp_wifi
-endif
-
-ifneq ($(BOARD),native)
-USEMODULE += netdev_default
-endif
-
+# paho-mqtt depends on TCP support, choose the stack you want
+USEMODULE += lwip_ipv6_autoconfig
+USEMODULE += lwip lwip_sock_ip
+USEMODULE += lwip_netdev
+USEMODULE += lwip_udp lwip_sock_udp
+USEMODULE += lwip_tcp lwip_sock_tcp
+USEMODULE += lwip_sock_async
+USEMODULE += sock_async_event
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps

@@ -5,10 +5,6 @@ PKG_LICENSE = EDL
 
 include $(RIOTBASE)/pkg/pkg.mk
 
-.PHONY: paho-mqtt
-
-all: paho-mqtt
-
-paho-mqtt:
+all:
 	"$(MAKE)" -C $(PKG_BUILDDIR)/MQTTPacket/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)-packet
 	"$(MAKE)" -C $(PKG_BUILDDIR)/MQTTClient-C/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)
