@@ -29,7 +29,7 @@ PKG_DIR ?= $(CURDIR)
 PKG_BUILD_OUT_OF_SOURCE ?= 1
 ifeq (1,$(PKG_BUILD_OUT_OF_SOURCE))
   PKG_SOURCE_DIR ?= $(PKGDIRBASE)/$(PKG_NAME)
-  PKG_BUILD_DIR ?= $(BINDIR)/$(PKG_NAME)
+  PKG_BUILD_DIR ?= $(BINDIR)/pkg/$(PKG_NAME)
 else
   # configure old behaviour: packages are cloned within the application build
   # directory in a separate pkg tree
