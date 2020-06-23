@@ -113,7 +113,6 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
                     if (posix_socket_avail(i) > 0) {
                         FD_SET(i, &ret_readfds);
                         fds_set++;
-                        wait = false;
                     }
                 }
             }
