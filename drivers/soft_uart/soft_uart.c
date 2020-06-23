@@ -167,7 +167,7 @@ int soft_uart_init(soft_uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void
 
     if (cfg->tx_pin != GPIO_UNDEF) {
         timer_init(cfg->tx_timer, cfg->timer_freq, _tx_timer_cb, (void*) uart);
-        gpio_set(cfg->tx_pin);
+        gpio_write(cfg->tx_pin, !(cfg->flags & SOFT_UART_FLAG_INVERT_TX));
         gpio_init(cfg->tx_pin, GPIO_OUT);
     }
 
@@ -273,6 +273,10 @@ static void soft_uart_write_byte(soft_uart_t uart, uint8_t data)
 
     for (int i = 0; i < BITS_STOP(ctx); ++i) {
         ctx->byte_tx |= 1 << ctx->bits_tx++;
+    }
+
+    if (cfg->flags & SOFT_UART_FLAG_INVERT_TX) {
+        ctx->byte_tx = ~ctx->byte_tx;
     }
 
     timer_set_periodic(cfg->tx_timer, 0, ctx->baud,
