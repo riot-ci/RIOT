@@ -52,7 +52,10 @@ CFLAGS += -fwrapv
 # (see above for details).
 # Note:         This warning is sadly not reliable, thus -fwrapv cannot be
 #               dropped in favor of this
-CFLAGS += -Wstrict-overflow
+ifneq (,$(filter arch_msp430,$(FEATURES_USED)))
+  # TODO: Re-enable for MSP430, once issues are addressed
+  CFLAGS += -Wstrict-overflow
+endif
 
 # Fast-out on old style function definitions.
 # They cause unreadable error compiler errors on missing semicolons.
