@@ -35,7 +35,6 @@
 #include <assert.h>
 #include <errno.h>
 
-#include "periph/pm.h"
 #include "shell.h"
 #include "shell_commands.h"
 
@@ -49,17 +48,6 @@
     #define MORE_COMMANDS
 #endif /* MODULE_SHELL_COMMANDS */
 
-/* on native, stop RIOT on EOF */
-#ifndef SHELL_SHUTDOWN_ON_EOF
-#  ifdef CPU_NATIVE
-#    define SHELL_SHUTDOWN_ON_EOF   (1)
-#  else
-#    define SHELL_SHUTDOWN_ON_EOF   (0)
-#  endif
-#endif /* SHELL_SHUTDOWN_ON_EOF */
-
-static void flush_if_needed(void)
-{
 #ifdef MODULE_NEWLIB
     #define flush_if_needed() fflush(stdout)
 #else
@@ -370,18 +358,15 @@ static int readline(char *buf, size_t size)
 void shell_run_once(const shell_command_t *shell_commands,
                     char *line_buf, int len)
 {
-    bool running = true;
+    print_prompt();
 
-    while (running) {
-
-        print_prompt();
+    while (1) {
         int res = readline(line_buf, len);
 
         switch (res) {
 
             case EOF:
-                running = false;
-                break;
+                return;
 
             case -ENOBUFS:
                 puts("shell: maximum line length exceeded");
@@ -391,9 +376,7 @@ void shell_run_once(const shell_command_t *shell_commands,
                 handle_input_line(shell_commands, line_buf);
                 break;
         }
-    }
 
-#if SHELL_SHUTDOWN_ON_EOF
-    pm_off();
-#endif
+        print_prompt();
+    }
 }
