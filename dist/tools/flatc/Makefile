@@ -7,7 +7,7 @@ PKG_LICENSE=Apache2.0
 RIOTBASE ?= $(CURDIR)/../../..
 RIOTTOOLS ?= $(CURDIR)/..
 PKGDIRBASE ?= $(RIOTBASE)/build/pkg
-PKG_BUILD_DIR ?= $(CURDIR)/build
+PKG_BUILD_DIR ?= $(CURDIR)/bin
 
 CMAKE_OPTIONS = \
     -DCMAKE_BUILD_TYPE=Release       \
