@@ -18,6 +18,8 @@
  * directly connected to headphones, but needs a dedicated amplifier for
  * connecting to passive speakers.
  *
+ * ![DFPlayer pinout](https://camo.githubusercontent.com/fd6ed047e8e3ced124b32051ddfff2df9e8afe47/68747470733a2f2f63646e2e73686f706966792e636f6d2f732f66696c65732f312f313530392f313633382f66696c65732f4d50335f706c617965725f6d6f64756c655f70696e6f75745f6469616772616d2e706e67)
+ *
  * File System Setup
  * =================
  *
@@ -28,20 +30,35 @@
  * Numbered File Inside Numbered Folder Naming Scheme
  * --------------------------------------------------
  *
- * The MP3 files have to be named with three decimal digits (e.g. `"001.mp3"` or
- * `"042"`) and must be placed in in folders named with two decimal digits
- * (e.g. `"01"` or `"99"`). The folder name numbers must be in the range 1-99
- * and the file name numbers in the range 1-255. (E.g. `"09/099.mp3"` would be
- * a valid path.) Playback of these files can be started using the function
- * @ref dfplayer_play_file
+ * The MP3 files have to be named with three leading decimal digits (e.g.
+ * `001.mp3` or `042 - foo bar.mp3`) and must be placed in in folders named with
+ * two decimal digits (e.g. `01` or `99`). The folder name numbers must be in
+ * the range 1-99 and the file name numbers in the range 1-255. Playback of
+ * these files can be started using the function @ref dfplayer_play_file .
+ *
+ * Examples of valid paths:
+ *
+ * - `01/001.mp3`
+ * - `19/249 - Nothing Else Matters.mp3`
+ *
+ * Examples of ***INVALID*** paths:
+ *
+ * - `01 - Yngwie Malmsteen/042 - Leonardo.mp3`
+ *     - The folder name must only consist of two digits, additional chars are
+ *       not allowed in the folder name
+ * - `9/42.mp3`
+ *     - Leading zeros must be added, e.g. `09/042.mp3` would be valid
+ * - `99/359.mp3`
+ *     - Folder number out of range (1-255 is valid)
  *
  * Numbered File Inside MP3 Folder Naming Scheme
  * ---------------------------------------------
  *
- * The MP3 files have to be named with four decimal digits (e.g. `"0001.mp3"` or
- * `"1337.mp3") and must be placed in the folder `"MP3"`. The file numbers
- * 1-9999 are valid. Playback of these files can be started using the function
- * @ref dfplayer_play_from_mp3
+ * The MP3 files have to be named with four decimal digits and must be placed in 
+ * the folder `"MP3"`. Subsequent characters after the four digits are ignored.
+ * Valid names are e.g. `MP3/0001.mp3` or `MP3/0042 - My favorite song.mp3`. The
+ * file numbers 1-9999 are valid. Playback of these files can be started using
+ * the function @ref dfplayer_play_from_mp3 .
  *
  * Advertisements
  * --------------
