@@ -4,7 +4,7 @@
  @ingroup  net
  @brief    Provides a RIOT adaption of the OpenWSN network stack
  @see      https://github.com/openwsn-berkeley/openwsn-fw
-
+ @experimental
 
  # OpenWSN RIOT Port
 
@@ -352,6 +352,19 @@
  as it stay within the above mentioned margins and if motes are able to stay
  synchronized over the long run. If there aren't then maybe board_info.h
  parameters require tuning for the specific platform.
+
+- `[JRC:ERROR] Type-error in conversion of 5N=ex`
+
+This errors happen when a node tries to rejoin the network. This error is only
+associated to a log print, so can be ignored.
+
+- `[coap:WARNING] coapRcBadRequest(reason=OSCOAP unprotect failed: oscoapError(reason=Replay protection failed))`
+
+The join procedure uses a replay window. If a node had already joined the network
+and for some reason attempts to rejoin again, then the replay windows will need
+to expire for its join request to be accepted.
+
+The following erros are platform specific.
 
  - samr21-xpro issues:
       - The serial debugger hinders Openserial operation, an ftdi device must
