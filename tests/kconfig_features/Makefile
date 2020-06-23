@@ -13,6 +13,8 @@ BOARD_WHITELIST += arduino-duemilanove \
                    cc2650-launchpad \
                    cc2650stk \
                    derfmega128 \
+                   hifive1 \
+                   hifive1b \
                    ikea-tradfri \
                    mega-xplained \
                    microduino-corerf \
