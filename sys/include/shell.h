@@ -21,11 +21,21 @@
 #define SHELL_H
 
 #include <stdint.h>
+#include "periph/pm.h"
 
 #include "kernel_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+/**
+ * @brief On native, stop RIOT on EOF
+ */
+#ifndef CONFIG_SHELL_SHUTDOWN_ON_EOF
+#  ifdef CPU_NATIVE
+#    define CONFIG_SHELL_SHUTDOWN_ON_EOF 1
+#  endif
 #endif
 
 /**
@@ -97,7 +107,12 @@ static inline void shell_run_forever(const shell_command_t *commands,
 static inline void shell_run(const shell_command_t *commands,
                              char *line_buf, int len)
 {
-    shell_run_forever(commands, line_buf, len);
+    if (IS_ACTIVE(CONFIG_SHELL_SHUTDOWN_ON_EOF)) {
+        shell_run_once(commands, line_buf, len);
+        pm_off();
+    } else {
+        shell_run_forever(commands, line_buf, len);
+    }
 }
 
 #ifdef __cplusplus
