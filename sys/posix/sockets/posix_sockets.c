@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdatomic.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -90,7 +91,7 @@ typedef struct {
     unsigned queue_array_len;
 #endif
 #if IS_USED(MODULE_SOCK_ASYNC)
-    volatile unsigned available;
+    atomic_uint available;
 #endif
 #if IS_USED(MODULE_POSIX_SELECT)
     thread_t *selecting_thread;
@@ -129,7 +130,7 @@ static socket_t *_get_free_socket(void)
     for (int i = 0; i < _ACTUAL_SOCKET_POOL_SIZE; i++) {
         if (_socket_pool[i].domain == AF_UNSPEC) {
 #if IS_USED(MODULE_SOCK_ASYNC)
-            _socket_pool[i].available = 0U;
+            atomic_init(&_socket_pool[i].available, 0U);
 #endif
 #if IS_USED(MODULE_POSIX_SELECT)
             _socket_pool[i].selecting_thread = NULL;
@@ -372,7 +373,7 @@ static const vfs_file_ops_t socket_ops = {
 static void _async_cb(socket_sock_pool_t *sock, sock_async_flags_t type)
 {
     if (type & SOCK_ASYNC_MSG_RECV) {
-        sock->socket->available++;
+        atomic_fetch_add(&sock->socket->available, 1);
 #if IS_USED(MODULE_POSIX_SELECT)
         thread_flags_set(sock->socket->selecting_thread,
                          POSIX_SELECT_THREAD_FLAG);
@@ -980,7 +981,7 @@ static ssize_t socket_recvfrom(socket_t *s, void *restrict buffer,
     }
     if ((res >= 0) && (address != NULL) && (address_len != NULL)) {
 #ifdef MODULE_SOCK_ASYNC
-        s->available--;
+        atomic_fetch_sub(&s->available, 1);
 #endif
         switch (s->type) {
 #ifdef MODULE_SOCK_TCP
@@ -1180,7 +1181,7 @@ unsigned posix_socket_avail(int fd)
 #if IS_USED(MODULE_SOCK_ASYNC)
     socket_t *socket = _get_socket(fd);
 
-    return (socket != NULL) ? socket->available : 0U;
+    return (socket != NULL) ? atomic_load(&socket->available) : 0U;
 #else
     (void)fd;
     return 0U;
