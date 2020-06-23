@@ -5,7 +5,6 @@ stack (UDP, IPv6, RPL, 6TiSCH) running on RIOT. When flashed, it will initialize
 and provide the user with some minimal shell commands to:
 
 - print the own IPv6 address `ifconfig`
-- start a RPL root node `rplroot` (This is only available with `openwsn_serial`)
 - change the UDP destination port `udp server start <port>`
 - send a UDP packet `udp send <addr> <port> <data>`
 

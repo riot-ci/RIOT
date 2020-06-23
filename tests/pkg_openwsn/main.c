@@ -250,27 +250,6 @@ static int as_cmd(int argc, char **argv)
     return 0;
 }
 
-#ifdef MODULE_OPENWSN_SERIAL
-static int rpl_cmd(int argc, char **argv)
-{
-    (void)argc;
-    (void)argv;
-
-    /* TODO allow other prefixes via shell ?!? */
-    uint8_t temp[8] = { 0xbb, 0xbb, 0x00, 0x00,
-                        0x00, 0x00, 0x00, 0x00 };
-    open_addr_t myPrefix;
-
-    myPrefix.type = ADDR_PREFIX;
-    memcpy(myPrefix.prefix, &temp, sizeof(myPrefix.prefix));
-    idmanager_setMyID(&myPrefix);
-    icmpv6rpl_init();
-    idmanager_setIsDAGroot(TRUE);
-
-    return 0;
-}
-#endif
-
 static int sc_cmd(int argc, char **argv)
 {
     (void)argc;
@@ -292,9 +271,6 @@ static const shell_command_t shell_commands[] = {
     { "as", "Shows active cells", as_cmd },
     { "sc", "Shows scheduler (openos) dbg states", sc_cmd },
     { "udp", "Send data over UDP and listen on UDP ports", udp_cmd },
-#ifdef MODULE_OPENWSN_SERIAL
-    { "rplroot", "Set node as RPL DODAG root node", rpl_cmd },
-#endif
     { NULL, NULL, NULL }
 };
 
