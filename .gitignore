@@ -79,6 +79,3 @@ keys/
 
 # clangd language server
 .clangd/
-
-# ignore external packages
-packages/
