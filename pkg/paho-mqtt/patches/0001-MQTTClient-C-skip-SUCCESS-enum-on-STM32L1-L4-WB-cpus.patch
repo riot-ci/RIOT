@@ -15,7 +15,7 @@ index b612341..a051199 100755
  enum QoS { QOS0, QOS1, QOS2, SUBFAIL=0x80 };
  
  /* all failure return codes must be negative */
-+#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32WB)
++#if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32L1) || defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32G4)
 +/* the SUCCESS enum is also defined with stm32 L1, L4 and WB families.
 +   Since it contains the same value, we just skip its definition here for them. */
 +enum returnCode { BUFFER_OVERFLOW = -2, FAILURE = -1};
