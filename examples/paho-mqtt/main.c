@@ -29,11 +29,11 @@
 #include "MQTTClient.h"
 
 #define BUF_SIZE                        1024
-#define MQTT_VERSION_v311               4     /* MQTT v3.1.1 version is 4 */
+#define MQTT_VERSION_v311               4       /* MQTT v3.1.1 version is 4 */
 #define COMMAND_TIMEOUT_MS              4000
 
 #define DEFAULT_MQTT_PORT               1883    /**< Default MQTT port */
-#define DEFAULT_KEEPALIVE_SEC           10    /**< Keepalive timeout in seconds */
+#define DEFAULT_KEEPALIVE_SEC           10      /**< Keepalive timeout in seconds */
 #define DEFAULT_MQTT_USER               "riot"
 #define DEFAULT_MQTT_PWD                 ""
 
