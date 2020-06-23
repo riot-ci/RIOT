@@ -59,6 +59,8 @@ CMDS = (
     ('end_test', '[TEST_END]'),
 )
 
+CMDS_REGEX = { 'ps' }
+
 BOARD = os.environ['BOARD']
 
 
@@ -69,10 +71,14 @@ def print_error(message):
 
 
 def check_cmd(child, cmd, expected):
+    regex = cmd in CMDS_REGEX
     child.expect(PROMPT)
     child.sendline(cmd)
     for line in expected:
-        child.expect_exact(line)
+        if regex:
+            child.expect(line)
+        else:
+            child.expect_exact(line)
 
 
 def check_startup(child):
