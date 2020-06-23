@@ -105,7 +105,7 @@ int __attribute__((used)) sched_run(void)
 #ifndef MODULE_CORE_IDLE_THREAD
     if (!runqueue_bitcache) {
         if (active_thread) {
-            // unschedule
+            _unschedule(active_thread);
             active_thread = NULL;
         }
 
