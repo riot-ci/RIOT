@@ -19,6 +19,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "od.h"
 #include "fmt.h"
@@ -206,13 +207,33 @@ static int q_cmd(int argc, char **argv)
     for (uint8_t i = 0; i < QUEUELENGTH; i++) {
         if (openqueue_vars.queue[i].creator || openqueue_vars.queue[i].owner) {
             queue = 0;
-            printf("Creator: %.9s, ",
-                   _get_name(openqueue_vars.queue[i].creator));
-            printf("Owner: %.9s\n", _get_name(openqueue_vars.queue[i].owner));
+            uint8_t creator = openqueue_vars.queue[i].creator;
+            uint8_t owner = openqueue_vars.queue[i].owner;
+            printf("Creator: %.9s [%d], ", _get_name(creator), creator);
+            printf("Owner: %.9s [%d]\n", _get_name(owner), owner);
         }
     }
     if (queue) {
         puts("openqueue empty");
+    }
+    return 0;
+}
+
+static int q_rmv(int argc, char **argv)
+{
+    if (argc < 2) {
+        printf("usage: %s [creator]\n", argv[0]);
+        return 1;
+    }
+
+    uint8_t creator = atoi(argv[1]);
+    if (creator == 0) {
+        printf("error: invalid input value\n");
+        return 1;
+    }
+    else {
+        printf("Removing entries created by: %.9s [%d]\n", _get_name(creator), creator);
+        openqueue_removeAllCreatedBy(creator);
     }
     return 0;
 }
@@ -271,6 +292,7 @@ static const shell_command_t shell_commands[] = {
     { "ifconfig", "Shows assigned IPv6 addresses", ifconfig_cmd },
     { "nc", "Shows neighbor table", nc_cmd },
     { "q", "Shows Openqueue", q_cmd },
+    { "q-rmv", "Remove entries from creator in queue", q_rmv },
     { "as", "Shows active cells", as_cmd },
     { "sc", "Shows scheduler (openos) dbg states", sc_cmd },
     { "udp", "Send data over UDP and listen on UDP ports", udp_cmd },
