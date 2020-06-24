@@ -1,10 +1,9 @@
 # Put board specific dependencies here
 
 ifneq (,$(filter arch_esp32,$(FEATURES_USED)))
-  CFLAGS += -DESP_WIFI_SSID=\"define_yours\" -DESP_WIFI_PASS=\"secret\"
   USEMODULE += esp_wifi
 endif
 
-ifneq ($(BOARD),native)
+ifeq ($(BOARD),native)
   USEMODULE += netdev_default
 endif

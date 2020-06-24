@@ -13,7 +13,18 @@
  */
 #include <string.h>
 #include <errno.h>
+
+#if defined(SOCK_HAS_IPV6) && defined(SOCK_HAS_IPV4)
+#error "Either use IPv4 or IPv6"
+#endif
+
+#ifdef SOCK_HAS_IPV6
 #include <net/ipv6/addr.h>
+#endif
+
+#ifdef SOCK_HAS_IPV4
+#include <net/ipv4/addr.h>
+#endif
 #include <net/af.h>
 #include <net/sock.h>
 #include <net/sock/tcp.h>
@@ -26,6 +37,7 @@
 #define ENABLE_DEBUG                        (0)
 #include "debug.h"
 
+#define IP_MAX_LEN_ADDRESS                 (39)
 #ifdef MODULE_LWIP
 #define TSRB_MAX_SIZE                       (1024)
 static uint8_t buffer[TSRB_MAX_SIZE];
@@ -33,7 +45,7 @@ static tsrb_t tsrb_lwip_tcp;
 #endif
 
 #ifndef PAHO_MQTT_YIELD_MS
-#define PAHO_MQTT_YIELD_MS                  (500)
+#define PAHO_MQTT_YIELD_MS                  (10)
 #endif
 
 static int mqtt_read(struct Network *n, unsigned char *buf, int len,
@@ -110,25 +122,32 @@ void NetworkInit(Network *n)
 
 int NetworkConnect(Network *n, char *addr_ip, int port)
 {
-    sock_tcp_ep_t remote = SOCK_IPV6_EP_ANY;
-    char _local_ip[25];
-
+    sock_tcp_ep_t *remote = NULL;
+    char _local_ip[IP_MAX_LEN_ADDRESS];
+    /* ipvN_addr_from_str modifies input buffer */
     strncpy(_local_ip, addr_ip, sizeof(_local_ip));
-    remote.family = AF_INET6;
-    if (ipv6_addr_from_str((ipv6_addr_t *)&remote.addr, _local_ip) == NULL) {
-        LOG_WARNING("Error IPv6: unable to parse destination address, trying IPv4\n");
-        /* ipv6_addr_from_str modifies input buffer */
-        strncpy(_local_ip, addr_ip, sizeof(_local_ip));
-        if (ipv4_addr_from_str((ipv4_addr_t *)&remote.addr,
-                               _local_ip) == NULL) {
-            LOG_ERROR("Error IPv4: unable to parse destination address\n");
-            return -1;
-        }
-        remote.family = AF_INET;
-    }
-    remote.port = port;
 
-    int ret = sock_tcp_connect(&n->sock, &remote, 0, 0);
+#ifdef SOCK_HAS_IPV6
+    sock_tcp_ep_t remote6 = SOCK_IPV6_EP_ANY;
+    if (ipv6_addr_from_str((ipv6_addr_t *)&remote6.addr, _local_ip) == NULL) {
+        LOG_ERROR("Error IPv6: unable to parse destination address\n");
+    }
+    remote6.port = port;
+    remote = &remote6;
+#endif
+
+#ifdef SOCK_HAS_IPV4
+    sock_tcp_ep_t remote4 = SOCK_IPV4_EP_ANY;
+    if (ipv4_addr_from_str((ipv4_addr_t *)&remote4.addr,
+                           _local_ip) == NULL) {
+        LOG_ERROR("Error IPv4: unable to parse destination address\n");
+        return -1;
+    }
+    remote4.port = port;
+    remote = &remote4;
+#endif
+
+    int ret = sock_tcp_connect(&n->sock, remote, 0, 0);
     if (ret < 0) {
         LOG_ERROR("paho-mqtt: unable to connect (%d)\n", ret);
     } else {
