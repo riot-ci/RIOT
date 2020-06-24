@@ -14,28 +14,45 @@ DEVELHELP ?= 1
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
 
-USEPKG += paho-mqtt
+WIFI_SSID ?= "Your_WiFi_name"
+WIFI_PASS ?= "Your_secure_password"
 
-USEMODULE += sock_async_event
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
+USEPKG += paho-mqtt
 
 # paho-mqtt depends on TCP support, choose the stack you want
-USEMODULE += lwip_ipv6_autoconfig
-USEMODULE += lwip lwip_sock_ip
+LWIP_IPV4 ?= 0
+
+ifneq (0, $(LWIP_IPV4))
+  USEMODULE += ipv4_addr
+  USEMODULE += lwip_arp
+  USEMODULE += lwip_ipv4
+  USEMODULE += lwip_dhcp_auto
+  USEMODULE += lwip_sock_udp
+  CFLAGS += -DETHARP_SUPPORT_STATIC_ENTRIES=1
+  LWIP_IPV6 ?= 0
+else
+  LWIP_IPV6 ?= 1
+endif
+
+ifneq (0, $(LWIP_IPV6))
+  USEMODULE += ipv6_addr
+  USEMODULE += lwip_ipv6_autoconfig
+endif
+
 USEMODULE += lwip_netdev
-USEMODULE += lwip_udp lwip_sock_udp
+USEMODULE += lwip lwip_sock_ip
 USEMODULE += lwip_tcp lwip_sock_tcp
 USEMODULE += lwip_sock_async
-# LwIP specific CFLAGS
-# setting socket reuse
-CFLAGS += -DSO_REUSE
-# setting timeout on socket receive
-CFLAGS += -DLWIP_SO_RCVTIMEO
-CFLAGS += -DLWIP_SOCK_TCP_ACCEPT_TIMEOUT=500
-# enable loop interface
-CFLAGS += -DLWIP_NETIF_LOOPBACK=1
-CFLAGS += -DLWIP_HAVE_LOOPIF=0
+
+USEMODULE += sock_async_event
+####
 
 include $(RIOTBASE)/Makefile.include
+
+ifneq (,$(filter arch_esp32,$(FEATURES_USED)))
+  CFLAGS += -DESP_WIFI_SSID=\"$(WIFI_SSID)\"
+  CFLAGS += -DESP_WIFI_PASS=\"$(WIFI_PASS)\"
+endif
