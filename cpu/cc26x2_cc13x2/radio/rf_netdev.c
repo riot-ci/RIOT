@@ -25,6 +25,7 @@
 #include "cc26xx_cc13xx_rfc_prop_mailbox.h"
 #include "cc26xx_cc13xx_rfc_queue.h"
 #include "vendor/rf_patch_cpe_prop.h"
+#include "rf_conf.h"
 
 #include "mutex.h"
 
