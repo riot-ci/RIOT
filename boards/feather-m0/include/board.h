@@ -42,9 +42,8 @@ extern "C" {
 #define LED0_TOGGLE         (LED_PORT.OUTTGL.reg = LED0_MASK)
 /** @} */
 
-#ifdef MODULE_FEATHER_M0_WIFI
 /**
- * @name    Board configuration for ATWINC15x0 WiFi netdev driver
+ * @name    Configuration for Feather M0 WiFi and the ATWINC15x0 WiFi netdev
  * @{
  */
 #define ATWINC15X0_PARAM_SPI            SPI_DEV(0)
@@ -54,7 +53,6 @@ extern "C" {
 #define ATWINC15X0_PARAM_IRQ_PIN        GPIO_PIN(0, 21)
 #define ATWINC15X0_PARAM_WAKE_PIN       GPIO_UNDEF
 /** @} */
-#endif
 
 /**
  * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
