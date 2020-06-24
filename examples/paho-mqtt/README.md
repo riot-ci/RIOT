@@ -22,9 +22,9 @@ For example this one for debian base linux users
 
 - To connect to a broker, use the `con` command:
 ```
-con  <ipv6 addr> [port] [clientID] [user] [password] [keepalivetime]
+con  <broker ip addr> [port] [clientID] [user] [password] [keepalivetime]
 ```
-  * *ipv6 addr*: IPv6 broker address.
+  * *broker ip addr*: IPv6 or IPv4 broker address.
   * *port*: broker port. Default 1883
   * *client ID*: is the client id you set up on the broker. Default can be set
      through DEFAULT_MQTT_CLIENTID in your makefile. Otherwise is "riot".
