@@ -1,4 +1,4 @@
-DEVELHELP ?= 0
+DEVELHELP ?= 1
 include ../Makefile.tests_common
 
 USEMODULE += embunit
@@ -50,3 +50,5 @@ ifeq (, $(UNIT_TESTS))
 else
   CFLAGS += -DTEST_SUITES='$(subst $() $(),$(charCOMMA),$(UNIT_TESTS:tests-%=%))'
 endif
+
+CFLAGS += -DDEBUG_ASSERT_VERBOSE
