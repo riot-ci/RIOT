@@ -79,6 +79,13 @@ extern rfc_cmd_prop_rx_adv_t rf_cmd_prop_rx_adv;
  */
 extern rfc_cmd_clear_rx_t rf_cmd_clear_rx;
 
+/**
+ * @brief   CMD_SET_TX_POWER
+ *
+ * Set TX Power
+ */
+extern rfc_cmd_set_tx_power_t rf_cmd_set_tx_power;
+
 extern netdev_driver_t cc26x2_cc13x2_rf_driver; /**< CC13x2 netdev driver*/
 
 /**

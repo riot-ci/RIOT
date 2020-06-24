@@ -296,3 +296,10 @@ rfc_cmd_clear_rx_t rf_cmd_clear_rx =
     .__dummy0 = 0,
     .queue = NULL /* set by us */
 };
+
+/** Set TX power */
+rfc_cmd_set_tx_power_t rf_cmd_set_tx_power =
+{
+    .command_no = RFC_CMD_SET_TX_POWER,
+    .tx_power = 0,
+};

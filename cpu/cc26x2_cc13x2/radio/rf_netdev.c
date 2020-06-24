@@ -68,10 +68,12 @@ static cc26x2_cc13x2_rf_netdev_t *_netdev;
  * @brief   Is NETOPT_TX_END_IRQ enabled?
  */
 static bool _tx_end_irq;
+static int16_t _tx_pwr;
 
 static mutex_t _last_cmd = MUTEX_INIT;
 
 static void _rx_start(void);
+static void _set_tx_pwr(int16_t pwr);
 
 static void _rfc_isr(void)
 {
@@ -347,6 +349,7 @@ static int _init(netdev_t *dev)
     /* Maximum TX power by default */
     cc26x2_cc13x2_rf_pa_t *tx_power = &cc26x2_cc13x2_rf_patable[0];
     rf_cmd_prop_radio_div_setup.tx_power = tx_power->val;
+    _tx_pwr = tx_power->dbm;
 
     /* Initialize radio driver in proprietary setup for the Sub-GHz band.
      * To use Sub-GHz we need to use CMD_PROP_RADIO_DIV_SETUP as our setup
@@ -407,6 +410,11 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
             }
             return sizeof(netopt_enable_t);
 
+        case NETOPT_TX_POWER:
+            assert(len == sizeof(int16_t));
+            _set_tx_pwr(*(const int16_t *)val);
+            return sizeof(netopt_enable_t);
+
         default:
             res = -ENOTSUP;
             break;
@@ -447,14 +455,14 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_TX_END_IRQ:
             assert(max_len >= sizeof(netopt_enable_t));
-            if (max_len < sizeof(netopt_enable_t)) {
-                return -EOVERFLOW;
-            }
-            else {
-                *(netopt_enable_t *)val = _tx_end_irq ? NETOPT_ENABLE :
-                                                        NETOPT_DISABLE;
-            }
+            *(netopt_enable_t *)val = _tx_end_irq ? NETOPT_ENABLE :
+                                                    NETOPT_DISABLE;
             return sizeof(netopt_enable_t);
+
+        case NETOPT_TX_POWER:
+            assert(max_len >= sizeof(int16_t));
+            *(int16_t *)val = _tx_pwr;
+            return sizeof(int16_t);
 
         default:
             break;
@@ -476,6 +484,32 @@ static void _isr(netdev_t *netdev)
     while (dev->tx_events) {
         dev->tx_events--;
         netdev->event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
+    }
+}
+
+static void _set_tx_pwr(int16_t pwr)
+{
+    DEBUG("_set_tx_pwr: %d\n", pwr);
+
+    cc26x2_cc13x2_rf_pa_t *cfg = &cc26x2_cc13x2_rf_patable[0];
+    for (unsigned i = 0; i < CC26X2_CC13X2_PA_TABLE_NUMOF; i++) {
+        if (cc26x2_cc13x2_rf_patable[i].dbm >= pwr) {
+            cfg = &cc26x2_cc13x2_rf_patable[i];
+        }
+        else {
+            break;
+        }
+    }
+
+    DEBUG("_set_tx_pwr: match %d\n", cfg->dbm);
+
+    rf_cmd_set_tx_power.tx_power = cfg->val;
+    _tx_pwr = cfg->dbm;
+
+    uint32_t cmdsta = cc26x2_cc13x2_rfc_send_cmd((rfc_op_t *)&rf_cmd_set_tx_power);
+    if ((cmdsta & 0xFF) != RFC_CMDSTA_DONE) {
+        DEBUG_PUTS("_set_tx_pwr: couldn't set TX power!");
+        return;
     }
 }
 

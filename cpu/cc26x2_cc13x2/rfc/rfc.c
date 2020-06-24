@@ -136,10 +136,10 @@ uint32_t cc26x2_cc13x2_rfc_send_cmd(rfc_op_t *op)
     unsigned key = irq_disable();
 
     /* Find the last operation in the chain (if any) */
-    rfc_op_t *curr_op = _last_in_chain(_last_command);
-
-    /* Wait while the last operation finishes */
-    while (curr_op->status == RFC_PENDING ||curr_op->status == RFC_ACTIVE) {}
+    if (_last_command != NULL) {
+        rfc_op_t *curr_op = _last_in_chain(_last_command);
+        while (curr_op->status == RFC_PENDING ||curr_op->status == RFC_ACTIVE) {}
+    }
 
     _last_command = op;
 
@@ -154,6 +154,9 @@ void cc26x2_cc13x2_rfc_abort_cmd(void)
 {
     if ((_rfc_execute_sync(RFC_CMDR_DIR_CMD(RFC_CMD_STOP)) & 0xFF) != RFC_CMDSTA_DONE) {
         DEBUG_PUTS("rfc_abort_cmd: couldn't execute CMD_STOP");
+    }
+    else {
+        _last_command = NULL;
     }
 }
 
