@@ -27,9 +27,6 @@ ifneq (,$(filter lwip_sock,$(USEMODULE)))
   ifneq (,$(filter lwip_ipv6,$(USEMODULE)))
     CFLAGS += -DSOCK_HAS_IPV6
   endif
-  ifneq (,$(filter lwip_ipv4,$(USEMODULE)))
-    CFLAGS += -DSOCK_HAS_IPV4
-  endif
   DIRS += $(RIOTBASE)/pkg/lwip/contrib/sock
 endif
 ifneq (,$(filter lwip_sock_async,$(USEMODULE)))
