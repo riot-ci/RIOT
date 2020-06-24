@@ -109,7 +109,7 @@ struct mtd_desc {
      *
      * @param[in]  dev      Pointer to the selected driver
      * @param[out] buff     Pointer to the data buffer to store read data
-     * @param[in]  page     Starting page address
+     * @param[in]  page     Page number to start reading from
      * @param[in]  offset   Byte offset from the start of the page
      * @param[in]  size     Number of bytes
      *
@@ -149,7 +149,7 @@ struct mtd_desc {
      *
      * @param[in]  dev      Pointer to the selected driver
      * @param[out] buff     Pointer to the data to be written
-     * @param[in]  page     Starting page address
+     * @param[in]  page     Page number to start writing to
      * @param[in]  offset   Byte offset from the start of the page
      * @param[in]  size     Number of bytes
      *
@@ -182,7 +182,8 @@ struct mtd_desc {
      * @brief   Erase sector(s) of the Memory Technology Device (MTD)
      *
      * @param[in] dev       Pointer to the selected driver
-     * @param[in] sector    Starting sector
+     * @param[in] sector    the first sector number to erase
+
      * @param[in] count     Number of sectors to erase
      *
      * @return 0 on success
@@ -242,7 +243,7 @@ int mtd_read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count);
  *
  * @param      mtd      the device to read from
  * @param[out] dest     the buffer to fill in
- * @param[in]  page     the start page to read from
+ * @param[in]  page     Page number to start reading from
  * @param[in]  offset   offset from the start of the page (in bytes)
  * @param[in]  size     the number of bytes to read
  *
@@ -289,7 +290,7 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count);
  *
  * @param      mtd      the device to write to
  * @param[in]  src      the buffer to write
- * @param[in]  page     the start page to write to
+ * @param[in]  page     Page number to start writing to
  * @param[in]  offset   byte offset from the start of the page
  * @param[in]  size     the number of bytes to write
  *
@@ -325,7 +326,7 @@ int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count);
  * @brief   Erase sectors of a MTD device
  *
  * @param      mtd    the device to erase
- * @param[in]  sector the first sector to erase
+ * @param[in]  sector the first sector number to erase
  * @param[in]  num    the number of sectors to erase
  *
  * @return 0 if erase successful
