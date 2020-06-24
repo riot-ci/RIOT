@@ -180,6 +180,20 @@ typedef struct {
 } rfc_cmd_clear_rx_t;
 /** @} */
 
+/**
+ * @brief   CMD_SET_TX_POWER
+ * @{
+ */
+#define RFC_CMD_SET_TX_POWER (0x0010)
+/**
+ * @brief   Set Transmit Power
+ */
+typedef struct  {
+   uint16_t command_no; /**< The command ID number */
+   uint16_t tx_power; /**< New TX power setting */
+} rfc_cmd_set_tx_power_t;
+/** @} */
+
 #ifdef __cplusplus
 } /* end of extern "C" */
 #endif
