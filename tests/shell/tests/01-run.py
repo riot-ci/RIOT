@@ -46,6 +46,7 @@ CMDS = (
     # test start
     ('start_test', '[TEST_START]'),
     (CONTROL_C, PROMPT),
+    (CONTROL_D, 'shell exited'),
     ('\n', PROMPT),
 
     # test simple word separation
