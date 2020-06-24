@@ -31,9 +31,9 @@ ifeq (1,$(PKG_BUILD_OUT_OF_SOURCE))
   PKG_SOURCE_DIR ?= $(PKGDIRBASE)/$(PKG_NAME)
   PKG_BUILD_DIR ?= $(BINDIR)/pkg/$(PKG_NAME)
 else
-  # configure old behaviour: packages are cloned within the application build
+  # in-source builds: packages are cloned within the application build
   # directory in a separate pkg tree
-  PKG_SOURCE_DIR ?= $(BINDIRBASE)/pkg/$(BOARD)/$(PKG_NAME)
+  PKG_SOURCE_DIR ?= $(BINDIR)/pkg/$(PKG_NAME)
   PKG_BUILD_DIR = $(PKG_SOURCE_DIR)
 endif
 
