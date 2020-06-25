@@ -11,6 +11,7 @@ CFLAGS += -Wno-old-style-definition
 CFLAGS += -Wno-unused-parameter
 
 CFLAGS += -DETH_MODE
+CFLAGS += -I$(PKG_BUILDDIR)/src
 
 all:
 	"$(MAKE)" MODULE=driver_atwinc15x0 -C $(PKG_BUILDDIR)/src/driver/source -f $(RIOTBASE)/Makefile.base
