@@ -117,10 +117,10 @@ struct mtd_desc {
      * @return < 0 value on error
      */
     int (*read_page)(mtd_dev_t *dev,
-                void *buff,
-                uint32_t page,
-                uint32_t offset,
-                uint32_t size);
+                     void *buff,
+                     uint32_t page,
+                     uint32_t offset,
+                     uint32_t size);
 
     /**
      * @brief   Write to the Memory Technology Device (MTD)
@@ -157,10 +157,10 @@ struct mtd_desc {
      * @return < 0 value on error
      */
     int (*write_page)(mtd_dev_t *dev,
-                const void *buff,
-                uint32_t page,
-                uint32_t offset,
-                uint32_t size);
+                      const void *buff,
+                      uint32_t page,
+                      uint32_t offset,
+                      uint32_t size);
 
     /**
      * @brief   Erase sector(s) over the Memory Technology Device (MTD)
