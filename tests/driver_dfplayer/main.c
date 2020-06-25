@@ -63,9 +63,9 @@ static void playback_done_handler(event_t *_data)
     dfplayer_next(dfplayer_get(0));
 }
 
-static void _cb_done(dfplayer_source_t src, uint16_t track, void *data)
+static void _cb_done(dfplayer_t *dev, dfplayer_source_t src, uint16_t track)
 {
-    (void)data;
+    (void)dev;
     static playback_done_event_t event = {
         .event = { .handler = playback_done_handler }
     };
@@ -105,9 +105,9 @@ static void media_changed_handler(event_t *_data)
     }
 }
 
-static void _cb_src(dfplayer_source_set_t srcs, void *data)
+static void _cb_src(dfplayer_t *dev, dfplayer_source_set_t srcs)
 {
-    (void)data;
+    (void)dev;
     static media_changed_event_t event = {
         .event = { .handler = media_changed_handler }
     };
@@ -125,7 +125,7 @@ int main(void)
         "Experiment with the shell command \"dfplayer\"\n\n"
     );
 
-    if (dfplayer_set_callbacks(dfplayer_get(0), _cb_done, _cb_src, dfplayer_get(0))) {
+    if (dfplayer_set_callbacks(dfplayer_get(0), _cb_done, _cb_src)) {
         print_str("Error: Failed to register callbacks\n");
     }
 
