@@ -189,45 +189,42 @@ void pca9633_set_ldr_state_all(pca9633_t* dev, pca9633_ldr_state_t state)
 
 void pca9633_set_auto_increment(pca9633_t* dev, pca9633_auto_inc_option_t option)
 {
-    bool enabled, bit0, bit1;
+    uint8_t new_reg;
 
     switch (option) {
 
         case PCA9633_AI_ALL:
-            enabled = true;
-            bit0 = false;
-            bit1 = false;
+            new_reg = (1 << PCA9633_BIT_AI2)
+                    | (0 << PCA9633_BIT_AI1)
+                    | (0 << PCA9633_BIT_AI0);
             break;
 
         case PCA9633_AI_IND:
-            enabled = true;
-            bit0 = false;
-            bit1 = true;
+            new_reg = (1 << PCA9633_BIT_AI2)
+                    | (1 << PCA9633_BIT_AI1)
+                    | (0 << PCA9633_BIT_AI0);
             break;
 
         case PCA9633_AI_GBL:
-            enabled = true;
-            bit0 = true;
-            bit1 = false;
+            new_reg = (1 << PCA9633_BIT_AI2)
+                    | (0 << PCA9633_BIT_AI1)
+                    | (1 << PCA9633_BIT_AI0);
             break;
 
         case PCA9633_AI_IND_GBL:
-            enabled = true;
-            bit0 = true;
-            bit1 = true;
+            new_reg = (1 << PCA9633_BIT_AI2)
+                    | (1 << PCA9633_BIT_AI1)
+                    | (1 << PCA9633_BIT_AI0);
             break;
 
         case PCA9633_AI_DISABLED:
+            /* fall-thru */
         default:
-            enabled = false;
-            bit0 = false;
-            bit1 = false;
+            new_reg = (0 << PCA9633_BIT_AI2)
+                    | (0 << PCA9633_BIT_AI1)
+                    | (0 << PCA9633_BIT_AI0);
             break;
     }
-
-    uint8_t new_reg = (enabled << PCA9633_BIT_AI2)
-                    | (bit1 << PCA9633_BIT_AI1)
-                    | (bit0 << PCA9633_BIT_AI0);
 
     _write_reg(dev, PCA9633_REG_MODE1, new_reg);
 }
