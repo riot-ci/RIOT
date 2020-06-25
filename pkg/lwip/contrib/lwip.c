@@ -164,6 +164,7 @@ static struct netif *_netif_add(struct netif *netif, void *state,
 
 void lwip_bootstrap(void)
 {
+    (void)_netif_add;   /* in case it is not used */
     /* TODO: do for every eligible netdev */
 #ifdef LWIP_NETIF_NUMOF
 #ifdef MODULE_NETDEV_TAP
