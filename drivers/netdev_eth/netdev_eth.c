@@ -36,6 +36,7 @@ int netdev_eth_get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
 #ifndef MODULE_L2FILTER
     (void)dev;
 #endif
+    (void)max_len;  /* only used in assert() */
     switch (opt) {
         case NETOPT_DEVICE_TYPE:
             {
