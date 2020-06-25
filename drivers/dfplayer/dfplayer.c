@@ -82,7 +82,7 @@ dfplayer_source_set_t dfplayer_get_sources(dfplayer_t *dev)
 }
 
 int dfplayer_set_callbacks(dfplayer_t *dev, dfplayer_cb_done_t cb_done,
-                           dfplayer_cb_src_t cb_src, void *userdata)
+                           dfplayer_cb_src_t cb_src)
 {
     if (!dev) {
         return -EINVAL;
@@ -91,7 +91,6 @@ int dfplayer_set_callbacks(dfplayer_t *dev, dfplayer_cb_done_t cb_done,
     unsigned state = irq_disable();
     dev->cb_done = cb_done;
     dev->cb_src = cb_src;
-    dev->userdata = userdata;
     irq_restore(state);
     return 0;
 }

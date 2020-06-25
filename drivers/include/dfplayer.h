@@ -233,7 +233,6 @@ dfplayer_source_set_t dfplayer_get_sources(dfplayer_t *dev);
  * @param   dev         Device descriptor of the DFPlayer to update
  * @param   cb_done     Function to call when playback of a file/track completed
  * @param   cb_src      Function to call when a source was inserted/ejected
- * @param   userdata    Argument to pass to the callback functions
  *
  * @retval  0           Success
  * @retval  -EINVAL     Called with invalid parameter
@@ -244,7 +243,7 @@ dfplayer_source_set_t dfplayer_get_sources(dfplayer_t *dev);
  * @warning The callbacks are called from interrupt context
  */
 int dfplayer_set_callbacks(dfplayer_t *dev, dfplayer_cb_done_t cb_done,
-                           dfplayer_cb_src_t cb_src, void *userdata);
+                           dfplayer_cb_src_t cb_src);
 
 /**
  * @brief   Start playing the next song in the currently used naming scheme

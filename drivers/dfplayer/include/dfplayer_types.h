@@ -104,26 +104,31 @@ typedef enum {
 typedef uint8_t dfplayer_source_set_t;
 
 /**
+ * @brief   A DFPlayer Mini device descriptor
+ */
+typedef struct dfplayer dfplayer_t;
+
+/**
  * @brief   Signature of the function called when a playback of track completed
  *
+ * @param   dev     Device descriptor of the DFPlayer triggering the event
  * @param   src     Source medium the track was played from
  * @param   track   The number of the track that was played
- * @param   data    Data supplied when registering the callback
  *
  * @warning This function is called from interrupt context
  */
-typedef void (*dfplayer_cb_done_t)(dfplayer_source_t src, uint16_t track,
-                                   void *data);
+typedef void (*dfplayer_cb_done_t)(dfplayer_t *dev, dfplayer_source_t src,
+                                   uint16_t track);
 
 /**
  * @brief   Signature of the function called when a medium was inserted/ejected
  *
+ * @param   dev     Device descriptor of the DFPlayer triggering the event
  * @param   srcs    Set of sources currently available for playback
- * @param   data    Data supplied when registering the callback
  *
  * @warning This function is called from interrupt context
  */
-typedef void (*dfplayer_cb_src_t)(dfplayer_source_set_t srcs, void *data);
+typedef void (*dfplayer_cb_src_t)(dfplayer_t *dev, dfplayer_source_set_t srcs);
 
 /**
  * @brief   Initialization parameters of a DFPlayer Mini device descriptor
@@ -148,10 +153,9 @@ typedef struct {
 /**
  * @brief   A DFPlayer Mini device descriptor
  */
-typedef struct {
+struct dfplayer {
     dfplayer_cb_done_t cb_done; /**< Function to call when playing a track completed */
     dfplayer_cb_src_t cb_src;   /**< Function to call when set of available playback sources changes */
-    void *userdata;             /**< Pointer to pass to callback functions */
     uint32_t last_event_us;     /**< Time stamp of the last event in µs */
     uint8_t buf[6];             /**< Data buffer for response from DFPlayer */
     dfplayer_track_t track;     /**< Currently played song */
@@ -163,7 +167,7 @@ typedef struct {
     mutex_t sync;               /**< Used to wait on ISR */
     dfplayer_source_set_t srcs; /**< Set of available playback sources */
     dfplayer_rx_state_t state;  /**< Current state of the DFPlayer */
-} dfplayer_t;
+};
 
 #ifdef __cplusplus
 }
