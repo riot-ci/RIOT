@@ -28,3 +28,8 @@ endif
 
 # select cortexm_svc pseudomodule if the corresponding feature is used
 USEMODULE += $(filter cortexm_svc, $(FEATURES_USED))
+
+# use mpu_stack_guard if the feature is used
+ifneq (,$(filter cortexm_mpu,$(FEATURES_USED)))
+  USEMODULE += mpu_stack_guard
+endif
