@@ -83,7 +83,7 @@ static void _handle_playback_completed(dfplayer_t *dev, dfplayer_source_t src)
      */
     uint32_t now_us = xtimer_now_usec();
     if (dev->cb_done && (now_us - dev->last_event_us > DFPLAYER_TIMEOUT_MS * US_PER_MS)) {
-        dev->cb_done(src, track, dev->userdata);
+        dev->cb_done(dev, src, track);
     }
     dev->last_event_us = now_us;
 }
@@ -126,7 +126,7 @@ static void _handle_event_notification(dfplayer_t *dev)
                 }
             }
             if (dev->cb_src) {
-                dev->cb_src(dev->srcs, dev->userdata);
+                dev->cb_src(dev, dev->srcs);
             }
             return;
         case DFPLAYER_NOTIFY_EJECT:
@@ -138,7 +138,7 @@ static void _handle_event_notification(dfplayer_t *dev)
                 }
             }
             if (dev->cb_src) {
-                dev->cb_src(dev->srcs, dev->userdata);
+                dev->cb_src(dev, dev->srcs);
             }
             return;
         case DFPLAYER_NOTIFY_DONE_USB:
