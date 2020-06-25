@@ -25,12 +25,6 @@ This port currently needs `openvisualizer`, please make sure you follow the
 [pre-requisites](dist/tools/openvisualizer/makefile.openvisualizer.inc.mk)
 to install a patched version of `openvisualizer`.
 
-If you want to disable channel hopping to speed up synchronization you can set
-a fix channel (see [documentation](../../pkg/openwsn/doc.txt#Synchronization)
-for more on synchronization)
-
-    $ export CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=17
-
 An OpenWSN root node acts acts as a border router, it tunnels IEEE80215.4.E
 between `openvisualizer` and the network without looking at the frame content.
 This means that a node will not be reachable when 'pinging' from the host
@@ -49,6 +43,36 @@ Two test cases are described with different requirements:
     - 1 root node
     - +2 leaf node
 ```
+
+### Synchronization
+
+There are 3 things that can be done to speed up and help nodes synchronization,
+all related to how often a node will receive an EB (enhanced beacon).
+
+    - disable channel hopping
+    - increase EB_PORTION
+    - reduce SLOTFRAME_LENGTH
+
+If you want to disable channel hopping to speed up synchronization you can set
+a fix channel.
+
+    $ export CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=17
+
+Enhanced beacon are send once per slotframe with a likelihood of 1/EB_PORTION.
+The default value is EB_PORTION = 10 (10%), reducing the value of EB_PORTION
+increases the frequency at which beacons are sent, this will also help nodes
+to stay synchronized.
+
+    $ export CFLAGS=-DEB_PORTION=4
+
+EB get an opportunity to be sent (depending on 1/EB_PORTION) once in every
+slotframe, reducing the soltframe length will cause EB to be sent more often.
+Beware that this could have an impact on the MSF (Minimal Scheduling Function).
+
+    $ export CFLAGS=-DSLOTFRAME_LENGTH=51
+
+See [documentation](../../pkg/openwsn/doc.txt#Synchronization) for more on
+synchronization.
 
 ## IMPORTANT!
 

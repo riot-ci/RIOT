@@ -223,13 +223,16 @@
 
     `SLOTFRAME_LENGTH*SLOTDURATION*P_CHANNEL*P_EB`
 
- `SLOTFRAME_LENGTH` in OpenWSN is 101, and this ports uses 20ms as the slotOffset
- duration. `P_EB` specified the a probability for a node to transmit an EB.
+ `SLOTFRAME_LENGTH` in OpenWSN is 101, and this port uses 20ms as the slotOffset
+ duration. `P_EB` specifies the a probability for a node to transmit an EB.
  By default its 10%, that means that on average it will take 10 tries before an
  EB is transmitted. `P_CHANNEL` is the probability for the transmitter's and
  receiver channel to match. If channel hopping is disabled this means that the
  average worst case scenario is `101*20ms*10 ~= 20s`, so 20s for synchronization
- to take place.
+ to take place. `EB_PORTION` can be changed to increase the likelihood of EB to be
+ sent. This can also be achieved by reducing `SLOTFRAME_LENGTH`, but the later can
+ have an impact on the MSF (Minimal Scheduling Function). If too few cells are
+ available this could increase the likelihood of collisions.
 
  On the other hand if channel hopping is enabled then the joining node picks and
  random channel to start listening on. The transmitter also picks a random
@@ -237,6 +240,9 @@
  This would take on average ~8 tries for it to hit the correct channel for the
  first time, and then it would hit it every 16 hops, on average this could lead
  synchronization times of around `320s`.
+
+ If nodes are having trouble in staying synchronized increasing `P_EB` by
+ reducing the value of `EB_PORTION` can also be done.
 
  ### Timing
 
