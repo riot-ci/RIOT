@@ -32,6 +32,8 @@
 #endif
 #include "shell.h"
 
+#define IFCONFIG_FILLER     "       "
+
 static int ifconfig(int argc, char **argv)
 {
     (void)argc;
@@ -42,17 +44,20 @@ static int ifconfig(int argc, char **argv)
 #ifdef MODULE_LWIP_IPV6
         for (int i = 0; i < LWIP_IPV6_NUM_ADDRESSES; i++) {
             if (!ipv6_addr_is_unspecified((ipv6_addr_t *)&iface->ip6_addr[i])) {
-                printf(" inet6 %s\n", ipv6_addr_to_str(addrstr, (ipv6_addr_t *)&iface->ip6_addr[i],
-                                                       sizeof(addrstr)));
+                printf("%s inet6 %s\n", (i == 0) ? "" : IFCONFIG_FILLER,
+                       ipv6_addr_to_str(addrstr,
+                                        (ipv6_addr_t *)&iface->ip6_addr[i],
+                                        sizeof(addrstr)));
             }
         }
 #endif
 #ifdef MODULE_LWIP_IPV4
         if (IS_USED(MODULE_LWIP_IPV6)) {
             /* insert spaces to be aligned with inet6 */
-            printf("       ");
+            printf(IFCONFIG_FILLER);
         }
-        printf(" inet %s\n", ipv4_addr_to_str(addrstr, (ipv4_addr_t *)&iface->ip_addr,
+        printf(" inet %s\n", ipv4_addr_to_str(addrstr,
+                                              (ipv4_addr_t *)&iface->ip_addr,
                                               sizeof(addrstr)));
 #endif
         puts("");
