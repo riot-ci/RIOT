@@ -75,7 +75,7 @@ static const shell_command_t shell_commands[] = {
 #ifdef MODULE_SOCK_UDP
     { "udp", "Send UDP messages and listen for messages on UDP port", udp_cmd },
 #endif
-    { "ifconfig", "Shows assigned IPv6 addresses", ifconfig },
+    { "ifconfig", "Shows assigned IP addresses", ifconfig },
     { NULL, NULL, NULL }
 };
 

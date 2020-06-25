@@ -103,6 +103,10 @@ static int udp_send(char *addr_str, char *data, unsigned int num,
         puts("Error: unable to parse destination address");
         return 1;
     }
+    if (dst.port == 0) {
+        puts("Error: no port or illegal port value provided");
+        return 1;
+    }
     data_len = hex2ints(byte_data, data);
     for (unsigned int i = 0; i < num; i++) {
         sock_udp_t *sock = NULL;

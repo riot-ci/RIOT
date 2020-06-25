@@ -127,6 +127,7 @@ static int tcp_connect(char *addr_str, char *local_port_str)
 
     if (client_running) {
         puts("Client already connected");
+        return 1;
     }
 
     /* parse destination address */
@@ -134,8 +135,16 @@ static int tcp_connect(char *addr_str, char *local_port_str)
         puts("Error: unable to parse destination address");
         return 1;
     }
+    if (dst.port == 0) {
+        puts("Error: no port or illegal port value provided");
+        return 1;
+    }
     if (local_port_str != NULL) {
         local_port = atoi(local_port_str);
+        if (local_port == 0) {
+            puts("Error: Illegal local port 0");
+            return 1;
+        }
     }
     if (sock_tcp_connect(&client_sock, &dst, local_port, 0) < 0) {
         puts("Error: unable to connect");
