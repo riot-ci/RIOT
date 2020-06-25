@@ -100,26 +100,6 @@ static int _write(mtd_dev_t *mtd, const void *src, uint32_t addr,
     return res;
 }
 
-int _write_page(mtd_dev_t *dev, const void *src, uint32_t page, uint32_t offset,
-                uint32_t size)
-{
-    int res;
-    mtd_mapper_region_t *region = container_of(dev, mtd_mapper_region_t, mtd);
-    mtd_dev_t *mtd = region->parent->mtd;
-
-    if (mtd->driver->write_page == NULL) {
-        return -ENOTSUP;
-    }
-
-    _lock(region);
-    res = mtd->driver->write_page(mtd, src,
-                                  page + region->sector * region->mtd.pages_per_sector,
-                                  offset, size);
-    _unlock(region);
-
-    return res;
-}
-
 static int _read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count)
 {
     mtd_mapper_region_t *region = container_of(mtd, mtd_mapper_region_t, mtd);
@@ -131,26 +111,6 @@ static int _read(mtd_dev_t *mtd, void *dest, uint32_t addr, uint32_t count)
     _lock(region);
     int res = mtd_read(region->parent->mtd, dest, addr + _byte_offset(region), count);
     _unlock(region);
-    return res;
-}
-
-int _read_page(mtd_dev_t *dev, void *dest, uint32_t page, uint32_t offset,
-               uint32_t size)
-{
-    int res;
-    mtd_mapper_region_t *region = container_of(dev, mtd_mapper_region_t, mtd);
-    mtd_dev_t *mtd = region->parent->mtd;
-
-    if (mtd->driver->read_page == NULL) {
-        return -ENOTSUP;
-    }
-
-    _lock(region);
-    res = mtd->driver->read_page(mtd, dest,
-                                page + region->sector * region->mtd.pages_per_sector,
-                                offset, size);
-    _unlock(region);
-
     return res;
 }
 
@@ -168,29 +128,9 @@ static int _erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count)
     return res;
 }
 
-int _erase_sector(mtd_dev_t *dev, uint32_t sector, uint32_t count)
-{
-    int res;
-    mtd_mapper_region_t *region = container_of(dev, mtd_mapper_region_t, mtd);
-    mtd_dev_t *mtd = region->parent->mtd;
-
-    if (mtd->driver->erase_sector == NULL) {
-        return -ENOTSUP;
-    }
-
-    _lock(region);
-    res = mtd->driver->erase_sector(mtd, sector + region->sector, count);
-    _unlock(region);
-
-    return res;
-}
-
 const mtd_desc_t mtd_mapper_driver = {
     .init = _init,
     .read = _read,
-    .read_page = _read_page,
     .write = _write,
-    .write_page = _write_page,
     .erase = _erase,
-    .erase_sector = _erase_sector,
 };
