@@ -27,7 +27,9 @@
 #define ICMPV6_ERROR_SET_VALUE(data, value) \
     ((icmpv6_error_pkt_too_big_t *)(data))->mtu = byteorder_htonl(value)
 
+#ifndef MIN
 #define MIN(a, b)   ((a) < (b)) ? (a) : (b)
+#endif
 
 /**
  * @brief   Get packet fit.
