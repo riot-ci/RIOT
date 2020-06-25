@@ -7,8 +7,10 @@ include ../Makefile.tests_common
 USEPKG += openwsn
 USEMODULE += openwsn_openstack
 USEMODULE += openwsn_scheduler
+
 # Optional Module required for root nodes
 # USEMODULE += openwsn_serial
+
 # Optional Modules
 USEMODULE += openwsn_leds
 USEMODULE += openwsn_debugpins
@@ -26,7 +28,7 @@ CFLAGS += -DOPENWSN_UART_BAUDRATE=$(OPENSERIAL_BAUD)
 endif
 
 # To enable debugging prints on OpenWSN code
-# OPENWSN_LOG_LEVEL ?= LOG_DEBUG
+# export OPENWSN_LOG_LEVEL ?= LOG_ERROR
 
 ## Test application Modules
 USEMODULE += ipv6_addr
