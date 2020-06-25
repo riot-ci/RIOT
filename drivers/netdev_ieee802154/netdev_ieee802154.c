@@ -82,6 +82,7 @@ int netdev_ieee802154_get(netdev_ieee802154_t *dev, netopt_t opt, void *value,
 {
     int res = -ENOTSUP;
 
+    (void)max_len;  /* only used in assert() */
     switch (opt) {
         case NETOPT_ADDRESS:
             assert(max_len >= sizeof(dev->short_addr));
