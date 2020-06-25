@@ -156,7 +156,7 @@ static void _atwinc15x0_wifi_cb(uint8_t type, void *msg)
             break;
 
         case M2M_WIFI_RESP_SCAN_RESULT:
-            LOG_INFO("[atwinc15x0] %s: rssi %d, auth %d, ch %d, bssid "
+            LOG_DEBUG("[atwinc15x0] %s: rssi %d, auth %d, ch %d, bssid "
                       ATWINC15X0_MAC_STR "\n",
                       event->scan_result.au8SSID,
                       event->scan_result.s8rssi,
