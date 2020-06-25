@@ -40,8 +40,9 @@ extern volatile int fe310_in_isr;
 static inline __attribute__((always_inline)) unsigned int irq_enable(void)
 {
     /* Enable all interrupts */
+    unsigned retval = read_csr(mstatus);
     set_csr(mstatus, MSTATUS_MIE);
-    return read_csr(mstatus);
+    return retval;
 }
 
 /**
