@@ -121,7 +121,8 @@ int blinking(int argc, char **argv)
                     PCA9633_GROUP_CONTROL_MODE_BLINKING);
 
             pca9633_set_blinking(&pca9633_dev,
-                    PCA9633_BLINKING_PERIOD_1_S, PCA9633_BLINKING_RATIO_BALANCED);
+                    1000,
+                    PCA9633_BLINKING_RATIO_BALANCED);
         }
         else {
             pca9633_set_group_control_mode(&pca9633_dev,
@@ -424,7 +425,8 @@ int run_demo(int argc, char **argv)
     pca9633_set_group_control_mode(&pca9633_dev,
             PCA9633_GROUP_CONTROL_MODE_BLINKING);
     pca9633_set_blinking(&pca9633_dev,
-            PCA9633_BLINKING_PERIOD_1_S, PCA9633_BLINKING_RATIO_BALANCED);
+            1000,
+            PCA9633_BLINKING_RATIO_BALANCED);
     xtimer_sleep(10);
     pca9633_set_group_control_mode(&pca9633_dev,
             PCA9633_GROUP_CONTROL_MODE_DIMMING);

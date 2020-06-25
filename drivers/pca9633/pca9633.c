@@ -121,10 +121,16 @@ void pca9633_set_grp_pwm(pca9633_t* dev, uint8_t pwm)
     _write_reg(dev, PCA9633_REG_GRPPWM, pwm);
 }
 
-void pca9633_set_blinking(pca9633_t* dev, uint8_t blink_period,
+void pca9633_set_blinking(pca9633_t* dev, uint16_t blink_period_ms,
         uint8_t on_off_ratio)
 {
-    _write_reg(dev, PCA9633_REG_GRPFREQ, blink_period);
+    /* frequency of 24 Hz is used: */
+    uint16_t blink_period = (24 * blink_period_ms) / 1000;
+    if (blink_period > 255) {
+        blink_period = 255;
+    }
+
+    _write_reg(dev, PCA9633_REG_GRPFREQ, (uint8_t) blink_period);
     _write_reg(dev, PCA9633_REG_GRPPWM, on_off_ratio);
 }
 

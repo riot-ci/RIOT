@@ -30,39 +30,10 @@ extern "C"
 
 #include "pca9633_regs.h"
 
-/* Frequency of 24 Hz is used */
-/**
- * @brief Blinking period with a duration of 125 ms
- *
- * ((1 / 24 Hz) * 3 cycles)
- */
-#define PCA9633_BLINKING_PERIOD_125_MS  3
-
-/**
- * @brief Blinking period with a duration of 250 ms
- *
- * ((1 / 24 Hz) * 6 cycles)
- */
-#define PCA9633_BLINKING_PERIOD_250_MS  6
-
-/**
- * @brief Blinking period with a duration of 500 ms
- *
- * ((1 / 24 Hz) * 12 cycles)
- */
-#define PCA9633_BLINKING_PERIOD_500_MS  12
-
-/**
- * @brief Blinking period with a duration of 1 s
- *
- * ((1 / 24 Hz) * 24 cycles)
- */
-#define PCA9633_BLINKING_PERIOD_1_S     24
-
 /**
  * @brief Blinking period with a maximum duration of ~10.73 s
  */
-#define PCA9633_BLINKING_PERIOD_MAX     255
+#define PCA9633_BLINKING_PERIOD_MAX     (65535)
 
 /**
  * @brief Ration between on/ off in blinking mode is balanced.
@@ -270,13 +241,15 @@ void pca9633_set_grp_pwm(pca9633_t* dev, uint8_t pwm);
  *        manually by calling
  *        pca9633_set_group_control_mode(GROUP_CONTROL_MODE_BLINKING).
  *
- * @param[in] dev           Device descriptor of the PCA9633
- * @param[in] blink_period  Period for one blink (turning off and on)
- * @param[in] on_off_ratio  Value between 0 and 255, where e.g. a value of
- *                          64 (255/4) means 1/4 of the time the LEDs are on and
- *                          3/4 of the time the LEDs are off
+ * @param[in] dev               Device descriptor of the PCA9633
+ * @param[in] blink_period_ms   Period in ms for one blink (turning off and on).
+ *                              Maximum period possible is ~10.73 s. All values
+ *                              above this maximum will we capped to it.
+ * @param[in] on_off_ratio      Value between 0 and 255, where e.g. a value of
+ *                              64 (255/4) means 1/4 of the time the LEDs are on
+ *                              and 3/4 of the time the LEDs are off.
  */
-void pca9633_set_blinking(pca9633_t* dev, uint8_t blink_period,
+void pca9633_set_blinking(pca9633_t* dev, uint16_t blink_period_ms,
         uint8_t on_off_ratio);
 
 /**
