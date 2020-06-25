@@ -28,79 +28,7 @@ extern "C"
 #include "stdbool.h"
 #include "periph/i2c.h"
 
-/* LED driver output state, LEDOUT (page 14, below table 13) */
-
-/**
- * @brief LED driver x is off
- */
-#define PCA9633_LDR_STATE_OFF       0x00
-
-/**
- * @brief LED driver x is fully on (individual brightness and group
- *        dimming/ blinking not controlled)
- */
-#define PCA9633_LDR_STATE_ON        0x01
-
-/**
- * @brief LED driver x individual brightness can be controlled through its
- *        PWMx register
- */
-#define PCA9633_LDR_STATE_IND       0x02
-
-/**
- * @brief LED driver x individual brightness and group dimming/ blinking can be
- *        controlled through its PWMx register and the GRPPWM registers. If using
- *        PCA9633_LDR_STATE_IND_GRP the controller takes the minimum value of
- *        PWM* and GRPPWM register
- */
-#define PCA9633_LDR_STATE_IND_GRP   0x03
-
-
-
-/* Auto-Increment options (page 10, table 6) */
-
-/**
- * @brief No Auto-Increment
- */
-#define PCA9633_AI_DISABLED 0
-
-/**
- * @brief Auto-Increment for all registers. D3, D2, D1, D0 roll over to ‘0000’
- *        after the last register (1100) is accessed.
- */
-#define PCA9633_AI_ALL      1
-
-/**
- * @brief Auto-Increment for individual brightness registers only. D3, D2, D1, D0
- *        roll over to ‘0010’ after the last register (0101) is accessed.
- */
-#define PCA9633_AI_IND      2
-
-/**
- * @brief Auto-Increment for global control registers only. D3, D2, D1, D0 roll
- *        over to ‘0110’ after the last register (0111) is accessed.
- */
-#define PCA9633_AI_GBL      3
-
-/**
- * @brief Auto-Increment for individual and global control registers only. D3,
- *        D2, D1, D0 roll over to ‘0010’ after the last register (0111) is accessed.
- */
-#define PCA9633_AI_IND_GBL  4
-
-
-
-/**
- * @brief Control mode for blinking
- */
-#define PCA9633_GROUP_CONTROL_MODE_BLINKING 0
-
-/**
- * @brief Control mode for dimming
- */
-#define PCA9633_GROUP_CONTROL_MODE_DIMMING  1
-
-
+#include "pca9633_regs.h"
 
 /* Frequency of 24 Hz is used */
 /**
@@ -175,6 +103,97 @@ typedef enum {
 } pca9685_error_t;
 
 /**
+ * @brief   PCA9633 PWM channel definitions
+ */
+typedef enum {
+    PCA9633_PWM_CHANNEL_0 = PCA9633_REG_PWM0,   /**< PWM channel 0 */
+    PCA9633_PWM_CHANNEL_1 = PCA9633_REG_PWM1,   /**< PWM channel 1 */
+    PCA9633_PWM_CHANNEL_2 = PCA9633_REG_PWM2,   /**< PWM channel 2 */
+    PCA9633_PWM_CHANNEL_3 = PCA9633_REG_PWM3,   /**< PWM channel 3 */
+} pca9633_pwm_channel_t;
+
+/**
+ * @brief   LED driver output state, LEDOUT (page 14, below table 13)
+ */
+typedef enum {
+    /**
+     * @brief LED driver x is off
+     */
+    PCA9633_LDR_STATE_OFF,
+
+    /**
+     * @brief LED driver x is fully on (individual brightness and group
+     *        dimming/ blinking not controlled)
+     */
+    PCA9633_LDR_STATE_ON,
+
+    /**
+     * @brief LED driver x individual brightness can be controlled through its
+     *        PWMx register
+     */
+    PCA9633_LDR_STATE_IND,
+
+    /**
+     * @brief LED driver x individual brightness and group dimming/ blinking can
+     *        be controlled through its PWMx register and the GRPPWM registers.
+     *        If using PCA9633_LDR_STATE_IND_GRP the controller takes the
+     *        minimum value of PWM* and GRPPWM register
+     */
+    PCA9633_LDR_STATE_IND_GRP,
+} pca9633_ldr_state_t;
+
+/**
+ * @brief   Auto-Increment options (page 10, table 6)
+ */
+typedef enum {
+    /**
+     * @brief No Auto-Increment
+     */
+    PCA9633_AI_DISABLED,
+
+    /**
+     * @brief Auto-Increment for all registers. D3, D2, D1, D0 roll over to
+     *        ‘0000’ after the last register (1100) is accessed.
+     */
+    PCA9633_AI_ALL,
+
+    /**
+     * @brief Auto-Increment for individual brightness registers only.
+     *        D3, D2, D1, D0 roll over to ‘0010’ after the last register (0101)
+     *        is accessed.
+     */
+    PCA9633_AI_IND,
+
+    /**
+     * @brief Auto-Increment for global control registers only. D3, D2, D1, D0
+     *        roll over to ‘0110’ after the last register (0111) is accessed.
+     */
+    PCA9633_AI_GBL,
+
+    /**
+     * @brief Auto-Increment for individual and global control registers only.
+     *        D3, D2, D1, D0 roll over to ‘0010’ after the last register (0111)
+     *        is accessed.
+     */
+    PCA9633_AI_IND_GBL,
+} pca9633_auto_inc_option_t;
+
+/**
+ * @brief   PCA9633 group control modes
+ */
+typedef enum {
+    /**
+     * @brief Control mode for blinking
+     */
+    PCA9633_GROUP_CONTROL_MODE_BLINKING,
+
+    /**
+     * @brief Control mode for dimming
+     */
+    PCA9633_GROUP_CONTROL_MODE_DIMMING,
+} pca9633_group_control_mode_t;
+
+/**
  * @brief Initialization.
  *
  * @param[in] dev       Device descriptor of the PCA9633
@@ -231,11 +250,12 @@ void pca9633_sleep(pca9633_t* dev);
 /**
  * @brief Set individual PWM signal for a given channel.
  *
- * @param[in] dev       Device descriptor of the PCA9633
- * @param[in] reg_pwm   Register address for PWM channel
- * @param[in] pwm       PWM value
+ * @param[in] dev           Device descriptor of the PCA9633
+ * @param[in] pwm_channel   PWM channel
+ * @param[in] pwm           PWM value
  */
-void pca9633_set_pwm(pca9633_t* dev, uint8_t reg_pwm, uint8_t pwm);
+void pca9633_set_pwm(pca9633_t* dev,
+        pca9633_pwm_channel_t pwm_channel, uint8_t pwm);
 
 /**
  * @brief Set global PWM signal.
@@ -292,7 +312,8 @@ void pca9633_set_rgba(pca9633_t* dev, uint8_t r, uint8_t g, uint8_t b, uint8_t w
  * @param[in] state     One of the four possible states
  * @param[in] ldr_bit   Lower bit of LDR* (see BIT_LDR*)
  */
-void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit);
+void pca9633_set_ldr_state(pca9633_t* dev,
+        pca9633_ldr_state_t state, pca9633_pwm_channel_t pwm_channel);
 
 /**
  * @brief Set the LED driver output state for all channels.
@@ -305,7 +326,7 @@ void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit);
  * @param[in] dev       Device descriptor of the PCA9633
  * @param[in] state     One of the four possible states
  */
-void pca9633_set_ldr_state_all(pca9633_t* dev, uint8_t state);
+void pca9633_set_ldr_state_all(pca9633_t* dev, pca9633_ldr_state_t state);
 
 /**
  * @brief Set an option for auto increment.
@@ -319,7 +340,7 @@ void pca9633_set_ldr_state_all(pca9633_t* dev, uint8_t state);
  * @param[in] dev       Device descriptor of the PCA9633
  * @param[in] option    One of the possible five options
  */
-void pca9633_set_auto_increment(pca9633_t* dev, uint8_t option);
+void pca9633_set_auto_increment(pca9633_t* dev, pca9633_auto_inc_option_t option);
 
 /**
  * @brief Set the group control mode.
@@ -330,7 +351,8 @@ void pca9633_set_auto_increment(pca9633_t* dev, uint8_t option);
  * @param[in] dev       Device descriptor of the PCA9633
  * @param[in] mode      One of the two possible modes
  */
-void pca9633_set_group_control_mode(pca9633_t* dev, uint8_t mode);
+void pca9633_set_group_control_mode(pca9633_t* dev,
+        pca9633_group_control_mode_t mode);
 
 #ifdef __cplusplus
 }

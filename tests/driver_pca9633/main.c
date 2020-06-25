@@ -21,7 +21,6 @@
 #include "shell.h"
 
 #include "pca9633.h"
-#include "pca9633_regs.h"
 #include "pca9633_params.h"
 
 pca9633_t pca9633_dev;
@@ -70,26 +69,26 @@ int pwm(int argc, char **argv)
     else {
         uint8_t pwm = atoi(argv[2]);
 
-        uint8_t reg_pwm;
+        pca9633_pwm_channel_t pwm_channel;
         switch (atoi(argv[1])) {
             case 0:
-                reg_pwm = PCA9633_REG_PWM0;
+                pwm_channel = PCA9633_PWM_CHANNEL_0;
                 break;
             case 1:
-                reg_pwm = PCA9633_REG_PWM1;
+                pwm_channel = PCA9633_PWM_CHANNEL_1;
                 break;
             case 2:
-                reg_pwm = PCA9633_REG_PWM2;
+                pwm_channel = PCA9633_PWM_CHANNEL_2;
                 break;
             case 3:
-                reg_pwm = PCA9633_REG_PWM3;
+                pwm_channel = PCA9633_PWM_CHANNEL_3;
                 break;
             default:
                 puts("channel needs to be one of [0-3]");
                 return -1;
         }
 
-        pca9633_set_pwm(&pca9633_dev, reg_pwm, pwm);
+        pca9633_set_pwm(&pca9633_dev, pwm_channel, pwm);
     }
 
     return 0;
@@ -170,20 +169,20 @@ int rgba(int argc, char **argv)
 int ldr_state(int argc, char **argv)
 {
     if (argc != 3) {
-        puts("usage: ldr_state <state (0-3)> <ldr_bit (0-3)>");
+        puts("usage: ldr_state <state (0-3)> pwm <channel (0-3)>");
 
         puts("  state 0: PCA9633_LDR_STATE_OFF");
         puts("  state 1: PCA9633_LDR_STATE_ON");
         puts("  state 2: PCA9633_LDR_STATE_IND");
         puts("  state 3: PCA9633_LDR_STATE_IND_GRP");
 
-        puts("  ldr_bit 0: PCA9633_BIT_LDR0");
-        puts("  ldr_bit 1: PCA9633_BIT_LDR1");
-        puts("  ldr_bit 2: PCA9633_BIT_LDR2");
-        puts("  ldr_bit 3: PCA9633_BIT_LDR3");
+        puts("  channel 0: PCA9633_PWM_CHANNEL_0");
+        puts("  channel 1: PCA9633_PWM_CHANNEL_1");
+        puts("  channel 2: PCA9633_PWM_CHANNEL_2");
+        puts("  channel 3: PCA9633_PWM_CHANNEL_3");
     }
     else {
-        uint8_t state;
+        pca9633_ldr_state_t state;
         switch (atoi(argv[1])) {
             case 0:
                 state = PCA9633_LDR_STATE_OFF;
@@ -206,30 +205,30 @@ int ldr_state(int argc, char **argv)
                 return -1;
         }
 
-        uint8_t ldr_bit;
+        pca9633_pwm_channel_t pwm_channel;
         switch (atoi(argv[2])) {
             case 0:
-                ldr_bit = PCA9633_BIT_LDR0;
+                pwm_channel = PCA9633_PWM_CHANNEL_0;
                 break;
             case 1:
-                ldr_bit = PCA9633_BIT_LDR1;
+                pwm_channel = PCA9633_PWM_CHANNEL_1;
                 break;
             case 2:
-                ldr_bit = PCA9633_BIT_LDR2;
+                pwm_channel = PCA9633_PWM_CHANNEL_2;
                 break;
             case 3:
-                ldr_bit = PCA9633_BIT_LDR3;
+                pwm_channel = PCA9633_PWM_CHANNEL_3;
                 break;
             default:
-                puts("ldr_bit needs to be one of [0-3]");
-                puts("  ldr_bit 0: PCA9633_BIT_LDR0");
-                puts("  ldr_bit 1: PCA9633_BIT_LDR1");
-                puts("  ldr_bit 2: PCA9633_BIT_LDR2");
-                puts("  ldr_bit 3: PCA9633_BIT_LDR3");
+                puts("channel needs to be one of [0-3]");
+                puts("  channel 0: PCA9633_PWM_CHANNEL_0");
+                puts("  channel 1: PCA9633_PWM_CHANNEL_1");
+                puts("  channel 2: PCA9633_PWM_CHANNEL_2");
+                puts("  channel 3: PCA9633_PWM_CHANNEL_3");
                 return -1;
         }
 
-        pca9633_set_ldr_state(&pca9633_dev, state, ldr_bit);
+        pca9633_set_ldr_state(&pca9633_dev, state, pwm_channel);
     }
 
     return 0;
@@ -246,7 +245,7 @@ int ldr_state_all(int argc, char **argv)
         puts("  state 3: PCA9633_LDR_STATE_IND_GRP");
     }
     else {
-        uint8_t state;
+        pca9633_ldr_state_t state;
         switch (atoi(argv[1])) {
             case 0:
                 state = PCA9633_LDR_STATE_OFF;
@@ -287,7 +286,7 @@ int auto_inc(int argc, char **argv)
         puts("  option 4: PCA9633_AI_IND_GBL");
     }
     else {
-        uint8_t option;
+        pca9633_auto_inc_option_t option;
         switch (atoi(argv[1])) {
             case 0:
                 option = PCA9633_AI_DISABLED;
@@ -329,7 +328,7 @@ int grp_ctrl_mode(int argc, char **argv)
         puts("  mode 1: PCA9633_GROUP_CONTROL_MODE_DIMMING");
     }
     else {
-        uint8_t mode;
+        pca9633_group_control_mode_t mode;
         switch (atoi(argv[1])) {
             case 0:
                 mode = PCA9633_GROUP_CONTROL_MODE_BLINKING;
@@ -368,7 +367,7 @@ int run_demo(int argc, char **argv)
     xtimer_usleep(500 * US_PER_MS);
 
     // 2. individual dimming (pca9633_set_rgb() uses pca9633_set_pwm() internally)
-    puts("2. individual dimming (pca9633_set_rgb() uses pca9633_set_pwm() internally)");
+    puts("2. individual dimming");
     pca9633_set_rgb(&pca9633_dev, 255, 255, 255);
     xtimer_usleep(500 * US_PER_MS);
 

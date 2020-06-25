@@ -110,9 +110,10 @@ void pca9633_turn_off(pca9633_t* dev)
     _write_reg(dev, PCA9633_REG_LEDOUT, PCA9633_LDR_STATE_OFF);
 }
 
-void pca9633_set_pwm(pca9633_t* dev, uint8_t reg_pwm, uint8_t pwm)
+void pca9633_set_pwm(pca9633_t* dev,
+        pca9633_pwm_channel_t pwm_channel, uint8_t pwm)
 {
-    _write_reg(dev, reg_pwm, pwm);
+    _write_reg(dev, pwm_channel, pwm);
 }
 
 void pca9633_set_grp_pwm(pca9633_t* dev, uint8_t pwm)
@@ -143,8 +144,27 @@ void pca9633_set_rgba(pca9633_t* dev, uint8_t r, uint8_t g, uint8_t b, uint8_t a
     }
 }
 
-void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit)
+void pca9633_set_ldr_state(pca9633_t* dev,
+        pca9633_ldr_state_t state, pca9633_pwm_channel_t pwm_channel)
 {
+    uint8_t ldr_bit;
+    switch (pwm_channel) {
+        case PCA9633_PWM_CHANNEL_0:
+            ldr_bit = PCA9633_BIT_LDR0;
+            break;
+        case PCA9633_PWM_CHANNEL_1:
+            ldr_bit = PCA9633_BIT_LDR1;
+            break;
+        case PCA9633_PWM_CHANNEL_2:
+            ldr_bit = PCA9633_BIT_LDR2;
+            break;
+        case PCA9633_PWM_CHANNEL_3:
+            ldr_bit = PCA9633_BIT_LDR3;
+            break;
+        default:
+            return;
+    }
+
     uint8_t reg;
     _read_reg(dev, PCA9633_REG_LEDOUT, &reg);
 
@@ -157,7 +177,7 @@ void pca9633_set_ldr_state(pca9633_t* dev, uint8_t state, uint8_t ldr_bit)
     _write_reg(dev, PCA9633_REG_LEDOUT, reg);
 }
 
-void pca9633_set_ldr_state_all(pca9633_t* dev, uint8_t state)
+void pca9633_set_ldr_state_all(pca9633_t* dev, pca9633_ldr_state_t state)
 {
     uint8_t reg = (state << PCA9633_BIT_LDR3)
                 | (state << PCA9633_BIT_LDR2)
@@ -167,7 +187,7 @@ void pca9633_set_ldr_state_all(pca9633_t* dev, uint8_t state)
     _write_reg(dev, PCA9633_REG_LEDOUT, reg);
 }
 
-void pca9633_set_auto_increment(pca9633_t* dev, uint8_t option)
+void pca9633_set_auto_increment(pca9633_t* dev, pca9633_auto_inc_option_t option)
 {
     bool enabled, bit0, bit1;
 
@@ -205,14 +225,15 @@ void pca9633_set_auto_increment(pca9633_t* dev, uint8_t option)
             break;
     }
 
-    uint8_t new_reg = ( (enabled << PCA9633_BIT_AI2)
-                       | (bit1 << PCA9633_BIT_AI1)
-                       | (bit0 << PCA9633_BIT_AI0) );
+    uint8_t new_reg = (enabled << PCA9633_BIT_AI2)
+                    | (bit1 << PCA9633_BIT_AI1)
+                    | (bit0 << PCA9633_BIT_AI0);
 
     _write_reg(dev, PCA9633_REG_MODE1, new_reg);
 }
 
-void pca9633_set_group_control_mode(pca9633_t* dev, uint8_t mode)
+void pca9633_set_group_control_mode(pca9633_t* dev,
+        pca9633_group_control_mode_t mode)
 {
     uint8_t prev_reg;
     _read_reg(dev, PCA9633_REG_MODE2, &prev_reg);
