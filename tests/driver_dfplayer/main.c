@@ -49,18 +49,49 @@ static void playback_done_handler(event_t *_data)
 {
     playback_done_event_t *data = (playback_done_event_t *)_data;
 
-    const char *dev = _sources[data->src];
-    if (!dev) {
-        dev = "unknown/error";
+    const char *source = _sources[data->src];
+    if (!source) {
+        source = "unknown/error";
     }
 
     print_str("Playback of track ");
     print_u32_dec(data->track);
     print_str(" on device ");
-    print_str(dev);
+    print_str(source);
     print_str(" has completed\n");
+
+    dfplayer_t *dev = dfplayer_get(0);
+    dfplayer_track_t track = dfplayer_get_track(dev);
+
+    char num[8];
+    size_t len;
+    switch (track.scheme) {
+        default:
+            return;
+        case DFPLAYER_SCHEME_FOLDER_FILE:
+            len = fmt_u16_dec(num, track.folder);
+            for (size_t i = len; i < 2; i++) {
+                print_str("0");
+            }
+            print(num, len);
+            print_str("/");
+            len = fmt_u16_dec(num, track.file);
+            for (size_t i = len; i < 3; i++) {
+                print_str("0");
+            }
+            print(num, len);
+            break;
+        case DFPLAYER_SCHEME_MP3_FILE:
+            len = fmt_u16_dec(num, track.number);
+            for (size_t i = len; i < 4; i++) {
+                print_str("0");
+            }
+            print(num, len);
+            break;
+    }
+    print_str(".mp3: Playback completed\n");
     xtimer_usleep(DFPLAYER_TIMEOUT_MS * US_PER_MS);
-    dfplayer_next(dfplayer_get(0));
+    dfplayer_next(dev);
 }
 
 static void _cb_done(dfplayer_t *dev, dfplayer_source_t src, uint16_t track)
