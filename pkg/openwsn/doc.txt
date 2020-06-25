@@ -377,7 +377,7 @@ The following erros are platform specific.
 
  - iotlab-m3 issues:
       - openserial does not work reliably over 57600 bauds or when using
-        sctimer_ztimer\.
+        sctimer_ztimer.
 
  ## Todos
 

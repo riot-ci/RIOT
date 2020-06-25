@@ -1,7 +1,8 @@
-From 33ce4bf864b06281b4f6ed6a7101329c2cd06a0f Mon Sep 17 00:00:00 2001
+From fbbc3e3032adfde1e27128febf2412fc93c9292a Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Thu, 4 Jun 2020 15:39:07 +0200
-Subject: [PATCH 9/9] drivers/common/openserial: add flag to echo badcrc frames
+Subject: [PATCH 09/10] drivers/common/openserial: add flag to echo badcrc
+ frames
 
 ---
  drivers/common/openserial.c | 6 +++++-

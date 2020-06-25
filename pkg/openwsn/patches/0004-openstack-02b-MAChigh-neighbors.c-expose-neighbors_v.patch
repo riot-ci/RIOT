@@ -1,7 +1,8 @@
 From a4a7bdb3504fe3e0f332170433e1e31f417f64fd Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 27 Mar 2020 10:15:43 +0100
-Subject: [PATCH 4/9] openstack/02b-MAChigh/neighbors.c: expose neighbors_vars
+Subject: [PATCH 04/10] openstack/02b-MAChigh/neighbors.c: expose
+ neighbors_vars
 
 ---
  openstack/02b-MAChigh/neighbors.c | 2 +-

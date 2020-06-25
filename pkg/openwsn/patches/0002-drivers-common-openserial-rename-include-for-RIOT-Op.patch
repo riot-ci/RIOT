@@ -1,7 +1,7 @@
 From 6fff6e0e31dbed9a603e4e1eab434c45e8b43861 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Mon, 10 Feb 2020 15:05:07 +0100
-Subject: [PATCH 2/9] drivers/common/openserial: rename include for
+Subject: [PATCH 02/10] drivers/common/openserial: rename include for
  RIOT-OpenWSN uart
 
 ---

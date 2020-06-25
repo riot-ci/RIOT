@@ -113,9 +113,8 @@ static void *_event_loop(void *arg)
     /* Disable IRQ while scheduler is not ready to start */
     unsigned irq_state = irq_disable();
     openstack_init();
-    irq_restore(irq_state);
     LOG_DEBUG("[openwsn]: start scheduler loop\n");
-    scheduler_start();
+    scheduler_start(irq_state);
 
     return NULL;
 }

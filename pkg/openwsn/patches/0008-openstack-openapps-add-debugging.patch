@@ -1,7 +1,7 @@
-From 66d20cf0567ec126cee1311ac59fc9cb949a41d0 Mon Sep 17 00:00:00 2001
+From d857866d869ba81b267abfc840cd3ca993207d5b Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 27 Mar 2020 10:18:16 +0100
-Subject: [PATCH 8/9] openstack/openapps: add debugging
+Subject: [PATCH 08/10] openstack/openapps: add debugging
 
 Debugging info that can be also be obtained through ifconfig in
 tests/openwsn.
@@ -14,18 +14,18 @@ tests/openwsn.
  5 files changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/openos/scheduler.c b/kernel/openos/scheduler.c
-index 9eeb4796..8874ed71 100644
+index de2bd594..37958775 100644
 --- a/kernel/openos/scheduler.c
 +++ b/kernel/openos/scheduler.c
-@@ -11,6 +11,7 @@
- #include "leds.h"
+@@ -12,6 +12,7 @@
  
+ #include "openwsn.h"
  #include "thread.h"
 +#include "log.h"
  
  #define OPENWSN_SCHEDULER_FLAG    (1u << 8)
  
-@@ -88,7 +89,7 @@ void scheduler_push_task(task_cbt cb, task_prio_t prio) {
+@@ -87,7 +88,7 @@ void scheduler_push_task(task_cbt cb, task_prio_t prio) {
      }
      if (taskContainer>&scheduler_vars.taskBuf[TASK_LIST_DEPTH-1]) {
         // task list has overflown. This should never happpen!
