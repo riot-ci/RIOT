@@ -21,6 +21,7 @@
 
 #include "board.h"
 #include "dfplayer_types.h"
+#include "kernel_defines.h"
 
 #ifdef __cplusplus
 extern "C" {
