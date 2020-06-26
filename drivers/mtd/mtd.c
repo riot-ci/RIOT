@@ -102,12 +102,11 @@ int mtd_write(mtd_dev_t *mtd, const void *src, uint32_t addr, uint32_t count)
         return -ENODEV;
     }
 
-    if (mtd->driver->write) {
-        return mtd->driver->write(mtd, src, addr, count);
-    }
-    else {
-        return -ENOTSUP;
-    }
+    /* page size is always a power of two */
+    const uint32_t page_shift = 32 - __builtin_clz(mtd->page_size) - 1;
+    const uint32_t page_mask = mtd->page_size - 1;
+
+    return mtd_write_page(mtd, src, addr >> page_shift, addr & page_mask, count);
 }
 
 int mtd_write_page(mtd_dev_t *mtd, const void *src, uint32_t page, uint32_t offset,
@@ -163,7 +162,16 @@ int mtd_erase(mtd_dev_t *mtd, uint32_t addr, uint32_t count)
     }
 
     uint32_t sector_size = mtd->pages_per_sector * mtd->page_size;
-    return mtd_erase_sector(mtd, addr / sector_size, (count + sector_size/2) / sector_size);
+
+    if (count % sector_size) {
+        return -EOVERFLOW;
+    }
+
+    if (addr % sector_size) {
+        return -EOVERFLOW;
+    }
+
+    return mtd_erase_sector(mtd, addr / sector_size, count / sector_size);
 }
 
 int mtd_erase_sector(mtd_dev_t *mtd, uint32_t sector, uint32_t count)
