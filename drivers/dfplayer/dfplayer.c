@@ -41,7 +41,7 @@ int dfplayer_init(dfplayer_t *dev, const dfplayer_params_t *params)
     }
 
     static const mutex_t locked = MUTEX_INIT_LOCKED;
-    memset(dev, 0x00, sizeof(dev));
+    memset(dev, 0x00, sizeof(*dev));
     dev->uart = params->uart;
     dev->busy_pin = params->busy_pin;
     mutex_init(&dev->mutex);
