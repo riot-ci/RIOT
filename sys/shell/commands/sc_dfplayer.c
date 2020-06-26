@@ -56,7 +56,12 @@ static const char *_states[] = {
 static void _print_error(int retval)
 {
     print_str("Error: ");
-    print_str(strerror(-retval));
+    if (IS_USED(DFPLAYER_NO_STRERROR)) {
+        print_s32_dec(retval);
+    }
+    else {
+        print_str(strerror(-retval));
+    }
     print("\n", 1);
 }
 
