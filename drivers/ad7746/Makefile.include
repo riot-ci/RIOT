@@ -1,0 +1,1 @@
+USEMODULE_INCLUDES += $(RIOTBASE)/drivers/ad7746/include
