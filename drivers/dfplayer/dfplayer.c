@@ -197,7 +197,7 @@ int dfplayer_step(dfplayer_t *dev, int step)
     if (dev->file.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
         /* Currently using naming scheme <FOLDERNUM>/<FILENUM>.mp3 */
         if ((dev->file.file + step < 1) ||
-            (dev->file.file + step > UINT8_MAX))
+            (dev->file.file + step > (int)UINT8_MAX))
         {
             mutex_unlock(&dev->mutex);
             return -ERANGE;
