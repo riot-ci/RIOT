@@ -78,6 +78,18 @@
  * However, you still have to use to the functions intended to be used with
  * the naming scheme of a specific file in order to be able to play it.
  *
+ * Track Numbers
+ * =============
+ *
+ * @warning     Track numbers are a bogus unit in the DFPlayer
+ *
+ * Track numbers in the dfplayer revert to the number of the file in the file
+ * system. Without preparing the medium played at a very low level, it will be
+ * hard to map track numbers to their corresponding songs. If you started
+ * playback using @ref dfplayer_play_file or @ref dfplayer_play_from_mp3, you
+ * can use @ref dfplayer_get_played_file to get the currently played filed
+ * according to the used naming scheme (see section above).
+ *
  * Continuous Playback
  * ===================
  *
@@ -432,40 +444,40 @@ static inline int dfplayer_pause(dfplayer_t *dev);
 int dfplayer_play_file(dfplayer_t *dev, uint8_t folder, uint8_t file);
 
 /**
- * @brief   Start playing the specified track in the MP3 folder
+ * @brief   Start playing the specified number in the MP3 folder
  *
  * @param   dev         Device descriptor of the DFPlayer to control
- * @param   track       Number of the file in the folder `"MP3"` to play
+ * @param   number      Number of the file in the folder `"MP3"` to play
  *
  * @retval  0           Success
  * @retval  -EINVAL     Called with invalid parameters (see precondition)
  * @retval  -EIO        Communication with the DFPlayer Mini failed
  * @retval  -EAGAIN     DFPlayer responded with error "Device busy"
  * @retval  -ETIMEDOUT  Response of the DFPlayer timed out
- * @retval  -ENOENT     Specified track does not exist
+ * @retval  -ENOENT     Specified number does not exist
  *
- * @pre     `0 < track <= 9999`
+ * @pre     `0 < number <= 9999`
  *
- * E.g. when called with @p track set to `42`, the file `"MP3/0042.mp3"` is
+ * E.g. when called with @p number set to `42`, the file `"MP3/0042.mp3"` is
  * played. Thus, the folder and file names need to follow a specific naming
  * convention in order to be selectable with this function.
  */
-int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t track);
+int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t number);
 
 /**
- * @brief   Start playing the specified track in the ADVERT folder
+ * @brief   Start playing the specified number in the ADVERT folder
  *
  * @param   dev         Device descriptor of the DFPlayer to control
- * @param   track       Number of the track in the folder `"ADVERT"` to play
+ * @param   number      Number of the number in the folder `"ADVERT"` to play
  *
  * @retval  0           Success
  * @retval  -EINVAL     Called with invalid parameters (see precondition)
  * @retval  -EIO        Communication with the DFPlayer Mini failed
  * @retval  -EAGAIN     DFPlayer responded with error "Device busy"
  * @retval  -ETIMEDOUT  Response of the DFPlayer timed out
- * @retval  -ENOENT     Specified track does not exist
+ * @retval  -ENOENT     Specified number does not exist
  *
- * @pre     `0 < track <= 9999`
+ * @pre     `0 < number <= 9999`
  * @warning The playback is only started when the DFPlayer is currently playing
  *          a non-advert file. The current playback is paused, the advert-file
  *          is played, and the previous playback is resumed afterwards
@@ -473,7 +485,7 @@ int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t track);
  *          advertisements, this function was provided in the best hope it is
  *          not used this way.
  *
- * E.g. when called with @p track set to `42`, the file `"ADVERT/0042.mp3"` is
+ * E.g. when called with @p number set to `42`, the file `"ADVERT/0042.mp3"` is
  * played. Thus, the folder and file names need to follow a specific naming
  * convention in order to be selectable with this function.
  *
@@ -483,7 +495,7 @@ int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t track);
  * the configured volume, even if currently played song is silent while
  * configuring the volume.
  */
-int dfplayer_play_from_advert(dfplayer_t *dev, uint16_t track);
+int dfplayer_play_from_advert(dfplayer_t *dev, uint16_t number);
 
 /**
  * @brief   Stop playing a file from the ADVERT folder and resume previous playback
@@ -714,13 +726,13 @@ static inline int dfplayer_get_fileno_sdcard(dfplayer_t *dev, uint16_t *fileno);
 static inline int dfplayer_get_fileno_flash(dfplayer_t *dev, uint16_t *fileno);
 
 /**
- * @brief   Get the currently played track and the used naming scheme
+ * @brief   Get the currently played file and the used naming scheme
  *
  * @param   dev         Device descriptor of the DFPlayer to query
  *
- * @return  The currently played track and the used naming scheme
+ * @return  The currently played file and the used naming scheme
  */
-static inline dfplayer_track_t dfplayer_get_track(dfplayer_t *dev);
+static inline dfplayer_file_t dfplayer_get_played_file(dfplayer_t *dev);
 
 /**
  * @brief   Check if the given source set contains the given source

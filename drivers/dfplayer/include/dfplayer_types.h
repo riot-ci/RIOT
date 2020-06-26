@@ -148,7 +148,7 @@ typedef struct {
         };
     };
     dfplayer_scheme_t scheme;   /**< Used naming scheme */
-} dfplayer_track_t;
+} dfplayer_file_t;
 
 /**
  * @brief   A DFPlayer Mini device descriptor
@@ -158,7 +158,7 @@ struct dfplayer {
     dfplayer_cb_src_t cb_src;   /**< Function to call when set of available playback sources changes */
     uint32_t last_event_us;     /**< Time stamp of the last event in µs */
     uint8_t buf[6];             /**< Data buffer for response from DFPlayer */
-    dfplayer_track_t track;     /**< Currently played song */
+    dfplayer_file_t file;       /**< Currently played song */
     uint8_t len;                /**< Length of the frame in the buffer */
     uint8_t flags;              /**< Flags storing info about the driver state*/
     mutex_t mutex;              /**< Used to mutual exclusive access */
