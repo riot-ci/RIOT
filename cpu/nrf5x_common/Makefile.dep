@@ -7,3 +7,9 @@ USEMODULE += nrf5x_common_periph
 
 # link common cpu code
 USEMODULE += cpu_common
+
+ifneq (,$(filter nrfmin,$(USEMODULE)))
+  FEATURES_REQUIRED += radio_nrfmin
+  FEATURES_REQUIRED += periph_cpuid
+  USEMODULE += netif
+endif
