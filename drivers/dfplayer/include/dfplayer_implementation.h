@@ -221,10 +221,10 @@ static inline int dfplayer_get_fileno_flash(dfplayer_t *dev, uint16_t *fileno)
     return dfplayer_query(dev, fileno, DFPLAYER_CMD_FILENO_FLASH);
 }
 
-static inline dfplayer_track_t dfplayer_get_track(dfplayer_t *dev)
+static inline dfplayer_file_t dfplayer_get_played_file(dfplayer_t *dev)
 {
     mutex_lock(&dev->mutex);
-    dfplayer_track_t res = dev->track;
+    dfplayer_file_t res = dev->file;
     mutex_unlock(&dev->mutex);
     return res;
 }

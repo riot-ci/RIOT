@@ -143,44 +143,44 @@ int dfplayer_play_file(dfplayer_t *dev, uint8_t folder, uint8_t file)
         return retval;
     }
 
-    dev->track.folder = folder;
-    dev->track.file = file;
-    dev->track.scheme = DFPLAYER_SCHEME_FOLDER_FILE;
+    dev->file.folder = folder;
+    dev->file.file = file;
+    dev->file.scheme = DFPLAYER_SCHEME_FOLDER_FILE;
     mutex_unlock(&dev->mutex);
     return 0;
 }
 
-int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t track)
+int dfplayer_play_from_mp3(dfplayer_t *dev, uint16_t number)
 {
     int retval;
-    if (!dev || !track || (track > DFPLAYER_MAX_MP3_FILE)) {
+    if (!dev || !number || (number > DFPLAYER_MAX_MP3_FILE)) {
         return -EINVAL;
     }
 
     mutex_lock(&dev->mutex);
     retval = dfplayer_file_cmd(dev, DFPLAYER_CMD_PLAY_FROM_MP3,
-                               (uint8_t)(track >> 8), (uint8_t) track);
+                               (uint8_t)(number >> 8), (uint8_t) number);
     if (retval) {
         mutex_unlock(&dev->mutex);
         return retval;
     }
 
-    dev->track.number = track;
-    dev->track.scheme = DFPLAYER_SCHEME_MP3_FILE;
+    dev->file.number = number;
+    dev->file.scheme = DFPLAYER_SCHEME_MP3_FILE;
     mutex_unlock(&dev->mutex);
     return 0;
 }
 
-int dfplayer_play_from_advert(dfplayer_t *dev, uint16_t track)
+int dfplayer_play_from_advert(dfplayer_t *dev, uint16_t number)
 {
     int retval;
-    if (!dev || !track || (track > DFPLAYER_MAX_ADVERT_FILE)) {
+    if (!dev || !number || (number > DFPLAYER_MAX_ADVERT_FILE)) {
         return -EINVAL;
     }
 
     mutex_lock(&dev->mutex);
     retval = dfplayer_file_cmd(dev, DFPLAYER_CMD_PLAY_ADVERT,
-                               (uint8_t)(track >> 8), (uint8_t) track);
+                               (uint8_t)(number >> 8), (uint8_t) number);
     mutex_unlock(&dev->mutex);
     return retval;
 }
@@ -194,29 +194,29 @@ int dfplayer_step(dfplayer_t *dev, int step)
 
     mutex_lock(&dev->mutex);
     uint8_t cmd, p1, p2;
-    if (dev->track.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
+    if (dev->file.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
         /* Currently using naming scheme <FOLDERNUM>/<FILENUM>.mp3 */
-        if ((dev->track.file + step < 1) || 
-            (dev->track.file + step > UINT8_MAX))
+        if ((dev->file.file + step < 1) ||
+            (dev->file.file + step > UINT8_MAX))
         {
             mutex_unlock(&dev->mutex);
             return -ERANGE;
         }
         cmd = DFPLAYER_CMD_FILE;
-        p1 = dev->track.folder;
-        p2 = (uint8_t)(dev->track.file + step);
+        p1 = dev->file.folder;
+        p2 = (uint8_t)(dev->file.file + step);
     }
     else {
         /* Currently using naming scheme MP3/<FILENUM>.mp3 */
-        if ((dev->track.number + step < 1) ||
-            (dev->track.number + step > DFPLAYER_MAX_MP3_FILE))
+        if ((dev->file.number + step < 1) ||
+            (dev->file.number + step > DFPLAYER_MAX_MP3_FILE))
         {
             mutex_unlock(&dev->mutex);
             return -ERANGE;
         }
         cmd = DFPLAYER_CMD_PLAY_FROM_MP3;
-        p1 = (uint8_t)((dev->track.number + step) >> 8);
-        p2 = (uint8_t)(dev->track.number + step);
+        p1 = (uint8_t)((dev->file.number + step) >> 8);
+        p2 = (uint8_t)(dev->file.number + step);
     }
 
     retval = dfplayer_file_cmd(dev, cmd, p1, p2);
@@ -225,13 +225,13 @@ int dfplayer_step(dfplayer_t *dev, int step)
         return retval;
     }
 
-    if (dev->track.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
+    if (dev->file.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
         /* Currently using naming scheme <FOLDERNUM>/<FILENUM>.mp3 */
-        dev->track.file = (uint8_t)(dev->track.file + step);
+        dev->file.file = (uint8_t)(dev->file.file + step);
     }
     else {
         /* Currently using naming scheme MP3/<FILENUM>.mp3 */
-        dev->track.number = (uint16_t)(dev->track.number + step);
+        dev->file.number = (uint16_t)(dev->file.number + step);
     }
 
     mutex_unlock(&dev->mutex);
