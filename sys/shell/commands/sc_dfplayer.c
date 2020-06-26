@@ -124,14 +124,14 @@ static void _print_tracks(dfplayer_t *dev)
     }
 
     print_str("Current track: ");
-    dfplayer_track_t track = dfplayer_get_track(dev);
-    if (track.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
-        print_u32_dec(track.folder);
+    dfplayer_file_t file = dfplayer_get_played_file(dev);
+    if (file.scheme == DFPLAYER_SCHEME_FOLDER_FILE) {
+        print_u32_dec(file.folder);
         print_str("/");
-        print_u32_dec(track.file);
+        print_u32_dec(file.file);
     }
     else {
-        print_u32_dec(track.number);
+        print_u32_dec(file.number);
     }
 
     print("\n", 1);
