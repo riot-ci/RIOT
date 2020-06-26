@@ -19,16 +19,11 @@
 #ifndef ATWINC15X0_INTERNAL_H
 #define ATWINC15X0_INTERNAL_H
 
-#include "bsp/include/nm_bsp.h"
+#include "atwinc15x0.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @brief   Forward declaration of ATWINC15x0 device descriptor type.
- */
-typedef struct atwinc15x0 atwinc15x0_t;
 
 /**
  * @brief   Reference to the single ATWINC15x0 device instance

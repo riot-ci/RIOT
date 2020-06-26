@@ -18,7 +18,7 @@
  * @}
  */
 
-#include "atwinc15x0.h"
+#include "atwinc15x0_internal.h"
 #include "mutex.h"
 #include "periph/spi.h"
 #include "xtimer.h"

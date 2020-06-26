@@ -20,8 +20,7 @@
 #ifndef ATWINC15X0_H
 #define ATWINC15X0_H
 
-#include "atwinc15x0_internal.h"
-
+#include "bsp/include/nm_bsp.h"
 #include "net/ethernet.h"
 #include "net/netdev.h"
 #include "periph/gpio.h"

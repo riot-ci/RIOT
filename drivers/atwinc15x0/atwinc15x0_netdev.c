@@ -22,7 +22,7 @@
 
 #define ETH_MODE            (1)
 
-#include "atwinc15x0.h"
+#include "atwinc15x0_internal.h"
 #include "atwinc15x0_params.h"
 
 #include "bus_wrapper/include/nm_bus_wrapper.h"
