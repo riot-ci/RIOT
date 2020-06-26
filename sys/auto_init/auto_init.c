@@ -258,4 +258,12 @@ void auto_init(void)
         extern void gnrc_dhcpv6_client_6lbr_init(void);
         gnrc_dhcpv6_client_6lbr_init();
     }
+
+    if (IS_USED(MODULE_AUTO_INIT_MULTIMEDIA)) {
+        LOG_DEBUG("auto_init MULTIMEDIA\n");
+        if (IS_USED(MODULE_DFPLAYER)) {
+            extern void auto_init_dfplayer(void);
+            auto_init_dfplayer();
+        }
+    }
 }
