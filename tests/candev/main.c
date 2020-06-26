@@ -28,6 +28,7 @@
 #include <string.h>
 #include <isrpipe.h>
 #include "shell.h"
+#include "test_utils/expect.h"
 #include "can/device.h"
 
 #ifdef BOARD_NATIVE
@@ -200,7 +201,7 @@ int main(void)
     /* add initialization for other candev drivers here */
 #endif
 
-    assert(candev);
+    expect(candev);
 
     candev->event_callback = _can_event_callback;
     candev->isr_arg = NULL;
