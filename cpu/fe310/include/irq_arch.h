@@ -50,10 +50,15 @@ static inline __attribute__((always_inline)) unsigned int irq_enable(void)
  */
 static inline __attribute__((always_inline)) unsigned int irq_disable(void)
 {
-    unsigned int state = read_csr(mstatus);
 
-    /* Disable all interrupts */
-    clear_csr(mstatus, MSTATUS_MIE);
+    unsigned int state;
+    __asm__ volatile (
+        "csrrc %[dest], mstatus, %[mask]"
+        : [dest]    "=r"(state)
+        : [mask]    "i"(MSTATUS_MIE)
+        : "memory"
+    );
+
     return state;
 }
 
@@ -63,7 +68,12 @@ static inline __attribute__((always_inline)) unsigned int irq_disable(void)
 static inline __attribute__((always_inline)) void irq_restore(unsigned int state)
 {
     /* Restore all interrupts to given state */
-    write_csr(mstatus, state);
+    __asm__ volatile (
+        "csrw mstatus, %[state]"
+        : /* no outputs */
+        : [state]   "r"(state)
+        : "memory"
+    );
 }
 
 /**
