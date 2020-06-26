@@ -39,7 +39,7 @@ OPENV_CLIENT_PATH := $(shell which openv-client)
 OPENV_SERIAL_PATH := $(shell which openv-serial)
 
 # Openvisualizer requires to know where openwsn-fw is located
-OPENV_OPENWSN_FW_PATH ?= --fw-path=$(BINDIRBASE)/pkg/$(BOARD)/openwsn-fw
+OPENV_OPENWSN_FW_PATH ?= --fw-path=$(RIOTBASE)/build/pkg/openwsn-fw
 OPENV_DEFAULT_FLAGS += $(OPENV_OPENWSN_FW_PATH)
 
 OPENV_DEFAULT_FLAGS ?=
@@ -72,7 +72,7 @@ OPENV_FLAGS ?=
 
 openv-term: $(OPENV_LOG_CONFIG)
 openv-term: $(TERMDEPS)
-	$(Q)$(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS)$(OPENV_FLAGS)
+	$(Q)$(OPENV_SERVER_PATH) $(OPENV_DEFAULT_FLAGS) $(OPENV_FLAGS)
 
 openv-termroot: $(OPENV_LOG_CONFIG)
 openv-termroot: $(TERMDEPS)
