@@ -9,6 +9,7 @@ CFLAGS += -Wno-discarded-qualifiers
 CFLAGS += -Wno-empty-body
 CFLAGS += -Wno-old-style-definition
 CFLAGS += -Wno-unused-parameter
+CFLAGS += -Wno-incompatible-pointer-types-discards-qualifiers
 
 CFLAGS += -DETH_MODE
 CFLAGS += -I$(PKG_BUILDDIR)/src
