@@ -56,12 +56,11 @@ static const char *_states[] = {
 static void _print_error(int retval)
 {
     print_str("Error: ");
-    if (IS_USED(DFPLAYER_NO_STRERROR)) {
-        print_s32_dec(retval);
-    }
-    else {
-        print_str(strerror(-retval));
-    }
+#ifdef DFPLAYER_NO_STRERROR
+    print_s32_dec(retval);
+#else
+    print_str(strerror(-retval));
+#endif
     print("\n", 1);
 }
 
@@ -139,7 +138,7 @@ static void _print_tracks(dfplayer_t *dev)
 
 static void _print_volume(dfplayer_t *dev)
 {
-    uint8_t volume;
+    uint8_t volume = 0;
     int retval = dfplayer_get_volume(dev, &volume);
     print_str("Volume: ");
     if (retval) {
@@ -153,7 +152,7 @@ static void _print_volume(dfplayer_t *dev)
 
 static void _print_equalizer(dfplayer_t *dev)
 {
-    dfplayer_eq_t equalizer;
+    dfplayer_eq_t equalizer = 0;
     int retval = dfplayer_get_equalizer(dev, &equalizer);
     print_str("Equalizer: ");
     if (retval) {
