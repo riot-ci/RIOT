@@ -21,6 +21,7 @@
 #include "cc26xx_cc13xx_rfc_mailbox.h"
 
 #define RX_BANDWIDTH_310KHZ (0x59) /**< RX bandwidth */
+#define RX_BANDWIDTH_190KHZ (0x56) /**< RX bandwidth */
 
 /* Overrides for CMD_PROP_RADIO_DIV_SETUP. These are overrides for some of the
  * hardware parameters (Cortex-M0/RF Core), they are automatically generated
@@ -28,30 +29,28 @@
  * (this one is compatible with all devices) */
 static uint32_t rf_prop_overrides[] =
 {
-    /* override_prop_common.xml
-     * DC/DC regulator: In Tx, use DCDCCTL5[3:0]=0x7 (DITHER_EN=0 and IPEAK=7).
-     */
+    // override_prop_common.xml
+    // DC/DC regulator: In Tx, use DCDCCTL5[3:0]=0x7 (DITHER_EN=0 and IPEAK=7).
     (uint32_t)0x00F788D3,
-    /* override_tc146.xml
-     * Tx: Configure PA ramp time, PACTL2.RC=0x3 (in ADI0, set PACTL2[4:3]=0x3)
-     */
-    RFC_ADI_2HALFREG_OVERRIDE(0, 16, 0x8, 0x8, 17, 0x1, 0x1),
-    /* Tx: Configure PA ramping, set wait time before turning off (0x1A ticks
-     of 16/24 us = 17.3 us).
-     */
-    RFC_HW_REG_OVERRIDE(0x6028, 0x001A),
-    /* Rx: Set AGC reference level to 0x16 (default: 0x2E) */
-    RFC_HW_REG_OVERRIDE(0x609C, 0x0016),
-    /* Rx: Set RSSI offset to adjust reported RSSI by -1 dB (default: -2),
-     * trimmed for external bias and differential configuration */
+    // override_prop_common_sub1g.xml
+    // Set RF_FSCA.ANADIV.DIV_SEL_BIAS = 1. Bits [0:16, 24, 30] are don't care..
+    (uint32_t)0x4001405D,
+    // Set RF_FSCA.ANADIV.DIV_SEL_BIAS = 1. Bits [0:16, 24, 30] are don't care..
+    (uint32_t)0x08141131,
+    // override_tc106.xml
+    // Tx: Configure PA ramp time, PACTL2.RC=0x3 (in ADI0, set PACTL2[4:3]=0x3)
+    RFC_ADI_2HALFREG_OVERRIDE(0,16,0x8,0x8,17,0x1,0x1),
+    // Rx: Set AGC reference level to 0x1A (default: 0x2E)
+    RFC_HW_REG_OVERRIDE(0x609C,0x001A),
+    // Rx: Set RSSI offset to adjust reported RSSI by -1 dB (default: -2), trimmed for external bias and differential configuration
     (uint32_t)0x000188A3,
-    /* Rx: Set anti-aliasing filter bandwidth to 0x8 (in ADI0, set
-     * IFAMPCTL3[7:4]=0x8) */
-    RFC_ADI_HALFREG_OVERRIDE(0, 61, 0xF, 0x8),
-    /* TX power override
-     * Tx: Set PA trim to max to maximize its output power (in ADI0,
-     * set PACTL0=0xF8) */
-    RFC_ADI_REG_OVERRIDE(0, 12, 0xF8),
+    // Rx: Set anti-aliasing filter bandwidth to 0xD (in ADI0, set IFAMPCTL3[7:4]=0xD)
+    RFC_ADI_HALFREG_OVERRIDE(0,61,0xF,0xD),
+    // Tx: Set wait time before turning off ramp to 0x1A (default: 0x1F)
+    RFC_HW_REG_OVERRIDE(0x6028,0x001A),
+    // TX power override
+    // Tx: Set PA trim to max to maximize its output power (in ADI0, set PACTL0=0xF8)
+    RFC_ADI_REG_OVERRIDE(0,12,0xF8),
     RFC_END_OVERRIDE
 };
 
@@ -109,15 +108,15 @@ rfc_cmd_prop_radio_div_setup_t rf_cmd_prop_radio_div_setup =
     },
     .modulation = {
         .mod_type = RFC_MOD_TYPE_GFSK,
-        .deviation = 200,
+        .deviation = 0x64,
         .deviation_step_sz = RFC_DEV_STEP_SZ_250_HZ
     },
     .symbol_rate = {
         .prescale = 15,
-        .rate_word = 0x20000,
+        .rate_word = 0x8000,
         .decim_mode = RFC_DECIM_MODE_AUTO
     },
-    .rx_bw = RX_BANDWIDTH_310KHZ,
+    .rx_bw = RX_BANDWIDTH_190KHZ,
     .pream_conf = {
         .pream_bytes = 7,
         .pream_mode = RFC_PREAM_MODE_0_FIRST,
@@ -137,8 +136,8 @@ rfc_cmd_prop_radio_div_setup_t rf_cmd_prop_radio_div_setup =
     },
     .tx_power = 0x04C0,
     .reg_override = rf_prop_overrides,
-    .center_freq = 0x0393,
-    .int_freq = 0x0999,
+    .center_freq = 0x0363,
+    .int_freq = 0x8000,
     .lo_divider = 0x05
 };
 
