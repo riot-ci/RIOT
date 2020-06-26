@@ -88,6 +88,14 @@ ifneq (,$(filter dcf77,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/dcf77/include
 endif
 
+ifneq (,$(filter dfplayer,$(USEMODULE)))
+  USEMODULE_INCLUDES += $(RIOTBASE)/drivers/dfplayer/include
+  ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
+    # no strerror() in avrlibc; which makes a lot of sense on a Harvard machine
+    CFLAGS += -DDFPLAYER_NO_STRERROR
+  endif
+endif
+
 ifneq (,$(filter dht,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/drivers/dht/include
 endif
