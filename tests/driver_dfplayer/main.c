@@ -61,7 +61,7 @@ static void playback_done_handler(event_t *_data)
     print_str(" has completed\n");
 
     dfplayer_t *dev = dfplayer_get(0);
-    dfplayer_track_t track = dfplayer_get_track(dev);
+    dfplayer_file_t track = dfplayer_get_played_file(dev);
 
     char num[8];
     size_t len;
