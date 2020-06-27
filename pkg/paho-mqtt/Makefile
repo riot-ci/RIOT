@@ -6,5 +6,5 @@ PKG_LICENSE = EDL
 include $(RIOTBASE)/pkg/pkg.mk
 
 all:
-	"$(MAKE)" -C $(PKG_BUILDDIR)/MQTTPacket/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)-packet
-	"$(MAKE)" -C $(PKG_BUILDDIR)/MQTTClient-C/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)
+	"$(MAKE)" -C $(PKG_SOURCE_DIR)/MQTTPacket/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)-packet
+	"$(MAKE)" -C $(PKG_SOURCE_DIR)/MQTTClient-C/src/ -f $(CURDIR)/Makefile.$(PKG_NAME)
