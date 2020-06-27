@@ -159,7 +159,7 @@ int MutexUnlock(Mutex *mutex);
  * @brief  Thread struct within mqtt paho
  */
 typedef struct {
-    char stack[MQTT_THREAD_STACKSIZE];      /**< stack variable for MQTT thread*/
+    char stack[MQTT_THREAD_STACKSIZE];      /**< stack for MQTT thread*/
     kernel_pid_t pid;                       /**< MQTT thread pid*/
 } Thread;
 

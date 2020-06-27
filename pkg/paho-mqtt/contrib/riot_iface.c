@@ -182,7 +182,8 @@ int TimerLeftMS(Timer *timer)
     xtimer_ticks64_t diff_ticks = xtimer_diff64(xtimer_now64(),
             timer->set_ticks);  /* should be always greater than 0 */
     if (xtimer_less64(diff_ticks, timer->ticks_timeout)) {
-        return (xtimer_usec_from_ticks64(xtimer_diff64(timer->ticks_timeout, diff_ticks)) / US_PER_MS);
+        diff_ticks = xtimer_diff64(timer->ticks_timeout, diff_ticks);
+        return (xtimer_usec_from_ticks64(diff_ticks) / US_PER_MS);
     }
     return 0;
 }
