@@ -77,4 +77,3 @@ static const adc_t arduino_analog_map[] = {
 
 #endif /* ARDUINO_BOARD_H */
 /** @} */
-
