@@ -61,6 +61,7 @@ static const clock_config_t clock_config = {
     .clkdiv1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(0) |
                SIM_CLKDIV1_OUTDIV3(1) | SIM_CLKDIV1_OUTDIV4(1),
     .rtc_clc = RTC_LOAD_CAP_BITS,
+    .periph_pllfllsel = SIM_SOPT2_PLLFLLSEL(0), /* Use FLL for peripherals */
     .osc32ksel = SIM_SOPT1_OSC32KSEL(2),
     .clock_flags =
         /* no OSC0_EN, the RTC module provides the clock input signal for the FLL */
