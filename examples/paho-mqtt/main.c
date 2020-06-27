@@ -105,7 +105,8 @@ static int _cmd_con(int argc, char **argv)
 {
     if (argc < 2) {
         printf(
-            "usage: %s <brokerip addr> [port] [clientID] [user] [password] [keepalivetime]\n",
+            "usage: %s <brokerip addr> [port] [clientID] [user] [password] "
+            "[keepalivetime]\n",
             argv[0]);
         return 1;
     }
@@ -152,7 +153,8 @@ static int _cmd_con(int argc, char **argv)
     data.cleansession = IS_CLEAN_SESSION;
     data.willFlag = 0;
 
-    printf("mqtt_example: Connecting to MQTT Broker from %s %d\n", remote_ip, port);
+    printf("mqtt_example: Connecting to MQTT Broker from %s %d\n",
+            remote_ip, port);
     printf("mqtt_example: Trying to connect to %s , port: %d\n",
             remote_ip, port);
     ret = NetworkConnect(&network, remote_ip, port);
@@ -199,8 +201,9 @@ static int _cmd_pub(int argc, char **argv)
         printf("mqtt_example: Unable to publish (%d)\n", rc);
     }
     else {
-        printf("mqtt_example: Message (%s) has been published to topic %s with QOS %d\n",
-                 (char *)message.payload, argv[1], (int)message.qos);
+        printf("mqtt_example: Message (%s) has been published to topic %s"
+               "with QOS %d\n",
+               (char *)message.payload, argv[1], (int)message.qos);
     }
 
     return rc;
@@ -220,7 +223,8 @@ static int _cmd_sub(int argc, char **argv)
     }
 
     if (topic_cnt > MAX_TOPICS) {
-        printf("mqtt_example: Already subscribed to max %d topics, call 'unsub' command\n", topic_cnt);
+        printf("mqtt_example: Already subscribed to max %d topics,"
+                "call 'unsub' command\n", topic_cnt);
         return -1;
     }
 
@@ -231,13 +235,16 @@ static int _cmd_sub(int argc, char **argv)
     strncpy(_topic_to_subscribe[topic_cnt], argv[1], strlen(argv[1]));
 
     printf("mqtt_example: Subscribing to %s\n", _topic_to_subscribe[topic_cnt]);
-    int ret = MQTTSubscribe(&client, _topic_to_subscribe[topic_cnt], qos, _on_msg_received);
+    int ret = MQTTSubscribe(&client,
+              _topic_to_subscribe[topic_cnt], qos, _on_msg_received);
     if (ret < 0) {
-        printf("mqtt_example: Unable to subscribe to %s (%d)\n", _topic_to_subscribe[topic_cnt], ret);
+        printf("mqtt_example: Unable to subscribe to %s (%d)\n",
+               _topic_to_subscribe[topic_cnt], ret);
         _cmd_discon(0, NULL);
     }
     else {
-        printf("mqtt_example: Now subscribed to %s, QOS %d\n", argv[1], (int) qos);
+        printf("mqtt_example: Now subscribed to %s, QOS %d\n",
+               argv[1], (int) qos);
         topic_cnt++;
     }
     return ret;

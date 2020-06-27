@@ -20,6 +20,7 @@ WIFI_PASS ?= "Your_secure_password"
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
+USEMODULE += netdev_default
 USEPKG += paho-mqtt
 
 # paho-mqtt depends on TCP support, choose the stack you want
