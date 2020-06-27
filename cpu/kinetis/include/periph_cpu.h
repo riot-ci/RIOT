@@ -673,7 +673,7 @@ typedef struct {
      */
     uint32_t clkdiv3;
 #endif
-#ifdef SIM_SOPT2_PLLFLLSEL_MASK
+#ifdef SIM_SOPT2_PLLFLLSEL
     /**
      * @brief   Clock source select for the high frequency peripheral clock.
      *
