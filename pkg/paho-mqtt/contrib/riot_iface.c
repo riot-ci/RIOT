@@ -72,7 +72,8 @@ static int mqtt_read(struct Network *n, unsigned char *buf, int len,
         _timeout = timeout_ms;
     }
 
-    uint64_t send_tick = xtimer_now64().ticks64 + xtimer_ticks_from_usec64(timeout_ms * US_PER_MS).ticks64;
+    uint64_t send_tick = xtimer_now64().ticks64 +
+            xtimer_ticks_from_usec64(timeout_ms * US_PER_MS).ticks64;
     do {
         rc = sock_tcp_read(&n->sock, _buf, _len, _timeout);
         if (rc == -EAGAIN) {
@@ -90,7 +91,8 @@ static int mqtt_read(struct Network *n, unsigned char *buf, int len,
 
 #ifdef ENABLE_DEBUG
     if (IS_USED(MODULE_LWIP) && rc > 0) {
-        DEBUG("MQTT buf asked for %d, available to read %d\n", rc, tsrb_avail(&tsrb_lwip_tcp));
+        DEBUG("MQTT buf asked for %d, available to read %d\n",
+                rc, tsrb_avail(&tsrb_lwip_tcp));
         for (int i = 0; i < rc; i++) {
             DEBUG("0x%02X ", buf[i]);
         }
@@ -177,7 +179,8 @@ void TimerCountdown(Timer *timer, unsigned int timeout_s)
 
 int TimerLeftMS(Timer *timer)
 {
-    xtimer_ticks64_t diff_ticks = xtimer_diff64(xtimer_now64(), timer->set_ticks);  /* should be always greater than 0 */
+    xtimer_ticks64_t diff_ticks = xtimer_diff64(xtimer_now64(),
+            timer->set_ticks);  /* should be always greater than 0 */
     if (xtimer_less64(diff_ticks, timer->ticks_timeout)) {
         return (xtimer_usec_from_ticks64(xtimer_diff64(timer->ticks_timeout, diff_ticks)) / US_PER_MS);
     }
