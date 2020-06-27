@@ -44,8 +44,15 @@
 #define DEFAULT_MQTT_PWD                ""
 #endif
 
-#define DEFAULT_MQTT_PORT               1883    /**< Default MQTT port */
-#define DEFAULT_KEEPALIVE_SEC           10      /**< Keepalive timeout in seconds */
+/**
+ * @brief Default MQTT port
+ */
+#define DEFAULT_MQTT_PORT               1883
+
+/**
+ * @brief Keepalive timeout in seconds
+ */
+#define DEFAULT_KEEPALIVE_SEC           10
 
 #ifndef MAX_LEN_TOPIC
 #define MAX_LEN_TOPIC                   100
