@@ -35,7 +35,7 @@
  * increases as well. A queue size of 8 messages works with default stack size,
  * so we increase the stack by `sizeof(msg_t)` for each additional element
  */
-#define NRF24L01P_NG_EXTRA_STACKSIZE  ((CONFIG_GNRC_NETIF_MSG_QUEUE_SIZE - 8) \
+#define NRF24L01P_NG_EXTRA_STACKSIZE  ((GNRC_NETIF_MSG_QUEUE_SIZE - 8) \
                                       * sizeof(msg_t))
 #endif
 
