@@ -1,0 +1,7 @@
+# Disable hardware FPU for Cortex-M4F/7 to prevent crash on these platforms
+ifneq (,$(filter cortex-m4f cortex-m7,$(CPU_CORE)))
+  DISABLE_MODULE += cortexm_fpu
+endif
+
+# emlearn is not compatible with MSP430
+FEATURES_BLACKLIST += arch_msp430
