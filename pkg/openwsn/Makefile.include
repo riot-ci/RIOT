@@ -35,3 +35,6 @@ CFLAGS += -DISR_STACKSIZE=2048
 ifneq (,$(filter at86rf2xx,$(USEMODULE)))
   CFLAGS += -DAT86RF2XX_BASIC_MODE
 endif
+
+# LLVM ARM shows issues with missing definitions fot stdatomic
+TOOLCHAINS_BLACKLIST += llvm
