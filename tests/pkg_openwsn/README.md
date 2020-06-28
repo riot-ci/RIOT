@@ -22,12 +22,12 @@ Testbed. Please check the ports [documentation](../../pkg/openwsn/doc.txt) for i
 about supported hardware platforms.
 
 This port currently needs `openvisualizer`, please make sure you follow the
-[pre-requisites](dist/tools/openvisualizer/makefile.openvisualizer.inc.mk)
+[pre-requisites](../../dist/tools/openvisualizer/makefile.openvisualizer.inc.mk)
 to install a patched version of `openvisualizer`.
 
-An OpenWSN root node acts acts as a border router, it tunnels IEEE80215.4.E
+An OpenWSN root node acts as a border router, it tunnels IEEE80215.4.E
 between `openvisualizer` and the network without looking at the frame content.
-This means that a node will not be reachable when 'pinging' from the host
+This means that a root node will not be reachable when 'pinging' from the host
 or if trying to send udp packets to it.
 
 Two test cases are described with different requirements:
@@ -58,14 +58,14 @@ a fix channel.
 
     $ export CFLAGS=-DIEEE802154E_SINGLE_CHANNEL=17
 
-Enhanced beacon are send once per slotframe with a likelihood of 1/EB_PORTION.
+Enhanced beacon are sent once per slotframe with a likelihood of 1/EB_PORTION.
 The default value is EB_PORTION = 10 (10%), reducing the value of EB_PORTION
 increases the frequency at which beacons are sent, this will also help nodes
 to stay synchronized.
 
     $ export CFLAGS=-DEB_PORTION=4
 
-EB get an opportunity to be sent (depending on 1/EB_PORTION) once in every
+EB gets an opportunity to be sent (depending on 1/EB_PORTION) once in every
 slotframe, reducing the soltframe length will cause EB to be sent more often.
 Beware that this could have an impact on the MSF (Minimal Scheduling Function).
 
@@ -76,7 +76,7 @@ synchronization.
 
 ## IMPORTANT!
 
-OpenWSN uses source routing and  this means all network traffic must go through
+OpenWSN uses source routing and this means all network traffic must go through
 from the root node to OpenVisualizer. If the root node configuration can't
 handle the configured baudrate correctly this will lead to packet loss.
 
@@ -91,7 +91,7 @@ Currently these are the tested configurations:
     - leaf nodes using `openwsn_sctimer_rtt` or `sctimer_ztimer`
     - root node using `openwsn_sctimer_rtt` and 57600 baudrate
 
-For more on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
+For more details on this please refer to [pkg documentation](../../pkg/openwsn/doc.txt).
 
 ## Testing configuration (a) (three local samr21-xpro nodes)
 
@@ -133,24 +133,24 @@ to be specified for every node,  `IOTLAB_NODE=m3-%.saclay.iot-lab.info`
 
 2. flash the root node
 
-        $ IOTLAB_NODE={ROOT_NODE_IOTLAB} USEMODULE=openwsn_serial \
+        $ IOTLAB_NODE=${ROOT_NODE_IOTLAB} USEMODULE=openwsn_serial \
           BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
 
 3. open a shell to the leaf nodes
    so in two shell windows, do (one in each):
-        $ BOARD=iotlab-m3 make all -j4
-        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make flash-only
-        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make flash-only
+        $ BOARD=iotlab-m3 make -C tests/pkg_openwsn all -j4
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make -C tests/pkg_openwsn flash-only
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make -C tests/pkg_openwsn flash-only
 
 4. open a shell to the leaf nodes
    so in two shell windows, do (one in each):
 
-        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make term
-        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make term
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE0} make -C tests/pkg_openwsnterm
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${LEAF_IOTLAB_NODE1} make -C tests/pkg_openwsnterm
 
 5. in a third shell, launch openvisualizer:
 
-        $ BOARD=iotlab-m3 IOTLAB_NODE=${ROOT_IOTLAB_NODE} make openv-termroot
+        $ BOARD=iotlab-m3 IOTLAB_NODE=${ROOT_IOTLAB_NODE} make -C tests/pkg_openwsn openv-termroot
 
 ### Network Setup
 
@@ -188,7 +188,7 @@ On the root node Openvisualizer is launched and the DAGroot is setup.
 The root node will now start sending beacons and other nodes will synchronize, and
 join. If channel hopping is enabled this can take quite some time (see
 [Synchronization](../../pkg/openwsn/doc.txt#Synchronization). Once leaf nodes
-have joined the network when issuing `ifcofing` you should see:
+have joined the network when issuing `ifconfing` you should see:
 
     ifconfig
     inet6 bbbb::684:f665:106b:1114

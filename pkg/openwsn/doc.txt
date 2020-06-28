@@ -35,20 +35,20 @@
 
  Once synchronized the node will need to join the network. OpenWSN uses CoJP
  [constrained join protocol](https://datatracker.ietf.org/doc/draft-ietf-6tisch-minimal-security/)
- OpenWSN stack only handles Join Requests. The JRC (join registrar/coordinator,
+ an the stack itself only handles Join Requests. The JRC (join registrar/coordinator,
  a central entity) is not running on the root node, but alongside it, in the
  `OpenVisualizer` external tool.
 
  Once joined the device has the required keys to start listening to DIS (DODAG
  Information Solicitation) messages and to send DIO (DODAG Information Object)
- requests. Once it knows about the topology of the network it will be able to
+ requests. Once it knows about the topology of the network it is able to
  send packets.
 
  OpenWSN uses source routing. This means that unless the recipient of a packet
  is one of the parents in the RPL tree the packet will have to go up the tree
  to the root node. But in OpenWSN RPL implementation the node does not know
  how to route, instead it is `OpenVisualizer` which generates an SRH (Source
- Routing Header ), attaches to the incoming packet and sends it down the tree.
+ Routing Header), attaches to the incoming packet and sends it down the tree.
 
  ## Hardware abstraction implementation
 
@@ -63,12 +63,12 @@
  time timer) module.
 
  This port has two possible implementations or sctimer, one on top of
- periph_rtt and the another on top of ztimer, `sctimer_rtt` and
- `sctimer_ztimer` respectively. If possible `ztimer` should be preferred,
- being a virtual timer it will allow RIOT applications/modules to use the
- low level RTT timer. But ztimer (any virtual timer) has some overhead
- which can be costly depending on the different platforms used, specially
- when `openserial` is required. More on this in openserial and Known Issues.
+ periph_rtt and another on top of ztimer, `sctimer_rtt` and `sctimer_ztimer`
+ respectively. If possible `ztimer` should be preferred, being a virtual
+ timer it will allow RIOT applications/modules to use the low level RTT timer.
+ But ztimer (any virtual timer) has some overhead which can be costly
+ depending on the different platforms used, specially when `openserial`
+ is required. More on this in openserial and Known Issues.
 
  #### sctimer_ztimer
 
@@ -82,7 +82,7 @@
  frequency is lower than 32768Hz or frac if higher.
 
  When next interrupt to schedule is already late, current time,
- Implementations in OpenWSN directly trigger a hardware interrupt.
+ implementations in OpenWSN directly trigger a hardware interrupt.
  Until able to trigger sw isr directly a callback is set 0 ticks in
  the future, which internally will be set to `now + RTT_MIN_OFFSET`.
 
@@ -102,7 +102,7 @@
  ### radio
 
  The radio adaptation runs in its own thread with the highest priority
- (`THREAD_PRIORITY_MAIN - 4`) and maps to RIOT's `netdev` API.
+ (`THREAD_PRIORITY_MAIN - 4`) and maps to RIOT's @ref netdev API.
 
  Hardware MAC layer features such as CSMA/CA, ACK handling and retransmissions
  are handled by OpenWSN, so the radio driver must support disabling AUTOACK
@@ -131,7 +131,7 @@
  In OpenWSN however, the `openserial` tool uses uart to feed external software
  running on a host computer such as
  [Openvisualizer](https://github.com/openwsn-berkeley/openvisualizer).
- To enable use of these tools, a uart adaptation is provided.
+ To enable use of these tools, an uart adaptation is provided.
 
  This is provided through the `openwsn_serial` (`openserial`) module. It
  will use the next available uart that is not used by STDIO
@@ -146,13 +146,13 @@
  are currently not defined in RIOT in a generic way, so instead a timer is set
  to fire shortly after a byte is written.
 
- It uses `ztimer` to set the timer since its already pulled in as a dependency.
+ It uses `ztimer` to set the timer since it's already pulled in as a dependency.
 
  ### Openserial
 
  As was mentioned before any OpenWSN network will require a root node which is
  connected to an `OpenVisualizer` instance running on a host computer.
- Interaction between `OpenVisualizer` and the open is done over serial. As
+ Interaction between `OpenVisualizer` and the root-node is done over serial. As
  OpenWSN uses source routing, this means that ultimately all network traffic
  must go from the root node to `OpenVisualizer` and back.
 
@@ -164,7 +164,7 @@
 
  Serial data is transmitted as High-Level Data Link Control (HDLC) frames.
  Since network traffic is tunneled through the serial pipe, in order to
- to have a stable connection this packets must not be lost. Packets can be
+ to have a stable connection these packets must not be lost. Packets can be
  lost in multiple ways but at the end it reduces to bytes being overridden in
  the uart reception buffer.
 
@@ -182,7 +182,7 @@
     connection (for example tcp connection to iotlab).
 
  3. Since uart reception is interrupted based if the uart ISR is not serviced
-    for too long then bytes where start overriding each other in the reception
+    for too long then bytes start overriding each other in the reception
     buffer. In an application where only OpenWSN is running then there are 3
     functions/operations that run in ISR or with disabled ISR.
 
@@ -191,14 +191,14 @@
   (c) `ztimer_handler`
 
  (a) and (b) are closely related since `opentimers_timer_callback` will
-  itself call `sctimer_setCompare` and `sctimer_readCounter`. An this itself
+  itself call `sctimer_setCompare` and `sctimer_readCounter`. And this itself
   will depend on `ztimer_set` and `ztimer_now` or `rtt_get_counter` or
   `rtt_set_alarm` execution time.
 
- (c) is also related to (a) (b) since `ztimer_handler` will as well call
+ (c) is also related to (a) (b) since `ztimer_handler` will also call
  `opentimers_timer_callback` as well as the underlying `rtt` functions.
 
- Since a 115200 baudrate means ~1byte every 10us, non of the above can take
+ Since a 115200 baudrate means ~1byte every 10us, none of the above can take
  longer than that or bytes could be lost at that baudrate.
 
  Because of the above mentioned reasons, it is preferable to use `sctimer_rtt`
@@ -218,14 +218,14 @@
  ### Synchronization
 
  To join a network a node must first receive EB (enhanced beacons). Once an EB
- is received the node will  be synchronized with the network. Synchronization
+ is received the node will be synchronized with the network. Synchronization
  times are not deterministic, they depend on the following:
 
     `SLOTFRAME_LENGTH*SLOTDURATION*P_CHANNEL*P_EB`
 
  `SLOTFRAME_LENGTH` in OpenWSN is 101, and this port uses 20ms as the slotOffset
  duration. `P_EB` specifies the a probability for a node to transmit an EB.
- By default its 10%, that means that on average it will take 10 tries before an
+ By default it's 10%, that means that on average it will take 10 tries before an
  EB is transmitted. `P_CHANNEL` is the probability for the transmitter's and
  receiver channel to match. If channel hopping is disabled this means that the
  average worst case scenario is `101*20ms*10 ~= 20s`, so 20s for synchronization
@@ -234,7 +234,7 @@
  have an impact on the MSF (Minimal Scheduling Function). If too few cells are
  available this could increase the likelihood of collisions.
 
- On the other hand if channel hopping is enabled then the joining node picks and
+ On the other hand if channel hopping is enabled then the joining node picks a
  random channel to start listening on. The transmitter also picks a random
  channel to start transmitting on and then follows a channel hopping template.
  This would take on average ~8 tries for it to hit the correct channel for the
@@ -336,7 +336,7 @@
 
  ## Known Issues
 
- The following errors might visible when using `openwsn_serial`:
+ The following errors might be visible when using `openwsn_serial`:
 
  - `[OPENSERIAL] wrong CRC in input Buffer`
 
@@ -347,8 +347,8 @@
 
  - `[IEEE802154E] wdDataDuration overflows while at state 19 in slotOffset 0`
 
- This error can show up  when the radio starts receiving (receives the SFD) and
- therefore triggers a `NETDEV_RX_STARTED`. but then no `NETDEV_TX_STARTED`
+ This error can show up when the radio starts receiving (receives the SFD) and
+ therefore triggers a `NETDEV_RX_STARTED` but then no `NETDEV_TX_STARTED`
  event follows. This happens when packets with invalid CRC are received.
  netdev currently silently drops these packets without notifying upper layers.
  But this does not affect the stack operation, so they can be ignored.
@@ -356,8 +356,8 @@
  - `[IEEE802154E] large timeCorr.: -18 ticks (code loc. 0)`
 
  Most crystals used to clock the RTT will drift even those with a very similarly
- drift (10-30ppm). Its is normal then for motes adjust there timerCorr as long
- as it stay within the above mentioned margins and if motes are able to stay
+ drift (10-30ppm). It's is normal then for motes adjust their timerCorr as long
+ as it stays within the above mentioned margins and if motes are able to stay
  synchronized over the long run. If there aren't then maybe board_info.h
  parameters require tuning for the specific platform.
 
@@ -370,7 +370,7 @@ associated to a log print, so can be ignored.
 
 The join procedure uses a replay window. If a node had already joined the network
 and for some reason attempts to rejoin again, then the replay windows will need
-to expire for its join request to be accepted.
+to expire for it's join request to be accepted.
 
 The following errors are platform specific.
 
@@ -394,11 +394,11 @@ The following errors are platform specific.
    should be adapted to make this configurable to be able to set `RTT_FREQUENCY`
    to 32768Hz or the closer possible value.
  - The UART wrapper uses ztimer to fake an interrupt after one byte
-   has been sent. this should also be done with software interrupts.
+   has been sent. This should also be done with software interrupts.
 
  ##  Future Steps
 
- The OpenWSN community is working working on refactoring their code base. As
+ The OpenWSN community is working on refactoring their code base. As
  one of the outputs of this modules like `cjoin`, `udp`, `coap` will become
  optional. Once this is upstream the support for this pkg should be adapted.
 
