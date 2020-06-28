@@ -20,12 +20,14 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include "sonar.h"
+
+#include "model.h"
 #include "blob/digit.h"
 
 int main(void)
 {
-    printf("Predicted digit: %" PRIi32 "\n", sonar_predict((const float *)digit, digit_len >> 2));
+    printf("Predicted digit: %" PRIi32 "\n",
+           model_predict((const float *)digit, digit_len >> 2));
 
     return 0;
 }

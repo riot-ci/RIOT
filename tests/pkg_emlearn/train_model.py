@@ -12,10 +12,9 @@ Xtrain, Xtest, ytrain, ytest = train_test_split(digits.data, digits.target, rand
 
 print('Loading digits dataset. 8x8=64 features')
 
-# 0.95+ with n_estimators=20, max_depth=20
-# 0.90+ with n_estimators=10, max_depth=10
-trees = 20
-max_depth = 20
+# 0.95+ with n_estimators=10, max_depth=10
+trees = 10
+max_depth = 10
 print('Training {} trees with max_depth {}'.format(trees, max_depth))
 model = RandomForestClassifier(n_estimators=trees, max_depth=max_depth, random_state=rnd)
 model.fit(Xtrain, ytrain)
