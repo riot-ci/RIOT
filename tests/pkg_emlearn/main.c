@@ -22,6 +22,9 @@
 #include <inttypes.h>
 
 #include "model.h"
+
+/* the digit array included must be 4-byte aligned */
+__attribute__((__aligned__(4)))
 #include "blob/digit.h"
 
 int main(void)
