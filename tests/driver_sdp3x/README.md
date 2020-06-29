@@ -9,7 +9,7 @@ of following values first in continuous mode and then triggered mode every secon
 * Differential pressure
 
 The user can specify the number of iterations by setting the variable `TEST_ITERATIONS`
-from commandline as follows:
+(default value is 10) from commandline as follows:
 ```
 make BOARD=... TEST_ITERATIONS=... -C tests/driver_sdp3x
 ```

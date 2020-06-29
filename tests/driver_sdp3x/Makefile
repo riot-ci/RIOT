@@ -9,6 +9,7 @@ USEMODULE += printf_float
 USEMODULE += periph_gpio_irq
 USEMODULE += checksum
 
+TEST_ITERATIONS ?= 10
 # export iterations for continuous measurements
 CFLAGS += -DTEST_ITERATIONS=$(TEST_ITERATIONS)
 
