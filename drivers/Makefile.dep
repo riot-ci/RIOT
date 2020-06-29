@@ -84,6 +84,15 @@ ifneq (,$(filter mtd_%,$(USEMODULE)))
   USEMODULE += mtd
 endif
 
+# nrfmin is a concrete module but comes from cpu/nrf5x_common. Due to limitations
+# in the dependency resolution mechanism it's not possible to move its
+# dependency resolution at cpu level.
+ifneq (,$(filter nrfmin,$(USEMODULE)))
+  FEATURES_REQUIRED += radio_nrfmin
+  FEATURES_REQUIRED += periph_cpuid
+  USEMODULE += netif
+endif
+
 ifneq (,$(filter qmc5883l_%,$(USEMODULE)))
   USEMODULE += qmc5883l
 endif
