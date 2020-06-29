@@ -437,16 +437,16 @@ static void _sdp3x_irq_callback(void *arg)
  */
 static bool _check_product_number(uint8_t *readData)
 {
-    if (readData[0] != 0x03) {
+    if (readData[0] != SDP31_PRODUCT_NO_BYTE_0) {
         return false;
     }
-    if (readData[1] != 0x01) {
+    if (readData[1] != SDP31_PRODUCT_NO_BYTE_1) {
         return false;
     }
     if ((readData[3] != SDP3X_MODEL_31) || (readData[3] != SDP3X_MODEL_32)) {
         return false;
     }
-    if (readData[4] != 0x01) {
+    if (readData[4] != SDP31_PRODUCT_NO_BYTE_3) {
         return false;
     }
 

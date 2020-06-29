@@ -48,7 +48,6 @@ extern "C" {
 
 #define SDP31_PRODUCT_NO_BYTE_0       0x03
 #define SDP31_PRODUCT_NO_BYTE_1       0x01
-#define SDP31_PRODUCT_NO_BYTE_2       0x01
 #define SDP31_PRODUCT_NO_BYTE_3       0x01
 /** @} */
 
