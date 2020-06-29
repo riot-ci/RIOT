@@ -133,7 +133,7 @@ to be specified for every node,  `IOTLAB_NODE=m3-%.saclay.iot-lab.info`
 
 2. flash the root node
 
-        $ IOTLAB_NODE=${ROOT_NODE_IOTLAB} USEMODULE=openwsn_serial \
+        $ IOTLAB_NODE=${ROOT_IOTLAB_NODE} USEMODULE=openwsn_serial \
           BOARD=iotlab-m3 make -C tests/pkg_openwsn flash
 
 3. open a shell to the leaf nodes
