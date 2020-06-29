@@ -28,11 +28,7 @@ ifneq (,$(filter bme680_%,$(USEMODULE)))
   USEMODULE += bme680
 endif
 
-ifneq (,$(filter bm%280_spi,$(USEMODULE)))
-  USEMODULE += bmx280
-endif
-
-ifneq (,$(filter bm%280_i2c,$(USEMODULE)))
+ifneq (,$(filter bm%280_%,$(USEMODULE)))
   USEMODULE += bmx280
 endif
 
@@ -40,11 +36,11 @@ ifneq (,$(filter cc110%,$(USEMODULE)))
   USEMODULE += cc110x
 endif
 
-ifneq (,$(filter ccs811_full,$(USEMODULE)))
+ifneq (,$(filter ccs811_%,$(USEMODULE)))
   USEMODULE += ccs811
 endif
 
-ifneq (,$(filter hmc5883l_int,$(USEMODULE)))
+ifneq (,$(filter hmc5883l_%,$(USEMODULE)))
   USEMODULE += hmc5883l
 endif
 
@@ -52,11 +48,11 @@ ifneq (,$(filter ina2%,$(USEMODULE)))
   USEMODULE += ina2xx
 endif
 
-ifneq (,$(filter ina3221_alerts,$(USEMODULE)))
+ifneq (,$(filter ina3221_%,$(USEMODULE)))
   USEMODULE += ina3221
 endif
 
-ifneq (,$(filter itg320x_int,$(USEMODULE)))
+ifneq (,$(filter itg320x_%,$(USEMODULE)))
   USEMODULE += itg320x
 endif
 
@@ -68,7 +64,7 @@ ifneq (,$(filter lps331ap lps2%hb,$(USEMODULE)))
   USEMODULE += lpsxxx
 endif
 
-ifneq (,$(filter ltc4150_bidirectional,$(USEMODULE)))
+ifneq (,$(filter ltc4150_%,$(USEMODULE)))
   USEMODULE += ltc4150
 endif
 
@@ -88,7 +84,7 @@ ifneq (,$(filter mtd_%,$(USEMODULE)))
   USEMODULE += mtd
 endif
 
-ifneq (,$(filter qmc5883l_int,$(USEMODULE)))
+ifneq (,$(filter qmc5883l_%,$(USEMODULE)))
   USEMODULE += qmc5883l
 endif
 
@@ -108,7 +104,7 @@ ifneq (,$(filter si70%,$(USEMODULE)))
   USEMODULE += si70xx
 endif
 
-ifneq (,$(filter slipdev_stdio,$(USEMODULE)))
+ifneq (,$(filter slipdev_%,$(USEMODULE)))
   USEMODULE += slipdev
 endif
 
