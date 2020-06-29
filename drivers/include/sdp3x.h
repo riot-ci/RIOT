@@ -26,6 +26,7 @@
 #include "xtimer.h"
 #include "mutex.h"
 #include "periph/i2c.h"
+#include "periph/gpio.h"
 
 #ifdef __cplusplus
 extern "C" {

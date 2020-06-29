@@ -146,7 +146,8 @@ int8_t sdp3x_read_single_measurement(sdp3x_t *dev, uint8_t flags,
         return 0;
     }
     else {
-        result->differential_pressure = _SDP3x_convert_to_pascal(data[0], data[2]);
+        result->differential_pressure = _SDP3x_convert_to_pascal(data[0],
+                                                                 data[2]);
         result->temperature = _SDP3x_convert_to_celsius(data[1]);
     }
     return 1;
@@ -195,7 +196,8 @@ int8_t sdp3x_read_continuous(sdp3x_measurement_t *result, sdp3x_t *dev)
         DEBUG("[SDP3x] Error reading date\n");
     }
     else {
-        result->differential_pressure = _SDP3x_convert_to_pascal(data[0], data[2]);
+        result->differential_pressure = _SDP3x_convert_to_pascal(data[0],
+                                                                 data[2]);
         result->temperature = _SDP3x_convert_to_celsius(data[1]);
     }
     return ret;
@@ -418,7 +420,8 @@ static int8_t _checkCRC(uint16_t value, uint8_t test)
 
 /**
  *      Callback function to handle trigger on irq
- *      @param  arguments passed when interrupt is raised (in this case sdp3x dev)
+ *      @param  arguments passed when interrupt is raised 
+ *              (in this case sdp3x dev)
  */
 static void _sdp3x_irq_callback(void *arg)
 {
