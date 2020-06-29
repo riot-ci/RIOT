@@ -487,10 +487,10 @@ static inline uint16_t byteorder_bebuftohs(const uint8_t *buf)
 
 static inline uint32_t byteorder_bebuftohl(const uint8_t *buf)
 {
-    return (uint32_t)((buf[0] << 24) |
-                      (buf[1] << 16) |
-                      (buf[2] << 8) |
-                      (buf[3] << 0));
+    return (uint32_t)((buf[0] << 24)
+                    | (buf[1] << 16)
+                    | (buf[2] << 8)
+                    | (buf[3] << 0));
 }
 
 static inline void byteorder_htobebufs(uint8_t *buf, uint16_t val)
