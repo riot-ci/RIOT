@@ -93,9 +93,15 @@ int TimerLeftMS(Timer *timer);
  * @brief  Network struct within mqtt paho
  */
 typedef struct Network {
-    sock_tcp_t sock;                                                    /**< socket number */
-    int (*mqttread) (struct Network*, unsigned char*, int, int);        /**< read internal function */
-    int (*mqttwrite) (struct Network*, unsigned char*, int, int);       /**< write internal function */
+    sock_tcp_t sock;    /**< socket number */
+    /**
+     * @brief read internal function
+     */
+    int (*mqttread) (struct Network*, unsigned char*, int, int);
+    /**
+     * @brief write internal function
+     */
+    int (*mqttwrite) (struct Network*, unsigned char*, int, int);
 } Network;
 
 /**
