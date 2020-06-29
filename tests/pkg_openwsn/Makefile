@@ -25,13 +25,20 @@ USEMODULE += openwsn_leds
 USEMODULE += openwsn_debugpins
 
 ifneq (,$(filter openwsn_serial,$(USEMODULE)))
-# OpenWSN serial module can't handle data at more than 115200 bauds/s
-OPENSERIAL_BAUD ?= 115200
-CFLAGS += -DOPENWSN_UART_BAUDRATE=$(OPENSERIAL_BAUD)
+  # OpenWSN serial module can't handle data at more than 115200 bauds/s,
+  # depending on the platform this might be even lower (e.g. 57600 bauds
+  # for iotlab-m3, 19200 for samr21-xpro).
+  # NOTE: baudrate can'y be changed when testing over IotLab.
+  OPENSERIAL_BAUD ?=
+  ifneq (,$(OPENSERIAL_BAUD))
+    CFLAGS += -DOPENWSN_UART_BAUDRATE=$(OPENSERIAL_BAUD)
+  endif
 # Uncomment to use STDIO_UART_DEV as the uart for OpenWSN openserial
 # USEMODULE += stdio_null
   ifneq (,$(filter iotlab-m3 iotlab-a8-m3,$(BOARD)))
     USEMODULE += stdio_null
+  endif
+  ifneq (,$(filter stdio_null,$(USEMODULE)))
     BAUD ?= $(OPENSERIAL_BAUD)
   endif
 endif
