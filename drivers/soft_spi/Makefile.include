@@ -1,0 +1,1 @@
+USEMODULE_INCLUDES += $(RIOTBASE)/drivers/soft_spi/include

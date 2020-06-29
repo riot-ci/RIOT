@@ -1,0 +1,1 @@
+USEMODULE_INCLUDES += $(RIOTBASE)/drivers/dcf77/include

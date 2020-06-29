@@ -1,0 +1,1 @@
+USEMODULE_INCLUDES += $(RIOTBASE)/drivers/atwinc15x0/include

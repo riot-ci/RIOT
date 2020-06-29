@@ -1,0 +1,1 @@
+USEMODULE_INCLUDES += $(RIOTBASE)/drivers/rn2xx3/include
