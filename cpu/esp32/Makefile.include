@@ -60,18 +60,14 @@ LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp32.rom.nanofmt.ld
 LINKFLAGS += -nostdlib -lgcc -Wl,-gc-sections
 
 # Baselibs needed when using esp_wifi_any pseudomodule
-_ESP_WIFI_ANY_BASELIBS = -lcore -lrtc -lnet80211 -lpp -lcoexist -lwps -lwpa -lwpa2
-_ESP_WIFI_ANY_BASELIBS += -lphy -lstdc++
-
-# Baselibs needed when using esp_now module
-_ESP_NOW_BASELIBS = -lespnow -lmesh
-
 ifneq (,$(filter esp_wifi_any,$(USEMODULE)))
-  BASELIBS += $(_ESP_WIFI_ANY_BASELIBS)
+  BASELIBS += -lcore -lrtc -lnet80211 -lpp -lcoexist -lwps -lwpa -lwpa2
+  BASELIBS += -lphy -lstdc++
 endif
 
+# Baselibs needed when using esp_now module
 ifneq (,$(filter esp_now,$(USEMODULE)))
-  BASELIBS += $(_ESP_NOW_BASELIBS)
+  BASELIBS += -lespnow -lmesh
 endif
 
 ifneq (,$(filter cpp,$(FEATURES_USED)))
