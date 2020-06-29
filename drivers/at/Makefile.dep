@@ -1,0 +1,4 @@
+FEATURES_REQUIRED += periph_uart
+USEMODULE += fmt
+USEMODULE += isrpipe
+USEMODULE += isrpipe_read_timeout
