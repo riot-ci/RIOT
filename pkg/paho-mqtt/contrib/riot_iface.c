@@ -15,20 +15,17 @@
 #include <errno.h>
 
 #ifdef MODULE_IPV6_ADDR
-#include <net/ipv6/addr.h>
+#include "net/ipv6/addr.h"
 #endif
-
 #ifdef MODULE_IPV4_ADDR
-#include <net/ipv4/addr.h>
+#include "net/ipv4/addr.h"
 #endif
-#include <net/af.h>
-#include <net/sock.h>
-#include <net/sock/tcp.h>
-#include <mqtt.h>
+#include "net/sock/tcp.h"
+#include "mqtt.h"
 #include "MQTTClient.h"
-#include <xtimer.h>
-#include <tsrb.h>
-#include <log.h>
+#include "xtimer.h"
+#include "tsrb.h"
+#include "log.h"
 
 #define ENABLE_DEBUG                        (0)
 #include "debug.h"
