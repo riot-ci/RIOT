@@ -1,4 +1,4 @@
-  USEMODULE += xtimer
+USEMODULE += xtimer
 
 ifneq (,$(filter mhz19_pwm,$(USEMODULE)))
   FEATURES_REQUIRED += periph_gpio
