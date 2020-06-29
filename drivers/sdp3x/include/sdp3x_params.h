@@ -63,7 +63,7 @@ extern "C" {
 #define SDP3X_PARAM_I2C_ADDR        SDP3X_ADDR1
 #endif
 #ifndef SDP3X_PARAM_IRQ_PIN
-#define SDP3X_PARAM_IRQ_PIN         (GPIO_PIN(PORT_A, 8))
+#define SDP3X_PARAM_IRQ_PIN         (GPIO_PIN(0, 2))
 #endif
 
 #ifndef SDP3X_PARAMS
