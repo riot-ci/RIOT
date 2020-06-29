@@ -66,9 +66,8 @@ int main(void)
      */
     while (i < (uint32_t)TEST_ITERATIONS) {
         printf(
-            "Continuous values for temp: %.02f pressure: %.02f \n",
-            (double)result.temperature/100.0,
-             (double)result.differential_pressure/100.0);
+            "Continuous values for temp: %.02f°C pressure: %.02fPa \n",
+            result.temperature/100.f, result.differential_pressure/100.f);
         xtimer_sleep(1);
         i++;
     }
@@ -84,8 +83,8 @@ int main(void)
         sdp3x_read_single_measurement(&sdp3x_dev, SDP3X_FLAG_DIFF_PRESS,
                                       &result);
         printf(
-            "Triggered values for temp: %.02f pressure: %.02f \n",
-            result.temperature/100.0, result.differential_pressure/100.0);
+            "Triggered values for temp: %.02f°C pressure: %.02fPa \n",
+            result.temperature/100.f, result.differential_pressure/100.f);
         xtimer_sleep(1);
         i++;
     }
