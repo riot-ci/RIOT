@@ -25,7 +25,8 @@
 
 static int read_temperature(const void *dev, phydat_t *res)
 {
-    int32_t temp = sdp3x_read_single_temperature((sdp3x_t *)dev, 2);
+    int32_t temp = sdp3x_read_single_temperature((sdp3x_t *)dev,
+                                                SDP3X_FLAG_DIFF_PRESS);
 
     /* Fit 32 bit data into 16 bit fields of phydat_t */
     phydat_fit(res, &temp, 1);
@@ -37,7 +38,7 @@ static int read_temperature(const void *dev, phydat_t *res)
 static int read_differential_pressure(const void *dev, phydat_t *res)
 {
     int32_t pres = sdp3x_read_single_differential_pressure((sdp3x_t *)dev,
-                                                          2);
+                                                        SDP3X_FLAG_DIFF_PRESS);
 
     /* Fit 32 bit data into 16 bit fields of phydat_t */
     phydat_fit(res, &pres, 1);

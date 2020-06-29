@@ -24,6 +24,7 @@
 #include "board.h"
 #include "sdp3x.h"
 #include "saul_reg.h"
+#include "periph/gpio.h"
 
 #ifdef __cplusplus
 extern "C" {
