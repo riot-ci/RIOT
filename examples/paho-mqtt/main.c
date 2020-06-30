@@ -33,11 +33,11 @@
 #define COMMAND_TIMEOUT_MS              4000
 
 #ifndef DEFAULT_MQTT_CLIENT_ID
-#define DEFAULT_MQTT_CLIENT_ID          "riot"
+#define DEFAULT_MQTT_CLIENT_ID          ""
 #endif
 
 #ifndef DEFAULT_MQTT_USER
-#define DEFAULT_MQTT_USER               "riot"
+#define DEFAULT_MQTT_USER               ""
 #endif
 
 #ifndef DEFAULT_MQTT_PWD
