@@ -101,9 +101,6 @@ typedef struct {
 
 typedef struct {
     socket_sock_t sock;
-#if IS_USED(MODULE_SOCK_ASYNC)
-    socket_t *socket;
-#endif
 } socket_sock_pool_t;
 
 static socket_t _socket_pool[_ACTUAL_SOCKET_POOL_SIZE];
@@ -370,10 +367,14 @@ static const vfs_file_ops_t socket_ops = {
 };
 
 #if IS_USED(MODULE_SOCK_ASYNC)
-static void _async_cb(socket_sock_pool_t *sock, sock_async_flags_t type)
+static void _async_cb(void *sock, sock_async_flags_t type,
+                      void *arg)
 {
+    socket_t *socket = arg;
+
+    (void)sock;
     if (type & SOCK_ASYNC_MSG_RECV) {
-        atomic_fetch_add(&sock->socket->available, 1);
+        atomic_fetch_add(&socket->available, 1);
 #if IS_USED(MODULE_POSIX_SELECT)
         thread_flags_set(sock->socket->selecting_thread,
                          POSIX_SELECT_THREAD_FLAG);
@@ -381,10 +382,10 @@ static void _async_cb(socket_sock_pool_t *sock, sock_async_flags_t type)
     }
 }
 
-static void _sock_set_cb(socket_sock_t *sock, int type, bool queue)
+static void _sock_set_cb(socket_t *socket)
 {
     union {
-        void (*sock_pool)(socket_sock_pool_t *, sock_async_flags_t);
+        void (*sock_pool)(void *, sock_async_flags_t, void *);
 #ifdef MODULE_SOCK_IP
         sock_ip_cb_t ip;
 #endif
@@ -397,31 +398,31 @@ static void _sock_set_cb(socket_sock_t *sock, int type, bool queue)
 #endif
     } callback = { .sock_pool = _async_cb };
 
-    switch (type) {
+    switch (socket->type) {
 #ifdef MODULE_SOCK_IP
         case SOCK_RAW:
-            sock_ip_set_cb(&sock->ip, callback.ip);
+            sock_ip_set_cb(&socket->sock.ip, callback.ip, socket);
             break;
 #endif
 #ifdef MODULE_SOCK_TCP
         case SOCK_STREAM:
-            if (queue) {
-                sock_tcp_queue_set_cb(&sock->tcp.queue, callback.tcp_queue);
+            /* is a TCP client socket */
+            if (socket->queue_array == NULL) {
+                sock_tcp_set_cb(&socket->sock.tcp.sock, callback.tcp, socket);
             }
+            /* is a TCP listening socket */
             else {
-                sock_tcp_set_cb(&sock->tcp.sock, callback.tcp);
+                sock_tcp_queue_set_cb(&socket->sock.tcp.queue,
+                                      callback.tcp_queue, socket);
             }
             break;
 #endif
 #ifdef MODULE_SOCK_UDP
         case SOCK_DGRAM:
-            sock_udp_set_cb(&sock->udp, callback.udp);
+            sock_udp_set_cb(&socket->sock->udp, callback.udp, socket);
             break;
 #endif
         default:
-            (void)sock;
-            (void)queue;
-            (void)callback;
             break;
     }
 }
@@ -562,8 +563,7 @@ int accept(int socket, struct sockaddr *restrict address,
                 new_s->queue_array_len = 0;
                 new_s->sock = (socket_sock_t *)sock;
 #if IS_USED(MODULE_SOCK_ASYNC)
-                ((socket_sock_pool_t *)sock)->socket = new_s;
-                _sock_set_cb(sock, s->type, false);
+                _sock_set_cb(new_s);
 #endif
                 memset(&s->local, 0, sizeof(sock_tcp_ep_t));
             }
@@ -699,8 +699,7 @@ static int _bind_connect(socket_t *s, const struct sockaddr *address,
     }
     s->sock = sock;
 #if IS_USED(MODULE_SOCK_ASYNC)
-    ((socket_sock_pool_t *)sock)->socket = s;
-    _sock_set_cb(sock, s->type, false);
+    _sock_set_cb(s);
 #endif
 
     return 0;
@@ -903,8 +902,7 @@ int listen(int socket, int backlog)
     if (res == 0) {
         s->sock = sock;
 #if IS_USED(MODULE_SOCK_ASYNC)
-        ((socket_sock_pool_t *)sock)->socket = s;
-        _sock_set_cb(sock, s->type, true);
+        _sock_set_cb(s);
 #endif
     }
     else {
