@@ -214,10 +214,10 @@ The automatic test replicates 11-lorawan release specs tests:
 - [11-lorawan](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md)
   - [Task #02 - OTAA join procedure](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-02---otaa-join-procedure)
   - [Task #03 - ABP join procedure](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-03---abp-join-procedure)
-  - [Task #04 - LoRaWAN device parameters persistence](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-03---lorawan-device-parameters-persistence)
+  - [Task #04 - LoRaWAN device parameters persistence](https://github.com/RIOT-OS/Release-Specs/blob/master/11-lorawan/11-lorawan.md#task-04---lorawan-device-parameters-persistence)
 
 It is recommended to test using iotlab-nodes. The default configuration is already
-set on tha application Makefile.
+set on the application Makefile.
 
 ### Requirements
 
@@ -234,13 +234,17 @@ and ABP.
 test.
 
 - iotlab uses TTN lorawan gateways, to run the test you will need to create an
-[account](https://account.thethingsnetwork.org/) add an [application](https://www.thethingsnetwork.org/docs/applications/add.html) and [register](https://www.thethingsnetwork.org/docs/devices/registration.html) a device. For this
-test you need to take note of the Device EUI, Application EUI & Application Key
-for that device.
+[account](https://account.thethingsnetwork.org/), add an [application](https://www.thethingsnetwork.org/docs/applications/add.html)
+and [register](https://www.thethingsnetwork.org/docs/devices/registration.html)
+a device. Two devices must be registered, one configured for OTA and another
+for ABP. For this test you need to take note of the Device EUI, Application EUI
+& Application Key of the device registered for OTA, as well as the Device EUI,
+Device Address, Network and Application session keys of the device registered
+for ABP. The test assumes that both devices have the same Application EUI.
 
 ### Usage
 
-1. flash device, set appropriate keys and test
+1. flash device with appropriate keys and test
 
     $ DEVEUI_OTA=<...> DEVEUI_ABP=<...> APPEUI=<...> APPKEY=<...> DEVADDR=<...> NWKSKEY=<...> APPSKEY=<...> RX2_DR=<...> make BOARD=b-l072z-lrwan1 -C tests/pkg_semtech-loramac test
 
@@ -250,7 +254,7 @@ for that device.
 
     $ make -C tests/pkg_semtech-loramac iotlab-exp
 
-2. flash device with set appropriate keys and test
+2. flash device with the appropriate keys and test
 
     $ DEVEUI=<...> APPEUI=<...> APPKEY=<...> DEVADDR=<...> NWKSKEY=<...> APPSKEY=<...> RX2_DR=<...> IOTLAB_NODE=auto-ssh make -C tests/pkg_semtech-loramac flash test
 
