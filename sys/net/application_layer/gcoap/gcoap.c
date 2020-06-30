@@ -56,10 +56,9 @@ static int _find_obs_memo(gcoap_observe_memo_t **memo, sock_udp_ep_t *remote,
 static void _find_obs_memo_resource(gcoap_observe_memo_t **memo,
                                    const coap_resource_t *resource);
 
-static int _request_matcher_default(const coap_pkt_t *pdu,
-                                    const coap_resource_t *resource,
-                                    coap_method_flags_t method_flag,
-                                    uint8_t *uri);
+static int _request_matcher_default(gcoap_listener_t *listener,
+                                    const coap_resource_t **resource,
+                                    const coap_pkt_t *pdu);
 
 /* Internal variables */
 const coap_resource_t _default_resources[] = {
@@ -378,29 +377,43 @@ static size_t _handle_req(coap_pkt_t *pdu, uint8_t *buf, size_t len,
     return pdu_len;
 }
 
-static int _request_matcher_default(const coap_pkt_t *pdu,
-                                    const coap_resource_t *resource,
-                                    coap_method_flags_t method_flag,
-                                    uint8_t *uri)
+static int _request_matcher_default(gcoap_listener_t *listener,
+                                    const coap_resource_t **resource,
+                                    const coap_pkt_t *pdu)
 {
-    (void) pdu;
+    uint8_t uri[CONFIG_NANOCOAP_URI_MAX];
 
-    int res = coap_match_path(resource, uri);
-
-    if (res > 0) {
-        return GCOAP_RESOURCE_MISMATCH;
+    if (coap_get_uri_path(pdu, uri) <= 0) {
+        return GCOAP_RESOURCE_NO_PATH;
     }
-    else if (res < 0) {
+
+    coap_method_flags_t method_flag = coap_method2flag(coap_get_code_detail(
+                                                           (coap_pkt_t *)pdu));
+
+    for (size_t i = 0; i < listener->resources_len; i++) {
+        *resource = &listener->resources[i];
+
+        int res = coap_match_path(*resource, uri);
+
+        /* URI mismatch */
+        if (res > 0) {
+            continue;
+        }
         /* resources expected in alphabetical order */
-        return GCOAP_RESOURCE_ERROR;
+        else if (res < 0) {
+            return GCOAP_RESOURCE_ERROR;
+        }
+
+        /* potential match, check for method */
+        if (! ((*resource)->methods & method_flag)) {
+            return GCOAP_RESOURCE_WRONG_METHOD;
+        }
+        else {
+            return GCOAP_RESOURCE_FOUND;
+        }
     }
 
-    /* potential match, check for method */
-    if (! (resource->methods & method_flag)) {
-        return GCOAP_RESOURCE_WRONG_METHOD;
-    }
-
-    return GCOAP_RESOURCE_FOUND;
+    return GCOAP_RESOURCE_MISMATCH;
 }
 
 /*
@@ -417,43 +430,30 @@ static int _find_resource(coap_pkt_t *pdu, const coap_resource_t **resource_ptr,
                           gcoap_listener_t **listener_ptr)
 {
     int ret = GCOAP_RESOURCE_NO_PATH;
-    coap_method_flags_t method_flag = coap_method2flag(coap_get_code_detail(pdu));
 
     /* Find path for CoAP msg among listener resources and execute callback. */
     gcoap_listener_t *listener = _coap_state.listeners;
 
-    uint8_t uri[CONFIG_NANOCOAP_URI_MAX];
-    if (coap_get_uri_path(pdu, uri) <= 0) {
-        return GCOAP_RESOURCE_NO_PATH;
-    }
-
     while (listener) {
-        const coap_resource_t *resource;
-        for (size_t i = 0; i < listener->resources_len; i++) {
-            resource = &listener->resources[i];
+        const coap_resource_t *resource = NULL;
+        int res = listener->request_matcher(listener, &resource, pdu);
 
-            int res = listener->request_matcher(pdu, resource, method_flag, uri);
-
-            if (res == GCOAP_RESOURCE_MISMATCH) {
-                continue;
-            }
-            else if (res == GCOAP_RESOURCE_WRONG_METHOD) {
-                return res;
-            }
-            else if (res == GCOAP_RESOURCE_FOUND) {
-                *resource_ptr = resource;
-                *listener_ptr = listener;
-                return res;
-            }
-            else {
-                /* res is probably GCOAP_RESOURCE_ERROR. There is an
-                 * error with iterating the listener, break. If res is
-                 * not GCOAP_RESOURCE_ERROR, then something else is
-                 * odd, also break */
-                break;
-            }
+        /* check next resource on mismatch */
+        if (res == GCOAP_RESOURCE_MISMATCH) {
+            listener = listener->next;
+            continue;
         }
-        listener = listener->next;
+        /* found a suitable resource */
+        else if (res == GCOAP_RESOURCE_FOUND) {
+            *resource_ptr = resource;
+            *listener_ptr = listener;
+            return res;
+        }
+
+        /* res is probably GCOAP_RESOURCE_ERROR or
+         * GCOAP_RESOURCE_NO_PATH. There is an error with
+         * iterating the listener, break. */
+        break;
     }
 
     return ret;
