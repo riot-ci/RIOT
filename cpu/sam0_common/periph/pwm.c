@@ -27,6 +27,21 @@
 #include "periph/gpio.h"
 #include "periph/pwm.h"
 
+/* determine the number of CC channels */
+#if defined(TCC_SYNCBUSY_CC5)
+#define CC_NUMOF    6
+#elif defined(TCC_SYNCBUSY_CC4)
+#define CC_NUMOF    5
+#elif defined(TCC_SYNCBUSY_CC3)
+#define CC_NUMOF    4
+#elif defined(TCC_SYNCBUSY_CC2)
+#define CC_NUMOF    3
+#elif defined(TCC_SYNCBUSY_CC1)
+#define CC_NUMOF    2
+#elif defined(TCC_SYNCBUSY_CC0)
+#define CC_NUMOF    1
+#endif
+
 static inline Tcc *_tcc(pwm_t dev)
 {
     return pwm_config[dev].tim.dev;
@@ -189,6 +204,9 @@ void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
         _tcc(dev)->CCB[chan].reg = value;
         while (_tcc(dev)->SYNCBUSY.reg & (TCC_SYNCBUSY_CCB0 << chan)) {}
     } else
+#else
+    /* TODO: use OTMX for pin remapping */
+    chan %= CC_NUMOF;
 #endif
     {
         _tcc(dev)->CC[chan].reg = value;
