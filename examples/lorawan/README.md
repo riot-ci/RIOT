@@ -45,7 +45,7 @@ The automatic test replicates 11-lorawan release specs test:
   - [Task #01 - LoRaWAN example](https://github.com/RIOT-OS/Release-Specs/blob/ba236c4a1d1258ab63d21b0a860d0f5a5935bbd4/11-lorawan/11-lorawan.md#task-01---lorawan-example)
 
 It is recommended to test using iotlab-nodes. The default configuration is already
-set on tha application Makefile.
+set on the application Makefile.
 
 ### Requirements
 
