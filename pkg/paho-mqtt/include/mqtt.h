@@ -18,10 +18,10 @@
 #ifndef MQTT_H
 #define MQTT_H
 
-#include <mutex.h>
-#include <xtimer.h>
-#include <thread.h>
-#include <net/sock/tcp.h>
+#include "mutex.h"
+#include "xtimer.h"
+#include "thread.h"
+#include "net/sock/tcp.h"
 
 #ifdef __cplusplus
 extern "C" {
