@@ -376,8 +376,7 @@ static void _async_cb(void *sock, sock_async_flags_t type,
     if (type & SOCK_ASYNC_MSG_RECV) {
         atomic_fetch_add(&socket->available, 1);
 #if IS_USED(MODULE_POSIX_SELECT)
-        thread_flags_set(sock->socket->selecting_thread,
-                         POSIX_SELECT_THREAD_FLAG);
+        thread_flags_set(socket->selecting_thread, POSIX_SELECT_THREAD_FLAG);
 #endif
     }
 }
