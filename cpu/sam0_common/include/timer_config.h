@@ -211,6 +211,23 @@ extern "C" {
 #define MCLK_TCC3      (&MCLK->APBDMASK.reg)
 #define MCLK_TCC3_MASK (MCLK_APBDMASK_TCC3)
 #endif
+
+#ifdef MCLK_APBAMASK_TCC4
+#define MCLK_TCC4      (&MCLK->APBAMASK.reg)
+#define MCLK_TCC4_MASK (MCLK_APBAMASK_TCC4)
+#endif
+#ifdef MCLK_APBBMASK_TCC4
+#define MCLK_TCC4      (&MCLK->APBBMASK.reg)
+#define MCLK_TCC4_MASK (MCLK_APBBMASK_TCC4)
+#endif
+#ifdef MCLK_APBCMASK_TCC4
+#define MCLK_TCC4      (&MCLK->APBCMASK.reg)
+#define MCLK_TCC4_MASK (MCLK_APBCMASK_TCC4)
+#endif
+#ifdef MCLK_APBDMASK_TCC4
+#define MCLK_TCC4      (&MCLK->APBDMASK.reg)
+#define MCLK_TCC4_MASK (MCLK_APBDMASK_TCC4)
+#endif
 /** @} */
 
 #ifdef __cplusplus
