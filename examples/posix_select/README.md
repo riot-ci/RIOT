@@ -58,9 +58,9 @@ this:
 2019-12-17 16:47:01,796 # Hello World!
 ```
 
-Alternatively, with `native` or if your host also can connect to board, you can
-also use [`netcat`][netcat] to send multiple packets simultaneously. E.g. when
-the node is connected to the host via the interface `tapbr0`:
+Alternatively, with `native` or if your host also can connect to the board, you
+can also use [`netcat`][netcat] to send multiple packets simultaneously. E.g.
+when the node is connected to the host via the interface `tapbr0`:
 
 ```sh
 echo -ne "Hello World!" | nc -6u "fe80::78b9:ecff:fe96:8279%tapbr0" 4973 & \
