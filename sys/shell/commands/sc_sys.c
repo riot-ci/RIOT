@@ -22,6 +22,9 @@
 
 #include "periph/pm.h"
 
+#define USB_H_USER_IS_RIOT_INTERNAL
+#include "usb_board_reset.h"
+
 int _reboot_handler(int argc, char **argv)
 {
     (void) argc;
@@ -33,8 +36,6 @@ int _reboot_handler(int argc, char **argv)
 }
 
 #ifdef MODULE_USB_BOARD_RESET
-void usb_board_reset_in_bootloader(void);
-
 int _bootloader_handler(int argc, char **argv)
 {
     (void) argc;
