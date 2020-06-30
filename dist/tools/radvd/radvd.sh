@@ -10,6 +10,7 @@ stop_radvd() {
     if [ -n "${PID}" ]; then
         kill ${PID}
         rm ${PIDFILE}
+        echo "radvd stopped"
     fi
 }
 
@@ -17,6 +18,13 @@ start_radvd() {
     export TAP
     export PREFIX
     cat ${CURRENT_DIR}/radvd.conf | envsubst | radvd -C /dev/stdin -u ${SUDO_USER} -p ${PIDFILE}
+
+    if [ $? -ne 0 ]; then
+        echo "radvd failed to start on ${TAP} with prefix ${PREFIX}"
+        exit 1
+    else
+        echo "radvd running on ${TAP}"
+    fi
 }
 
 usage() {
