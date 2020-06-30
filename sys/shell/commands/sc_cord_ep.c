@@ -35,7 +35,7 @@ static int make_sock_ep(sock_udp_ep_t *ep, const char *addr)
     /* if netif not specified in addr */
     if ((ep->netif == SOCK_ADDR_ANY_NETIF) && (gnrc_netif_numof() == 1)) {
         /* assign the single interface found in gnrc_netif_numof() */
-        ep->netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+        ep->netif = (int16_t)gnrc_netif_iter(NULL)->pid;
     }
     ep->family  = AF_INET6;
     if (ep->port == 0) {
