@@ -16,6 +16,7 @@
  *          - Inclusion of `<signal.h>`; no POSIX signal handling implemented
  *            in RIOT yet
  *          - `pselect()` as it uses `sigset_t` from `<signal.h>`
+ *          - handling of the `writefds` and `errorfds` parameters of `select()`
  * @todo    Currently, only [sockets](@ref posix_sockets) are supported
  * @{
  *
@@ -144,10 +145,14 @@ static inline void FD_ZERO(fd_set *fdsetp)
  *                          ready to write. Indicates on output which file
  *                          descriptors are ready to write. May be NULL to check
  *                          no file descriptors.
+ *                          **As only sockets are supported for now, these will
+ *                          be ignored**
  * @param[in,out] errorfds  The set of file descriptors to be checked for being
  *                          error conditions pending. Indicates on output which
  *                          file descriptors have error conditions pending. May
  *                          be NULL to check no file descriptors.
+ *                          **As only sockets are supported for now, these will
+ *                          be ignored**
  * @param[in] timeout       Timeout for select to block until one or more of the
  *                          checked file descriptors is ready. Set timeout
  *                          to all-zero to return immediately without blocking.

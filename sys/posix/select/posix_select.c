@@ -10,7 +10,6 @@
  * @{
  * @file
  * @author  Martine S. Lenders <m.lenders@fu-berlin.de>
- * @todo
  */
 
 #include <errno.h>
@@ -54,7 +53,8 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
     bool wait = true;
 
     FD_ZERO(&ret_readfds);
-    /* TODO ignored for now since there is no point for them with sockets */
+    /* TODO ignored writefds and errorfds for now since there is no point for
+     * them with sockets */
     if (timeout != NULL) {
         uint64_t t = ((uint64_t)(timeout->tv_sec * US_PER_SEC) +
                       timeout->tv_usec);
