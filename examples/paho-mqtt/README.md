@@ -27,11 +27,11 @@ con  <broker ip addr> [port] [clientID] [user] [password] [keepalivetime]
   * *broker ip addr*: IPv6 or IPv4 broker address.
   * *port*: broker port. Default 1883
   * *client ID*: is the client id you set up on the broker. Default can be set
-     through DEFAULT_MQTT_CLIENTID in your makefile. Otherwise is "riot".
+     through DEFAULT_MQTT_CLIENTID in your makefile. Otherwise is an empty string.
   * *user*: the one set in the broker, check online tutorial to do it regarding chosen broker.
-     Default user can be set through DEFAULT_MQTT_USER in your makefile. Otherwise is "riot".
+     Default user can be set through DEFAULT_MQTT_USER in your makefile. Otherwise is an empty string.
   * *password*: the one set in the broker, check online tutorial to do it regarding chosen broker.
-     Default user can be set through DEFAULT_MQTT_PWD in your makefile. Otherwise is empty.
+     Default user can be set through DEFAULT_MQTT_PWD in your makefile. Otherwise is an empty string.
   * *keepalivetime*: keep alive in seconds for your client. Default 10 secs.
 
 - To subscribe to a topic, run `sub` with the topic name as parameter and a QoS
