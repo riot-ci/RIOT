@@ -121,8 +121,10 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
             goto end;
         }
         if (!wait) {
-            /* timeout was reached */
-            break;
+            /* timeout was reached, timeout was not set, so no need to
+             * go to end */
+            errno = -EINTR;
+            return -1;
         }
         thread_flags_t tflags = thread_flags_wait_any(POSIX_SELECT_THREAD_FLAG |
                                                       THREAD_FLAG_TIMEOUT);
@@ -136,6 +138,11 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
                     }
                 }
             }
+        }
+        else if (tflags & THREAD_FLAG_TIMEOUT) {
+            errno = -EINTR;
+            /* timeout fired, so no need to go to end */
+            return -1;
         }
     }
     *readfds = ret_readfds;
