@@ -23,6 +23,8 @@
 
 #define USB_H_USER_IS_RIOT_INTERNAL
 
+#include <stdint.h>
+#include "cpu.h"
 #include "usb_board_reset.h"
 
 #ifdef HMCRAMC0_ADDR
