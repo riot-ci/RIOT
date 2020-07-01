@@ -51,7 +51,16 @@
               <p class="navbar-text navbar-left"><span id="projectbrief">$projectbrief</span></p>
               <ul id="riot-navlist" class="nav navbar-nav"></ul>
               <!--BEGIN SEARCHENGINE-->
-              <form id="riot-searchform" class="navbar-form navbar-left navbar-right hidden-sm hidden-xs" onsubmit="return false">
+              <form id="riot-searchform" class="navbar-form navbar-left navbar-right hidden-sm hidden-xs"
+                    onsubmit="try{
+                        var rhtml=document.getElementById('MSearchResults').contentWindow.document.body.innerHTML;
+                        document.getElementById('MSearchResultsWindow').style.display='none';
+                        document.getElementById('top').append(document.getElementById('MSearchSelectWindow'));
+                        document.getElementById('top').append(document.getElementById('MSearchResultsWindow'));
+                        document.getElementById('doc-content').innerHTML=rhtml;
+                        }finally{
+                            return false;
+                    }">
                  <div class="form-group">
                    <div id="MSearchBox" class="MSearchBoxActive">
                      <div class="input-group">
