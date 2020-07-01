@@ -114,6 +114,8 @@ static int _restart_timewait_timer(gnrc_tcp_tcb_t *tcb)
  * @param[in]     state   State to transition in.
  *
  * @return   Zero on success.
+ * @return   -EADDRINUSE, if @p state == FSM_STATE_SYN_SENT and tcb->local_port
+ *           is already in use.
  */
 static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
 {
@@ -165,7 +167,7 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
             if (iter == NULL) {
                 /* Check if port number was specified */
                 if (tcb->local_port != PORT_UNSPEC) {
-                    /* Check if given port number is use: return error and release buffer */
+                    /* Check if given port number is use: return error */
                     if (_is_local_port_in_use(tcb->local_port)) {
                         mutex_unlock(&_list_tcb_lock);
                         return -EADDRINUSE;
