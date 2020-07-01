@@ -31,13 +31,20 @@ static sock_udp_ep_t remote;
 static char rdbuf[2 * CONFIG_NANOCOAP_URI_MAX] = {0};
 static unsigned rd_initialized = 0;
 
-static int _make_sock_ep(sock_udp_ep_t *ep, const char *addr) {
+static int make_sock_ep(sock_udp_ep_t *ep, const char *addr)
+{
+    ep->port = 0;
     if (sock_udp_str2ep(ep, addr) < 0) {
         return -1;
     }
-    ep->netif = SOCK_ADDR_ANY_NETIF;
+    /* if netif not specified in addr */
+    if ((ep->netif == SOCK_ADDR_ANY_NETIF) && (gnrc_netif_numof() == 1)) {
+        /* assign the single interface found in gnrc_netif_numof() */
+        ep->netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+    }
+    ep->family  = AF_INET6;
     if (ep->port == 0) {
-        ep->port = CONFIG_GCOAP_PORT;
+        ep->port = COAP_PORT;
     }
     return 0;
 }
@@ -94,7 +101,7 @@ int cord_lc_cli_cmd(int argc, char **argv) {
     }
 
     if (!rd_initialized) {
-        int ret = _make_sock_ep(&remote, argv[1]);
+        int ret = make_sock_ep(&remote, argv[1]);
         if (ret < 0) {
             printf("error: unable to parse address\n");
             return -1;
@@ -107,7 +114,7 @@ int cord_lc_cli_cmd(int argc, char **argv) {
         }
         rd_initialized = 1;
     }
-    
+
     /* parse filters */
     unsigned filter_start = raw_mode ? 4 : 3;
     size_t filter_count = argc - filter_start;
