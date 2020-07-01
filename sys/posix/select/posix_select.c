@@ -44,9 +44,34 @@ static inline void posix_socket_select(int fd)
 }
 #endif  /* IS_USED(MODULE_POSIX_SOCKETS) */
 
+static int _set_timeout(xtimer_t *timeout_timer, struct timeval *timeout,
+                        uint32_t offset, bool *wait)
+{
+    if (timeout != NULL) {
+        uint64_t t = ((uint64_t)(timeout->tv_sec * US_PER_SEC) +
+                      timeout->tv_usec);
+        /* check for potential underflow before subtracting offset */
+        if ((t == 0) || (offset > t)) {
+            *wait = false;
+            return 0;
+        }
+        t -= offset;
+        if (t > UINT32_MAX) {
+            errno = EINVAL;
+            /* don't have timer set yet so go to end */
+            return -1;
+        }
+        else {
+            xtimer_set_timeout_flag(timeout_timer, (uint32_t)t);
+        }
+    }
+    return 0;
+}
+
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
            struct timeval *timeout)
 {
+    uint32_t start_time = xtimer_now_usec();
     fd_set ret_readfds;
     xtimer_t timeout_timer;
     int fds_set = 0;
@@ -55,21 +80,6 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
     FD_ZERO(&ret_readfds);
     /* TODO ignored writefds and errorfds for now since there is no point for
      * them with sockets */
-    if (timeout != NULL) {
-        uint64_t t = ((uint64_t)(timeout->tv_sec * US_PER_SEC) +
-                      timeout->tv_usec);
-        if (t == 0) {
-            wait = false;
-        }
-        else if (t > UINT32_MAX) {
-            errno = EINVAL;
-            /* don't have timer set yet so go to end */
-            return -1;
-        }
-        else {
-            xtimer_set_timeout_flag(&timeout_timer, (uint32_t)t);
-        }
-    }
     if ((nfds >= FD_SETSIZE) || ((unsigned)nfds >= VFS_MAX_OPEN_FILES)) {
         errno = EINVAL;
         fds_set = -1;
@@ -104,7 +114,16 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
             goto end;
         }
     }
-    if (wait) {
+    while (wait) {
+        if (_set_timeout(&timeout_timer, timeout,
+                         xtimer_now_usec() - start_time, &wait) < 0) {
+            fds_set = -1;
+            goto end;
+        }
+        if (!wait) {
+            /* timeout was reached */
+            break;
+        }
         thread_flags_t tflags = thread_flags_wait_any(POSIX_SELECT_THREAD_FLAG |
                                                       THREAD_FLAG_TIMEOUT);
         if (tflags & POSIX_SELECT_THREAD_FLAG) {
@@ -113,6 +132,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds,
                     if (posix_socket_avail(i) > 0) {
                         FD_SET(i, &ret_readfds);
                         fds_set++;
+                        wait = false;
                     }
                 }
             }
