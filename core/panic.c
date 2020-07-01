@@ -36,6 +36,11 @@
 #include "ps.h"
 #endif
 
+/* If a device is flashed over USB bootloader, try to launch
+ * the bootloader again on crash so the user can re-flash it.
+ */
+#include "usb_board_reset.h"
+
 const char assert_crash_message[] = "FAILED ASSERTION.";
 
 /* flag preventing "recursive crash printing loop" */
@@ -81,7 +86,12 @@ NORETURN void core_panic(core_panic_t crash_code, const char *message)
     pm_reboot();
 #else
     /* DEVELHELP set => power off system */
-    pm_off();
+    /*               or start bootloader */
+    if (IS_USED(MODULE_USB_BOARD_RESET)) {
+        usb_board_reset_in_bootloader();
+    } else {
+        pm_off();
+    }
 #endif
 
     /* tell the compiler that we won't return from this function
