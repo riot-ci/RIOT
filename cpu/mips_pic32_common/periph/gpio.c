@@ -202,8 +202,12 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
             break;
         case GPIO_OD_PU:
             pu = 1;
+            output = 1;
+            break;
         case GPIO_OD:
             od = 1;
+            output = 1;
+            break;
         case GPIO_OUT:
             output = 1;
             break;
