@@ -19,6 +19,8 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
+
 #include "base64.h"
 #include "kernel_defines.h"
 
@@ -73,10 +75,11 @@ static char getsymbol(unsigned char code, bool urlsafe)
 }
 
 static int base64_encode_base(const void *data_in, size_t data_in_size,
-                              unsigned char *base64_out, size_t *base64_out_size,
+                              void *base64_out, size_t *base64_out_size,
                               bool urlsafe)
 {
     const unsigned char *in = data_in;
+    uint8_t *out = base64_out;
     size_t required_size = base64_estimate_encode_size(data_in_size);
 
     if (data_in == NULL) {
@@ -93,7 +96,7 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
         return BASE64_ERROR_BUFFER_OUT_SIZE;
     }
 
-    if (base64_out == NULL) {
+    if (out == NULL) {
         return BASE64_ERROR_BUFFER_OUT;
     }
 
@@ -120,18 +123,18 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
             nLst =  tmpval & ((1 << njump * 2) - 1);
         }
 
-        base64_out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
+        out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
     }
 
     /* The last character is not finished yet */
     njump++;
 
     nNum = nLst << (8 - 2 * njump);
-    base64_out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
+    out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
 
     /* if required we append '=' for the required dividability */
     while (iterate_base64_buffer % 4) {
-        base64_out[iterate_base64_buffer++] = '=';
+        out[iterate_base64_buffer++] = '=';
     }
 
     *base64_out_size = iterate_base64_buffer;
@@ -140,14 +143,14 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
 }
 
 int base64_encode(const void *data_in, size_t data_in_size,
-                  unsigned char *base64_out, size_t *base64_out_size)
+                  void *base64_out, size_t *base64_out_size)
 {
     return base64_encode_base(data_in, data_in_size, base64_out, base64_out_size, false);
 }
 
 #if IS_ACTIVE(MODULE_BASE64URL)
 int base64url_encode(const void *data_in, size_t data_in_size,
-                     unsigned char *base64_out, size_t *base64_out_size)
+                     void *base64_out, size_t *base64_out_size)
 {
     return base64_encode_base(data_in, data_in_size, base64_out, base64_out_size, true);
 }
@@ -156,7 +159,7 @@ int base64url_encode(const void *data_in, size_t data_in_size,
 /*
  *  returns the corresponding base64 code for the given ascii symbol
  */
-static int getcode(char symbol)
+static uint8_t getcode(char symbol)
 {
     if (symbol == '/') {
         return BASE64_SLASH;
@@ -200,13 +203,14 @@ static int getcode(char symbol)
     return BASE64_NOT_DEFINED;
 }
 
-int base64_decode(const unsigned char *base64_in, size_t base64_in_size,
+int base64_decode(const void *base64_in, size_t base64_in_size,
                   void *data_out, size_t *data_out_size)
 {
-    unsigned char *out = data_out;
+    uint8_t *out = data_out;
+    const uint8_t *in = base64_in;
     size_t required_size = base64_estimate_decode_size(base64_in_size);
 
-    if (base64_in == NULL) {
+    if (in == NULL) {
         return BASE64_ERROR_DATA_IN;
     }
 
@@ -230,13 +234,13 @@ int base64_decode(const unsigned char *base64_in, size_t base64_in_size,
 
     int iterate_data_buffer = 0;
     unsigned char nNum = 0;
-    int nLst = getcode(base64_in[0]) << 2;
+    int nLst = getcode(in[0]) << 2;
     int code = 0;
 
     int mask = 2;
 
     for (int i = 1; i < (int)(base64_in_size); i++) {
-        code = getcode(base64_in[i]);
+        code = getcode(in[i]);
 
         if (code == BASE64_NOT_DEFINED || code == BASE64_EQUALS) {
             continue;
