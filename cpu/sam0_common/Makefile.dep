@@ -3,7 +3,7 @@ ifneq (,$(filter periph_uart_nonblocking,$(USEMODULE)))
 endif
 
 ifneq (,$(filter periph_rtc periph_rtt,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_rtc_rtt
+  USEMODULE += periph_rtc_rtt
 endif
 
 # All SAM0 based CPUs provide PM
