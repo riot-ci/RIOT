@@ -169,21 +169,23 @@ int gpio_init(gpio_t pin, gpio_mode_t mode);
  * @brief   Initialize the given pin as general purpose output with a low level.
  *
  * @param[in] pin       pin to initialize
+ * @param[in] mode      mode of the pin, see @c gpio_mode_t
  *
  * @return              0 on success
  * @return              -1 on error
  */
-int gpio_init_low(gpio_t pin);
+int gpio_init_low(gpio_t pin, gpio_mode_t mode);
 
 /**
  * @brief   Initialize the given pin as general purpose output with a high level.
  *
  * @param[in] pin       pin to initialize
+ * @param[in] mode      mode of the pin, see @c gpio_mode_t
  *
  * @return              0 on success
  * @return              -1 on error
  */
-int gpio_init_high(gpio_t pin);
+int gpio_init_high(gpio_t pin, gpio_mode_t mode);
 
 #if defined(MODULE_PERIPH_GPIO_IRQ) || defined(DOXYGEN)
 /**

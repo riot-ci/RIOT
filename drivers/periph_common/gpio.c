@@ -17,20 +17,29 @@
  * @}
  */
 
+#include <assert.h>
 #include "periph/gpio.h"
 
 #ifndef GPIO_HAVE_INIT_LEVEL
 
-int gpio_init_low(gpio_t pin)
+int gpio_init_low(gpio_t pin, gpio_mode_t mode)
 {
+    assert(mode != GPIO_IN);
+    assert(mode != GPIO_IN_PD);
+    assert(mode != GPIO_IN_PU);
+
     gpio_clear(pin);
-    return gpio_init(pin, GPIO_OUT);
+    return gpio_init(pin, mode);
 }
 
-int gpio_init_high(gpio_t pin)
+int gpio_init_high(gpio_t pin, gpio_mode_t mode)
 {
+    assert(mode != GPIO_IN);
+    assert(mode != GPIO_IN_PD);
+    assert(mode != GPIO_IN_PU);
+
     gpio_set(pin);
-    return gpio_init(pin, GPIO_OUT);
+    return gpio_init(pin, mode);
 }
 
 #endif /* GPIO_HAVE_INIT_LEVEL */
