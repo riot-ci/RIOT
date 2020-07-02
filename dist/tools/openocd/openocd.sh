@@ -287,12 +287,12 @@ do_flash() {
     # flash device
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
-            -f '${OPENOCD_CONFIG}' \
-            ${OPENOCD_EXTRA_INIT} \
-            ${OPENOCD_EXTRA_RESET_INIT} \
             -c 'tcl_port 0' \
             -c 'telnet_port 0' \
             -c 'gdb_port 0' \
+            -f '${OPENOCD_CONFIG}' \
+            ${OPENOCD_EXTRA_INIT} \
+            ${OPENOCD_EXTRA_RESET_INIT} \
             -c 'init' \
             -c 'targets' \
             -c 'reset halt' \
@@ -325,11 +325,11 @@ do_debug() {
     # start OpenOCD as GDB server
     ${SETSID} sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
-            -f '${OPENOCD_CONFIG}' \
-            ${OPENOCD_EXTRA_INIT} \
             -c 'tcl_port ${TCL_PORT}' \
             -c 'telnet_port ${TELNET_PORT}' \
             -c 'gdb_port ${GDB_PORT}' \
+            -f '${OPENOCD_CONFIG}' \
+            ${OPENOCD_EXTRA_INIT} \
             -c 'init' \
             ${OPENOCD_DBG_EXTRA_CMD} \
             -c 'targets' \
@@ -353,11 +353,11 @@ do_debugserver() {
     # start OpenOCD as GDB server
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
-            -f '${OPENOCD_CONFIG}' \
-            ${OPENOCD_EXTRA_INIT} \
             -c 'tcl_port ${TCL_PORT}' \
             -c 'telnet_port ${TELNET_PORT}' \
             -c 'gdb_port ${GDB_PORT}' \
+            -f '${OPENOCD_CONFIG}' \
+            ${OPENOCD_EXTRA_INIT} \
             -c 'init' \
             ${OPENOCD_DBG_EXTRA_CMD} \
             -c 'targets' \
@@ -369,12 +369,12 @@ do_reset() {
     # start OpenOCD and invoke board reset
     sh -c "${OPENOCD} \
             ${OPENOCD_ADAPTER_INIT} \
-            -f '${OPENOCD_CONFIG}' \
-            ${OPENOCD_EXTRA_INIT} \
-            ${OPENOCD_EXTRA_RESET_INIT} \
             -c 'tcl_port 0' \
             -c 'telnet_port 0' \
             -c 'gdb_port 0' \
+            -f '${OPENOCD_CONFIG}' \
+            ${OPENOCD_EXTRA_INIT} \
+            ${OPENOCD_EXTRA_RESET_INIT} \
             -c 'init' \
             ${OPENOCD_CMD_RESET_RUN} \
             -c 'shutdown'"
