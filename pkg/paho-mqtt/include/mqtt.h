@@ -6,8 +6,19 @@
  * directory for more details.
  *
  */
+
 /**
- * @ingroup     pkg_paho-mqtt
+ * @defgroup pkg_paho-mqtt   MQTT paho framework
+ * @ingroup  pkg
+ * @brief    The Eclipse Paho project provides open-source client implementations of MQTT for embedded systems
+ * @see      https://github.com/eclipse/paho.mqtt.embedded-c
+ *
+ * The Eclipse Paho project provides open-source client
+ * implementations of MQTT.
+ */
+
+/**
+ * @addtogroup  pkg_paho-mqtt
  * @{
  *
  * @file
@@ -27,14 +38,23 @@
 extern "C" {
 #endif
 
+/**
+ * @brief  RIOT's mqtt paho thread priority
+ */
 #ifndef MQTT_THREAD_PRIORITY
 #define MQTT_THREAD_PRIORITY            (THREAD_PRIORITY_MAIN - 1)
 #endif
 
+/**
+ * @brief  RIOT's mqtt paho thread stack size
+ */
+
 #ifndef MQTT_THREAD_STACKSIZE
 #define MQTT_THREAD_STACKSIZE           (THREAD_STACKSIZE_DEFAULT)
 #endif
-
+/**
+ * @brief  MQTT thread YIELD polling time in msecs
+ */
 #ifndef MQTT_YIELD_POLLING_MS
 #define MQTT_YIELD_POLLING_MS           (30)
 #endif
