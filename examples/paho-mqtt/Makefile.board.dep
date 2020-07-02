@@ -1,6 +1,6 @@
 # Put board specific dependencies here
 
-ifneq (,$(filter arch_esp32,$(FEATURES_USED)))
+ifneq (,$(filter arch_esp,$(FEATURES_USED)))
   USEMODULE += esp_wifi
 endif
 
