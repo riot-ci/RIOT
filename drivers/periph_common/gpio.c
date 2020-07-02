@@ -27,8 +27,12 @@ int gpio_init_low(gpio_t pin, gpio_mode_t mode)
     assert(mode != GPIO_IN_PD);
     assert(mode != GPIO_IN_PU);
 
+    if (gpio_init(pin, mode)) {
+        return -1;
+    }
+
     gpio_clear(pin);
-    return gpio_init(pin, mode);
+    return 0;
 }
 
 __attribute__((weak))
@@ -38,6 +42,10 @@ int gpio_init_high(gpio_t pin, gpio_mode_t mode)
     assert(mode != GPIO_IN_PD);
     assert(mode != GPIO_IN_PU);
 
+    if (gpio_init(pin, mode)) {
+        return -1;
+    }
+
     gpio_set(pin);
-    return gpio_init(pin, mode);
+    return 0;
 }
