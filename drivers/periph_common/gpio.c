@@ -20,8 +20,7 @@
 #include <assert.h>
 #include "periph/gpio.h"
 
-#ifndef GPIO_HAVE_INIT_LEVEL
-
+__attribute__((weak))
 int gpio_init_low(gpio_t pin, gpio_mode_t mode)
 {
     assert(mode != GPIO_IN);
@@ -32,6 +31,7 @@ int gpio_init_low(gpio_t pin, gpio_mode_t mode)
     return gpio_init(pin, mode);
 }
 
+__attribute__((weak))
 int gpio_init_high(gpio_t pin, gpio_mode_t mode)
 {
     assert(mode != GPIO_IN);
@@ -41,7 +41,3 @@ int gpio_init_high(gpio_t pin, gpio_mode_t mode)
     gpio_set(pin);
     return gpio_init(pin, mode);
 }
-
-#else
-typedef int dont_be_pedantic;
-#endif /* GPIO_HAVE_INIT_LEVEL */
