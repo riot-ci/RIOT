@@ -37,7 +37,7 @@
 /*
  * returns the corresponding ascii symbol value for the given base64 code
  */
-static char getsymbol(unsigned char code, bool urlsafe)
+static char getsymbol(uint8_t code, bool urlsafe)
 {
     if (!IS_ACTIVE(MODULE_BASE64URL)) {
         urlsafe = false;
@@ -78,7 +78,7 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
                               void *base64_out, size_t *base64_out_size,
                               bool urlsafe)
 {
-    const unsigned char *in = data_in;
+    const uint8_t *in = data_in;
     uint8_t *out = base64_out;
     size_t required_size = base64_estimate_encode_size(data_in_size);
 
@@ -101,36 +101,36 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
     }
 
     int iterate_base64_buffer = 0;
-    unsigned char nNum = 0;
+    uint8_t n_num = 0;
     int nLst = 0;
     int njump = 0;
 
     for (int i = 0; i < (int)(data_in_size); ++i) {
-        unsigned char tmpval;
+        uint8_t tmpval;
         njump++;
         tmpval = *(in + i);
 
-        nNum = (tmpval >> (2 * njump));
+        n_num = (tmpval >> (2 * njump));
 
         if (njump == 4) {
-            nNum = nLst << (8 - 2 * njump);
+            n_num = nLst << (8 - 2 * njump);
             njump = 0;
             nLst = 0;
             --i;
         }
         else {
-            nNum += nLst << (8 - 2 * njump);
+            n_num += nLst << (8 - 2 * njump);
             nLst =  tmpval & ((1 << njump * 2) - 1);
         }
 
-        out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
+        out[iterate_base64_buffer++] = getsymbol(n_num, urlsafe);
     }
 
     /* The last character is not finished yet */
     njump++;
 
-    nNum = nLst << (8 - 2 * njump);
-    out[iterate_base64_buffer++] = getsymbol(nNum, urlsafe);
+    n_num = nLst << (8 - 2 * njump);
+    out[iterate_base64_buffer++] = getsymbol(n_num, urlsafe);
 
     /* if required we append '=' for the required dividability */
     while (iterate_base64_buffer % 4) {
@@ -233,7 +233,7 @@ int base64_decode(const void *base64_in, size_t base64_in_size,
     }
 
     int iterate_data_buffer = 0;
-    unsigned char nNum = 0;
+    uint8_t n_num = 0;
     int nLst = getcode(in[0]) << 2;
     int code = 0;
 
@@ -248,16 +248,16 @@ int base64_decode(const void *base64_in, size_t base64_in_size,
 
         int nm = (0xFF << (2 * mask));
 
-        nNum = nLst + ((code & (0xFF & nm)) >> (2 * mask));
+        n_num = nLst + ((code & (0xFF & nm)) >> (2 * mask));
         nLst = (code & (0xFF & ~nm)) << (8 - (2 * mask));
 
-        (mask != 3) ? out[iterate_data_buffer++] = nNum : nNum;
+        (mask != 3) ? out[iterate_data_buffer++] = n_num : n_num;
         (mask == 0) ? mask = 3 : mask--;
     }
 
     if (code == BASE64_EQUALS) {
         /* add the last character to the data_out buffer */
-        out[iterate_data_buffer] = nNum;
+        out[iterate_data_buffer] = n_num;
     }
 
     *data_out_size = iterate_data_buffer;
