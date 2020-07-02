@@ -17,10 +17,9 @@
  * @}
  */
 
-
 #include "periph/gpio.h"
 
-#ifndef GPIO_HAVE_INIT_LEVEL
+#if !defined(GPIO_HAVE_INIT_LEVEL) || defined(DOXYGEN)
 
 int gpio_init_low(gpio_t pin)
 {
