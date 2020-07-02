@@ -39,18 +39,18 @@ static void cb(void *arg)
 
 static int init_pin(int argc, char **argv, gpio_mode_t mode)
 {
-    int po, pi;
+    int port, pin;
 
     if (argc < 3) {
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
 
-    po = atoi(argv[1]);
-    pi = atoi(argv[2]);
+    port = atoi(argv[1]);
+    pin  = atoi(argv[2]);
 
-    if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
-        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+    if (gpio_init(GPIO_PIN(port, pin), mode)) {
+        printf("Error to initialize GPIO_PIN(%i, %02i)\n", port, pin);
         return 1;
     }
 
@@ -59,25 +59,25 @@ static int init_pin(int argc, char **argv, gpio_mode_t mode)
 
 static int init_pin_hl(int argc, char **argv, bool high)
 {
-    int po, pi, r;
+    int port, pin, res;
 
     if (argc < 3) {
         printf("usage: %s <port> <pin>\n", argv[0]);
         return 1;
     }
 
-    po = atoi(argv[1]);
-    pi = atoi(argv[2]);
+    port = atoi(argv[1]);
+    pin  = atoi(argv[2]);
 
     if (high) {
-        r = gpio_init_high(GPIO_PIN(po, pi));
+        res = gpio_init_high(GPIO_PIN(port, pin));
     }
     else {
-        r = gpio_init_low(GPIO_PIN(po, pi));
+        res = gpio_init_low(GPIO_PIN(port, pin));
     }
 
-    if (r < 0) {
-        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+    if (res) {
+        printf("Error to initialize GPIO_PIN(%i, %02i)\n", port, pin);
         return 1;
     }
 
