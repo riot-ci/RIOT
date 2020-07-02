@@ -50,8 +50,8 @@
             <div class="collapse navbar-collapse" id="navbar-collapse">
               <p class="navbar-text navbar-left"><span id="projectbrief">$projectbrief</span></p>
               <ul id="riot-navlist" class="nav navbar-nav"></ul>
-              <!--BEGIN SEARCHENGINE-->
-              <form id="riot-searchform" class="navbar-form navbar-left navbar-right hidden-sm hidden-xs"
+              <!--BEGIN SEARCHENGINE hidden-sm hidden-xs"-->
+              <form id="riot-searchform" class="navbar-form navbar-left navbar-right"
                     onsubmit="try{
                         var rhtml=document.getElementById('MSearchResults').contentWindow.document.body.innerHTML;
                         document.getElementById('MSearchResultsWindow').style.display='none';
@@ -67,7 +67,9 @@
                        <div class="input-group-addon">
                          <span id="MSearchSelect" class="glyphicon glyphicon-search" aria-hidden="true" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"></span>
                        </div>
-                       <input class="form-control" type="text" id="MSearchField" placeholder="Search" accesskey="S" onfocus="searchBox.OnSearchFieldFocus(true)" onblur="searchBox.OnSearchFieldFocus(false)" onkeyup="searchBox.OnSearchFieldChange(event)">
+                       <input class="form-control" type="text" id="MSearchField" placeholder="Search" accesskey="S" onfocus="searchBox.OnSearchFieldFocus(true)" onblur="searchBox.OnSearchFieldFocus(false)" onkeyup="searchBox.OnSearchFieldChange(event);
+                              r=document.getElementById('MSearchResultsWindow');
+                              if(parseInt(r.style.left)<0)r.style.left=0;">
                        <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()">
                          <span id="search-reset" class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                        </a>
