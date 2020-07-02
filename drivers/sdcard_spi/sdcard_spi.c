@@ -427,7 +427,7 @@ uint8_t sdcard_spi_send_cmd(sdcard_spi_t *card, uint8_t sd_cmd_idx, uint32_t arg
 
     do {
         DEBUG("sdcard_spi_send_cmd: CMD%02d (0x%08" PRIx32 ") (remaining retry time %"PRIu32" usec)\n", sd_cmd_idx, argument,
-              (retry_timeout > xtimer_now_usec()) ? (retry_timeout - xtimer_now_usec()) : 0UL);
+              (retry_timeout > xtimer_now_usec()) ? (retry_timeout - xtimer_now_usec()) : 0);
 
         if (!_wait_for_not_busy(card, SD_WAIT_FOR_NOT_BUSY_US)) {
             DEBUG("sdcard_spi_send_cmd: timeout while waiting for bus to be not busy!\n");
@@ -475,7 +475,7 @@ uint8_t sdcard_spi_send_acmd(sdcard_spi_t *card, uint8_t sd_cmd_idx, uint32_t ar
 
     do {
         DEBUG("sdcard_spi_send_acmd: CMD%02d (0x%08" PRIx32 ") (remaining retry time %"PRIu32" usec)\n", sd_cmd_idx, argument,
-              (retry_timeout > xtimer_now_usec()) ? (retry_timeout - xtimer_now_usec()) : 0UL);
+              (retry_timeout > xtimer_now_usec()) ? (retry_timeout - xtimer_now_usec()) : 0);
         r1_resu = sdcard_spi_send_cmd(card, SD_CMD_55, SD_CMD_NO_ARG, 0);
         if (R1_VALID(r1_resu) && !R1_ERROR(r1_resu)) {
             r1_resu = sdcard_spi_send_cmd(card, sd_cmd_idx, argument, 0);
