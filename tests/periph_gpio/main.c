@@ -70,10 +70,10 @@ static int init_pin_hl(int argc, char **argv, bool high)
     pin  = atoi(argv[2]);
 
     if (high) {
-        res = gpio_init_high(GPIO_PIN(port, pin));
+        res = gpio_init_high(GPIO_PIN(port, pin), GPIO_OUT);
     }
     else {
-        res = gpio_init_low(GPIO_PIN(port, pin));
+        res = gpio_init_low(GPIO_PIN(port, pin), GPIO_OUT);
     }
 
     if (res) {
