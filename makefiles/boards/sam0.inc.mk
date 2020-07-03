@@ -6,7 +6,7 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
 # The SERIAL setting is only available for backwards compatibility with older
 # settings. It's only checked when a target is given to the make command.
-ifneq (,$(filter-out all clean,$(MAKECMDGOALS)))
+ifneq (,$(filter-out all %clean,$(MAKECMDGOALS)))
   ifneq (,$(SERIAL))
     EDBG_ARGS += --serial $(SERIAL)
     SERIAL_TTY = $(firstword $(shell $(RIOTTOOLS)/usb-serial/find-tty.sh $(SERIAL)))
