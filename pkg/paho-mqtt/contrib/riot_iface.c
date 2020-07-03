@@ -21,7 +21,7 @@
 #include "net/ipv4/addr.h"
 #endif
 #include "net/sock/tcp.h"
-#include "mqtt.h"
+#include "paho_mqtt.h"
 #include "MQTTClient.h"
 #include "xtimer.h"
 #include "tsrb.h"

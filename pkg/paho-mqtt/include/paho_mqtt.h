@@ -6,19 +6,8 @@
  * directory for more details.
  *
  */
-
 /**
- * @defgroup pkg_paho-mqtt   MQTT paho framework
- * @ingroup  pkg
- * @brief    The Eclipse Paho project provides open-source client implementations of MQTT for embedded systems
- * @see      https://github.com/eclipse/paho.mqtt.embedded-c
- *
- * The Eclipse Paho project provides open-source client
- * implementations of MQTT.
- */
-
-/**
- * @addtogroup  pkg_paho-mqtt
+ * @addtogroup  pkg_paho_mqtt
  * @{
  *
  * @file
