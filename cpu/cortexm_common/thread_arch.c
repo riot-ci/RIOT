@@ -265,15 +265,18 @@ void *thread_isr_stack_start(void)
     return (void *)&_sstack;
 }
 
-__attribute__((naked)) void NORETURN cpu_switch_context_exit(void)
+void NORETURN cpu_switch_context_exit(void)
 {
+    /* enable IRQs to make the SVC interrupt is reachable */
+    irq_enable();
+    /* trigger the SVC interrupt */
     __asm__ volatile (
-    "bl     irq_enable               \n" /* enable IRQs to make the SVC
-                                           * interrupt is reachable */
-    "svc    #1                            \n" /* trigger the SVC interrupt */
-    "unreachable%=:                       \n" /* this loop is unreachable */
-    "b      unreachable%=                 \n" /* loop indefinitely */
-    :::);
+        "svc    #1"
+        : /* no outputs */
+        : /* no inputs */
+        : /* no clobbers */
+    );
+    UNREACHABLE();
 }
 
 void thread_yield_higher(void)
@@ -368,6 +371,8 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
                                            * causes end of exception*/
 #endif
     /* {r0-r3,r12,LR,PC,xPSR,s0-s15,FPSCR} are restored automatically on exception return */
+     ".ltorg                           \n" /* literal pool needed to access
+                                            * sched_active_thread */
     );
 }
 
