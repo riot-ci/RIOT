@@ -57,10 +57,7 @@ static int _auth_handler(suit_manifest_t *manifest, int key,
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
-    uint32_t tag;
-    nanocbor_get_tag(&arr, &tag);
-    arr.remaining++;
-    res = nanocbor_get_subcbor(&arr, &cose_buf, &cose_len);
+    res = nanocbor_get_bstr(&arr, &cose_buf, &cose_len);
     if (res < 0) {
         LOG_INFO("Unable to get subcbor: %d\n", res);
     }
@@ -142,10 +139,10 @@ static int _manifest_handler(suit_manifest_t *manifest, int key,
 }
 
 /* begin{code-style-ignore} */
-const suit_manifest_handler_t suit_container_handlers[] = {
+const suit_manifest_handler_t suit_envelope_handlers[] = {
     [SUIT_WRAPPER_AUTHENTICATION] = _auth_handler,
     [SUIT_WRAPPER_MANIFEST]       = _manifest_handler,
 };
 /* end{code-style-ignore} */
 
-const size_t suit_container_handlers_len = ARRAY_SIZE(suit_container_handlers);
+const size_t suit_envelope_handlers_len = ARRAY_SIZE(suit_envelope_handlers);
