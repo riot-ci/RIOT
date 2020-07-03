@@ -17,6 +17,10 @@
 #include "net/gnrc/netif/ieee802154.h"
 #include "net/netdev/ieee802154.h"
 
+#ifdef MODULE_NETSTATS_NEIGHBOR
+#include "net/netstats/neighbor.h"
+#endif
+
 #ifdef MODULE_GNRC_IPV6
 #include "net/ipv6/hdr.h"
 #endif
@@ -280,9 +284,18 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     if (netif_hdr->flags &
             (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
         netif->stats.tx_mcast_count++;
+
+#ifdef MODULE_NETSTATS_NEIGHBOR
+       DEBUG("l2 stats: Destination is multicast or unicast, NULL recorded\n");
+       netstats_nb_record(&netif->netif, NULL, 0);
+#endif
     }
     else {
         netif->stats.tx_unicast_count++;
+#ifdef MODULE_NETSTATS_NEIGHBOR
+        DEBUG("l2 stats: recording transmission\n");
+        netstats_nb_record(&netif->netif, dst, dst_len);
+#endif
     }
 #endif
 #ifdef MODULE_GNRC_MAC
