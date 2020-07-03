@@ -25,7 +25,7 @@
 #include "shell.h"
 #include "thread.h"
 #include "mutex.h"
-#include "mqtt.h"
+#include "paho_mqtt.h"
 #include "MQTTClient.h"
 
 #define BUF_SIZE                        1024
