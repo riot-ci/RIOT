@@ -74,15 +74,26 @@ static char getsymbol(uint8_t code, bool urlsafe)
     return (char)BASE64_NOT_DEFINED;
 }
 
+static void encode_three_bytes(uint8_t *dest,
+                               uint8_t b1, uint8_t b2, uint8_t b3,
+                               bool urlsafe)
+{
+    dest[0] = getsymbol(b1 >> 2, urlsafe);
+    dest[1] = getsymbol(((b1 & 0x03) << 4) | (b2 >> 4), urlsafe);
+    dest[2] = getsymbol(((b2 & 0x0f) << 2) | (b3 >> 6), urlsafe);
+    dest[3] = getsymbol(b3 & 0x3f, urlsafe);
+}
+
 static int base64_encode_base(const void *data_in, size_t data_in_size,
                               void *base64_out, size_t *base64_out_size,
                               bool urlsafe)
 {
     const uint8_t *in = data_in;
+    const uint8_t *end = in + data_in_size;
     uint8_t *out = base64_out;
     size_t required_size = base64_estimate_encode_size(data_in_size);
 
-    if (data_in == NULL) {
+    if (in == NULL) {
         return BASE64_ERROR_DATA_IN;
     }
 
@@ -100,44 +111,32 @@ static int base64_encode_base(const void *data_in, size_t data_in_size,
         return BASE64_ERROR_BUFFER_OUT;
     }
 
-    int iterate_base64_buffer = 0;
-    uint8_t n_num = 0;
-    int nLst = 0;
-    int njump = 0;
+    *base64_out_size = required_size;
 
-    for (int i = 0; i < (int)(data_in_size); ++i) {
-        uint8_t tmpval;
-        njump++;
-        tmpval = *(in + i);
-
-        n_num = (tmpval >> (2 * njump));
-
-        if (njump == 4) {
-            n_num = nLst << (8 - 2 * njump);
-            njump = 0;
-            nLst = 0;
-            --i;
-        }
-        else {
-            n_num += nLst << (8 - 2 * njump);
-            nLst =  tmpval & ((1 << njump * 2) - 1);
-        }
-
-        out[iterate_base64_buffer++] = getsymbol(n_num, urlsafe);
+    while (in < end - 2) {
+        encode_three_bytes(out, in[0], in[1], in[2], urlsafe);
+        out += 4;
+        in += 3;
     }
 
-    /* The last character is not finished yet */
-    njump++;
-
-    n_num = nLst << (8 - 2 * njump);
-    out[iterate_base64_buffer++] = getsymbol(n_num, urlsafe);
-
-    /* if required we append '=' for the required dividability */
-    while (iterate_base64_buffer % 4) {
-        out[iterate_base64_buffer++] = '=';
+    if (in == end) {
+        /* data_in_size is multiple of 3, we're done */
+        return BASE64_SUCCESS;
     }
 
-    *base64_out_size = iterate_base64_buffer;
+    if (in + 1 == end) {
+        /* One byte still left to decode, set other two input bytes to zero */
+        encode_three_bytes(out, in[0], 0, 0, urlsafe);
+        /* Replace last two bytes with "=" to signal corresponding input bytes
+         * didn't exist */
+        out[2] = out[3] = '=';
+        return BASE64_SUCCESS;
+    }
+
+    /* Final case: 2 bytes remain for encoding, use zero as third input */
+    encode_three_bytes(out, in[0], in[1], 0, urlsafe);
+    /* Replace last output with "=" to signal corresponding input byte didn't exit */
+    out[3] = '=';
 
     return BASE64_SUCCESS;
 }
@@ -203,6 +202,13 @@ static uint8_t getcode(char symbol)
     return BASE64_NOT_DEFINED;
 }
 
+static void decode_four_codes(uint8_t *out, const uint8_t *src)
+{
+    out[0] = (src[0] << 2) | (src[1] >> 4);
+    out[1] = (src[1] << 4) | (src[2] >> 2);
+    out[2] = (src[2] << 6) | src[3];
+}
+
 int base64_decode(const void *base64_in, size_t base64_in_size,
                   void *data_out, size_t *data_out_size)
 {
@@ -214,15 +220,6 @@ int base64_decode(const void *base64_in, size_t base64_in_size,
         return BASE64_ERROR_DATA_IN;
     }
 
-    if (base64_in_size == 0) {
-        *data_out_size = 0;
-        return BASE64_SUCCESS;
-    }
-
-    if (base64_in_size < 4) {
-        return BASE64_ERROR_DATA_IN_SIZE;
-    }
-
     if (*data_out_size < required_size) {
         *data_out_size = required_size;
         return BASE64_ERROR_BUFFER_OUT_SIZE;
@@ -232,34 +229,44 @@ int base64_decode(const void *base64_in, size_t base64_in_size,
         return BASE64_ERROR_BUFFER_OUT;
     }
 
-    int iterate_data_buffer = 0;
-    uint8_t n_num = 0;
-    int nLst = getcode(in[0]) << 2;
-    int code = 0;
+    const uint8_t *end = base64_in + base64_in_size;
+    uint8_t codes[4];
+    size_t n_codes;
 
-    int mask = 2;
-
-    for (int i = 1; i < (int)(base64_in_size); i++) {
-        code = getcode(in[i]);
-
-        if (code == BASE64_NOT_DEFINED || code == BASE64_EQUALS) {
-            continue;
+    while (1) {
+        n_codes = 0;
+        do {
+            if (in == end) {
+                switch (n_codes) {
+                    case 0:
+                        /* nothing to do */
+                        break;
+                    case 1:
+                        return BASE64_ERROR_DATA_IN_SIZE;
+                    case 2:
+                        codes[2] = codes[3] = 0;
+                        decode_four_codes(out, codes);
+                        out += 1;
+                        break;
+                    case 3:
+                        codes[3] = 0;
+                        decode_four_codes(out, codes);
+                        out += 2;
+                        break;
+                }
+                *data_out_size = (size_t)out - (size_t)data_out;
+                return BASE64_SUCCESS;
+            }
+            switch (codes[n_codes] = getcode(*in++)) {
+                case BASE64_NOT_DEFINED:
+                case BASE64_EQUALS:
+                    continue;
+            }
+            n_codes++;
         }
+        while (n_codes < 4);
 
-        int nm = (0xFF << (2 * mask));
-
-        n_num = nLst + ((code & (0xFF & nm)) >> (2 * mask));
-        nLst = (code & (0xFF & ~nm)) << (8 - (2 * mask));
-
-        (mask != 3) ? out[iterate_data_buffer++] = n_num : n_num;
-        (mask == 0) ? mask = 3 : mask--;
+        decode_four_codes(out, codes);
+        out += 3;
     }
-
-    if (code == BASE64_EQUALS) {
-        /* add the last character to the data_out buffer */
-        out[iterate_data_buffer] = n_num;
-    }
-
-    *data_out_size = iterate_data_buffer;
-    return BASE64_SUCCESS;
 }
