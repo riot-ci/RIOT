@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2014 Hochschule für Angewandte Wissenschaften Hamburg (HAW)
  * Copyright (C) 2014 Martin Landsmann <Martin.Landsmann@HAW-Hamburg.de>
+ *               2020 Otto-von-Guericke-Universität Magdeburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,6 +15,7 @@
  * @brief   Functions to encode and decode base64
  *
  * @author  Martin Landsmann <Martin.Landsmann@HAW-Hamburg.de>
+ * @author  Marian Buschsieweke <marian.buschsieweke@ovgu.de>
  * @}
  *
  */
@@ -229,44 +231,55 @@ int base64_decode(const void *base64_in, size_t base64_in_size,
         return BASE64_ERROR_BUFFER_OUT;
     }
 
-    const uint8_t *end = base64_in + base64_in_size;
-    uint8_t codes[4];
-    size_t n_codes;
+    const uint8_t *end = in + base64_in_size;
+    uint8_t decode_buf[4];
 
     while (1) {
-        n_codes = 0;
+        size_t decode_buf_fill = 0;
+        /* Try to load 4 codes into the decode buffer, skipping invalid symbols
+         * (such as inserted newlines commonly used to improve readability) */
         do {
+            /* Reached end of input before 4 codes were loaded, handle each
+             * possible decode buffer fill level individually: */
             if (in == end) {
-                switch (n_codes) {
+                switch (decode_buf_fill) {
                     case 0:
-                        /* nothing to do */
+                        /* no data in decode buffer -->nothing to do */
                         break;
                     case 1:
+                        /* an input size of 4 * n + 1 cannot happen, (even when
+                         * dropping the "=" chars) */
                         return BASE64_ERROR_DATA_IN_SIZE;
                     case 2:
-                        codes[2] = codes[3] = 0;
-                        decode_four_codes(out, codes);
+                        /* Got two base64 chars, or one byte of output data.
+                         * The just fill with zero codes and ignore the two
+                         * additionally decoded bytes */
+                        decode_buf[2] = decode_buf[3] = 0;
+                        decode_four_codes(out, decode_buf);
                         out += 1;
                         break;
                     case 3:
-                        codes[3] = 0;
-                        decode_four_codes(out, codes);
+                        /* Got three base64 chars or 2 bytes of output data.
+                         * Again, just fill with zero bytes and ignore the
+                         * additionally decoded byte */
+                        decode_buf[3] = 0;
+                        decode_four_codes(out, decode_buf);
                         out += 2;
                         break;
                 }
-                *data_out_size = (size_t)out - (size_t)data_out;
+                *data_out_size = (uintptr_t)out - (uintptr_t)data_out;
                 return BASE64_SUCCESS;
             }
-            switch (codes[n_codes] = getcode(*in++)) {
+            switch (decode_buf[decode_buf_fill] = getcode(*in++)) {
                 case BASE64_NOT_DEFINED:
                 case BASE64_EQUALS:
                     continue;
             }
-            n_codes++;
+            decode_buf_fill++;
         }
-        while (n_codes < 4);
+        while (decode_buf_fill < 4);
 
-        decode_four_codes(out, codes);
+        decode_four_codes(out, decode_buf);
         out += 3;
     }
 }
