@@ -6,6 +6,7 @@
  * directory for more details.
  *
  */
+
 /**
  * @addtogroup  pkg_paho_mqtt
  * @{
@@ -15,8 +16,8 @@
  *
  * @author      Javier FILEIV <javier.fileiv@gmail.com>
  */
-#ifndef MQTT_H
-#define MQTT_H
+#ifndef PAHO_MQTT_H
+#define PAHO_MQTT_H
 
 #include "mutex.h"
 #include "xtimer.h"
@@ -193,5 +194,5 @@ int ThreadStart(Thread *thread, void (*fn)(void *), void *arg);
 }
 #endif
 
-#endif /* MQTT_H */
+#endif /* PAHO_MQTT_H */
 /** @} */
