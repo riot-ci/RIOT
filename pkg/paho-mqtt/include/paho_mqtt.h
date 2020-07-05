@@ -40,7 +40,7 @@ extern "C" {
  */
 
 #ifndef MQTT_THREAD_STACKSIZE
-#define MQTT_THREAD_STACKSIZE           (THREAD_STACKSIZE_DEFAULT)
+#define MQTT_THREAD_STACKSIZE           (THREAD_STACKSIZE_LARGE)
 #endif
 /**
  * @brief  MQTT thread YIELD polling time in msecs
