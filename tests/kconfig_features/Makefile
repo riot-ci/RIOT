@@ -67,6 +67,6 @@ kconfig-features: $(KCONFIG_OUT_CONFIG)
 	    (echo "ERROR: Kconfig features mismatch" && exit 1)'
 
 check-values: $(KCONFIG_OUT_CONFIG)
-	@bash -c '(diff <($(MAKE) $(_CMDS)) \
-	    <($(MAKE) $(_CMDS_CONFIG)) && echo "SUCCESS: $(_CMDS:info-debug-variable-%=%) values match") || \
+	@bash -c '(diff <($(MAKE) $(_CMDS) | sort) \
+	    <($(MAKE) $(_CMDS_CONFIG) | sort) && echo "SUCCESS: $(_CMDS:info-debug-variable-%=%) values match") || \
 	    (echo "ERROR: The value for $(_CMDS:info-debug-variable-%=%) in Kconfig does not match the one in the Makefile" && exit 1)'
