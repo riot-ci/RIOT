@@ -285,7 +285,7 @@ def test_netif_add_anycast():
     res = si.netif_add("foobar", "dead:coff:ee::/64", anycast=True)
     assert res == "success: added address to interface"
     assert rc.term.last_command == \
-           "ifconfig foobar add dead:coff:ee::/64 anycast"
+        "ifconfig foobar add dead:coff:ee::/64 anycast"
 
 
 def test_netif_add_error():
