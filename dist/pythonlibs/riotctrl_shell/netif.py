@@ -19,7 +19,7 @@ from riotctrl.shell import ShellInteraction, ShellInteractionParser
 
 class IfconfigListParser(ShellInteractionParser):
     def __init__(self):
-        self.iface_c = re.compile(r"^Iface\s+(?P<name>\S+)\s")
+        self.iface_c = re.compile(r"Iface\s+(?P<name>\S+)\s")
         # option values are repetitions of at least one non white space
         # separated by at most one whitespace
         # e.g. for MCS: 1 (BPSK, rate 1/2, 2x frequency repetition)  MTU :1280
@@ -155,6 +155,8 @@ class IfconfigListParser(ShellInteractionParser):
 
     def _parse_netif_option(self, netif, line):
         """Parses all the options found before the IP address listing"""
+        # remove potential content before line like logging tag, date etc.
+        line = line.split("          ")[-1]
         # options and flags are separated by two spaces
         for token in line.strip().split("  "):
             # ensure there are no whitespaces at start or end => output bug
@@ -166,7 +168,7 @@ class IfconfigListParser(ShellInteractionParser):
                 netif[option] = self._convert_value(value_str)
             m = self.flag_c.search(token)
             if m is not None:
-                flag = self._snake_case(m.group("flag")).upper()
+                flag = m.group("flag")
                 if "flags" in netif:
                     netif["flags"].append(flag)
                 else:
@@ -244,6 +246,7 @@ class IfconfigStatsParser(ShellInteractionParser):
         stats = None
         current = None
         for line in cmd_output.splitlines():
+            line = line.strip()
             m = self.header_c.search(line)
             if m is not None:
                 module = m.group("module")
