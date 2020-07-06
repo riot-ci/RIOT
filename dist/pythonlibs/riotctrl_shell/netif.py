@@ -17,7 +17,7 @@ from riotctrl.shell import ShellInteraction, ShellInteractionParser
 
 # ==== Parsers ====
 
-class NetifListParser(ShellInteractionParser):
+class IfconfigListParser(ShellInteractionParser):
     def __init__(self):
         self.iface_c = re.compile(r"^Iface\s+(?P<name>\S+)\s")
         # option values are repetitions of at least one non white space
@@ -41,11 +41,11 @@ class NetifListParser(ShellInteractionParser):
 
     def parse(self, cmd_output):
         """
-        Parses output of Netif::netif_list()
+        Parses output of Ifconfig::ifconfig_list()
 
         See tests for further possible items:
 
-        >>> parser = NetifListParser()
+        >>> parser = IfconfigListParser()
         >>> res = parser.parse("Iface WP_01  HWAddr: ab:cd  6LO  PROMISC\\n"
         ...                    "Iface ET_01  HWaddr: 01:23:45:67:89:AB\\n")
         >>> len(res)
@@ -61,7 +61,7 @@ class NetifListParser(ShellInteractionParser):
         current = None
         parse_ipv6 = False
         parse_blacklist = False
-        stats_parser = NetifStatsParser()
+        stats_parser = IfconfigStatsParser()
         offset = 0
         for line in cmd_output.splitlines():
             m = self.iface_c.search(line)
@@ -115,7 +115,7 @@ class NetifListParser(ShellInteractionParser):
         """
         Converts all option names parset by _parse_netif_option() to snake_case
 
-        >>> NetifListParser._snake_case("Max. Retrans.")
+        >>> IfconfigListParser._snake_case("Max. Retrans.")
         'max_retrans'
         """
         return re.sub(r"\W+", "_", option.strip().lower()).strip("_")
@@ -194,7 +194,7 @@ class NetifListParser(ShellInteractionParser):
         return False
 
 
-class NetifStatsParser(ShellInteractionParser):
+class IfconfigStatsParser(ShellInteractionParser):
     def __init__(self):
         self.header_c = re.compile(r"Statistics for (?P<module>.+)$")
         self.rx_c = re.compile(r"RX packets\s+(?P<packets>\d+)\s+"
@@ -207,15 +207,15 @@ class NetifStatsParser(ShellInteractionParser):
 
     def parse(self, cmd_output):
         """
-        Parses output of Netif::netif_stats or the statistics part of
-        Netif::netif_list.
+        Parses output of Ifconfig::ifconfig_stats or the statistics part of
+        Ifconfig::ifconfig_list.
 
-        :param cmd_output(str): output of Netif::netif_stats or
-                                Netif::netif_list
+        :param cmd_output(str): output of Ifconfig::ifconfig_stats or
+                                Ifconfig::ifconfig_list
         :return: dictionary with one entry per statistics module, each module
                  containing an entry 'rx' and 'tx' with respective statistics
 
-        >>> parser = NetifStatsParser()
+        >>> parser = IfconfigStatsParser()
         >>> res = parser.parse(
         ...         "Statistics for IPv6\\n"
         ...         "  RX packets 14  bytes 1104\\n"
@@ -263,11 +263,11 @@ class NetifStatsParser(ShellInteractionParser):
 
 # ==== ShellInteractions ====
 
-class Netif(ShellInteraction):
-    def netif_list(self, netif=None, timeout=-1, async_=False):
-        return self.netif_cmd(netif=netif, timeout=timeout, async_=async_)
+class Ifconfig(ShellInteraction):
+    def ifconfig_list(self, netif=None, timeout=-1, async_=False):
+        return self.ifconfig_cmd(netif=netif, timeout=timeout, async_=async_)
 
-    def netif_cmd(self, netif=None, args=None, timeout=-1, async_=False):
+    def ifconfig_cmd(self, netif=None, args=None, timeout=-1, async_=False):
         cmd = "ifconfig"
         if netif is not None:
             cmd += " {netif}".format(netif=netif)
@@ -277,84 +277,87 @@ class Netif(ShellInteraction):
             cmd += " {args}".format(args=" ".join(args))
         return self.cmd(cmd, timeout=timeout, async_=False)
 
-    def netif_help(self, netif, timeout=-1, async_=False):
-        return self.netif_cmd(netif=netif, args=("help",),
-                              timeout=timeout, async_=async_)
+    def ifconfig_help(self, netif, timeout=-1, async_=False):
+        return self.ifconfig_cmd(netif=netif, args=("help",),
+                                 timeout=timeout, async_=async_)
 
-    def netif_set(self, netif, key, value, timeout=-1, async_=False):
-        return self._netif_success_cmd(netif=netif, args=("set", key, value),
-                                       timeout=timeout, async_=async_)
+    def ifconfig_set(self, netif, key, value, timeout=-1, async_=False):
+        return self._ifconfig_success_cmd(netif=netif,
+                                          args=("set", key, value),
+                                          timeout=timeout, async_=async_)
 
-    def netif_up(self, netif, timeout=-1, async_=False):
-        self._netif_error_cmd(netif=netif, args=("up",), timeout=timeout,
-                              async_=async_)
+    def ifconfig_up(self, netif, timeout=-1, async_=False):
+        self._ifconfig_error_cmd(netif=netif, args=("up",),
+                                 timeout=timeout, async_=async_)
 
-    def netif_down(self, netif, timeout=-1, async_=False):
-        self._netif_error_cmd(netif=netif, args=("down",), timeout=timeout,
-                              async_=async_)
+    def ifconfig_down(self, netif, timeout=-1, async_=False):
+        self._ifconfig_error_cmd(netif=netif, args=("down",),
+                                 timeout=timeout, async_=async_)
 
-    def netif_add(self, netif, addr, anycast=False, timeout=-1, async_=False):
+    def ifconfig_add(self, netif, addr, anycast=False,
+                     timeout=-1, async_=False):
         args = ["add", addr]
         if anycast:
             args.append("anycast")
-        return self._netif_success_cmd(netif=netif, args=args,
-                                       timeout=timeout, async_=async_)
+        return self._ifconfig_success_cmd(netif=netif, args=args,
+                                          timeout=timeout, async_=async_)
 
-    def netif_del(self, netif, addr, timeout=-1, async_=False):
-        return self._netif_success_cmd(netif=netif, args=("del", addr),
-                                       timeout=timeout, async_=async_)
+    def ifconfig_del(self, netif, addr, timeout=-1, async_=False):
+        return self._ifconfig_success_cmd(netif=netif, args=("del", addr),
+                                          timeout=timeout, async_=async_)
 
-    def netif_flag(self, netif, flag, enable=True, timeout=-1, async_=False):
-        return self._netif_success_cmd(
+    def ifconfig_flag(self, netif, flag, enable=True,
+                      timeout=-1, async_=False):
+        return self._ifconfig_success_cmd(
             netif=netif, args=("{}{}".format("" if enable else "-", flag),),
             timeout=timeout, async_=async_
         )
 
-    def netif_l2filter_add(self, netif, addr, timeout=-1, async_=False):
-        return self._netif_success_cmd(
+    def ifconfig_l2filter_add(self, netif, addr, timeout=-1, async_=False):
+        return self._ifconfig_success_cmd(
             netif=netif, args=("l2filter", "add", addr),
             timeout=timeout, async_=async_
         )
 
-    def netif_l2filter_del(self, netif, addr, timeout=-1, async_=False):
-        return self._netif_success_cmd(
+    def ifconfig_l2filter_del(self, netif, addr, timeout=-1, async_=False):
+        return self._ifconfig_success_cmd(
             netif=netif, args=("l2filter", "del", addr),
             timeout=timeout, async_=async_
         )
 
-    def netif_stats(self, netif, module, timeout=-1, async_=False):
-        res = self.netif_cmd(netif=netif, args=("stats", module),
-                             timeout=timeout, async_=async_)
+    def ifconfig_stats(self, netif, module, timeout=-1, async_=False):
+        res = self.ifconfig_cmd(netif=netif, args=("stats", module),
+                                timeout=timeout, async_=async_)
         if "Statistics for " in res:
             return res
         raise RuntimeError(res)
 
-    def netif_stats_reset(self, netif, module, timeout=-1, async_=False):
-        res = self.netif_cmd(netif=netif, args=("stats", module, "reset"),
-                             timeout=timeout, async_=async_)
+    def ifconfig_stats_reset(self, netif, module, timeout=-1, async_=False):
+        res = self.ifconfig_cmd(netif=netif, args=("stats", module, "reset"),
+                                timeout=timeout, async_=async_)
         if "Reset statistics for module " in res:
             return res
         raise RuntimeError(res)
 
-    def _netif_success_cmd(self, netif=None, args=None,
-                           timeout=-1, async_=False):
+    def _ifconfig_success_cmd(self, netif=None, args=None,
+                              timeout=-1, async_=False):
         """For commands that have a success output"""
-        res = self.netif_cmd(netif=netif, args=args,
-                             timeout=timeout, async_=async_)
+        res = self.ifconfig_cmd(netif=netif, args=args,
+                                timeout=timeout, async_=async_)
         if "success" in res:
             return res
         raise RuntimeError(res)
 
-    def _netif_error_cmd(self, netif=None, args=None,
-                         timeout=-1, async_=False):
+    def _ifconfig_error_cmd(self, netif=None, args=None,
+                            timeout=-1, async_=False):
         """For commands that only have an error output"""
-        res = self.netif_cmd(netif=netif, args=args,
-                             timeout=timeout, async_=async_)
+        res = self.ifconfig_cmd(netif=netif, args=args,
+                                timeout=timeout, async_=async_)
         if "error" in res:
             raise RuntimeError(res)
 
 
-class NetifSend(ShellInteraction):
+class TXTSnd(ShellInteraction):
     def netif_txtsnd(self, netif, target, data, timeout=-1, async_=False):
         cmd = "txtsnd {netif} {target} {data}".format(
             netif=netif,
