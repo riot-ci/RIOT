@@ -21,7 +21,7 @@ class NetifListParser(ShellInteractionParser):
     def __init__(self):
         self.iface_c = re.compile(r"^Iface\s+(?P<name>\S+)\s")
         # option values are repetitions of at least one non white space
-        # seperated by at most one whitespace
+        # separated by at most one whitespace
         # e.g. for MCS: 1 (BPSK, rate 1/2, 2x frequency repetition)  MTU :1280
         # "1 (BPSK, rate 1/2, 2x frequency repetition)" belongs to the option
         # value, "MTU" does not
