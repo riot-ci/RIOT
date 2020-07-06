@@ -706,7 +706,7 @@ static void _netif_list(netif_t *iface)
                                    line_thresh);
     line_thresh = _netif_list_flag(iface, NETOPT_OTAA, "OTAA  ",
                                    line_thresh);
-    /* XXX devide options and flags by at least two spaces! */
+    /* XXX divide options and flags by at least two spaces! */
     res = netif_get_opt(iface, NETOPT_MAX_PDU_SIZE, 0, &u16, sizeof(u16));
     if (res > 0) {
         printf("L2-PDU:%" PRIu16 "  ", u16);
