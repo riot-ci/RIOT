@@ -75,10 +75,10 @@ class IfconfigListParser(ShellInteractionParser):
                 offset += m.end() + 1
             if current is not None:
                 # XXX checking for IPv4 address might also go here
-                parse_ipv6 = self.ipv6_c.search(line) is not None
-                if not parse_ipv6 and not parse_blacklist and \
-                   "ipv6_addrs" not in current:
-                    self._parse_netif_option(current, line)
+                if "ipv6_addrs" not in current:
+                    parse_ipv6 = self.ipv6_c.search(line) is not None
+                    if not parse_ipv6 and not parse_blacklist:
+                        self._parse_netif_option(current, line)
                 if parse_ipv6:
                     parse_ipv6 = self._parse_ipv6(current, line)
                 elif parse_blacklist:
