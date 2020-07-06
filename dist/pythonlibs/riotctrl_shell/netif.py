@@ -125,6 +125,15 @@ class IfconfigListParser(ShellInteractionParser):
         """
         Tries to converts an option value parsed by _parse_netif_option() to
         int or float if possible
+
+        >>> IfconfigListParser._convert_value("12345")
+        12345
+        >>> IfconfigListParser._convert_value("0xf")
+        15
+        >>> IfconfigListParser._convert_value("3.14")
+        3.14
+        >>> IfconfigListParser._convert_value("3.14ispi")
+        '3.14ispi'
         """
         try:
             # try to convert to int
