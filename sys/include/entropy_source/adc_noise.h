@@ -51,15 +51,15 @@ extern "C" {
  */
 #if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_6BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_6BIT
-#else if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_8BIT)
+#elif IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_8BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_8BIT
-#else if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_10BIT)
+#elif IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_10BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_10BIT
-#else if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_12BIT)
+#elif IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_12BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_12BIT
-#else if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_14BIT)
+#elif IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_14BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_14BIT
-#else if IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_16BIT)
+#elif IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ADC_RES_16BIT)
 #define CONFIG_ENTROPY_SOURCE_ADC_RES          ADC_RES_16BIT
 #endif
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_RES
@@ -84,9 +84,10 @@ extern "C" {
  * @brief   ADC Min. entropy per sample [2^16 * bit/sample].
  *
  * Min. entropy needs to be evaluated thoroughly beforehand! To avoid float, the
- * actual entropy value per one byte sample needs to be manually multiplied by 2^16
- * before setting it as configuration parameter. See @ref sys_entropy_source
- * for further information about entropy source validation.
+ * actual entropy value per one byte sample needs to be manually multiplied by
+ * 2^16 before setting it as configuration parameter. See
+ * @ref sys_entropy_source for further information about entropy source
+ * validation.
  */
 #if !defined(CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE) || defined(DOXYGEN)
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HMIN
@@ -96,10 +97,14 @@ extern "C" {
 #endif
 
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
-#define CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST  0    /**< Disable ADC health test by default. */
+#define CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST  0  /**< Disable ADC health test
+                                                   *   by default.
+                                                   */
 #endif
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_COND
-#define CONFIG_ENTROPY_SOURCE_ADC_COND         0    /**< Disable ADC conditioning test by default. */
+#define CONFIG_ENTROPY_SOURCE_ADC_COND         0   /**< Disable ADC conditioning
+                                                    *   test by default.
+                                                    */
 #endif
 #endif /* !CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE || DOXYGEN */
 /** @} */

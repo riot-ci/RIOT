@@ -17,8 +17,8 @@
  */
 
 #include "periph/adc.h"
+#include "entropy_source.h"
 #include "entropy_source/adc_noise.h"
-#include "entropy_source/entropy_source.h"
 
 entropy_source_tests_rep_t adc_state_rep;
 entropy_source_tests_prop_t adc_state_prop;
@@ -29,7 +29,8 @@ static int _get_sample(uint8_t *out)
     uint8_t byte = 0;
 
     for (unsigned bit = 0; bit < 8; bit++) {
-        int sample = adc_sample(ENTROPY_SOURCE_ADC_LINE, CONFIG_ENTROPY_SOURCE_ADC_RES);
+        int sample = adc_sample(CONFIG_ENTROPY_SOURCE_ADC_LINE,
+                                CONFIG_ENTROPY_SOURCE_ADC_RES);
         if (sample < 0) {
             /* Resolution is not applicable */
             return ENTROPY_SOURCE_ERR_CONFIG;
@@ -50,7 +51,7 @@ static int _get_sample(uint8_t *out)
 int entropy_source_adc_init(void)
 {
     /* init ADC */
-    if (adc_init(ENTROPY_SOURCE_ADC_LINE) != 0) {
+    if (adc_init(CONFIG_ENTROPY_SOURCE_ADC_LINE) != 0) {
         return ENTROPY_SOURCE_ERR_INIT;
     }
 

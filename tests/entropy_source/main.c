@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include "fmt.h"
 #include "xtimer.h"
+#include "entropy_source.h"
 #include "entropy_source/adc_noise.h"
 #include "entropy_source/zero_entropy.h"
-#include "entropy_source/entropy_source.h"
 
 #ifndef NUM_BYTES
 #define NUM_BYTES     (64)
@@ -69,7 +69,7 @@ int main(void)
         /*Request single bytes*/
         ret = entropy_source_adc_get(&buf1, 1);
         if (ret < 0) {
-            printf("ADC noise single request %i/%i: %i\n", i, NUM_BYTES, ret);
+            printf("ADC noise single request %u/%i: %i\n", i, NUM_BYTES, ret);
         }
         else {
             printf("%02x\n", buf1);

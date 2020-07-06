@@ -16,8 +16,8 @@
  */
 
 #include "kernel_defines.h"
+#include "entropy_source.h"
 #include "entropy_source/zero_entropy.h"
-#include "entropy_source/entropy_source.h"
 
 entropy_source_tests_rep_t zero_state_rep;
 entropy_source_tests_prop_t zero_state_prop;
@@ -54,7 +54,6 @@ int entropy_source_zero_get(uint8_t *out, size_t len)
     assert(out != NULL);
 
     int ret = ENTROPY_SOURCE_OK;
-
 
     if (IS_ACTIVE(CONFIG_ENTROPY_SOURCE_ZERO_COND)) {
         ret = entropy_source_neumann_unbias(_get_sample, out, len);

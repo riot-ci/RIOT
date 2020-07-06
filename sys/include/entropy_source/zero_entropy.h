@@ -19,8 +19,8 @@
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  */
 
-#ifndef ENTROPY_SOURCE_ZERO_H
-#define ENTROPY_SOURCE_ZERO_H
+#ifndef ENTROPY_SOURCE_ZERO_ENTROPY_H
+#define ENTROPY_SOURCE_ZERO_ENTROPY_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,27 +33,35 @@ extern "C" {
  * @ingroup    sys_entropy_source_config
  * @{
  */
+
 /**
- * @brief   Min. Entropy value for zero entropy module. Only set for testing!
+ * @brief   Min. Entropy value for zero entropy module.
+ *
+ * H_min=0.9 bit/sample * 2^16 fake for testing!
  */
 #if !defined(CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ZERO_ENTROPY) || defined(DOXYGEN)
-#ifndef CONFIG_ENTROPY_SOURCE_ZERO_HMIN
-#define CONFIG_ENTROPY_SOURCE_ZERO_HMIN         (58982) /**< H_min=0.9 bit/sample * 2^16
-                                                         *   fake for testing!
-                                                         */
+#ifndef CONFIG_ENTROPY_SOURCE_ZERO_ENTROPY_HMIN
+#define CONFIG_ENTROPY_SOURCE_ZERO_HMIN         (58982)
 #endif
+
+/**
+ * @brief   Enable health test by default.
+ *
+ * Testing is the only purpose of this module.
+ */
 #ifndef CONFIG_ENTROPY_SOURCE_ZERO_HEALTH_TEST
-#define CONFIG_ENTROPY_SOURCE_ZERO_HEALTH_TEST  1 /**< Enable health test by default.
-                                                   *   Testing is the only purpose of this module.
-                                                   */
+#define CONFIG_ENTROPY_SOURCE_ZERO_HEALTH_TEST  1
 #endif
+
+/**
+ * @brief   Disable conditioning by default.
+ *
+ * Conditioning is useless for zeros only. The von Neumann extractor would
+ * never finish and wait for the stop criterion given by
+ * @ref CONFIG_ENTROPY_SOURCE_NEUMANN_ABORT.
+ */
 #ifndef CONFIG_ENTROPY_SOURCE_ZERO_COND
-#define CONFIG_ENTROPY_SOURCE_ZERO_COND         0 /**< Disable conditioning by default.
-                                                   *   Conditioning is useless for zeros only.
-                                                   *   The von Neumann extractor would never finish
-                                                   *   and wait for the stop criterion given by
-                                                   *   @ref CONFIG_ENTROPY_SOURCE_NEUMANN_ABORT.
-                                                   */
+#define CONFIG_ENTROPY_SOURCE_ZERO_COND         0
 #endif
 #endif /* !CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ZERO_ENTROPY || DOXYGEN */
 /** @} */
@@ -80,5 +88,5 @@ int entropy_source_zero_get(uint8_t *buf, size_t len);
 }
 #endif
 
-#endif /* ENTROPY_SOURCE_ZERO_H */
+#endif /* ENTROPY_SOURCE_ZERO_ENTROPY_H */
 /** @} */

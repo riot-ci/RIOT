@@ -17,7 +17,7 @@
  */
 
 #include <stdio.h>
-#include "entropy_source/entropy_source.h"
+#include "entropy_source.h"
 
 int entropy_source_neumann_unbias(entropy_source_sample_func_t func,
                                   uint8_t *out, size_t len)
@@ -41,7 +41,7 @@ int entropy_source_neumann_unbias(entropy_source_sample_func_t func,
 
     while (bytes_count < len) {
         /* Increment sample counter and abort if
-        * exeeds maximum number of iterations */
+         * exceeds maximum number of iterations */
         sample_count++;
         if (sample_count > abort) {
             return ENTROPY_SOURCE_ERR_COND;
@@ -61,7 +61,7 @@ int entropy_source_neumann_unbias(entropy_source_sample_func_t func,
             bit1 = (1 << j) & old_sample;
             bit2 = (1 << j) & new_sample;
 
-            /* Only save information if change occured
+            /* Only save information if change occurred
              * 0/1 change results in 1
              * 1/0 change results in 0
              */
