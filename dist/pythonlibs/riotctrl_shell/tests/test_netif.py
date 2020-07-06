@@ -302,7 +302,7 @@ def test_netif_add_anycast_error():
     with pytest.raises(RuntimeError):
         si.netif_add("foobar", "dead:coff:ee::/64", anycast=True)
     assert rc.term.last_command == \
-           "ifconfig foobar add dead:coff:ee::/64 anycast"
+        "ifconfig foobar add dead:coff:ee::/64 anycast"
 
 
 def test_netif_del():
