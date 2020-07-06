@@ -152,6 +152,36 @@ Iface  6  HWaddr: 2D:4A  Channel: 26  Page: 0  NID: 0x23  PHY: O-QPSK
     assert {"addr": "ff02::1:ff08:657b"} in res["6"]["ipv6_groups"]
 
 
+def test_netif_list_parser3():
+    cmd_output = """
+ ifconfig
+Iface  3  HWaddr: 26:01:24:C0  Frequency: 869524963Hz  BW: 125kHz  SF: 12  CR: 4/5  Link: up
+           TX-Power: 14dBm  State: SLEEP  Demod margin.: 0  Num gateways.: 0
+          IQ_INVERT
+          RX_SINGLE  OTAA  L2-PDU:2559
+          """     # noqa: E501
+    parser = riotctrl_shell.netif.NetifListParser()
+    res = parser.parse(cmd_output)
+    assert len(res) == 1
+    assert "3" in res
+    print(res)
+    assert len(res["3"]["flags"]) == 3
+    assert "IQ_INVERT" in res["3"]["flags"]
+    assert "RX_SINGLE" in res["3"]["flags"]
+    assert "OTAA" in res["3"]["flags"]
+    assert res["3"]["hwaddr"] == "26:01:24:C0"
+    assert res["3"]["frequency"] == "869524963Hz"
+    assert res["3"]["bw"] == "125kHz"
+    assert res["3"]["sf"] == 12
+    assert res["3"]["cr"] == "4/5"
+    assert res["3"]["link"] == "up"
+    assert res["3"]["tx_power"] == "14dBm"
+    assert res["3"]["state"] == "SLEEP"
+    assert res["3"]["demod_margin"] == 0
+    assert res["3"]["num_gateways"] == 0
+    assert res["3"]["l2_pdu"] == 2559
+
+
 def test_netif_stats_parser():
     cmd_output = """
           Statistics for Layer 2
