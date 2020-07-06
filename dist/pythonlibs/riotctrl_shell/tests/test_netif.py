@@ -211,34 +211,27 @@ def test_netif_stats_parser():
     assert res["IPv6"]["tx"]["errors"] == 0
 
 
-def test_netif():
+@pytest.mark.parametrize(
+    "args,expected",
+    [((), "ifconfig"), (("foobar",), "ifconfig foobar")]
+)
+def test_netif_list(args, expected):
     rc = init_ctrl()
     si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_list()
+    res = si.netif_list(*args)
     # mock just returns last input
-    assert res == "ifconfig"
+    assert res == expected
 
 
-def test_netif_w_netif():
+@pytest.mark.parametrize(
+    "args,expected",
+    [((), "ifconfig"), (("foobar",), "ifconfig foobar")]
+)
+def test_netif_cmd_empty(args, expected):
     rc = init_ctrl()
     si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_list("foobar")
-    # mock just returns last input
-    assert res == "ifconfig foobar"
-
-
-def test_netif_cmd_empty():
-    rc = init_ctrl()
-    si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_cmd()
-    assert res == "ifconfig"
-
-
-def test_netif_cmd_only_netif():
-    rc = init_ctrl()
-    si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_cmd("foobar")
-    assert res == "ifconfig foobar"
+    res = si.netif_cmd(*args)
+    assert res == expected
 
 
 def test_netif_cmd_error():
@@ -301,38 +294,38 @@ def test_netif_down_error():
     assert rc.term.last_command == "ifconfig foobar down"
 
 
-def test_netif_add():
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [({"netif": "foobar", "addr": "dead:coff:ee::/64"},
+      "ifconfig foobar add dead:coff:ee::/64"),
+     ({"netif": "foobar", "addr": "dead:coff:ee::/64", "anycast": False},
+      "ifconfig foobar add dead:coff:ee::/64"),
+     ({"netif": "foobar", "addr": "dead:coff:ee::/64", "anycast": True},
+      "ifconfig foobar add dead:coff:ee::/64 anycast")]
+)
+def test_netif_add(kwargs, expected):
     rc = init_ctrl(output="success: added address to interface")
     si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_add("foobar", "dead:coff:ee::/64")
+    res = si.netif_add(**kwargs)
     assert res == "success: added address to interface"
-    assert rc.term.last_command == "ifconfig foobar add dead:coff:ee::/64"
+    assert rc.term.last_command == expected
 
 
-def test_netif_add_anycast():
-    rc = init_ctrl(output="success: added address to interface")
-    si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_add("foobar", "dead:coff:ee::/64", anycast=True)
-    assert res == "success: added address to interface"
-    assert rc.term.last_command == \
-        "ifconfig foobar add dead:coff:ee::/64 anycast"
-
-
-def test_netif_add_error():
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [({"netif": "foobar", "addr": "dead:coff:ee::/64"},
+      "ifconfig foobar add dead:coff:ee::/64"),
+     ({"netif": "foobar", "addr": "dead:coff:ee::/64", "anycast": False},
+      "ifconfig foobar add dead:coff:ee::/64"),
+     ({"netif": "foobar", "addr": "dead:coff:ee::/64", "anycast": True},
+      "ifconfig foobar add dead:coff:ee::/64 anycast")]
+)
+def test_netif_add_error(kwargs, expected):
     rc = init_ctrl()
     si = riotctrl_shell.netif.Netif(rc)
     with pytest.raises(RuntimeError):
-        si.netif_add("foobar", "dead:coff:ee::/64")
-    assert rc.term.last_command == "ifconfig foobar add dead:coff:ee::/64"
-
-
-def test_netif_add_anycast_error():
-    rc = init_ctrl()
-    si = riotctrl_shell.netif.Netif(rc)
-    with pytest.raises(RuntimeError):
-        si.netif_add("foobar", "dead:coff:ee::/64", anycast=True)
-    assert rc.term.last_command == \
-        "ifconfig foobar add dead:coff:ee::/64 anycast"
+        si.netif_add(**kwargs)
+    assert rc.term.last_command == expected
 
 
 def test_netif_del():
@@ -351,20 +344,20 @@ def test_netif_del_error():
     assert rc.term.last_command == "ifconfig foobar del dead:coff:ee::/64"
 
 
-def test_netif_flag_set():
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [({"netif": "foobar", "flag": "6lo"}, "ifconfig foobar 6lo"),
+     ({"netif": "foobar", "flag": "6lo", "enable": True},
+      "ifconfig foobar 6lo"),
+     ({"netif": "foobar", "flag": "6lo", "enable": False},
+      "ifconfig foobar -6lo")]
+)
+def test_netif_flag(kwargs, expected):
     rc = init_ctrl(output="success: set option")
     si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_flag("foobar", "6lo")
+    res = si.netif_flag(**kwargs)
     assert res == "success: set option"
-    assert rc.term.last_command == "ifconfig foobar 6lo"
-
-
-def test_netif_flag_unset():
-    rc = init_ctrl(output="success: set option")
-    si = riotctrl_shell.netif.Netif(rc)
-    res = si.netif_flag("foobar", "6lo", False)
-    assert res == "success: set option"
-    assert rc.term.last_command == "ifconfig foobar -6lo"
+    assert rc.term.last_command == expected
 
 
 def test_netif_flag_error():
@@ -454,16 +447,12 @@ def test_netif_txtsnd():
     assert res == "txtsnd foobar bcast abcdef"
 
 
-def test_netif_txtsnd_error1():
-    rc = init_ctrl(output="error: foobar")
-    si = riotctrl_shell.netif.NetifSend(rc)
-    with pytest.raises(RuntimeError):
-        si.netif_txtsnd("foobar", "bcast", "abcdef")
-    assert rc.term.last_command == "txtsnd foobar bcast abcdef"
-
-
-def test_netif_txtsnd_error2():
-    rc = init_ctrl(output="usage: txtsnd foobar")
+@pytest.mark.parametrize(
+    "error_msg",
+    ["error: foobar", "usage: txtsnd foobar"]
+)
+def test_netif_txtsnd_error(error_msg):
+    rc = init_ctrl(output=error_msg)
     si = riotctrl_shell.netif.NetifSend(rc)
     with pytest.raises(RuntimeError):
         si.netif_txtsnd("foobar", "bcast", "abcdef")
