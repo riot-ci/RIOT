@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
 # Copyright 2016-2019 ARM Limited or its affiliates
@@ -16,16 +15,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# ----------------------------------------------------------------------------
-
-import sys
-import os
-suittoolPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')
-sys.path.insert(0,suittoolPath)
-from suit_tool import clidriver
-
-def main():
-  return clidriver.main()
-
-if __name__ == "__main__":
-  sys.exit(main())
+#
+__version__ = '0.0.1'

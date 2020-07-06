@@ -1,7 +1,6 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Copyright 2019 ARM Limited or its affiliates
+# Copyright 2019-2020 ARM Limited or its affiliates
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -19,16 +18,24 @@
 # ----------------------------------------------------------------------------
 import binascii
 import copy
+import collections
+import json
+import cbor
+import sys
+import textwrap
+import itertools
 
 import logging
+
+from collections import OrderedDict
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
 
 from suit_tool.manifest import SUITComponentId, SUITCommon, SUITSequence, \
-                     SUITCommand, \
-                     SUITWrapper, SUITTryEach
+                     suitCommonInfo, SUITCommand, SUITManifest, \
+                     SUITWrapper, SUITTryEach, SUITBWrapField
 
 LOG = logging.getLogger(__name__)
 
@@ -92,16 +99,30 @@ def make_sequence(cid, choices, seq, params, cmds, pcid_key=None, param_drctv='d
         seq.append(mkCommand(pcid, param_drctv, params))
     TryEachCmd = SUITTryEach()
     for c in choices:
-        TECseq = SUITSequence()
-        for item, cmd in neqcmds.items():
-            TECseq.append(cmd(cid, c))
+        TECseq = TryEachCmd.field.obj().from_json([])
         params = {}
         for param, pcmd in neqparams.items():
             k,v = pcmd(cid, c)
             params[k] = v
+        dep_params = {}
+        TECseq_cmds = []
+        for item, cmd in neqcmds.items():
+            ncmd = cmd(cid, c)
+            for dp in ncmd.dep_params:
+                if dp in params:
+                    dep_params[dp] = params[dp]
+                    del params[dp]
+            TECseq_cmds.append(ncmd)
+
+        if len(dep_params):
+            TECseq.v.append(mkCommand(pcid, param_drctv, dep_params))
+        
+        for cmd in TECseq_cmds:
+            TECseq.v.append(cmd)
+
         if len(params):
-            TECseq.append(mkCommand(pcid, param_drctv, params))
-        if len(TECseq.items):
+            TECseq.v.append(mkCommand(pcid, param_drctv, params))
+        if hasattr(TECseq, "v") and len(TECseq.v.items):
             TryEachCmd.append(TECseq)
     if len(TryEachCmd.items):
         seq.append(mkCommand(cid, 'directive-try-each', TryEachCmd))
@@ -114,14 +135,15 @@ def compile_manifest(options, m):
     m = copy.deepcopy(m)
     m['components'] += options.components
     # Compile list of All Component IDs
-    ids = set([
+    # There is no ordered set, so use ordered dict instead
+    ids = OrderedDict.fromkeys([
         SUITComponentId().from_json(id) for comp_ids in [
             [c[f] for f in [
                 'install-id', 'download-id', 'load-id'
             ] if f in c] for c in m['components']
         ] for id in comp_ids
     ])
-    cid_data = {}
+    cid_data = OrderedDict()
     for c in m['components']:
         if not 'install-id' in c:
             LOG.critical('install-id required for all components')
@@ -153,20 +175,19 @@ def compile_manifest(options, m):
 
     # Construct common sequence
     CommonCmds = {
-        'offset': lambda cid, data: mkCommand(cid, 'condition-component-offset', data['offset'])
+        'offset': lambda cid, data: mkCommand(cid, 'condition-component-offset', None),
+        'vendor-id': lambda cid, data: mkCommand(cid, 'condition-vendor-identifier', None),
+        'class-id': lambda cid, data: mkCommand(cid, 'condition-class-identifier', None),
     }
     CommonParams = {
         'install-digest': lambda cid, data: ('image-digest', data['install-digest']),
         'install-size': lambda cid, data: ('image-size', data['install-size']),
+        'vendor-id' : lambda cid, data: ('vendor-id', data['vendor-id']),
+        'class-id' : lambda cid, data: ('class-id', data['class-id']),
+        'offset' : lambda cid, data: ('offset', data['offset'])
     }
     CommonSeq = SUITSequence()
     for cid, choices in cid_data.items():
-        if any(['vendor-id' in c for c in choices]):
-            CommonSeq.append(mkCommand(cid, 'condition-vendor-identifier',
-                [c['vendor-id'] for c in choices if 'vendor-id' in c][0]))
-        if any(['vendor-id' in c for c in choices]):
-            CommonSeq.append(mkCommand(cid, 'condition-class-identifier',
-                [c['class-id'] for c in choices if 'class-id' in c][0]))
         CommonSeq = make_sequence(cid, choices, CommonSeq, CommonParams,
             CommonCmds, param_drctv='directive-override-parameters')
 
@@ -176,12 +197,13 @@ def compile_manifest(options, m):
         if any([c.get('install-on-download', True) and 'uri' in c for c in choices]):
             InstParams = {
                 'uri' : lambda cid, data: ('uri', data['uri']),
+                'offset' : lambda cid, data: ('offset', data['offset']),
             }
             if any(['compression-info' in c and not c.get('decompress-on-load', False) for c in choices]):
                 InstParams['compression-info'] = lambda cid, data: data.get('compression-info')
             InstCmds = {
                 'offset': lambda cid, data: mkCommand(
-                    cid, 'condition-component-offset', data['offset'])
+                    cid, 'condition-component-offset', None)
             }
             InstSeq = make_sequence(cid, choices, InstSeq, InstParams, InstCmds)
             InstSeq.append(mkCommand(cid, 'directive-fetch', None))
@@ -191,7 +213,8 @@ def compile_manifest(options, m):
             FetchParams = {
                 'uri' : lambda cid, data: ('uri', data['uri']),
                 'download-digest' : lambda cid, data : (
-                    'image-digest', data.get('download-digest', data['install-digest']))
+                    'image-digest', data.get('download-digest', data['install-digest'])),
+                'offset' : lambda cid, data: ('offset', data['offset']),
             }
             if any(['compression-info' in c and not c.get('decompress-on-load', False) for c in choices]):
                 FetchParams['compression-info'] = lambda cid, data: data.get('compression-info')
@@ -224,19 +247,26 @@ def compile_manifest(options, m):
     LoadSeq = SUITSequence()
     # If any component is marked bootable
     for cid, choices in cid_data.items():
-        if any([c.get('bootable', False) for c in choices]):
-            # TODO: Dependencies
-            # If there are dependencies
-                # Verify dependencies
-                # Process dependencies
-            ValidateSeq.append(mkCommand(cid, 'condition-image-match', None))
+        ValidateCmds = {
+            # 'install-digest' : lambda cid, data : mkCommand(cid, 'condition-image-match', None)
+        }
+        ValidateParams = {
+        }
+        ValidateSeq = make_sequence(cid, choices, ValidateSeq, ValidateParams, ValidateCmds)
+        ValidateSeq.append(mkCommand(cid, 'condition-image-match', None))
+        # if any([c.get('bootable', False) for c in choices]):
+        # TODO: Dependencies
+        # If there are dependencies
+            # Verify dependencies
+            # Process dependencies
+
 
         if any(['loadable' in c for c in choices]):
             # Generate image load section
             LoadParams = {
-                'install-id' : lambda cid, data : ('source-component', c['install-id']),
-                'load-digest' : ('image-digest', c.get('load-digest', c['install-digest'])),
-                'load-size' : ('image-size', c.get('load-size', c['install-size']))
+                'install-id'  : lambda cid, data : ('source-component', c['install-id']),
+                'load-digest' : lambda cid, data : ('image-digest', c.get('load-digest', c['install-digest'])),
+                'load-size'   : lambda cid, data : ('image-size', c.get('load-size', c['install-size'])),
             }
             if 'compression-info' in c and c.get('decompress-on-load', False):
                 LoadParams['compression-info'] = lambda cid, data: ('compression-info', c['compression-info'])
@@ -244,7 +274,7 @@ def compile_manifest(options, m):
                 # Move each loadable component
             }
             load_id = SUITComponentId().from_json(choices[0]['load-id'])
-            LoadSeq = make_sequence(load_id, choices, ValidateSeq, LoadParams, LoadCmds)
+            LoadSeq = make_sequence(load_id, choices, LoadSeq, LoadParams, LoadCmds)
             LoadSeq.append(mkCommand(load_id, 'directive-copy', None))
             LoadSeq.append(mkCommand(load_id, 'condition-image-match', None))
 
@@ -258,7 +288,7 @@ def compile_manifest(options, m):
                 'command-arg' : None
             }))
         else:
-            t = []
+            te = []
             for c in bootable_components:
                 pass
                 # TODO: conditions
@@ -267,7 +297,7 @@ def compile_manifest(options, m):
                 # )
     #TODO: Text
     common = SUITCommon().from_json({
-        'components': [id.to_json() for id in ids],
+        'components': [id.to_json() for id in ids.keys()],
         'common-sequence': CommonSeq.to_json(),
     })
 

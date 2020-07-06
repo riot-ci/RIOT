@@ -14,10 +14,10 @@
  * @experimental
  *
  * @note The current implementation of this specification is based on the
- *       IETF-SUIT-v3 draft. The module is still experimental and will change to
+ *       IETF-SUIT-v7 draft. The module is still experimental and will change to
  *       match future draft specifications
  *
- * @see https://tools.ietf.org/html/draft-ietf-suit-manifest-03
+ * @see https://tools.ietf.org/html/draft-ietf-suit-manifest-04
  *
  * @{
  *
@@ -126,6 +126,34 @@ enum {
 };
 
 /**
+ * @name SUIT parameters
+ * @{
+ */
+typedef enum {
+    SUIT_PARAMETER_VENDOR_IDENTIFIER = 1,
+    SUIT_PARAMETER_CLASS_IDENTIFIER  = 2,
+    SUIT_PARAMETER_IMAGE_DIGEST      = 3,
+    SUIT_PARAMETER_USE_BEFORE        = 4,
+    SUIT_PARAMETER_COMPONENT_OFFSET  = 5,
+    SUIT_PARAMETER_STRICT_ORDER      = 12,
+    SUIT_PARAMETER_SOFT_FAILURE      = 13,
+    SUIT_PARAMETER_IMAGE_SIZE        = 14,
+    SUIT_PARAMETER_ENCRYPTION_INFO   = 18,
+    SUIT_PARAMETER_COMPRESSION_INFO  = 19,
+    SUIT_PARAMETER_UNPACK_INFO       = 20,
+    SUIT_PARAMETER_URI               = 21,
+    SUIT_PARAMETER_SOURCE_COMPONENT  = 22,
+    SUIT_PARAMETER_RUN_ARGS          = 23,
+    SUIT_PARAMETER_DEVICE_IDENTIFIER = 24,
+    SUIT_PARAMETER_MINIMUM_BATTERY   = 26,
+    SUIT_PARAMETER_UPDATE_PRIORITY   = 27,
+    SUIT_PARAMETER_VERSION           = 28,
+    SUIT_PARAMETER_WAIT_INFO         = 29,
+    SUIT_PARAMETER_URI_LIST          = 30,
+} suit_parameter_t;
+/** @} */
+
+/**
  * @brief SUIT component struct
  */
 typedef struct {
@@ -134,6 +162,13 @@ typedef struct {
     nanocbor_value_t url;               /**< Url */
     nanocbor_value_t digest;            /**< Digest */
 } suit_component_t;
+
+/**
+ * @brief SUIT parameter reference
+ */
+typedef struct {
+    uint16_t offset;
+} suit_param_ref_t;
 
 /**
  * @brief SUIT manifest struct
@@ -145,6 +180,12 @@ typedef struct {
     size_t cose_payload_len;        /**< length of the COSE payload */
     uint32_t validated;             /**< bitfield of validated policies */
     uint32_t state;                 /**< bitfield holding state information */
+    suit_param_ref_t param_vendor_id;
+    suit_param_ref_t param_class_id;
+    suit_param_ref_t param_digest;
+    suit_param_ref_t param_uri;
+    suit_param_ref_t param_size;
+    suit_param_ref_t param_component_offset;
     /** List of components in the manifest */
     suit_component_t components[SUIT_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */

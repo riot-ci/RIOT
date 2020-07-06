@@ -1,7 +1,6 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------
-# Copyright 2019 ARM Limited or its affiliates
+# Copyright 2019-2020 ARM Limited or its affiliates
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -20,10 +19,18 @@
 import collections
 import binascii
 import cbor
+import json
 import copy
 import uuid
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+
+from collections import OrderedDict
+
+import logging
+LOG = logging.getLogger(__name__)
+
+TreeBranch = []
 
 ManifestKey = collections.namedtuple(
     'ManifestKey',
@@ -47,6 +54,12 @@ def to_bytes(s):
             else:
                 return str(s).encode('utf-8')
 
+class SUITException(Exception):
+    def __init__(self, m, data, tree_branch):
+        super().__init__(m)
+        self.data = data
+        self.tree_branch = tree_branch
+
 class SUITCommonInformation:
     def __init__(self):
         self.component_ids = []
@@ -69,7 +82,9 @@ class SUITInt:
     def to_json(self):
         return self.v
     def from_suit(self, v):
+        TreeBranch.append(type(self))
         self.v = int(v)
+        TreeBranch.pop()
         return self
     def to_suit(self):
         return self.v
@@ -78,17 +93,19 @@ class SUITInt:
 
 class SUITPosInt(SUITInt):
     def from_json(self, v):
+        TreeBranch.append(type(self))
         _v = int(v)
         if _v < 0:
             raise Exception('Positive Integers must be >= 0')
         self.v = _v
+        TreeBranch.pop()
         return self
     def from_suit(self, v):
         return self.from_json(v)
 
 class SUITManifestDict:
     def mkfields(d):
-        # rd = {}
+        # rd = OderedDict()
         return {k: ManifestKey(*v) for k,v in d.items()}
 
     def __init__(self):
@@ -100,7 +117,7 @@ class SUITManifestDict:
         return self
 
     def to_json(self):
-        j = {}
+        j = OrderedDict()
         for k, f in self.fields.items():
             v = getattr(self, k)
             if v:
@@ -108,14 +125,18 @@ class SUITManifestDict:
         return j
 
     def from_suit(self, data):
+        TreeBranch.append(type(self))
         for k, f in self.fields.items():
+            TreeBranch.append(k)
             v = data.get(f.suit_key, None)
             d = f.obj().from_suit(v) if v is not None else None
             setattr(self, k, d)
+            TreeBranch.pop()
+        TreeBranch.pop()
         return self
 
     def to_suit(self):
-        sd = {}
+        sd = OrderedDict()
         for k, f in self.fields.items():
             v = getattr(self, k)
             if v:
@@ -136,8 +157,12 @@ class SUITManifestDict:
 
 class SUITManifestNamedList(SUITManifestDict):
     def from_suit(self, data):
+        TreeBranch.append(type(self))
         for k, f in self.fields.items():
+            TreeBranch.append(k)
             setattr(self, k, f.obj().from_suit(data[f.suit_key]))
+            TreeBranch.pop()
+        TreeBranch.pop()
         return self
 
     def to_suit(self):
@@ -172,10 +197,12 @@ class SUITKeyMap:
     def to_suit(self):
         return self.v
     def from_suit(self, d):
+        TreeBranch.append(type(self))
         self.v = self.keymap[self.rkeymap[d]]
+        TreeBranch.pop()
         return self
     def to_debug(self, indent):
-        s = str(self.v) + ' / ' + self.to_json() + ' /'
+        s = str(self.v) + ' / ' + json.dumps(self.to_json(),sort_keys = True) + ' /'
         return s
 
 def SUITBWrapField(c):
@@ -183,7 +210,21 @@ def SUITBWrapField(c):
         def to_suit(self):
             return cbor.dumps(self.v.to_suit(), sort_keys=True)
         def from_suit(self, d):
-            self.v = c().from_suit(cbor.loads(d))
+            TreeBranch.append(type(self))
+            try:
+                self.v = c().from_suit(cbor.loads(d))
+            except SUITException as e:
+                raise e
+            except Exception as e:
+                LOG.debug('At {}: failed to load "{}" as CBOR'.format(type(self),binascii.b2a_hex(d).decode('utf-8')))
+                LOG.debug('Path: {}'.format(TreeBranch))
+                # LOG.debug('At {}: failed to load "{}" as CBOR'.format(type(self),binascii.b2a_hex(d).decode('utf-8')))
+                raise SUITException(
+                    m = 'At {}: failed to load "{}" as CBOR'.format(type(self),binascii.b2a_hex(d).decode('utf-8')),
+                    data = d,
+                    tree_branch = TreeBranch
+                )
+            TreeBranch.pop()
             return self
         def to_json(self):
             return self.v.to_json()
@@ -225,8 +266,12 @@ class SUITManifestArray:
 
     def from_suit(self, data):
         self.items = []
+        TreeBranch.append(type(self))
         for d in data:
+            TreeBranch.append(len(self.items))
             self.items.append(self.field.obj().from_suit(d))
+            TreeBranch.pop()
+        TreeBranch.pop()
         return self
 
     def to_suit(self):
@@ -270,7 +315,7 @@ class SUITUUID(SUITBytes):
         self.v = uuid.UUID(bytes=d).bytes
         return self
     def to_debug(self, indent):
-        return 'h\'' + self.to_json() + '\' / ' + str(uuid.UUID(bytes=self.v)) + ' /'
+        return 'h\'' + json.dumps(self.to_json(), sort_keys=True) + '\' / ' + str(uuid.UUID(bytes=self.v)) + ' /'
 
 
 class SUITRaw:
@@ -376,11 +421,14 @@ class SUITCompressionInfo(SUITKeyMap):
 
 class SUITParameters(SUITManifestDict):
     fields = SUITManifestDict.mkfields({
-        'digest' : ('image-digest', 11, SUITDigest),
-        'size' : ('image-size', 12, SUITPosInt),
-        'uri' : ('uri', 6, SUITTStr),
-        'src' : ('source-component', 10, SUITComponentIndex),
-        'compress' : ('compression-info', 8, SUITCompressionInfo)
+        'vendor-id' : ('vendor-id', 1, SUITUUID),
+        'class-id' : ('class-id', 2, SUITUUID),
+        'digest' : ('image-digest', 3, SUITBWrapField(SUITDigest)),
+        'size' : ('image-size', 14, SUITPosInt),
+        'uri' : ('uri', 21, SUITTStr),
+        'src' : ('source-component', 22, SUITComponentIndex),
+        'compress' : ('compression-info', 19, SUITCompressionInfo),
+        'offset' : ('offset', 5, SUITPosInt)
     })
     def from_json(self, j):
         return super(SUITParameters, self).from_json(j)
@@ -388,10 +436,11 @@ class SUITParameters(SUITManifestDict):
 class SUITTryEach(SUITManifestArray):
     pass
 
-def SUITCommandContainer(jkey, skey, argtype):
+def SUITCommandContainer(jkey, skey, argtype, dp=[]):
     class SUITCmd(SUITCommand):
         json_key = jkey
         suit_key = skey
+        dep_params = dp
         def __init__(self):
             pass
         def to_suit(self):
@@ -435,31 +484,30 @@ class SUITCommand:
         return self.scommands[s[0]]().from_suit(s)
 
 SUITCommand.commands = [
-    SUITCommandContainer('condition-vendor-identifier',    1,  SUITUUID),
-    SUITCommandContainer('condition-class-identifier',     2,  SUITUUID),
-    SUITCommandContainer('condition-image-match',          3,  SUITNil),
-    SUITCommandContainer('condition-use-before',           4,  SUITRaw),
-    SUITCommandContainer('condition-component-offset',     5,  SUITRaw),
-    SUITCommandContainer('condition-custom',               6,  SUITRaw),
-    SUITCommandContainer('condition-device-identifier',    24, SUITRaw),
-    SUITCommandContainer('condition-image-not-match',      25, SUITRaw),
-    SUITCommandContainer('condition-minimum-battery',      26, SUITRaw),
-    SUITCommandContainer('condition-update-authorised',    27, SUITRaw),
-    SUITCommandContainer('condition-version',              28, SUITRaw),
+    SUITCommandContainer('condition-vendor-identifier',    1,  SUITNil, ['vendor-id']),
+    SUITCommandContainer('condition-class-identifier',     2,  SUITNil, ['class-id']),
+    SUITCommandContainer('condition-image-match',          3,  SUITNil, ['digest']),
+    SUITCommandContainer('condition-use-before',           4,  SUITNil),
+    SUITCommandContainer('condition-component-offset',     5,  SUITNil, ['offset']),
+    SUITCommandContainer('condition-device-identifier',    24, SUITNil),
+    SUITCommandContainer('condition-image-not-match',      25, SUITNil),
+    SUITCommandContainer('condition-minimum-battery',      26, SUITNil),
+    SUITCommandContainer('condition-update-authorised',    27, SUITNil),
+    SUITCommandContainer('condition-version',              28, SUITNil),
     SUITCommandContainer('directive-set-component-index',  12, SUITPosInt),
-    SUITCommandContainer('directive-set-dependency-index', 13, SUITRaw),
-    SUITCommandContainer('directive-abort',                14, SUITRaw),
+    SUITCommandContainer('directive-set-dependency-index', 13, SUITPosInt),
+    SUITCommandContainer('directive-abort',                14, SUITNil),
     SUITCommandContainer('directive-try-each',             15, SUITTryEach),
-    SUITCommandContainer('directive-process-dependency',   18, SUITRaw),
+    SUITCommandContainer('directive-process-dependency',   18, SUITNil),
     SUITCommandContainer('directive-set-parameters',       19, SUITParameters),
     SUITCommandContainer('directive-override-parameters',  20, SUITParameters),
     SUITCommandContainer('directive-fetch',                21, SUITNil),
-    SUITCommandContainer('directive-copy',                 22, SUITRaw),
-    SUITCommandContainer('directive-run',                  23, SUITRaw),
-    SUITCommandContainer('directive-wait',                 29, SUITRaw),
+    SUITCommandContainer('directive-copy',                 22, SUITNil),
+    SUITCommandContainer('directive-run',                  23, SUITNil),
+    SUITCommandContainer('directive-wait',                 29, SUITNil),
     SUITCommandContainer('directive-run-sequence',         30, SUITRaw),
     SUITCommandContainer('directive-run-with-arguments',   31, SUITRaw),
-    SUITCommandContainer('directive-swap',                 32, SUITRaw),
+    SUITCommandContainer('directive-swap',                 32, SUITNil),
 ]
 SUITCommand.jcommands = { c.json_key : c for c in SUITCommand.commands}
 SUITCommand.scommands = { c.suit_key : c for c in SUITCommand.commands}
@@ -471,6 +519,7 @@ class SUITSequence(SUITManifestArray):
         suit_l = []
         suitCommonInfo.current_index = 0 if len(suitCommonInfo.component_ids) == 1 else None
         for i in self.items:
+            # print(i.json_key, i.arg)
             if i.json_key == 'directive-set-component-index':
                 suitCommonInfo.current_index = i.arg.v
             else:
@@ -491,7 +540,7 @@ class SUITSequence(SUITManifestArray):
         self.items = [SUITCommand().from_suit(i) for i in zip(*[iter(s)]*2)]
         return self
 
-SUITTryEach.field = collections.namedtuple('ArrayElement', 'obj')(obj=SUITSequence)
+SUITTryEach.field = collections.namedtuple('ArrayElement', 'obj')(obj=SUITBWrapField(SUITSequence))
 
 class SUITSequenceComponentReset(SUITSequence):
     def to_suit(self):
@@ -618,7 +667,7 @@ class COSETaggedAuth(COSETagChoice):
     })
 
 class COSEList(SUITManifestArray):
-    field = collections.namedtuple('ArrayElement', 'obj')(obj=COSETaggedAuth)
+    field = collections.namedtuple('ArrayElement', 'obj')(obj=SUITBWrapField(COSETaggedAuth))
     def from_suit(self, data):
         return super(COSEList, self).from_suit(data)
 
@@ -651,7 +700,7 @@ class SUITWrapper(SUITManifestDict):
             if v is None:
                 continue
             cbor_field = cbor.dumps(v.to_suit(), sort_keys=True)
-            digest = hashes.Hash(digest_algorithms.get(digest_alg)(), backend=default_backend())
+            digest = hashes.Hash(self.digest_algorithms.get(digest_alg)(), backend=default_backend())
             digest.update(cbor_field)
             field_digest = SUITDigest().from_json({
                 'algorithm-id' : digest_alg,
@@ -677,7 +726,7 @@ class SUITWrapper(SUITManifestDict):
             digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
             digest.update(cbor_field)
             actual_digest = digest.finalize()
-            field_digest = getattr(sev.nsev.v, k)
+            field_digest = getattr(nsev.v, k)
             expected_digest = field_digest.to_suit()[1]
             if digest != expected_digest:
                 raise Exception('Field Digest mismatch: For {}, expected: {}, got {}'.format(
