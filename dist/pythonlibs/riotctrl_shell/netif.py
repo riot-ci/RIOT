@@ -43,7 +43,7 @@ class IfconfigListParser(ShellInteractionParser):
         """
         Parses output of Ifconfig::ifconfig_list()
 
-        See tests for further possible items:
+        See tests (tests/test_netif_list_parse.py) for further possible items:
 
         >>> parser = IfconfigListParser()
         >>> res = parser.parse("Iface WP_01  HWAddr: ab:cd  6LO  PROMISC\\n"
