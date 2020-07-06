@@ -666,7 +666,7 @@ typedef struct gcoap_listener gcoap_listener_t;
  * @brief   Handler function for the request matcher strategy
  *
  * @param[in]  listener     Listener context
- * @param[out] resource     Matchin resource
+ * @param[out] resource     Matching resource
  * @param[in]  pdu          Pointer to the PDU
  *
  * @return  GCOAP_RESOURCE_FOUND      on resource match
