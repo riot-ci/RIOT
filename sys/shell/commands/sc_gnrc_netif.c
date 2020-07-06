@@ -540,7 +540,7 @@ static void _netif_list(netif_t *iface)
     _print_iface_name(iface);
     printf(" ");
 
-    /* XXX devide options and flags by at least two spaces! */
+    /* XXX divide options and flags by at least two spaces! */
     res = netif_get_opt(iface, NETOPT_ADDRESS, 0, hwaddr, sizeof(hwaddr));
     if (res >= 0) {
         char hwaddr_str[res * 3];
