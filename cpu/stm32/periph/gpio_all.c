@@ -83,8 +83,9 @@ static inline int _pin_num(gpio_t pin)
     return (pin & 0x0f);
 }
 
-static inline void port_init_clock(gpio_t pin)
+static inline void port_init_clock(GPIO_TypeDef *port, gpio_t pin)
 {
+    (void)port; /* <-- Only used for when port G requires special handling */
 #if defined(CPU_FAM_STM32F0) || defined (CPU_FAM_STM32F3) || defined(CPU_FAM_STM32L1)
     periph_clk_en(AHB, (RCC_AHBENR_GPIOAEN << _port_num(pin)));
 #elif defined (CPU_FAM_STM32L0)
@@ -118,7 +119,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
     int pin_num = _pin_num(pin);
 
     /* enable clock */
-    port_init_clock(pin);
+    port_init_clock(port, pin);
     /* set mode */
     set_mode(port, pin_num, mode);
     /* set pull resistor configuration */
@@ -139,7 +140,7 @@ void gpio_init_af(gpio_t pin, gpio_af_t af)
     uint32_t pin_num = _pin_num(pin);
 
     /* enable clock */
-    port_init_clock(pin);
+    port_init_clock(port, pin);
     /* set selected function */
     port->AFR[(pin_num > 7) ? 1 : 0] &= ~(0xf << ((pin_num & 0x07) * 4));
     port->AFR[(pin_num > 7) ? 1 : 0] |= (af << ((pin_num & 0x07) * 4));
