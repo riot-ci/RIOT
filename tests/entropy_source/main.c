@@ -19,6 +19,8 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
+
 #include "fmt.h"
 #include "xtimer.h"
 #include "entropy_source.h"
@@ -55,11 +57,13 @@ int main(void)
 
 #if MODULE_PERIPH_ADC
     uint32_t start, stop;
+    uint32_t entropy;
 
-    ret = entropy_source_adc_entropy_per_sample();
-    printf("ADC noise source entropy/sample: %i [2^16 * bit / sample]\n", ret);
+    entropy = entropy_source_adc_entropy_per_sample();
+    printf("ADC noise source entropy/sample: %"PRIu32" [2^16 * bit / sample]\n", \
+            entropy);
     print_str("ADC noise source entropy/sample: ");
-    print_float(ENTROPY_SOURCE_HMIN_SCALE_BACK(ret), 6);
+    print_float(ENTROPY_SOURCE_HMIN_SCALE_BACK(entropy), 6);
     print_str(" [bit / sample]\n");
 
     /* Initialize ADC noise source */

@@ -66,13 +66,13 @@ typedef struct {
  *          entropy per sample (8 Byte) of a noise source can likely be smaller
  *          than 1 bit.
  */
-#define ENTROPY_SOURCE_HMIN_SCALE(x)    ((unsigned)(x * (1 << 16)))
+#define ENTROPY_SOURCE_HMIN_SCALE(x)    ((x * (1UL << 16)))
 
 /**
  * @brief   Scale internal fixed point Min. Entropy back to float. This macro is
  *          not required and only there for convenience.
  */
-#define ENTROPY_SOURCE_HMIN_SCALE_BACK(x)    (((float)x / (1 << 16)))
+#define ENTROPY_SOURCE_HMIN_SCALE_BACK(x)    ((float)x / (1UL << 16))
 
 /**
  * @defgroup   sys_entropy_source_config Entropy Source compile configurations

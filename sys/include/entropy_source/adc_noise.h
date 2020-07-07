@@ -134,7 +134,7 @@ int entropy_source_adc_get(uint8_t *buf, size_t len);
  *
  * @return          entropy per sample
  */
-static inline int entropy_source_adc_entropy_per_sample(void)
+static inline uint32_t entropy_source_adc_entropy_per_sample(void)
 {
     return CONFIG_ENTROPY_SOURCE_ADC_HMIN;
 }
