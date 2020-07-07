@@ -199,7 +199,9 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     char *writepos = readpos;
 
     uint8_t pstate = PARSE_BLANK;
-
+#if IS_USED(MODULE_SHELL_HOOKS)
+        post_readline_hook();
+#endif
     for (; *readpos != '\0'; readpos++) {
 
         char wordbreak = SPACE;
@@ -300,7 +302,13 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
     /* then we call the appropriate handler */
     shell_command_handler_t handler = find_handler(command_list, argv[0]);
     if (handler != NULL) {
+#if IS_USED(MODULE_SHELL_HOOKS)
+        pre_command_hook(argc, argv);
+#endif
         handler(argc, argv);
+#if IS_USED(MODULE_SHELL_HOOKS)
+        post_command_hook(argc, argv);
+#endif
     }
     else {
         if (strcmp("help", argv[0]) == 0) {
@@ -310,6 +318,23 @@ static void handle_input_line(const shell_command_t *command_list, char *line)
             printf("shell: command not found: %s\n", argv[0]);
         }
     }
+}
+
+__attribute__((weak)) void post_readline_hook(void)
+{
+
+}
+
+__attribute__((weak)) void pre_command_hook(int argc, char **argv)
+{
+    (void)argv;
+    (void)argc;
+}
+
+__attribute__((weak)) void post_command_hook(int argc, char **argv)
+{
+    (void)argv;
+    (void)argc;
 }
 
 static inline void print_prompt(void)
