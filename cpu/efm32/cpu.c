@@ -107,10 +107,10 @@ static void clk_init(void)
 
     /* initialize LFXO with board-specific parameters before switching */
     if (CLOCK_LFA == cmuSelect_LFXO || CLOCK_LFB == cmuSelect_LFXO ||
-#if defined(_SILICON_LABS_32B_SERIES_0)
-        false)
-#elif defined(_SILICON_LABS_32B_SERIES_1)
+#if defined(_SILICON_LABS_32B_SERIES_1)
         CLOCK_LFE == cmuSelect_LFXO)
+#else
+        false)
 #endif
     {
         CMU_LFXOInit_TypeDef init_lfxo = CMU_LFXOINIT;
@@ -131,10 +131,10 @@ static void clk_init(void)
 
     /* disable the LFRCO if external crystal is used */
     if (CLOCK_LFA == cmuSelect_LFXO && CLOCK_LFB == cmuSelect_LFXO &&
-#if defined(_SILICON_LABS_32B_SERIES_0)
-        true)
-#elif defined(_SILICON_LABS_32B_SERIES_1)
+#if defined(_SILICON_LABS_32B_SERIES_1)
         CLOCK_LFE == cmuSelect_LFXO)
+#else
+        true)
 #endif
     {
         CMU_OscillatorEnable(cmuOsc_LFRCO, false, false);
