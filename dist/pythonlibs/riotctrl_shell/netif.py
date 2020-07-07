@@ -113,7 +113,7 @@ class IfconfigListParser(ShellInteractionParser):
     @staticmethod
     def _snake_case(option):
         """
-        Converts all option names parset by _parse_netif_option() to snake_case
+        Converts all option names parsed by _parse_netif_option() to snake_case
 
         >>> IfconfigListParser._snake_case("Max. Retrans.")
         'max_retrans'
