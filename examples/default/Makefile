@@ -34,6 +34,12 @@ USEMODULE += ps
 # include and auto-initialize all available sensors
 USEMODULE += saul_default
 
+/* TODO: drop this before merging */
+USEMODULE += shell_lock
+USEMODULE += shell_lock_auto_locking
+CFLAGS += -DSHELL_LOCK_PASSWORD=\"pass\"
+CFLAGS += -DSHELL_LOCK_AUTO_LOCK_TIMEOUT_MS=7000
+
 BOARD_PROVIDES_NETIF := acd52832 adafruit-clue airfy-beacon atmega256rfr2-xpro \
         arduino-nano-33-ble avr-rss2 b-l072z-lrwan1 cc2538dk dwm1001 fox \
         derfmega128 derfmega256 hamilton iotlab-m3 iotlab-a8-m3 lobaro-lorabox lsn50 mulle microbit msba2 \
