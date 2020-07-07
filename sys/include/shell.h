@@ -49,6 +49,34 @@ extern "C" {
 #define SHELL_DEFAULT_BUFSIZE   (128)
 
 /**
+ * @brief           Optional hook after readline has triggered.
+ * @details         User implemented function gets called after the shell
+ *                  readline is complete.
+ */
+void post_readline_hook(void);
+
+/**
+ * @brief           Optional hook before shell command is called.
+ * @details         User implemented function gets called before a valid shell
+ *                  command will be called.
+ *
+ * @param[in]       argc   Number of arguments supplied to the function invocation.
+ * @param[in]       argv   The supplied argument list.
+ */
+void pre_command_hook(int argc, char **argv);
+
+/**
+ * @brief           Optional hook after shell command is called.
+ * @details         User implemented function gets called before a valid shell
+ *                  command will be called.
+ *
+ * @param[in]       ret    Return value of the shell command.
+ * @param[in]       argc   Number of arguments supplied to the function invocation.
+ * @param[in]       argv   The supplied argument list.
+ */
+void post_command_hook(int ret, int argc, char **argv);
+
+/**
  * @brief           Protype of a shell callback handler.
  * @details         The functions supplied to shell_run() must use this signature.
  *                  The argument list is terminated with a NULL, i.e ``argv[argc] == NULL`.
