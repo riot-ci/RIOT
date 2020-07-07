@@ -5,5 +5,7 @@ USEMODULE += hashes
 USEMODULE += tinydtls_aes
 USEMODULE += tinydtls_ecc
 
+FEATURES_OPTIONAL += periph_hwrng
+
 # TinyDTLS only has support for 32-bit architectures ATM
 FEATURES_REQUIRED += arch_32bit
