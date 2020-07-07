@@ -95,7 +95,7 @@ int main(void)
 
     puts("RIOT emb6 test application");
 
-    at86rf2xx_setup(&at86rf2xx, at86rf2xx_params);
+    at86rf2xx_setup(&at86rf2xx, at86rf2xx_params, 0);
     netdev->driver->init((netdev_t *)&at86rf2xx);
     emb6_netdev_setup(netdev);
     emb6_init(&emb6);
