@@ -45,4 +45,8 @@ ifneq (,$(filter shell_commands,$(USEMODULE)))
   endif
 endif
 
+ifneq (,$(filter shell_lock,$(USEMODULE)))
+  FEATURES_BLACKLIST += arch_msp430
+endif
+
 include $(RIOTBASE)/sys/test_utils/Makefile.dep
