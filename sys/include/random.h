@@ -22,6 +22,7 @@
  *  - Simple Park-Miller PRNG
  *  - Musl C PRNG
  *  - Fortuna (CS)PRNG
+ *  - Hardware Random Number Generator (non-seedable)
  */
 
 #ifndef RANDOM_H
