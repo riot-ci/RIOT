@@ -279,6 +279,7 @@ typedef void (*netdev_event_cb_t)(netdev_t *dev, netdev_event_t event);
 typedef enum {
     NETDEV_AT86RF215,
     NETDEV_AT86RF2XX,
+    NETDEV_DOSE,
 } netdev_type_t;
 /** @} */
 
