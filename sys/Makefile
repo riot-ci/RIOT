@@ -139,6 +139,9 @@ endif
 ifneq (,$(filter l2util,$(USEMODULE)))
   DIRS += net/link_layer/l2util
 endif
+ifneq (,$(filter eui_provider,$(USEMODULE)))
+  DIRS += net/link_layer/eui_provider
+endif
 ifneq (,$(filter nanocoap,$(USEMODULE)))
   DIRS += net/application_layer/nanocoap
 endif
