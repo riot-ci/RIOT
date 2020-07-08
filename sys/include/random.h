@@ -23,6 +23,7 @@
  *  - Musl C PRNG
  *  - Fortuna (CS)PRNG
  *  - Hardware Random Number Generator (non-seedable)
+ *    Refer to your MCU manual for platform specific properties.
  */
 
 #ifndef RANDOM_H
