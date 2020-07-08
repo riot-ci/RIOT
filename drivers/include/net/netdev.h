@@ -274,9 +274,11 @@ typedef void (*netdev_event_cb_t)(netdev_t *dev, netdev_event_t event);
 
 /**
  * @brief   Driver types for netdev.
+ *          To be used for @see netdev_register and to match EUI providers.
  * @{
  */
 typedef enum {
+    NETDEV_ANY = 0,         /**< Will match any device type */
     NETDEV_AT86RF215,
     NETDEV_AT86RF2XX,
     NETDEV_DOSE,
