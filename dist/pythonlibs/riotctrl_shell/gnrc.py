@@ -131,10 +131,7 @@ class GNRCICMPv6EchoParser(ShellInteractionParser):
                 m = c_rtts.match(line)
                 if m is not None:
                     self._set_rtts(res, m.groupdict())
-        if not res:
-            return None
-        else:
-            return res
+        return res
 
 
 class GNRCPktbufStatsResults(dict):
