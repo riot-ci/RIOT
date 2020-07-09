@@ -13,19 +13,10 @@
  * @author  Benjamin Valentin <benjamin.valentin@ml-pa.com>
  */
 
-#include "board.h"
+#include "eui48_provider_params.h"
+#include "eui64_provider_params.h"
 #include "luid.h"
 #include "net/eui_provider.h"
-
-#ifndef EUI48_PROVIDER_NUMOF
-#define EUI48_PROVIDER_NUMOF 0U
-static const eui48_conf_t eui48_conf[1];
-#endif
-
-#ifndef EUI64_PROVIDER_NUMOF
-#define EUI64_PROVIDER_NUMOF 0U
-static const eui64_conf_t eui64_conf[1];
-#endif
 
 void netdev_eui48_get(netdev_t *netdev, eui48_t *addr)
 {
