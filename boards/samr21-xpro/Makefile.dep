@@ -1,5 +1,8 @@
 ifneq (,$(filter netdev_default,$(USEMODULE)))
   USEMODULE += at86rf233
+endif
+
+ifneq (,$(filter eui_provider,$(USEMODULE)))
   USEMODULE += edbg_eui
 endif
 
