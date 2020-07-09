@@ -164,9 +164,9 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
      * efficiency reason we do that here, so we can do all in one single write
      * to the CTRLA register */
     const uint32_t ctrla = SERCOM_SPI_CTRLA_MODE(0x3)       /* 0x3 -> master */
-                           | SERCOM_SPI_CTRLA_DOPO(spi_config[bus].mosi_pad)
-                           | SERCOM_SPI_CTRLA_DIPO(spi_config[bus].miso_pad)
-                           | (mode << SERCOM_SPI_CTRLA_CPHA_Pos);
+                         | SERCOM_SPI_CTRLA_DOPO(spi_config[bus].mosi_pad)
+                         | SERCOM_SPI_CTRLA_DIPO(spi_config[bus].miso_pad)
+                         | (mode << SERCOM_SPI_CTRLA_CPHA_Pos);
 
     /* get exclusive access to the device */
     mutex_lock(&locks[bus]);
