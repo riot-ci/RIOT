@@ -263,6 +263,10 @@ typedef enum {
 
 /**
  * @brief   SPI device configuration
+ *
+ *          The frequency f() of the clock `gclk_src` must fulfill the condition
+ *
+ *              4 * spi_clk ≤ f(gclk_src) ≤ 512 * spi_clk
  */
 typedef struct {
     SercomSpi *dev;         /**< pointer to the used SPI device */
