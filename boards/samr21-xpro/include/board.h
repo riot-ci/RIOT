@@ -26,7 +26,6 @@
 #include "periph_cpu.h"
 
 #include "edbg_eui.h"
-#include "net/eui_provider.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,20 +70,12 @@ static inline int _edbg_get_eui64(const void *arg, eui64_t *addr)
 
 /**
  * @name    EUI sources on the board
- *
+ *          EUI-64 inside EDBG for the internal radio
  * @{
  */
-static const eui64_conf_t eui64_conf[] = {
-    /* EUI-64 inside EDBG for the internal radio */
-    {
-        .provider = _edbg_get_eui64,
-        .arg = NULL,
-        .type = NETDEV_AT86RF2XX,
-        .index = 0,
-    },
-};
-
-#define EUI64_PROVIDER_NUMOF    ARRAY_SIZE(eui64_conf)
+#define EUI64_PROVIDER_FUNC   _edbg_get_eui64
+#define EUI64_PROVIDER_TYPE   NETDEV_AT86RF2XX
+#define EUI64_PROVIDER_INDEX  0
 /** @} */
 
 /**
