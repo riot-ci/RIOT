@@ -175,8 +175,9 @@ typedef struct {
  * @brief   Setup a DOSE based device state
  * @param[out]  dev         Handle of the device to initialize
  * @param[in]   params      Parameters for device initialization
+ * @param[in]   index       The index in the config struct
  */
-void dose_setup(dose_t *dev, const dose_params_t *params);
+void dose_setup(dose_t *dev, const dose_params_t *params, uint8_t index);
 
 #ifdef __cplusplus
 }
