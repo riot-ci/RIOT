@@ -47,21 +47,13 @@ static inline int _at24mac_get_eui64(const void *arg, eui64_t *addr)
 }
 
 /**
- * @name    EUI sources on the board
- *
+ * @name    EUI-64 sources on the board
+ *          AT24Mac is present on the board
  * @{
  */
-static const eui64_conf_t eui64_conf[] = {
-    /* AT24Mac is present on the board */
-    {
-        .provider = _at24mac_get_eui64,
-        .arg = NULL,
-        .type = NETDEV_AT86RF2XX,
-        .index = 0,
-    },
-};
-
-#define EUI64_PROVIDER_NUMOF    ARRAY_SIZE(eui64_conf)
+#define EUI64_PROVIDER_FUNC   _at24mac_get_eui64
+#define EUI64_PROVIDER_TYPE   NETDEV_AT86RF2XX
+#define EUI64_PROVIDER_INDEX  0
 /** @} */
 
 /**
