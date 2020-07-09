@@ -19,7 +19,7 @@ def test_ping6():
     assert " -i 100 " in res
 
 
-def test_ping6_parser_success():
+def test_ping6_parser_success1():
     parser = riotctrl_shell.gnrc.GNRCICMPv6EchoParser()
     ping_res = parser.parse("""
 12 bytes from ::1: icmp_seq=0 ttl=64 time=0.435 ms
@@ -34,6 +34,24 @@ round-trip min/avg/max = 0.432/0.433/0.435 ms""")
     assert "avg" in ping_res["rtts"]
 
 
+def test_ping6_parser_success2():
+    parser = riotctrl_shell.gnrc.GNRCICMPv6EchoParser()
+    ping_res = parser.parse("""
+12 bytes from ::1: icmp_seq=0 ttl=64
+12 bytes from ::1: icmp_seq=1 ttl=64
+12 bytes from ::1: icmp_seq=1 ttl=64 (DUP)
+
+--- ::1 PING statistics ---
+2 packets transmitted, 3 packets received, 1 duplicates, 0% packet loss
+round-trip min/avg/max = 0.432/0.433/0.435 ms""")
+    assert ping_res is not None
+    assert "rtts" in ping_res
+    assert "avg" in ping_res["rtts"]
+    print(ping_res["replies"])
+    assert len(ping_res["replies"]) == 3
+    assert ping_res["replies"][2]["dup"]
+
+
 def test_ping6_parser_empty():
     parser = riotctrl_shell.gnrc.GNRCICMPv6EchoParser()
     ping_res = parser.parse("")
@@ -43,13 +61,15 @@ def test_ping6_parser_empty():
 def test_ping6_parser_missing_rtts():
     parser = riotctrl_shell.gnrc.GNRCICMPv6EchoParser()
     ping_res = parser.parse("""
-12 bytes from ::1: icmp_seq=0 ttl=64 time=0.553 ms
-12 bytes from ::1: icmp_seq=1 ttl=64 time=0.496 ms
-12 bytes from ::1: icmp_seq=2 ttl=64 time=0.496 ms
+12 bytes from ::1: icmp_seq=0 ttl=64
+12 bytes from ::1: icmp_seq=1 ttl=64
+12 bytes from ::1: icmp_seq=2 ttl=64
 
 --- ::1 PING statistics ---
 3 packets transmitted, 3 packets received, 0% packet loss""")
-    assert ping_res is None
+    assert ping_res is not None
+    assert "rtts" not in ping_res
+    assert len(ping_res["replies"]) == 3
 
 
 def test_pktbuf():
