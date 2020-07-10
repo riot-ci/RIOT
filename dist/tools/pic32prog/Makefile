@@ -23,4 +23,4 @@ $(CURDIR)/pic32prog:
 	@mv $(PKG_BUILD_DIR)/pic32prog $(CURDIR)/pic32prog
 
 clean::
-	@rm -f $(CURDIR)/pic32prog
+	rm -f $(CURDIR)/pic32prog
