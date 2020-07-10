@@ -181,3 +181,12 @@ Reason for removal:
 - its only user within the RIOT code base `gnrc_ipv6_ext` was reworked in
   f671a87fe2c539c3aecd595ae03fa4f6f209d042 so it is not needed anymore.
 - the function was deprecated in f2760c033c5f332be076b25aa212aca4007c3d65
+
+### pkg/emb6 [a72aa0a98dc9219f6b23b842aeb60aaaa3f92e05]
+Author(s):
+- Martine S. Lenders <m.lenders@fu-berlin.de>
+
+Reason for removal:
+- Stale upstream (last update to date in Mar 2018)
+- Ported version even older (last update Feb 2016)
+- Updating to more recent version would be more effort than its worth
