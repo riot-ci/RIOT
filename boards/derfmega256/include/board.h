@@ -32,7 +32,7 @@ extern "C" {
  * @name    MAC configuration
  *          Offset of the MAC address in the EEPROM
  */
-#define EEPROM_MAC_ADDR (0x0U)
+#define EEPROM_MAC_ADDR (0x1fe4)
 
 /**
  * @brief    Constant in EEPROM provides a EUI-64, this is also printed on the board
