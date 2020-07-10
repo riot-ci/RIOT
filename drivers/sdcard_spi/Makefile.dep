@@ -1,5 +1,5 @@
 FEATURES_REQUIRED += periph_gpio
 FEATURES_REQUIRED += periph_spi
-DEFAULT_MODULE += auto_init_storage
+FEATURES_OPTIONAL += periph_spi_reconfigure
 USEMODULE += checksum
 USEMODULE += xtimer
