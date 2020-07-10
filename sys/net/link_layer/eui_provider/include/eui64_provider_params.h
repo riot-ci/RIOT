@@ -14,8 +14,8 @@
  *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
  */
-#ifndef NET_EUI64_PROVIDER_PARAMS_H
-#define NET_EUI64_PROVIDER_PARAMS_H
+#ifndef EUI64_PROVIDER_PARAMS_H
+#define EUI64_PROVIDER_PARAMS_H
 
 #include "board.h"
 #include "net/eui_provider.h"
@@ -73,4 +73,4 @@ static const eui64_conf_t eui64_conf[] = {
 }
 #endif
 
-#endif /* NET_EUI64_PROVIDER_PARAMS_H */
+#endif /* EUI64_PROVIDER_PARAMS_H */

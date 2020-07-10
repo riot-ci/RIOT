@@ -14,8 +14,8 @@
  *
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
  */
-#ifndef NET_EUI48_PROVIDER_PARAMS_H
-#define NET_EUI48_PROVIDER_PARAMS_H
+#ifndef EUI48_PROVIDER_PARAMS_H
+#define EUI48_PROVIDER_PARAMS_H
 
 #include "board.h"
 #include "net/eui_provider.h"
@@ -73,4 +73,4 @@ static const eui48_conf_t eui48_conf[] = {
 }
 #endif
 
-#endif /* NET_EUI48_PROVIDER_PARAMS_H */
+#endif /* EUI48_PROVIDER_PARAMS_H */
