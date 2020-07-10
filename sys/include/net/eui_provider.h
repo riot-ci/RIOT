@@ -66,9 +66,9 @@ typedef struct {
 /**
  * @brief Generates an EUI-48 address for the netdev interface.
  *
- * @note It is possible to supply a board-specific, constant addres
+ * @note It is possible to supply a board-specific, constant address
  *       by implementing @ref board_get_eui48.
- *       If no such function is availiable, this will fall back to
+ *       If no such function is available, this will fall back to
  *       @ref luid_get_eui48.
  *
  * @param[in] netdev    The network device for which the address is
@@ -82,9 +82,9 @@ void netdev_eui48_get(netdev_t *netdev, eui48_t *addr);
 /**
  * @brief Generates an EUI-64 address for the netdev interface.
  *
- * @note It is possible to supply a board-specific, constant addres
+ * @note It is possible to supply a board-specific, constant address
  *       by implementing @ref board_get_eui64.
- *       If no such function is availiable, this will fall back to
+ *       If no such function is available, this will fall back to
  *       @ref luid_get_eui64.
  *
  * @param[in] netdev    The network device for which the address is
