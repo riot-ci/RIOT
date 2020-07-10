@@ -199,6 +199,7 @@ extern "C" {
 
 #include "iolist.h"
 #include "net/netopt.h"
+#include "kernel_defines.h"
 
 #ifdef MODULE_L2FILTER
 #include "net/l2filter.h"
@@ -272,6 +273,19 @@ typedef struct netdev netdev_t;
 typedef void (*netdev_event_cb_t)(netdev_t *dev, netdev_event_t event);
 
 /**
+ * @brief   Driver types for netdev.
+ *          To be used for @see netdev_register and to match EUI providers.
+ * @{
+ */
+typedef enum {
+    NETDEV_ANY = 0,         /**< Will match any device type */
+    NETDEV_AT86RF215,
+    NETDEV_AT86RF2XX,
+    NETDEV_DOSE,
+} netdev_type_t;
+/** @} */
+
+/**
  * @brief Structure to hold driver state
  *
  * Supposed to be extended by driver implementations.
@@ -290,7 +304,31 @@ struct netdev {
 #ifdef MODULE_L2FILTER
     l2filter_t filter[L2FILTER_LISTSIZE];   /**< link layer address filters */
 #endif
+#if !IS_ACTIVE(GNRC_NETIF_SINGLE)
+    netdev_type_t type;                     /**< driver type used for netdev */
+    uint8_t index;                          /**< instance number of the device */
+#endif
 };
+
+/**
+ * @brief Register a device with netdev.
+ *        Must by called by the driver's setup function.
+ *
+ * @param[out] type         the new netdev
+ * @param[in] type          the driver used for the netdev
+ * @param[in] index         the index in the config struct
+ */
+static inline void netdev_register(struct netdev *dev, netdev_type_t type, uint8_t index)
+{
+#if IS_ACTIVE(GNRC_NETIF_SINGLE)
+    (void) dev;
+    (void) type;
+    (void) index;
+#else
+    dev->type  = type;
+    dev->index = index;
+#endif
+}
 
 /**
  * @brief Structure to hold driver interface -> function mapping
