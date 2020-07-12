@@ -25,6 +25,7 @@
 #include "kernel_types.h"
 #include "thread.h"
 #include "mutex.h"
+#include "evtimer.h"
 #include "net/gnrc/netapi.h"
 #include "net/gnrc/tcp/tcb.h"
 
@@ -117,6 +118,11 @@ extern "C" {
  * @brief PID of GNRC TCP event handling thread
  */
 extern kernel_pid_t gnrc_tcp_pid;
+
+/**
+ * @brief Central evtimer used by gnrc_tcp
+ */
+extern evtimer_t gnrc_tcp_timer;
 
 /**
  * @brief Head of linked TCB list.

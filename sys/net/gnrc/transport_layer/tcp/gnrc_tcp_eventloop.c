@@ -220,6 +220,9 @@ static int _receive(gnrc_pktsnip_t *pkt)
     mutex_unlock(&_list_tcb_lock);
 
     /* Call FSM with event RCVD_PKT if a fitting TCB was found */
+    /* cppcheck-suppress knownConditionTrueFalse
+     * (reason: tcb can be NULL at runtime)
+     */
     if (tcb != NULL) {
         _fsm(tcb, FSM_EVENT_RCVD_PKT, pkt, NULL, 0);
     }
@@ -247,6 +250,9 @@ void *_event_loop(__attribute__((unused)) void *arg)
 
     /* Store pid */
     gnrc_tcp_pid = thread_getpid();
+
+    /* Initialize timer */
+    evtimer_init_msg_mbox(&gnrc_tcp_timer);
 
     /* Setup reply message */
     reply.type = GNRC_NETAPI_MSG_TYPE_ACK;

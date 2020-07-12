@@ -20,6 +20,8 @@
 #include <utlist.h>
 #include <errno.h>
 #include "byteorder.h"
+#include "evtimer.h"
+#include "evtimer_msg_mbox.h"
 #include "net/inet_csum.h"
 #include "net/gnrc.h"
 #include "internal/common.h"
@@ -271,7 +273,7 @@ int _pkt_send(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *out_pkt, const uint16_t seq_c
     if (!retransmit) {
         tcb->retries = 0;
         tcb->snd_nxt += seq_con;
-        tcb->rtt_start = xtimer_now().ticks32;
+        tcb->rtt_start = evtimer_now_msec();
     }
     else {
         tcb->retries += 1;
@@ -388,7 +390,8 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
             tcb->rto = CONFIG_GNRC_TCP_RTO_LOWER_BOUND;
         }
         else {
-            tcb->rto = tcb->srtt + _max(CONFIG_GNRC_TCP_RTO_GRANULARITY, CONFIG_GNRC_TCP_RTO_K * tcb->rtt_var);
+            tcb->rto = tcb->srtt + _max(CONFIG_GNRC_TCP_RTO_GRANULARITY,
+                                        CONFIG_GNRC_TCP_RTO_K * tcb->rtt_var);
         }
     }
     else {
@@ -412,9 +415,11 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
     }
 
     /* Setup retransmission timer, msg to TCP thread with ptr to TCB */
-    tcb->msg_retransmit.type = MSG_TYPE_RETRANSMISSION;
-    tcb->msg_retransmit.content.ptr = (void *) tcb;
-    xtimer_set_msg(&tcb->timer_retransmit, tcb->rto, &tcb->msg_retransmit, gnrc_tcp_pid);
+    tcb->event_retransmit.event.offset = tcb->rto;
+    tcb->event_retransmit.msg.type = MSG_TYPE_RETRANSMISSION;
+    tcb->event_retransmit.msg.content.ptr = (void *) tcb;
+    evtimer_add_msg(&gnrc_tcp_timer, (evtimer_msg_event_t *) &(tcb->event_retransmit),
+                    gnrc_tcp_pid);
     return 0;
 }
 
@@ -438,12 +443,12 @@ int _pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack)
 
     /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
     if (LSS_32_BIT(seg, ack)) {
-        xtimer_remove(&(tcb->timer_retransmit));
+        evtimer_del(&gnrc_tcp_timer, (evtimer_event_t *) &(tcb->event_retransmit));
         gnrc_pktbuf_release(tcb->pkt_retransmit);
         tcb->pkt_retransmit = NULL;
 
         /* Measure round trip time */
-        int32_t rtt = xtimer_now().ticks32 - tcb->rtt_start;
+        int32_t rtt = evtimer_now_msec() - tcb->rtt_start;
 
         /* Use time only if there was no timer overflow and no retransmission (Karns Algorithm) */
         if (tcb->retries == 0 && rtt > 0) {

@@ -427,7 +427,7 @@ ifneq (,$(filter gnrc_tcp,$(USEMODULE)))
   USEMODULE += inet_csum
   USEMODULE += random
   USEMODULE += tcp
-  USEMODULE += xtimer
+  USEMODULE += evtimer
   USEMODULE += core_mbox
 endif
 
