@@ -249,17 +249,17 @@ typedef struct {
  */
 #ifdef MCLK
 #define TC_CONFIG(tim)                    { \
-        .dev.tc   = tim,                    \
+        .dev       = {.tc = tim},           \
         .mclk      = MCLK_ ## tim,          \
         .mclk_mask = MCLK_ ## tim ## _MASK, \
         .gclk_id   = tim ## _GCLK_ID,       \
-        .type       = TIMER_TYPE_TC,      }
+        .type      = TIMER_TYPE_TC,      }
 #else
 #define TC_CONFIG(tim)                    { \
-        .dev.tc   = tim,                    \
+        .dev       = {.tc = tim},           \
         .pm_mask   = PM_APBCMASK_ ## tim,   \
         .gclk_id   = tim ## _GCLK_ID,       \
-        .type       = TIMER_TYPE_TC,      }
+        .type      = TIMER_TYPE_TC,      }
 #endif
 
 /**
@@ -267,14 +267,14 @@ typedef struct {
  */
 #ifdef MCLK
 #define TCC_CONFIG(tim)                   { \
-        .dev.tcc   = tim,                   \
+        .dev       = {.tcc = tim},          \
         .mclk      = MCLK_ ## tim,          \
         .mclk_mask = MCLK_ ## tim ## _MASK, \
         .gclk_id   = tim ## _GCLK_ID,       \
         .type       = TIMER_TYPE_TCC,     }
 #else
 #define TCC_CONFIG(tim)                   { \
-        .dev.tcc   = tim,                   \
+        .dev       = {.tcc = tim},          \
         .pm_mask   = PM_APBCMASK_ ## tim,   \
         .gclk_id   = tim ## _GCLK_ID,       \
         .type       = TIMER_TYPE_TCC,     }
