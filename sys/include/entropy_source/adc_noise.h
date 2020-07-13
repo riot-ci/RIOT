@@ -81,9 +81,10 @@ extern "C" {
 #endif
 
 /**
- * @brief   ADC Min. entropy per sample [2^16 * bit/sample].
+ * @brief   ADC estimated entropy per sample [2^16 * bit/sample].
  *
- * Min. entropy needs to be evaluated thoroughly beforehand! To avoid float, the
+ * The entropy value needs to be estimated and evaluated thoroughly beforehand
+ * deployment! To avoid float, the
  * actual entropy value per one byte sample needs to be manually multiplied by
  * 2^16 before setting it as configuration parameter. See
  * @ref sys_entropy_source for further information about entropy source

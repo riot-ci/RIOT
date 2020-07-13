@@ -50,13 +50,13 @@ config ENTROPY_SOURCE_ADC_LINE_NUM
         a board is not required to specify a minimum number of lines.
 
 config ENTROPY_SOURCE_ADC_HMIN
-    int "Min. entropy per sample [2^16 * bit/sample]"
+    int "Estimated entropy per sample [2^16 * bit/sample]"
     range 1 524288
     default 65536
     help
-        Min. entropy needs to be evaluated thoroughly beforehand! To avoid float, the
-        actual entropy value per one byte sample needs to be manually multiplied by 2^16
-        before setting it as configuration parameter.
+        The entropy value needs to be estimated and evaluated thoroughly before
+        deployment! To avoid float, the entropy value per one byte sample needs
+        to be manually multiplied by 2^16 before configuring it.
 
 config ENTROPY_SOURCE_ADC_HEALTH_TEST
     bool "Enable health test"

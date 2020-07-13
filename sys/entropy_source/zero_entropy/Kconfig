@@ -13,7 +13,7 @@ menuconfig KCONFIG_MODULE_ENTROPY_SOURCE_ZERO_ENTROPY
 if KCONFIG_MODULE_ENTROPY_SOURCE_ZERO_ENTROPY
 
 config ENTROPY_SOURCE_ZERO_HMIN
-    int "Min. entropy per sample (byte)"
+    int "Estimated entropy per sample (byte)"
     default 58982
     help
         This is a dummy default value for testing. The zero entropy module does not
