@@ -7,22 +7,18 @@
  */
 
 /**
- * @ingroup     unittests
- * @{
  *
  * @file
  * @brief       Test cases for the SHA1PRNG pseudo random number generator
  *
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  *
- * @}
  */
 
 #include <stdio.h>
 #include <string.h>
 
 #include "random.h"
-#include "tests-prng_sha1prng.h"
 
 /**
  * @brief expected sequence for seed=1. This sequence was generated running the
@@ -69,21 +65,18 @@ static void test_prng_sha1prng_java_u32(void)
     }
 
     /* compare generator output and reference */
-    TEST_ASSERT_EQUAL_INT(0, memcmp(test32, seq_seed1, sizeof(seq_seed1)));
+    if (!(memcmp(test32, seq_seed1, sizeof(seq_seed1)))) {
+        printf("%s:SUCCESS\n", __func__);
+    }
+    else {
+        printf("%s:FAILURE\n", __func__);
+    }
 }
 
-Test *tests_prng_sha1prng_tests(void)
+int main(void)
 {
-    EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_prng_sha1prng_java_u32),
-    };
 
-    EMB_UNIT_TESTCALLER(prng_sha1prng_tests, NULL, NULL, fixtures);
+    test_prng_sha1prng_java_u32();
 
-    return (Test *)&prng_sha1prng_tests;
-}
-
-void tests_prng_sha1prng(void)
-{
-    TESTS_RUN(tests_prng_sha1prng_tests());
+    return 0;
 }
