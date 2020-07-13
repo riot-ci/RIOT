@@ -7,22 +7,18 @@
  */
 
 /**
- * @ingroup     unittests
- * @{
  *
  * @file
  * @brief       Test cases for the SHA256PRNG pseudo random number generator
  *
  * @author      Peter Kietzmann <peter.kietzmann@haw-hamburg.de>
  *
- * @}
  */
 
 #include <stdio.h>
 #include <string.h>
 
 #include "random.h"
-#include "tests-prng_sha256prng.h"
 
 /**
  * @brief expected sequence for seed=1. This is only a regression test. The
@@ -58,7 +54,12 @@ static void test_prng_sha256prng_seed1_u32(void)
     }
 
     /* compare generator output and reference */
-    TEST_ASSERT_EQUAL_INT(0, memcmp(test32, seq_seed1, sizeof(seq_seed1)));
+    if (!(memcmp(test32, seq_seed1, sizeof(seq_seed1)))) {
+        printf("%s:SUCCESS\n", __func__);
+    }
+    else {
+        printf("%s:FAILURE\n", __func__);
+    }
 }
 
 static void test_prng_sha256prng_seed2_u8(void)
@@ -72,22 +73,18 @@ static void test_prng_sha256prng_seed2_u8(void)
     random_bytes(test8, sizeof(seq_seed2));
 
     /* compare generator output and reference */
-    TEST_ASSERT_EQUAL_INT(0, memcmp(test8, seq_seed2, sizeof(seq_seed2)));
+    if (!(memcmp(test8, seq_seed2, sizeof(seq_seed2)))) {
+        printf("%s:SUCCESS\n", __func__);
+    }
+    else {
+        printf("%s:FAILURE\n", __func__);
+    }
 }
 
-Test *tests_prng_sha256prng_tests(void)
+int main(void)
 {
-    EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(test_prng_sha256prng_seed1_u32),
-        new_TestFixture(test_prng_sha256prng_seed2_u8),
-    };
+    test_prng_sha256prng_seed1_u32();
+    test_prng_sha256prng_seed2_u8();
 
-    EMB_UNIT_TESTCALLER(prng_sha256prng_tests, NULL, NULL, fixtures);
-
-    return (Test *)&prng_sha256prng_tests;
-}
-
-void tests_prng_sha256prng(void)
-{
-    TESTS_RUN(tests_prng_sha256prng_tests());
+    return 0;
 }
