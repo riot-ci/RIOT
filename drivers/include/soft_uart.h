@@ -78,7 +78,7 @@ typedef unsigned soft_uart_t;
  * initialized in TX only mode.
  *
  * @param[in] uart          UART device to initialize
- * @param[in] baudrate      desired baudrate in baud/s
+ * @param[in] baudrate      desired symbol rate in baud
  * @param[in] rx_cb         receive callback, executed in interrupt context once
  *                          for every byte that is received (RX buffer filled),
  *                          set to NULL for TX only mode
