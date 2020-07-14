@@ -141,8 +141,8 @@ int soft_uart_init(soft_uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void
     struct uart_ctx *ctx = &soft_uart_ctx[uart];
 
     mutex_init(&ctx->lock);
-    mutex_init(&ctx->sync);
-    mutex_lock(&ctx->sync);
+    static const mutex_t init_locked = MUTEX_INIT_LOCKED;
+    ctx->sync = init_locked;
 
     ctx->baud = cfg->timer_freq / baudrate;
 
