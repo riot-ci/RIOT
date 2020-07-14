@@ -166,7 +166,7 @@ int soft_uart_init(soft_uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void
     ctx->state_rx = STATE_RX_IDLE;
 
     if (cfg->tx_pin != GPIO_UNDEF) {
-        timer_init(cfg->tx_timer, cfg->timer_freq, _tx_timer_cb, (void*) uart);
+        timer_init(cfg->tx_timer, cfg->timer_freq, _tx_timer_cb, (void *)uart);
         gpio_write(cfg->tx_pin, !(cfg->flags & SOFT_UART_FLAG_INVERT_TX));
         gpio_init(cfg->tx_pin, GPIO_OUT);
     }
