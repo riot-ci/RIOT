@@ -172,7 +172,7 @@ int soft_uart_init(soft_uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void
     }
 
     if (rx_cb) {
-        timer_init(cfg->rx_timer, cfg->timer_freq, _rx_timer_cb, (void*) uart);
+        timer_init(cfg->rx_timer, cfg->timer_freq, _rx_timer_cb, (void *)uart);
         timer_stop(cfg->rx_timer);
         /* timer should fire at the end of the byte */
         timer_set_periodic(cfg->rx_timer, 0, ctx->baud * (BITS_DATA(ctx) + BITS_PARITY(ctx) + 1),
