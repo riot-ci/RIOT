@@ -66,7 +66,7 @@ struct uart_ctx {
 
 static void _tx_timer_cb(void *arg, int chan)
 {
-    soft_uart_t uart = (soft_uart_t) arg;
+    soft_uart_t uart = (soft_uart_t)arg;
 
     const soft_uart_conf_t *cfg = &soft_uart_config[uart];
     struct uart_ctx *ctx = &soft_uart_ctx[uart];
