@@ -52,7 +52,9 @@ extern "C" {
 /**
  * @brief   Maximum number of components supported in a SUIT manifest
  */
+#ifndef SUIT_COMPONENT_MAX
 #define SUIT_COMPONENT_MAX                  (1U)
+#endif
 
 /**
  * @brief Current SUIT serialization format version
@@ -154,21 +156,25 @@ typedef enum {
 /** @} */
 
 /**
- * @brief SUIT component struct
- */
-typedef struct {
-    uint32_t size;                      /**< Size */
-    nanocbor_value_t identifier;        /**< Identifier */
-    nanocbor_value_t url;               /**< Url */
-    nanocbor_value_t digest;            /**< Digest */
-} suit_component_t;
-
-/**
  * @brief SUIT parameter reference
  */
 typedef struct {
     uint16_t offset;
 } suit_param_ref_t;
+
+/**
+ * @brief SUIT component struct
+ */
+typedef struct {
+    uint32_t size;                      /**< Size */
+    suit_param_ref_t identifier;
+    suit_param_ref_t param_vendor_id;
+    suit_param_ref_t param_class_id;
+    suit_param_ref_t param_digest;
+    suit_param_ref_t param_uri;
+    suit_param_ref_t param_size;
+    suit_param_ref_t param_component_offset;
+} suit_component_t;
 
 /**
  * @brief SUIT manifest struct
@@ -180,16 +186,10 @@ typedef struct {
     size_t cose_payload_len;        /**< length of the COSE payload */
     uint32_t validated;             /**< bitfield of validated policies */
     uint32_t state;                 /**< bitfield holding state information */
-    suit_param_ref_t param_vendor_id;
-    suit_param_ref_t param_class_id;
-    suit_param_ref_t param_digest;
-    suit_param_ref_t param_uri;
-    suit_param_ref_t param_size;
-    suit_param_ref_t param_component_offset;
     /** List of components in the manifest */
     suit_component_t components[SUIT_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */
-    uint32_t component_current;     /**< Current component index */
+    uint8_t component_current;      /**< Current component index */
     riotboot_flashwrite_t *writer;  /**< Pointer to the riotboot flash writer */
     /** Manifest validation buffer */
     uint8_t validation_buf[SUIT_COSE_BUF_SIZE];
@@ -205,6 +205,20 @@ typedef struct {
  * @brief Bit flags used to determine if SUIT manifest contains an image
  */
 #define SUIT_MANIFEST_HAVE_IMAGE        (0x2)
+
+/**
+ * @brief Component index representing all components
+ *
+ * Used when suit-directive-set-component-index = True
+ */
+#define SUIT_MANIFEST_COMPONENT_ALL     (UINT8_MAX)
+
+/**
+ * @brief Component index representing no components
+ *
+ * Used when suit-directive-set-component-index = False
+ */
+#define SUIT_MANIFEST_COMPONENT_NONE    (SUIT_MANIFEST_COMPONENT_ALL - 1)
 
 /**
  * @brief Parse a manifest

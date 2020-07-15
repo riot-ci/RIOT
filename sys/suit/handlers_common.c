@@ -54,12 +54,20 @@ static int _component_handler(suit_manifest_t *manifest, int key,
     }
     unsigned n = 0;
     while (!nanocbor_at_end(&arr)) {
+        if (n  >= SUIT_COMPONENT_MAX) {
+            LOG_INFO("Too many components found: %u, Supported: %u\n",
+                     n, SUIT_COMPONENT_MAX);
+            return SUIT_ERR_UNSUPPORTED;
+        }
+        suit_component_t *component = &manifest->components[n];
         nanocbor_value_t comp;
         if (nanocbor_enter_array(&arr, &comp) < 0) {
             LOG_DEBUG("component elements field not an array %d\n",
                       nanocbor_get_type(it));
             return SUIT_ERR_INVALID_MANIFEST;
         }
+        suit_param_cbor_to_ref(manifest, &component->identifier, &comp);
+        /* Ensure that all parts of the identifier are a bstr */
         while (!nanocbor_at_end(&comp)) {
             const uint8_t *identifier;
             size_t id_len;
@@ -71,11 +79,10 @@ static int _component_handler(suit_manifest_t *manifest, int key,
         nanocbor_leave_container(&arr, &comp);
         n++;
     }
-    if (n > 1) {
-        LOG_INFO("More than 1 component found, exiting\n");
-        return SUIT_ERR_UNSUPPORTED;
+    manifest->components_len = n;
+    if (n) {
+        manifest->state |= SUIT_MANIFEST_HAVE_COMPONENTS;
     }
-    manifest->state |= SUIT_MANIFEST_HAVE_COMPONENTS;
     return 0;
 }
 
