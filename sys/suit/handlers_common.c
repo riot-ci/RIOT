@@ -35,11 +35,6 @@ static int _component_handler(suit_manifest_t *manifest, int key,
 {
     (void)manifest;
     (void)key;
-    const uint8_t *subcbor;
-    size_t sub_size;
-    nanocbor_value_t _it;
-    nanocbor_get_bstr(it, &subcbor, &sub_size);
-    nanocbor_decoder_init(&_it, subcbor, sub_size);
 
     /* This is a list of lists, something like:
      * [
@@ -48,7 +43,7 @@ static int _component_handler(suit_manifest_t *manifest, int key,
      * ]
      * */
     nanocbor_value_t arr;
-    if (nanocbor_enter_array(&_it, &arr) < 0) {
+    if (nanocbor_enter_array(it, &arr) < 0) {
         LOG_DEBUG("components field not an array %d\n", nanocbor_get_type(it));
         return SUIT_ERR_INVALID_MANIFEST;
     }

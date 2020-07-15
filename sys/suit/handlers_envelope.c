@@ -38,12 +38,12 @@ static int _auth_handler(suit_manifest_t *manifest, int key,
     (void)key;
     cose_sign_dec_t verify;
     const uint8_t *cose_buf;
-    const uint8_t *cose_container;
-    size_t container_len;
+    const uint8_t *auth_container;
+    size_t auth_container_len;
     size_t cose_len = 0;
     /* It is a list of cose signatures */
-    if (nanocbor_get_bstr(it, &cose_container, &container_len) < 0) {
-        LOG_INFO("Unable to get COSE signature\n");
+    if (nanocbor_get_bstr(it, &auth_container, &auth_container_len) < 0) {
+        LOG_INFO("Unable to get auth container\n");
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
@@ -54,7 +54,7 @@ static int _auth_handler(suit_manifest_t *manifest, int key,
                       (uint8_t *)public_key, NULL, NULL);
 
     nanocbor_value_t _cont, arr;
-    nanocbor_decoder_init(&_cont, cose_container, container_len);
+    nanocbor_decoder_init(&_cont, auth_container, auth_container_len);
 
     int rc = nanocbor_enter_array(&_cont, &arr);
     if (rc < 0) {

@@ -113,10 +113,12 @@ static int _cond_comp_offset(suit_manifest_t *manifest,
     (void)manifest;
     (void)key;
     uint32_t offset;
+    uint32_t report;
+
     suit_component_t *comp = _get_component(manifest);
 
     /* Grab offset from param */
-    if (nanocbor_get_null(it) < 0) {
+    if (nanocbor_get_uint32(it, &report) < 0) {
         LOG_WARNING("_cond_comp_offset(): expected None param\n");
         return SUIT_ERR_INVALID_MANIFEST;
     }
