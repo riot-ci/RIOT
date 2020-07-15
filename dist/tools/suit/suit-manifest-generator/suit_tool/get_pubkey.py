@@ -18,7 +18,6 @@
 # ----------------------------------------------------------------------------
 import textwrap
 import binascii
-import pyhsslms
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import ec, ed25519
@@ -79,8 +78,6 @@ def main(options):
             password=None,
             backend=default_backend()
         )
-    elif options.output_format in ('c-hsslms', 'hsslms'):
-        private_key = pyhsslms.HssPrivateKey.deserialize(options.private_key.read())
 
     odata = OutputFormaters.get(options.output_format)(private_key)
 

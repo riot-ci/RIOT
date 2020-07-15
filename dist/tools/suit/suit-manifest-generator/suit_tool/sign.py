@@ -27,8 +27,6 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives.asymmetric import utils as asymmetric_utils
 from cryptography.hazmat.primitives import serialization as ks
 
-import pyhsslms
-
 from suit_tool.manifest import COSE_Sign1, COSEList, SUITDigest,\
                                SUITEnvelope, SUITBytes, SUITBWrapField, \
                                COSETaggedAuth
@@ -77,15 +75,8 @@ def main(options):
             'EdDSA' : hashes.Hash(hashes.SHA256(), backend=default_backend()),
         }.get(options.key_type)
     except:
-        try:
-            digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-            private_key = pyhsslms.HssPrivateKey.deserialize(private_key_buffer)
-            options.key_type = 'HSS-LMS'
-        except:
-            # private_key = None
-            # TODO: Implement loading of DSA keys not supported by python cryptography
-            LOG.critical('Non-library key type not implemented')
-            return 1
+        LOG.critical('Non-library key type not implemented')
+        return 1
 
     digest.update(cbor.dumps(wrapper[SUITEnvelope.fields['manifest'].suit_key]))
 
