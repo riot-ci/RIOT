@@ -21,9 +21,6 @@ import logging, sys
 
 from suit_tool.argparser import MainArgumentParser
 from suit_tool import create, sign, parse, get_pubkey, keygen, sever #, verify, cert, init
-# from suit_tool import update
-import colorama
-colorama.init()
 
 
 LOG = logging.getLogger(__name__)
