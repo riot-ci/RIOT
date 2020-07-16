@@ -16,6 +16,9 @@ ifneq (,$(filter periph_uart_nonblocking,$(USEMODULE)))
   USEMODULE += tsrb
 endif
 
+# 16 bit GPIO pin mask required
+USEMODULE += gpio_mask_16bit
+
 ifneq (STM32F030x4, $(CPU_LINE))
   # Retrieve vendor CMSIS headers from ST cmsis_device_<family> repositories on
   # GitHub, https://github.com/STMicroelectronics
