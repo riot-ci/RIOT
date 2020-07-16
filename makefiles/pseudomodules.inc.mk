@@ -112,6 +112,7 @@ PSEUDOMODULES += stdio_ethos
 PSEUDOMODULES += stdio_cdc_acm
 PSEUDOMODULES += stdio_uart_rx
 PSEUDOMODULES += suit_transport_%
+PSEUDOMODULES += systick_prescaler
 PSEUDOMODULES += wakaama_objects_%
 PSEUDOMODULES += wifi_enterprise
 PSEUDOMODULES += xtimer_on_ztimer
