@@ -71,7 +71,7 @@ typedef struct {
 typedef enum {
     PCA9633_OK              = 0,    /**< Success */
     PCA9633_ERROR_I2C       = 1,    /**< I2C communication error */
-} pca9685_error_t;
+};
 
 /**
  * @brief   PCA9633 PWM channel definitions
