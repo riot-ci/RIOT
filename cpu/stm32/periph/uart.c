@@ -44,6 +44,13 @@
 #define ISR_TC      USART_ISR_TC
 #define TDR_REG     TDR
 #define RDR_REG     RDR
+#elif defined(CPU_FAM_STM32G0)
+#define ISR_REG     ISR
+#define ISR_TXE     USART_ISR_TXE_TXFNF
+#define ISR_RXNE    USART_ISR_RXNE_RXFNE
+#define ISR_TC      USART_ISR_TC
+#define TDR_REG     TDR
+#define RDR_REG     RDR
 #else
 #define ISR_REG     SR
 #define ISR_TXE     USART_SR_TXE
@@ -53,7 +60,11 @@
 #define RDR_REG     DR
 #endif
 
-#define RXENABLE            (USART_CR1_RE | USART_CR1_RXNEIE)
+#ifdef CPU_FAM_STM32G0
+#define RXENABLE             (USART_CR1_RE | USART_CR1_RXNEIE_RXFNEIE)
+#else
+#define RXENABLE             (USART_CR1_RE | USART_CR1_RXNEIE)
+#endif
 
 #ifdef MODULE_PERIPH_UART_NONBLOCKING
 
