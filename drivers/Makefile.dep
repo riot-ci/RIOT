@@ -800,7 +800,9 @@ ifneq (,$(filter sx127%,$(USEMODULE)))
   FEATURES_REQUIRED += periph_spi
   FEATURES_OPTIONAL += periph_spi_gpio_mode
   USEMODULE += iolist
-  USEMODULE += xtimer
+  USEMODULE += ztimer_usec
+  USEMODULE += ztimer_msec
+  USEMODULE += ztimer_periph_rtt
   USEMODULE += sx127x
   USEMODULE += netif
   USEMODULE += lora
