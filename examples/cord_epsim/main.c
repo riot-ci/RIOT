@@ -78,6 +78,8 @@ int main(void)
 
     /* parse RD address information */
     sock_udp_ep_t rd_ep;
+    rd_ep.family = AF_INET6;
+    rd_ep.netif = SOCK_ADDR_ANY_NETIF;
     rd_ep.port = 0;
 
     if (sock_udp_str2ep(&rd_ep, RD_ADDR) < 0) {
@@ -85,13 +87,20 @@ int main(void)
         return 1;
     }
 
-    /* if netif not specified in addr */
-    if ((rd_ep.netif == SOCK_ADDR_ANY_NETIF) && (gnrc_netif_numof() == 1)) {
-        /* assign the single interface found in gnrc_netif_numof() */
-        rd_ep.netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+    /* if netif is not specified in addr and it's link local */
+    if ((rd_ep.netif == SOCK_ADDR_ANY_NETIF) &&
+         ipv6_addr_is_link_local((ipv6_addr_t *) &rd_ep.addr.ipv6)) {
+        /* if there is only one interface we use that */
+        if (gnrc_netif_numof() == 1) {
+            rd_ep.netif = (uint16_t)gnrc_netif_iter(NULL)->pid;
+        }
+        /* if there are many it's an error */
+        else {
+            puts("error: must specify an interface for a link local address");
+            return 1;
+        }
     }
 
-    rd_ep.family = AF_INET6;
     if (rd_ep.port == 0) {
         rd_ep.port = COAP_PORT;
     }
