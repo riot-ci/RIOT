@@ -78,9 +78,6 @@ int main(void)
 
     /* parse RD address information */
     sock_udp_ep_t rd_ep;
-    rd_ep.family = AF_INET6;
-    rd_ep.netif = SOCK_ADDR_ANY_NETIF;
-    rd_ep.port = 0;
 
     if (sock_udp_str2ep(&rd_ep, RD_ADDR) < 0) {
         puts("error: unable to parse RD address from RD_ADDR variable");
