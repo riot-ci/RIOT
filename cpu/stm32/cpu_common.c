@@ -48,23 +48,14 @@ static const uint8_t apbmul[] = {
 
 uint32_t periph_apb_clk(uint8_t bus)
 {
-#if defined(CPU_FAM_STM32G0)
-    (void)bus;
-    return CLOCK_APB1;
-#else
-    if (bus == APB1) {
-        return CLOCK_APB1;
-    }
-#if defined (CPU_FAM_STM32L4) || defined(CPU_FAM_STM32WB) || \
-    defined(CPU_FAM_STM32G4)
-    else if (bus == APB12) {
-        return CLOCK_APB1;
-    }
-#endif
-    else {
+#ifdef CLOCK_APB2
+    if (bus == APB2) {
         return CLOCK_APB2;
     }
+#else
+    (void)bus;
 #endif
+    return CLOCK_APB1;
 }
 
 uint32_t periph_timer_clk(uint8_t bus)
