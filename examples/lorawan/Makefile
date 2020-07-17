@@ -66,29 +66,13 @@ endif
 
 # Enable persistence on EEPROM and lowest possible power mode only if the board
 # provides the EEPROM feature
-ifneq (,$(filter $(BOARD), $(BOARD_PROVIDING_EEPROM)))
+ifneq (,$(filter $(BOARD),$(BOARD_PROVIDING_EEPROM)))
   FEATURES_REQUIRED += periph_eeprom
   # Enable lowest possible power mode (e.g. STANDBY mode on STM32) which
   # in general doesn't provide RAM retention after wake-up.
   # This low-power mode can only be used with boards providing an internal
   # EEPROM to be able to restore the state of MAC from a non-volatile memory.
   CFLAGS += -DPM_BLOCKER_INITIAL=0x01010100
-else
-  # WARNING: the next line disables the dutycycle restriction from the MAC. This
-  # means that the sending period must be greater than the allowed dutycycle.
-  # Check your LoRaWAN regional parameters and use a valid SEND_PERIOD value.
-  #
-  # Note that this is used as a workaround for issues with the internal use
-  # of xtimer in the semtech-loramac adaption code for RIOT. Indeed, during a
-  # sleep mode with RAM retention the hardware timer used by default are stopped
-  # and thus, when waking up the dutycycle timer time has not changed. This
-  # prevents more than one message to be sent.
-  # This is a known limitation of xtimer and should be fixed in the future by
-  # using low power timer (based on 32.768kHz external oscillator).
-  $(warning You are disabling dutycycle restriction, make sure your sending \
-            period is greater than the allowed dutycycle in your geographic \
-            region)
-  CFLAGS+=-DDISABLE_LORAMAC_DUTYCYCLE
 endif
 
 # Comment this out to disable code in RIOT that does safety checking
