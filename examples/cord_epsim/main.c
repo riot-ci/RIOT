@@ -69,7 +69,9 @@ static gcoap_listener_t listener = {
 
 int main(void)
 {
-    char addrstr[IPV6_ADDR_MAX_STR_LEN];
+    char ep_str[CONFIG_SOCK_URLPATH_MAXLEN];
+    uint16_t ep_port;
+
     puts("Simplified CoRE RD registration example\n");
 
     /* fill riot info */
@@ -102,9 +104,7 @@ int main(void)
         rd_ep.port = COAP_PORT;
     }
 
-    ipv6_addr_to_str(addrstr,
-                     (ipv6_addr_t *) &rd_ep.addr.ipv6,
-                     sizeof(addrstr));
+    sock_udp_ep_fmt(&rd_ep, ep_str, &ep_port);
 
     /* register resource handlers with gcoap */
     gcoap_register_listener(&listener);
@@ -113,7 +113,7 @@ int main(void)
     puts("epsim configuration:");
     printf("         ep: %s\n", cord_common_get_ep());
     printf("         lt: %is\n", (int)CORD_LT);
-    printf(" RD address: [%s]:%u\n\n", addrstr, rd_ep.port);
+    printf(" RD address: [%s]:%u\n\n", ep_str, ep_port);
 
     xtimer_sleep(STARTUP_DELAY);
 
@@ -132,7 +132,7 @@ int main(void)
                 break;
         }
 
-        printf("updating registration with RD [%s]:%u\n", addrstr, rd_ep.port);
+        printf("updating registration with RD [%s]:%u\n", ep_str, ep_port);
         res = cord_epsim_register(&rd_ep);
         if (res == CORD_EPSIM_BUSY) {
             puts("warning: registration already in progress");
