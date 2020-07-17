@@ -26,6 +26,16 @@
 #include "shell.h"
 #include "board.h" /* MTD_0 is defined in board.h */
 
+#if  defined(MTD_0) && \
+     (defined(MODULE_SPIFFS) || \
+      defined(MODULE_LITTLEFS) || \
+      defined(MODULE_LITTLEFS2) || \
+      defined(MODULE_FATFS_VFS))
+#define FLASH_AND_FILESYSTEM_PRESENT    1
+#else
+#define FLASH_AND_FILESYSTEM_PRESENT    0
+#endif
+
 /* Configure MTD device for SD card if none is provided */
 #if !defined(MTD_0) && MODULE_MTD_SDCARD
 #include "mtd_sdcard.h"
@@ -169,7 +179,7 @@ static int _mount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_LITTLEFS2) || defined(MODULE_FATFS_VFS))
+#if FLASH_AND_FILESYSTEM_PRESENT
     int res = vfs_mount(&flash_mount);
     if (res < 0) {
         printf("Error while mounting %s...try format\n", FLASH_MOUNT_POINT);
@@ -188,7 +198,7 @@ static int _format(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_LITTLEFS2) || defined(MODULE_FATFS_VFS))
+#if FLASH_AND_FILESYSTEM_PRESENT
     int res = vfs_format(&flash_mount);
     if (res < 0) {
         printf("Error while formatting %s\n", FLASH_MOUNT_POINT);
@@ -207,7 +217,7 @@ static int _umount(int argc, char **argv)
 {
     (void)argc;
     (void)argv;
-#if defined(MTD_0) && (defined(MODULE_SPIFFS) || defined(MODULE_LITTLEFS) || defined(MODULE_LITTLEFS2) || defined(MODULE_FATFS_VFS))
+#if FLASH_AND_FILESYSTEM_PRESENT
     int res = vfs_umount(&flash_mount);
     if (res < 0) {
         printf("Error while unmounting %s\n", FLASH_MOUNT_POINT);
