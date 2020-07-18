@@ -113,14 +113,15 @@ static const uart_conf_t uart_config[] = {
 /* PWM0 channels */
 static const pwm_conf_chan_t pwm_chan0_config[] = {
     /* GPIO pin, MUX value, TC channel */
-    { GPIO_PIN(PA, 7), GPIO_MUX_E, 1 },
+    { GPIO_PIN(PA, 18), GPIO_MUX_E, 0 },
+    { GPIO_PIN(PA, 19), GPIO_MUX_E, 1 },
 };
 #endif
 
 /* PWM device configuration */
 static const pwm_conf_t pwm_config[] = {
 #if PWM_0_EN
-    { .tim  = TC_CONFIG(TC1),
+    { .tim  = TC_CONFIG(TC2),
       .chan = pwm_chan0_config,
       .chan_numof = ARRAY_SIZE(pwm_chan0_config),
       .gclk_src = SAM0_GCLK_MAIN,
