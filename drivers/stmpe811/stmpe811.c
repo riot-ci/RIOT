@@ -166,7 +166,7 @@ int stmpe811_init(stmpe811_t *dev, const stmpe811_params_t * params, touch_event
 
         /* Enable touchscreen interrupt */
         ret += i2c_write_reg(STMPE811_DEV_I2C, STMPE811_DEV_ADDR,
-                             STMPE811_INT_EN, STMPE811_INT_EN_TOUCH_DET, 0);
+                             STMPE811_INT_EN, STMPE811_INT_EN_TOUCH_DET | STMPE811_INT_EN_FIFO_TH, 0);
 
         /* Enable global interrupt */
         ret += i2c_write_reg(STMPE811_DEV_I2C, STMPE811_DEV_ADDR,
@@ -178,6 +178,8 @@ int stmpe811_init(stmpe811_t *dev, const stmpe811_params_t * params, touch_event
         DEBUG("[stmpe811] init: initialization sequence failed\n");
         return -STMPE811_ERR_I2C;
     }
+
+    _reset_fifo(dev);
 
     /* Release I2C device */
     i2c_release(STMPE811_DEV_I2C);
@@ -203,7 +205,6 @@ int stmpe811_read_touch_position(stmpe811_t *dev, stmpe811_touch_position_t *pos
         i2c_release(STMPE811_DEV_I2C);
         return -STMPE811_ERR_I2C;
     }
-    _reset_fifo(dev);
 
     /* Release I2C device */
     i2c_release(STMPE811_DEV_I2C);
