@@ -27,7 +27,6 @@
 
 static void _touch_event_cb(void *arg)
 {
-    puts("Pressed!");
     mutex_unlock(arg);
 }
 
@@ -52,10 +51,18 @@ int main(void)
     stmpe811_touch_state_t last_touch_state = current_touch_state;
 
     while (1) {
+        stmpe811_touch_position_t position;
+
+        /* wait for touch event */
         mutex_lock(&lock);
 
         stmpe811_read_touch_state(&dev, &current_touch_state);
+        stmpe811_read_touch_position(&dev, &position);
+
         if (current_touch_state != last_touch_state) {
+            if (current_touch_state == STMPE811_TOUCH_STATE_PRESSED) {
+                puts("Pressed!");
+            }
             if (current_touch_state == STMPE811_TOUCH_STATE_RELEASED) {
                 puts("Released!");
             }
@@ -64,8 +71,6 @@ int main(void)
 
         /* Display touch position if pressed */
         if (current_touch_state == STMPE811_TOUCH_STATE_PRESSED) {
-            stmpe811_touch_position_t position;
-            stmpe811_read_touch_position(&dev, &position);
             printf("X: %i, Y:%i\n", position.x, position.y);
         }
     }
