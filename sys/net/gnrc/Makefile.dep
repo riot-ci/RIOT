@@ -25,7 +25,8 @@ ifneq (,$(filter gnrc_gomach,$(USEMODULE)))
 endif
 
 ifneq (,$(filter gnrc_lorawan,$(USEMODULE)))
-  USEMODULE += xtimer
+  USEMODULE += ztimer_msec
+  USEMODULE += ztimer_periph_rtt
   USEMODULE += random
   USEMODULE += hashes
   USEMODULE += crypto_aes_128
