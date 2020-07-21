@@ -165,13 +165,15 @@ static inline unsigned bitarithm_lsb(unsigned v)
 #endif
 
 /**
- * @brief   Returns the index of the first set bit in @p state, returns @p state with
- *          that bit cleared.
+ * @brief   Used for iterating over the bits in @state.
+ *          Returns the index of a set bit in @p state, returns @p state with that bit cleared.
  *
  * @warning This is a low-level helper function, arguments are not checked.
  *          It is intended to iterate over a bit map until all bits are cleared.
  *          Whether it starts with the highest or lowest bit will depend on what is fastest
  *          on the given hardware.
+ *
+ * @warning @p state must not be zero.
  *
  * @param[in]   state   Bit Map with at least one bit set
  * @param[out]  index   Index of the first set bit. Must be initialized with 0 before the
