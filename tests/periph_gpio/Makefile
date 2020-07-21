@@ -20,6 +20,9 @@ else
   PORT_UNDER_TEST ?= 0
 endif
 
+# disable native GPIO access
+DISABLE_MODULE += periph_gpio_linux
+
 include $(RIOTBASE)/Makefile.include
 
 $(call target-export-variables,test,PORT_UNDER_TEST)
