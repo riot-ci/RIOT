@@ -1,1 +1,4 @@
 INCLUDES += -I$(PKGDIRBASE)/driver_atwinc15x0/src
+
+# Disable 'ISO C forbids an empty translation unit [-Werror=pedantic]'
+CFLAGS += -Wno-pedantic
