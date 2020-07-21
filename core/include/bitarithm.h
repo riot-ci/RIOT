@@ -186,6 +186,12 @@ static inline unsigned bitarithm_test_and_clear(unsigned state, uint8_t *index)
 #if defined(BITARITHM_HAS_CLZ)
     *index = 8 * sizeof(state) - __builtin_clz(state) - 1;
     return state & ~(1 << *index);
+#elif defined(BITARITHM_LSB_LOOKUP)
+    /* Source: http://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup */
+    extern const uint8_t MultiplyDeBruijnBitPosition[32];
+    uint32_t least_bit = state & -state;
+    *index = MultiplyDeBruijnBitPosition[(least_bit * 0x077CB531U) >> 27];
+    return state & ~least_bit;
 #else
     while ((state & 1) == 0) {
         *index += 1;
