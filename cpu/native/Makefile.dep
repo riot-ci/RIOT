@@ -1,9 +1,9 @@
 ifeq ($(OS),Linux)
   ifneq (,$(filter periph_gpio,$(USEMODULE)))
-    USEMODULE += periph_gpio_linux
+    DEFAULT_MODULE += periph_gpio_linux
   endif
   ifneq (,$(filter periph_spi,$(USEMODULE)))
-    USEMODULE += periph_spidev_linux
+    DEFAULT_MODULE += periph_spidev_linux
   endif
 endif
 
