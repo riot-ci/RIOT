@@ -113,11 +113,56 @@ static inline void set_mode(GPIO_TypeDef *port, int pin_num, unsigned mode)
     port->MODER = tmp;
 }
 
+static inline void _check_port(gpio_t pin)
+{
+    int port = _port_num(pin);
+    switch (port) {
+#ifdef GPIOA
+        case PORT_A: break;
+#endif
+#ifdef GPIOB
+        case PORT_B: break;
+#endif
+#ifdef GPIOC
+        case PORT_C: break;
+#endif
+#ifdef GPIOD
+        case PORT_D: break;
+#endif
+#ifdef GPIOE
+        case PORT_E: break;
+#endif
+#ifdef GPIOF
+        case PORT_F: break;
+#endif
+#ifdef GPIOG
+        case PORT_G: break;
+#endif
+#ifdef GPIOH
+        case PORT_H: break;
+#endif
+#ifdef GPIOI
+        case PORT_I: break;
+#endif
+#ifdef GPIOJ
+        case PORT_J: break;
+#endif
+#ifdef GPIOK
+        case PORT_K: break;
+#endif
+        default: assert(0); /* port is not available */
+    }
+}
+
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
     GPIO_TypeDef *port = _port(pin);
     int pin_num = _pin_num(pin);
 
+#ifndef NDEBUG
+    /* check whether the port is available */
+    _check_port(pin);
+#endif
     /* enable clock */
     port_init_clock(port, pin);
     /* set mode */
