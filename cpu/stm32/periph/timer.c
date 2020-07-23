@@ -175,8 +175,8 @@ static inline bool is_reset_on_match(tim_t tim, int chan)
 
 static inline void clear_reset_on_match(tim_t tim, int chan)
 {
-    (void) tim;
-    (void) chan;
+    (void)tim;
+    (void)chan;
 }
 
 static inline void clear_ignore_irq(tim_t tim)
