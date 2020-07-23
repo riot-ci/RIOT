@@ -159,8 +159,8 @@ static inline void set_oneshot(tim_t tim, int chan)
 
 static inline bool is_oneshot(tim_t tim, int chan)
 {
-    (void) tim;
-    (void) chan;
+    (void)tim;
+    (void)chan;
 
     return true;
 }
