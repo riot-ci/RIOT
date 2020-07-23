@@ -186,7 +186,7 @@ static inline void clear_ignore_irq(tim_t tim)
 
 static inline bool is_ignore_irq(tim_t tim)
 {
-    (void) tim;
+    (void)tim;
 
     return false;
 }
