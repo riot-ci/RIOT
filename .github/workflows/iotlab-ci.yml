@@ -57,11 +57,11 @@ jobs:
         uses: webfactory/ssh-agent@v0.4.0
         with:
           ssh-private-key: ${{ secrets.IOTLAB_PRIVATE_KEY }}
-      - name: Fetch host key from IoT-LAB saclay site
+      - name: Fetch host key from IoT-LAB ${{ fromJson(matrix.boards).site }} site
         run: |
           IOTLAB_USER=$(cat ~/.iotlabrc | cut -f1 -d:)
           ssh -oStrictHostKeyChecking=accept-new \
-          ${IOTLAB_USER}@saclay.iot-lab.info exit
+          ${IOTLAB_USER}@${{ fromJson(matrix.boards).site }}.iot-lab.info exit
       - name: Pull riotbuild docker image
         run: |
           docker pull riot/riotbuild:latest
@@ -88,3 +88,5 @@ jobs:
         with:
           name: ${{ fromJson(matrix.boards).riot }}
           path: results-${{ fromJson(matrix.boards).riot }}
+      - if: failure()
+        run: exit 1
