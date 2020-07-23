@@ -24,8 +24,8 @@ jobs:
   compile_and_test_for_board:
     strategy:
       max-parallel: 10
+      fail-fast: false
       matrix:
-        fail-fast: false
         boards:
           - '{"riot": "iotlab-m3", "iotlab": "m3:at86rf231", "site": "saclay"}'
           - '{"riot": "nrf51dk", "iotlab": "nrf51dk:ble", "site": "saclay"}'
