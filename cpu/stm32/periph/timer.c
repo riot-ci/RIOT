@@ -153,8 +153,8 @@ static void _set_arr(tim_t tim)
 
 static inline void set_oneshot(tim_t tim, int chan)
 {
-    (void) tim;
-    (void) chan;
+    (void)tim;
+    (void)chan;
 }
 
 static inline bool is_oneshot(tim_t tim, int chan)
