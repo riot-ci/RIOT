@@ -9,8 +9,8 @@ TEST_MY9221_DAT ?= GPIO_PIN\(0,2\)
 TEST_MY9221_DIR ?= MY9221_DIR_FWD
 TEST_MY9221_NUM ?= 10
 
-# disable native GPIO access
-DISABLE_MODULE += periph_gpio_linux
+# CI has no native GPIOs
+TEST_ON_CI_BLACKLIST += native
 
 # export parameters
 CFLAGS += -DTEST_MY9221_CLK=$(TEST_MY9221_CLK)

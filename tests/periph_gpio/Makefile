@@ -20,8 +20,8 @@ else
   PORT_UNDER_TEST ?= 0
 endif
 
-# disable native GPIO access
-DISABLE_MODULE += periph_gpio_linux
+# CI has no native GPIOs
+TEST_ON_CI_BLACKLIST += native
 
 include $(RIOTBASE)/Makefile.include
 
