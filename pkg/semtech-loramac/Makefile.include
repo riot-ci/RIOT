@@ -8,9 +8,6 @@ LORA_REGION ?= EU868
 CFLAGS += -DREGION_$(LORA_REGION)
 CFLAGS += -DLORAMAC_ACTIVE_REGION=LORAMAC_REGION_$(LORA_REGION)
 
-# Disable 'ISO C forbids initialization between function pointer and ‘void *’ [-Werror=pedantic]'
-CFLAGS += -Wno-pedantic
-
 # There's no concrete semtech-loramac module that is built so declare it as a
 # pseudo module.
 PSEUDOMODULES += semtech-loramac
