@@ -181,7 +181,7 @@ static inline void clear_reset_on_match(tim_t tim, int chan)
 
 static inline void clear_ignore_irq(tim_t tim)
 {
-    (void) tim;
+    (void)tim;
 }
 
 static inline bool is_ignore_irq(tim_t tim)
