@@ -34,7 +34,7 @@ jobs:
           - '{"riot": "b-l475e-iot01a", "iotlab": "st-iotnode:multi", "site": "saclay"}'
     runs-on: ubuntu-latest
     name: ${{ fromJson(matrix.boards).riot }}
-    continue-on-error: true
+    fail-fast: false
     env:
       IOTLAB_NODE: auto-ssh
       BUILD_IN_DOCKER: 1
@@ -88,5 +88,3 @@ jobs:
         with:
           name: ${{ fromJson(matrix.boards).riot }}
           path: results-${{ fromJson(matrix.boards).riot }}
-      - if: failure()
-        run: exit 1
