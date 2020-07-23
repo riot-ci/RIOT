@@ -5,10 +5,9 @@
 # directory for more details.
 #
 
-config APPLICATION
-    bool
-    default y
-    imply MODULE_PERIPH_RTC
-    imply MODULE_PERIPH_GPIO
-    imply MODULE_PERIPH_GPIO_IRQ
+menu "Test utilities"
     depends on TEST_KCONFIG
+
+rsource "dummy_thread/Kconfig"
+rsource "interactive_sync/Kconfig"
+endmenu # Test utilities

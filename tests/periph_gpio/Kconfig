@@ -8,5 +8,5 @@
 config APPLICATION
     bool
     default y
-    imply MOD_PERIPH_GPIO_IRQ
+    imply MODULE_PERIPH_GPIO_IRQ
     depends on TEST_KCONFIG

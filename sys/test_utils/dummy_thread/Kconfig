@@ -5,10 +5,8 @@
 # directory for more details.
 #
 
-config APPLICATION
-    bool
-    default y
-    imply MODULE_PERIPH_RTC
-    imply MODULE_PERIPH_GPIO
-    imply MODULE_PERIPH_GPIO_IRQ
-    depends on TEST_KCONFIG
+config MODULE_DUMMY_THREAD
+    bool "Dummy thread"
+    help
+        This module can be used to mess up the number of threads a bit, e.g.,
+        for testing test scripts.

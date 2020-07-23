@@ -8,5 +8,5 @@
 config APPLICATION
     bool
     default y
-    imply MOD_PERIPH_UART_MODECFG
+    imply MODULE_PERIPH_UART_MODECFG
     depends on TEST_KCONFIG
