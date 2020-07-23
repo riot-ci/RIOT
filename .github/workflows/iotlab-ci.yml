@@ -25,6 +25,7 @@ jobs:
     strategy:
       max-parallel: 10
       matrix:
+        fail-fast: false
         boards:
           - '{"riot": "iotlab-m3", "iotlab": "m3:at86rf231", "site": "saclay"}'
           - '{"riot": "nrf51dk", "iotlab": "nrf51dk:ble", "site": "saclay"}'
@@ -34,7 +35,6 @@ jobs:
           - '{"riot": "b-l475e-iot01a", "iotlab": "st-iotnode:multi", "site": "saclay"}'
     runs-on: ubuntu-latest
     name: ${{ fromJson(matrix.boards).riot }}
-    fail-fast: false
     env:
       IOTLAB_NODE: auto-ssh
       BUILD_IN_DOCKER: 1
