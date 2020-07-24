@@ -54,13 +54,21 @@ else
   # which are only used for STM32 system includes and not of interest for RIOT.
   CFLAGS += -D__SYSTEM_STM32$(call uppercase,$(CPU_FAM))XX_H
 
-  STM32CMSIS_INCLUDE_DIR = $(RIOTBASE)/cpu/stm32/include/vendor/cmsis/$(CPU_FAM)/Include
-
+  STM32CMSIS_INCLUDE_DIR = $(RIOTCPU)/stm32/include/vendor/cmsis/$(CPU_FAM)/Include
+  STM32FAM_INCLUDE_FILE = $(STM32CMSIS_INCLUDE_DIR)/stm32$(CPU_FAM)xx.h
   INCLUDES += -I$(STM32CMSIS_INCLUDE_DIR)
 
-$(VECTORS_FILE):
+  STM32IRQS_INCLUDE_FILE = $(RIOTCPU)/stm32/include/irqs/$(CPU_FAM)/irqs.h
+  BUILDDEPS += $(STM32IRQS_INCLUDE_FILE)
+
+$(STM32FAM_INCLUDE_FILE):
 	$(Q)make -C $(RIOTPKG)/stm32cmsis
-	$(Q)$(RIOTTOOLS)/stm32_gen_vectors/stm32_gen_vectors.py $(CPU_LINE)
+
+$(STM32IRQS_INCLUDE_FILE): $(STM32FAM_INCLUDE_FILE)
+	$(Q)$(RIOTCPU)/stm32/dist/irqs/gen_irqs.py $(CPU_FAM)
+
+$(VECTORS_FILE): $(STM32FAM_INCLUDE_FILE)
+	$(Q)$(RIOTCPU)/stm32/dist/irqs/gen_vectors.py $(CPU_LINE)
 endif
 
 include $(RIOTMAKE)/arch/cortexm.inc.mk
