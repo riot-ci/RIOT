@@ -297,16 +297,32 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 /*================
  *  THEME USAGE
  *================*/
-#define LV_THEME_LIVE_UPDATE    0   /*1: Allow theme switching at run time. Uses 8..10 kB of RAM*/
+/*Always enable at least on theme*/
 
-#define LV_USE_THEME_TEMPL      0   /*Just for test*/
-#define LV_USE_THEME_DEFAULT    0   /*Built mainly from the built-in styles. Consumes very few RAM*/
-#define LV_USE_THEME_ALIEN      0   /*Dark futuristic theme*/
-#define LV_USE_THEME_NIGHT      0   /*Dark elegant theme*/
-#define LV_USE_THEME_MONO       0   /*Mono color theme for monochrome displays*/
-#define LV_USE_THEME_MATERIAL   0   /*Flat theme with bold colors and light shadows*/
-#define LV_USE_THEME_ZEN        0   /*Peaceful, mainly light theme */
-#define LV_USE_THEME_NEMO       0   /*Water-like theme based on the movie "Finding Nemo"*/
+/* No theme, you can apply your styles as you need
+ * No flags. Set LV_THEME_DEFAULT_FLAG 0 */
+ #define LV_USE_THEME_EMPTY       1
+
+/*Simple to the create your theme based on it
+ * No flags. Set LV_THEME_DEFAULT_FLAG 0 */
+ #define LV_USE_THEME_TEMPLATE    1
+
+/* A fast and impressive theme.
+ * Flags:
+ * LV_THEME_MATERIAL_FLAG_LIGHT: light theme
+ * LV_THEME_MATERIAL_FLAG_DARK: dark theme*/
+ #define LV_USE_THEME_MATERIAL    1
+
+/* Mono-color theme for monochrome displays.
+ * If LV_THEME_DEFAULT_COLOR_PRIMARY is LV_COLOR_BLACK the
+ * texts and borders will be black and the background will be
+ * white. Else the colors are inverted.
+ * No flags. Set LV_THEME_DEFAULT_FLAG 0 */
+ #define LV_USE_THEME_MONO        1
+
+#define LV_THEME_DEFAULT_INCLUDE            <stdint.h>      /*Include a header for the init. function*/
+#define LV_THEME_DEFAULT_INIT               lv_theme_material_init
+#define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_DARK
 
 /*==================
  *    FONT USAGE
