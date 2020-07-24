@@ -25,8 +25,8 @@
  */
 
 
-#include "luid.h"
 #include "byteorder.h"
+#include "net/eui_provider.h"
 #include "net/ieee802154.h"
 #include "net/gnrc.h"
 #include "at86rf2xx_registers.h"
@@ -37,7 +37,7 @@
 #include "debug.h"
 
 
-void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params)
+void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params, uint8_t index)
 {
     netdev_t *netdev = (netdev_t *)dev;
 
@@ -56,6 +56,8 @@ void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params)
     /* initialize device descriptor */
     dev->params = *params;
 #endif
+
+    netdev_register(netdev, NETDEV_AT86RF2XX, index);
 }
 
 static void at86rf2xx_disable_clock_output(at86rf2xx_t *dev)
@@ -100,8 +102,8 @@ void at86rf2xx_reset(at86rf2xx_t *dev)
     }
 
     /* generate EUI-64 and short address */
-    luid_get_eui64(&addr_long);
-    luid_get_short(&addr_short);
+    netdev_eui64_get(&dev->netdev.netdev, &addr_long);
+    eui_short_from_eui64(&addr_long, &addr_short);
 
     /* set short and long address */
     at86rf2xx_set_addr_long(dev, &addr_long);

@@ -294,8 +294,9 @@ typedef struct {
  *
  * @param[out] dev          device descriptor
  * @param[in]  params       parameters for device initialization
+ * @param[in]  index        Index of the device in the parameter struct
  */
-void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params);
+void at86rf2xx_setup(at86rf2xx_t *dev, const at86rf2xx_params_t *params, uint8_t index);
 
 /**
  * @brief   Trigger a hardware reset and configure radio with default values
@@ -387,7 +388,7 @@ uint8_t at86rf2xx_get_phy_mode(at86rf2xx_t *dev);
  *
  * @param[in] dev           device to read from
  *
- * @return                  the currenty set rate mode
+ * @return                  the currently set rate mode
  */
 uint8_t at86rf2xx_get_rate(at86rf2xx_t *dev);
 
