@@ -245,16 +245,17 @@
  * Alternatively, the macro #GPIO_CPU_PORT_IS can be overridden by the MCU
  * implementation with a more efficient implementation if possible.
  *
- * Thus the MCU implementation of the low-level API must define the following
+ * Thus the MCU implementation of the low-level API has to define
  *
  * - the width of its GPIO ports using the according `gpio_mask_*bit` module
- * - if register address are used as port definitions the macros
+ * - if register addresses are used as port definitions the macros
  *   - #GPIO_CPU_PORT and #GPIO_CPU_PORT_NUM
  *   - #GPIO_CPU_PORT_BASE and #GPIO_CPU_PORT_MASK or alternatively
  *     #GPIO_CPU_PORT_IS
  * - the low-level API functions with prefix `gpio_cpu_*`, see section
  *   @ref drivers_periph_gpio_exp_low_level_api_functions
  *   "Low-level API functions".
+ * - the feature `periph_gpio_exp`
  *
  * ## (Low-) Power Implications
  *
