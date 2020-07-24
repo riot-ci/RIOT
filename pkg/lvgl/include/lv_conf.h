@@ -322,8 +322,6 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 
 #define LV_THEME_DEFAULT_INCLUDE            <stdint.h>      /*Include a header for the init. function*/
 #define LV_THEME_DEFAULT_INIT               lv_theme_material_init
-#define LV_THEME_DEFAULT_COLOR_PRIMARY      LV_COLOR_RED
-#define LV_THEME_DEFAULT_COLOR_SECONDARY    LV_COLOR_BLUE
 #define LV_THEME_DEFAULT_FLAG               LV_THEME_MATERIAL_FLAG_DARK
 
 /*==================
