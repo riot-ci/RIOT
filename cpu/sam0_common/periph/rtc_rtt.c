@@ -122,10 +122,10 @@ static inline void _rtc_set_enabled(bool on)
 static inline void _rtt_reset(void)
 {
 #ifdef RTC_MODE0_CTRL_SWRST
-    RTC->MODE0.CTRL.bit.SWRST = 1;
+    RTC->MODE0.CTRL.reg = RTC_MODE0_CTRL_SWRST;
     while (RTC->MODE0.CTRL.bit.SWRST) {}
 #else
-    RTC->MODE0.CTRLA.bit.SWRST = 1;
+    RTC->MODE0.CTRLA.reg = RTC_MODE2_CTRLA_SWRST;
     while (RTC->MODE0.CTRLA.bit.SWRST) {}
 #endif
 }
@@ -193,21 +193,38 @@ static void _rtt_clock_setup(void)
 }
 #endif /* !CPU_SAMD21 - Clock Setup */
 
-void rtc_init(void)
+static void _rtc_init(void)
 {
-    _rtc_clock_setup();
-    _poweron();
-    _rtc_set_enabled(0);
+#ifdef REG_RTC_MODE2_CTRLA
+    if (RTC->MODE2.CTRLA.bit.MODE == RTC_MODE2_CTRLA_MODE_CLOCK_Val) {
+        return;
+    }
+
+    _rtt_reset();
 
     /* RTC config with RTC_MODE2_CTRL_CLKREP = 0 (24h) */
-#ifdef REG_RTC_MODE2_CTRLA
     RTC->MODE2.CTRLA.reg = RTC_MODE2_CTRLA_PRESCALER_DIV1024   /* CLK_RTC_CNT = 1KHz / 1024 -> 1Hz */
                          | RTC_MODE2_CTRLA_CLOCKSYNC           /* Clock Read Synchronization Enable */
                          | RTC_MODE2_CTRLA_MODE_CLOCK;
 #else
+    if (RTC->MODE2.CTRL.bit.MODE == RTC_MODE2_CTRL_MODE_CLOCK_Val) {
+        return;
+    }
+
+    _rtt_reset();
+
     RTC->MODE2.CTRL.reg = RTC_MODE2_CTRL_PRESCALER_DIV1024
                         | RTC_MODE2_CTRL_MODE_CLOCK;
 #endif
+}
+
+void rtc_init(void)
+{
+    _poweroff();
+    _rtc_clock_setup();
+    _poweron();
+
+    _rtc_init();
 
     /* disable all interrupt sources */
     RTC->MODE2.INTENCLR.reg = RTC_MODE2_INTENCLR_MASK;
