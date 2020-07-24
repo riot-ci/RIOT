@@ -49,9 +49,19 @@ extern "C" {
 #ifndef DHCPV6_CLIENT_SERVER_MAX
 #define DHCPV6_CLIENT_SERVER_MAX    (1U)    /**< maximum number of servers to store */
 #endif
-#ifndef DHCPV6_CLIENT_PFX_LEASE_MAX
-#define DHCPV6_CLIENT_PFX_LEASE_MAX (1U)    /**< maximum number of prefix leases to store */
+
+/**
+ * @defgroup net_dhcpv6_conf DHCPv6 client compile configurations
+ * @ingroup  config
+ * @{
+ */
+/**
+ * @brief   Maximum number of prefix leases to be stored
+ */
+#ifndef CONFIG_DHCPV6_CLIENT_PFX_LEASE_MAX
+#define CONFIG_DHCPV6_CLIENT_PFX_LEASE_MAX (1U)
 #endif
+/** @} */
 
 /**
  * @name DHCPv6 unique identifier (DUID) definitions
