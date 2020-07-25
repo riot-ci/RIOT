@@ -62,7 +62,7 @@ int gpio_port_numof(void)
 int gpio_port_num(gpio_t gpio)
 {
 #ifdef MODULE_GPIO_EXP
-    if ((gpio.port.reg & GPIO_CPU_PORT_MASK) == GPIO_CPU_PORT_BASE) {
+    if (GPIO_CPU_PORT_IS(gpio.port)) {
         return GPIO_CPU_PORT_NUM(gpio.port.reg);
     }
 #ifdef GPIO_EXP_PORTS
