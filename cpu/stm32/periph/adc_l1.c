@@ -112,7 +112,7 @@ int adc_init(adc_t line)
     prep();
 
     /* configure the pin */
-    if ((adc_config[line].pin != GPIO_UNDEF))
+    if (!gpio_is_undef(adc_config[line].pin))
         gpio_init_analog(adc_config[line].pin);
 
     /* set ADC clock prescaler */
