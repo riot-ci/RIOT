@@ -132,10 +132,10 @@ config HAS_PERIPH_GPIO
     help
         Indicates that a GPIO peripheral is present.
 
-config HAS_PERIPH_GPIO_EXT
+config HAS_PERIPH_GPIO_EXP
     bool
     help
-        Indicates that a extendable GPIO peripheral is present.
+        Indicates that a expandable GPIO peripheral is present.
 
 config HAS_PERIPH_GPIO_IRQ
     bool
