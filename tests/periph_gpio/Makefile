@@ -20,6 +20,9 @@ else
   PORT_UNDER_TEST ?= 0
 endif
 
+# CI has no native GPIOs
+TEST_ON_CI_BLACKLIST += native
+
 include $(RIOTBASE)/Makefile.include
 
 $(call target-export-variables,test,PORT_UNDER_TEST)
