@@ -209,12 +209,12 @@ int at25xxx_init(at25xxx_t *dev, const at25xxx_params_t *params)
     dev->params = *params;
     spi_init_cs(dev->params.spi, dev->params.cs_pin);
 
-    if (dev->params.wp_pin != GPIO_UNDEF) {
+    if (!gpio_is_undef(dev->params.wp_pin)) {
         gpio_init(dev->params.wp_pin, GPIO_OUT);
         gpio_set(dev->params.wp_pin);
     }
 
-    if (dev->params.hold_pin != GPIO_UNDEF) {
+    if (!gpio_is_undef(dev->params.hold_pin)) {
         gpio_init(dev->params.hold_pin, GPIO_OUT);
         gpio_set(dev->params.hold_pin);
     }

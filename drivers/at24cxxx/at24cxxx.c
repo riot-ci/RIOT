@@ -175,7 +175,7 @@ int at24cxxx_init(at24cxxx_t *dev, const at24cxxx_params_t *params)
         return -EINVAL;
     }
     dev->params = *params;
-    if (DEV_PIN_WP != GPIO_UNDEF) {
+    if (!gpio_is_undef(DEV_PIN_WP)) {
         gpio_init(DEV_PIN_WP, GPIO_OUT);
         at24cxxx_disable_write_protect(dev);
     }
@@ -271,7 +271,7 @@ int at24cxxx_erase(const at24cxxx_t *dev)
 
 int at24cxxx_enable_write_protect(const at24cxxx_t *dev)
 {
-    if (DEV_PIN_WP == GPIO_UNDEF) {
+    if (gpio_is_undef(DEV_PIN_WP)) {
         return -ENOTSUP;
     }
     gpio_set(DEV_PIN_WP);
@@ -280,7 +280,7 @@ int at24cxxx_enable_write_protect(const at24cxxx_t *dev)
 
 int at24cxxx_disable_write_protect(const at24cxxx_t *dev)
 {
-    if (DEV_PIN_WP == GPIO_UNDEF) {
+    if (gpio_is_undef(DEV_PIN_WP)) {
         return -ENOTSUP;
     }
     gpio_clear(DEV_PIN_WP);
