@@ -39,7 +39,7 @@ static debugpins_config_t _configuration = {
 static void _set_checked(gpio_t pin)
 {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (pin != GPIO_UNDEF){
+        if (!gpio_is_undef(pin)){
             gpio_set(pin);
         }
     }
@@ -48,7 +48,7 @@ static void _set_checked(gpio_t pin)
 static void _clear_checked(gpio_t pin)
 {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (pin != GPIO_UNDEF){
+        if (!gpio_is_undef(pin)){
             gpio_clear(pin);
         }
     }
@@ -57,7 +57,7 @@ static void _clear_checked(gpio_t pin)
 static void _toggle_checked(gpio_t pin)
 {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (pin != GPIO_UNDEF){
+        if (!gpio_is_undef(pin)){
             gpio_toggle(pin);
         }
     }
@@ -66,7 +66,7 @@ static void _toggle_checked(gpio_t pin)
 static void _init_checked(gpio_t pin)
 {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        if (pin != GPIO_UNDEF){
+        if (!gpio_is_undef(pin)){
             gpio_init(pin, GPIO_OUT);
         }
     }
@@ -75,7 +75,12 @@ static void _init_checked(gpio_t pin)
 void openwsn_debugpins_init(const debugpins_config_t *user_config)
 {
     if (IS_USED(MODULE_OPENWSN_DEBUGPINS)) {
-        memset(&_configuration, GPIO_UNDEF, sizeof(debugpins_config_t));
+        _configuration.frame = GPIO_UNDEF;
+        _configuration.slot = GPIO_UNDEF;
+        _configuration.fsm = GPIO_UNDEF;
+        _configuration.task = GPIO_UNDEF;
+        _configuration.isr = GPIO_UNDEF,
+        _configuration.radio = GPIO_UNDEF;
 
         if (user_config != NULL) {
             memcpy(&_configuration, user_config, sizeof(debugpins_config_t));
