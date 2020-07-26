@@ -388,6 +388,20 @@ typedef uint8_t gpio_mask_t;
 #endif
 
 /**
+ * @brief   Determine whether a given port is a MCU GPIO port
+ *
+ * The macro defines a test to determine whether a given port is an MCU
+ * GPIO port. By default this is done by masking the port register address
+ * with #GPIO_CPU_PORT_MASK and comparing the result with #GPIO_CPU_PORT_BASE.
+ *
+ * The MCU implementation can override this macro by a more efficient
+ * implementation if possible
+ */
+#ifndef GPIO_CPU_PORT_IS
+#define GPIO_CPU_PORT_IS(x) ((x.reg & GPIO_CPU_PORT_MASK) == GPIO_CPU_PORT_BASE)
+#endif
+
+/**
  * @brief   Convert a (port, pin) tuple into @ref gpio_t structure
  */
 #if MODULE_GPIO_EXP || DOXYGEN
@@ -731,20 +745,6 @@ void gpio_cpu_write(gpio_port_t port, gpio_mask_t values);
  */
 
 #if MODULE_GPIO_EXP || DOXYGEN
-/**
- * @brief   Determine whether a given port is a MCU GPIO port
- *
- * The macro defines a test to determine whether a given port is an MCU
- * GPIO port. By default this is done by masking the port register address
- * with #GPIO_CPU_PORT_MASK and comparing the result with #GPIO_CPU_PORT_BASE.
- *
- * The MCU implementation can override this macro by a more efficient
- * implementation if possible
- */
-#ifndef GPIO_CPU_PORT_IS
-#define GPIO_CPU_PORT_IS(x) ((x.reg & GPIO_CPU_PORT_MASK) == GPIO_CPU_PORT_BASE)
-#endif
-
 /**
  * @brief    Get the driver interface for a GPIO port
  */
