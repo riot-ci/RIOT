@@ -27,7 +27,6 @@
  */
 
 #include <assert.h>
-#include <string.h>
 
 #include "cpu.h"
 #include "periph/flashpage.h"
@@ -114,10 +113,17 @@ static void _cmd_write_page(void)
 
 static void _write_page(void* dst, const void *data, size_t len, void (*cmd_write)(void))
 {
+    uint32_t *dst32 = dst;
+
     _unlock();
     _cmd_clear_page_buffer();
 
-    memcpy(dst, data, len);
+    /* copy whole words */
+    const uint32_t *data32 = data;
+    while (len) {
+        *dst32++ = *data32++;
+        len -= sizeof(uint32_t);
+    }
 
     cmd_write();
     _lock();
