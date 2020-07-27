@@ -89,11 +89,17 @@ USEPKG_W_PREFIX = $(addprefix PKG_,$(USEPKG))
 # defining symbols like 'MODULE_<MODULE_NAME>' or PKG_<PACKAGE_NAME> which
 # default to 'y'. Then, every module and package Kconfig menu will depend on
 # that symbol being set to show its options.
+# Do nothing when testing Kconfig module dependency modelling.
+ifeq (1,$(TEST_KCONFIG))
+$(KCONFIG_GENERATED_DEPENDENCIES): FORCE | $(GENERATED_DIR)
+	$(Q)touch $@
+else
 $(KCONFIG_GENERATED_DEPENDENCIES): FORCE | $(GENERATED_DIR)
 	$(Q)printf "%s " $(USEMODULE_W_PREFIX) $(USEPKG_W_PREFIX) \
 	  | awk 'BEGIN {RS=" "}{ gsub("-", "_", $$0); \
 	      printf "config %s\n\tbool\n\tdefault y\n", toupper($$0)}' \
 	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
+endif
 
 .PHONY: menuconfig
 
