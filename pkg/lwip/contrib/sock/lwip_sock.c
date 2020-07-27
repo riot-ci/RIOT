@@ -490,11 +490,9 @@ int lwip_sock_get_addr(struct netconn *conn, struct _sock_tl_ep *ep, u8_t local)
         ) {
         return res;
     }
-#if LWIP_IPV6 && LWIP_IPV4
-    ep->family = (addr.type == IPADDR_TYPE_V6) ? AF_INET6 : AF_INET;
-#elif LWIP_IPV6
+#if LWIP_IPV6
     ep->family = (conn->type & NETCONN_TYPE_IPV6) ? AF_INET6 : AF_INET;
-#elif LWIP_IPV4
+#else
     ep->family = AF_INET;
 #endif
     if (local) {
