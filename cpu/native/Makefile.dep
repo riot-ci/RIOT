@@ -1,5 +1,8 @@
 ifeq (FreeBSD,$(OS))
-  ifneq ($(DISABLE_LIBSTDCPP),1)
+  ifeq ($(OS_ARCH),amd64)
+    DISABLE_LIBSTDCPP ?= 1
+  endif
+  ifeq ($(DISABLE_LIBSTDCPP),1)
     # static C++ constructors need guards for thread safe initialization
     ifneq (,$(filter cpp,$(FEATURES_USED)))
       USEMODULE += cxx_ctor_guards
