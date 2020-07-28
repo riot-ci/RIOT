@@ -1,5 +1,7 @@
 ifeq (FreeBSD,$(OS))
-  DISABLE_LIBSTDCPP ?= 1
+  ifeq ($(OS_ARCH),amd64)
+    DISABLE_LIBSTDCPP ?= 1
+  endif
 endif
 
 FEATURES_PROVIDED += arch_32bit
