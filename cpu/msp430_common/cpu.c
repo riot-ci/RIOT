@@ -20,7 +20,7 @@
  * address on the stack before executing the function's first instruction.
  *
  * If called within ISR, just set sched_context_switch_request and
- * directly return to the call site. A regular "ret" does this.
+ * directly return to the call site. A regular function return does this.
  *
  * If called from stack context, it needs to prepare the stack so it looks exactly
  * as if the thread had been interrupted by an ISR, which requires the SR to be on
@@ -32,13 +32,11 @@
  * the currently active thread, which __restore_context() then restores, resuming
  * execution at the call site using reti.
  *
- * The naked attribute is needed to ensure this works.
  */
-__attribute__((naked)) void thread_yield_higher(void)
+void thread_yield_higher(void)
 {
     if (irq_is_in()) {
         sched_context_switch_request = 1;
-        __asm__("ret");
     }
     else {
         __asm__("push r2"); /* save SR */
