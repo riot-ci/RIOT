@@ -49,9 +49,6 @@ KCONFIG_EDITED_CONFIG = $(GENERATED_DIR)/.editedconfig
 
 # Add configurations to merge, in ascendent priority (i.e. a file overrides the
 # previous ones).
-# KCONFIG_ADD_CONFIG holds a list of .config files that are merged for the
-# initial configuration. This allows to split configurations in common files and
-# share them among boards or cpus.
 ifeq (1, $(TEST_KCONFIG))
   # KCONFIG_ADD_CONFIG holds a list of .config files that are merged for the
   # initial configuration. This allows to split configurations in common files
