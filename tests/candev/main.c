@@ -69,7 +69,7 @@ static int _send(int argc, char **argv)
         frame.can_dlc = argc - 1;
     }
 
-    ret = candev->driver->send(candev, &frame);
+    ret = candev->driver->send(candev, &frame, NULL);
     if (ret < 0) {
         puts("Failed to send CAN-message!");
     }
