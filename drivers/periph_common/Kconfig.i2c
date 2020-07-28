@@ -22,7 +22,7 @@ config MOD_PERIPH_I2C_RECONFIGURE
 
 # TODO: this module is actually just an artifact from the way periph_init_%
 # modules are handled in Makefile. We need to define it to keep the list the
-# same.
+# same for now. We should be able to remove it later on.
 
 config MOD_PERIPH_INIT_I2C_RECONFIGURE
     bool "Auto initialize I2C pin reconfiguration support"

@@ -12,7 +12,7 @@ menuconfig MOD_PERIPH_FLASHPAGE
 
 # TODO: the 'init' modules are actually just artifacts from the way
 # periph_init_% modules are handled in Makefile. We need to define them to keep
-# the list the same.
+# the list the same for now. We should be able to remove them later on.
 
 config MOD_PERIPH_INIT_FLASHPAGE
     bool "Auto initialize Flashpage peripheral"

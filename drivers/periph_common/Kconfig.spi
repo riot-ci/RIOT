@@ -22,7 +22,7 @@ config MOD_PERIPH_SPI_RECONFIGURE
 
 # TODO: this module is actually just an artifact from the way periph_init_%
 # modules are handled in Makefile. We need to define it to keep the list the
-# same.
+# same for now. We should be able to remove it later on.
 
 config MOD_PERIPH_INIT_SPI_RECONFIGURE
     bool "Auto initialize SPI pin reconfiguration support"
