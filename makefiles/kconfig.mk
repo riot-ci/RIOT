@@ -123,12 +123,11 @@ endif # eq (clean, $(MAKECMDGOALS))
 # as KCONFIG_OUT_CONFIG, and is used to inject the configurations during
 # compilation.
 #
-# This will optionally generate the 'dummy' header files needed for incremental
-# builds.
+# This will generate the 'dummy' header files needed for incremental builds.
 $(KCONFIG_GENERATED_AUTOCONF_HEADER_C): $(KCONFIG_OUT_CONFIG)
 	$(Q) $(GENCONFIG) \
 	  --header-path $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) \
-	  $(if $(KCONFIG_SYNC_DEPS),--sync-deps $(KCONFIG_SYNC_DIR)) \
+	  --sync-deps $(KCONFIG_SYNC_DIR) \
 	  --kconfig-filename $(KCONFIG) \
 	  --config-sources $(KCONFIG_OUT_CONFIG)
 	@touch $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
