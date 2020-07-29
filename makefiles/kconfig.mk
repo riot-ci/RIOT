@@ -8,7 +8,7 @@ include $(RIOTMAKE)/tools/kconfiglib.inc.mk
 GENERATED_DIR = $(BINDIR)/generated
 
 # The sync dir will contain a tree of header files that represent Kconfig symbols
-KCONFIG_SYNC_DIR = $(GENERATED_DIR)/deps
+export KCONFIG_SYNC_DIR = $(GENERATED_DIR)/deps
 
 # This file will contain all generated configuration from kconfig
 export KCONFIG_GENERATED_AUTOCONF_HEADER_C = $(GENERATED_DIR)/autoconf.h
@@ -79,9 +79,6 @@ SHOULD_RUN_KCONFIG ?= $(or $(wildcard $(APPDIR)/*.config), $(wildcard $(APPDIR)/
 
 ifneq (,$(SHOULD_RUN_KCONFIG))
 
-# Flag to enable the --sync-dir feature of Kconfiglib
-KCONFIG_SYNC_DEPS ?=
-
 # Add configuration header to build dependencies
 BUILDDEPS += $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
 
@@ -133,6 +130,6 @@ $(KCONFIG_OUT_CONFIG) $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) &: $(KCONFIG_GENERA
 	KCONFIG_CONFIG=$(KCONFIG_MERGED_CONFIG) $(GENCONFIG) \
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
 	  --header-path $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) \
-	  $(if $(KCONFIG_SYNC_DEPS),--sync-deps $(KCONFIG_SYNC_DIR)) \
+	  --sync-deps $(KCONFIG_SYNC_DIR) \
 	  $(KCONFIG)
 endif
