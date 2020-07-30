@@ -1,7 +1,11 @@
 all: fixdep
 
-fixdep: fixdep.c
-	$(CC) -O3 -Wall fixdep.c -o fixdep
+fixdep_patched.c: fixdep.c
+	patch $^ fixdep_riot.patch -o $@
+
+fixdep: fixdep_patched.c
+	$(CC) -O3 -Wall $^ -o $@
 
 clean:
-	rm -f fixdep
+	$(RM) fixdep_patched.c
+	$(RM) fixdep

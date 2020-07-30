@@ -1,13 +1,4 @@
 /*
- * Copyright (C) 2020 HAW Hamburg
- *
- * This file is imported from [1] and slightly modified to work with
- * the RIOT build system.
- *
- * [1] https://github.com/torvalds/linux/blob/6ba1b005ffc388c2aeaddae20da29e4810dea298/scripts/basic/fixdep.c
- */
-
-/*
  * "Optimize" a list of dependencies as spit out by gcc -MD
  * for the kernel build
  * ===========================================================================
@@ -18,10 +9,84 @@
  * This software may be used and distributed according to the terms
  * of the GNU General Public License, incorporated herein by reference.
  *
+ *
+ * Introduction:
+ *
+ * gcc produces a very nice and correct list of dependencies which
+ * tells make when to remake a file.
+ *
+ * To use this list as-is however has the drawback that virtually
+ * every file in the kernel includes autoconf.h.
+ *
+ * If the user re-runs make *config, autoconf.h will be
+ * regenerated.  make notices that and will rebuild every file which
+ * includes autoconf.h, i.e. basically all files. This is extremely
+ * annoying if the user just changed CONFIG_HIS_DRIVER from n to m.
+ *
+ * So we play the same trick that "mkdep" played before. We replace
+ * the dependency on autoconf.h by a dependency on every config
+ * option which is mentioned in any of the listed prerequisites.
+ *
+ * kconfig populates a tree in include/config/ with an empty file
+ * for each config symbol and when the configuration is updated
+ * the files representing changed config options are touched
+ * which then let make pick up the changes and the files that use
+ * the config symbols are rebuilt.
+ *
+ * So if the user changes his CONFIG_HIS_DRIVER option, only the objects
+ * which depend on "include/config/his/driver.h" will be rebuilt,
+ * so most likely only his driver ;-)
+ *
+ * The idea above dates, by the way, back to Michael E Chastain, AFAIK.
+ *
+ * So to get dependencies right, there are two issues:
+ * o if any of the files the compiler read changed, we need to rebuild
+ * o if the command line given to the compile the file changed, we
+ *   better rebuild as well.
+ *
+ * The former is handled by using the -MD output, the later by saving
+ * the command line used to compile the old object and comparing it
+ * to the one we would now use.
+ *
+ * Again, also this idea is pretty old and has been discussed on
+ * kbuild-devel a long time ago. I don't have a sensibly working
+ * internet connection right now, so I rather don't mention names
+ * without double checking.
+ *
+ * This code here has been based partially based on mkdep.c, which
+ * says the following about its history:
+ *
+ *   Copyright abandoned, Michael Chastain, <mailto:mec@shout.net>.
+ *   This is a C version of syncdep.pl by Werner Almesberger.
+ *
+ *
  * It is invoked as
  *
- *   fixdep <dep_file> <object_file> <config_dir>
+ *   fixdep <depfile> <target> <cmdline>
  *
+ * and will read the dependency file <depfile>
+ *
+ * The transformed dependency snipped is written to stdout.
+ *
+ * It first generates a line
+ *
+ *   cmd_<target> = <cmdline>
+ *
+ * and then basically copies the .<target>.d file to stdout, in the
+ * process filtering out the dependency on autoconf.h and adding
+ * dependencies on include/config/my/option.h for every
+ * CONFIG_MY_OPTION encountered in any of the prerequisites.
+ *
+ * We don't even try to really parse the header files, but
+ * merely grep, i.e. if CONFIG_FOO is mentioned in a comment, it will
+ * be picked up as well. It's not a problem with respect to
+ * correctness, since that can only give too many dependencies, thus
+ * we cannot miss a rebuild. Since people tend to not mention totally
+ * unrelated CONFIG_ options all over the place, it's not an
+ * efficiency problem either.
+ *
+ * (Note: it'd be easy to port over the complete mkdep state machine,
+ *  but I don't think the added complexity is worth it)
  */
 
 #include <sys/types.h>
@@ -36,7 +101,7 @@
 
 static void usage(void)
 {
-	fprintf(stderr, "Usage: fixdep <depfile> <target> <deps_dir>\n");
+	fprintf(stderr, "Usage: fixdep <depfile> <target> <cmdline>\n");
 	exit(1);
 }
 
@@ -147,7 +212,7 @@ static void define_config(const char *name, int len, unsigned int hash)
 /*
  * Record the use of a CONFIG_* word.
  */
-static void use_config(const char *m, int slen, const char *deps_dir)
+static void use_config(const char *m, int slen)
 {
 	unsigned int hash = strhash(m, slen);
 
@@ -155,7 +220,7 @@ static void use_config(const char *m, int slen, const char *deps_dir)
 	    return;
 
 	define_config(m, slen, hash);
-	print_dep(m, slen, deps_dir);
+	print_dep(m, slen, "include/config");
 }
 
 /* test if s ends in sub */
@@ -169,7 +234,7 @@ static int str_ends_with(const char *s, int slen, const char *sub)
 	return !memcmp(s + slen - sublen, sub, sublen);
 }
 
-static void parse_config_file(const char *p, const char *deps_dir)
+static void parse_config_file(const char *p)
 {
 	const char *q, *r;
 	const char *start = p;
@@ -188,7 +253,7 @@ static void parse_config_file(const char *p, const char *deps_dir)
 		else
 			r = q;
 		if (r > p)
-                        use_config(p, r - p, deps_dir);
+			use_config(p, r - p);
 		p = q;
 	}
 }
@@ -228,7 +293,8 @@ static void *read_file(const char *filename)
 /* Ignore certain dependencies */
 static int is_ignored_file(const char *s, int len)
 {
-	return str_ends_with(s, len, "generated/autoconf.h");
+	return str_ends_with(s, len, "include/generated/autoconf.h") ||
+	       str_ends_with(s, len, "include/generated/autoksyms.h");
 }
 
 /*
@@ -236,7 +302,7 @@ static int is_ignored_file(const char *s, int len)
  * assignments are parsed not only by make, but also by the rather simple
  * parser in scripts/mod/sumversion.c.
  */
-static void parse_dep_file(char *m, const char *target, const char *deps_dir)
+static void parse_dep_file(char *m, const char *target)
 {
 	char *p;
 	int is_last, is_target;
@@ -283,8 +349,9 @@ static void parse_dep_file(char *m, const char *target, const char *deps_dir)
 				 */
 				if (!saw_any_target) {
 					saw_any_target = 1;
-					xprintf("deps_%s :=\\\n  %s \\\n",
+					xprintf("source_%s := %s\n\n",
 						target, m);
+					xprintf("deps_%s := \\\n", target);
 				}
 				is_first_dep = 0;
 			} else {
@@ -292,7 +359,7 @@ static void parse_dep_file(char *m, const char *target, const char *deps_dir)
 			}
 
 			buf = read_file(m);
-			parse_config_file(buf, deps_dir);
+			parse_config_file(buf);
 			free(buf);
 		}
 
@@ -317,7 +384,7 @@ static void parse_dep_file(char *m, const char *target, const char *deps_dir)
 
 int main(int argc, char *argv[])
 {
-        const char *depfile, *target, *deps_dir;
+	const char *depfile, *target, *cmdline;
 	void *buf;
 
 	if (argc != 4)
@@ -325,10 +392,12 @@ int main(int argc, char *argv[])
 
 	depfile = argv[1];
 	target = argv[2];
-	deps_dir = argv[3];
+	cmdline = argv[3];
+
+	xprintf("cmd_%s := %s\n\n", target, cmdline);
 
 	buf = read_file(depfile);
-	parse_dep_file(buf, target, deps_dir);
+	parse_dep_file(buf, target);
 	free(buf);
 
 	return 0;
