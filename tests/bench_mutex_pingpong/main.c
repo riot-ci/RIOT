@@ -78,7 +78,10 @@ int main(void)
         n++;
     }
 
-    printf("{ \"result\" : %"PRIu32" }\n", n);
-
+    printf("{ \"result\" : %"PRIu32, n);
+#ifdef CLOCK_CORECLOCK
+    printf(", \"ticks\" : %"PRIu32, CLOCK_CORECLOCK/n);
+#endif
+    puts(" }");
     return 0;
 }
