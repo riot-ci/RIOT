@@ -326,9 +326,9 @@ typedef struct netdev_driver {
      *
      * This function will cause the driver to start the transmission in an
      * async fashion. The driver will "own" the `iolist` until a subsequent
-     * call to @ref netdev_driver_t::confirm_send returns `0`. The driver must
-     * signal completion using the NETDEV_EVENT_TX_COMPLETE event, regardless
-     * of success or failure.
+     * call to @ref netdev_driver_t::confirm_send returns something different
+     * than `-EBUSY`. The driver must signal completion using the
+     * NETDEV_EVENT_TX_COMPLETE event, regardless of success or failure.
      *
      * Old drivers might not be ported to the new API and have
      * netdev_driver_t::confirm_send set to `NULL`. An that case the driver
