@@ -24,7 +24,7 @@ menu "Hifive1b clock configuration"
     depends on BOARD_HIFIVE1B
 
 choice
-prompt "Clock source selection"
+bool "Clock source selection"
 default USE_CLOCK_HFXOSC_PLL
 
 config USE_CLOCK_HFXOSC_PLL

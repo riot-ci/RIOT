@@ -22,7 +22,7 @@ menu "Hifive1 clock configuration"
     depends on BOARD_HIFIVE1
 
 choice
-prompt "Clock source selection"
+bool "Clock source selection"
 default USE_CLOCK_HFXOSC_PLL
 
 config USE_CLOCK_HFXOSC_PLL
