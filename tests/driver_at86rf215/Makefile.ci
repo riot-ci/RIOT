@@ -8,6 +8,8 @@ BOARD_INSUFFICIENT_MEMORY := \
     derfmega128 \
     i-nucleo-lrwan1 \
     microduino-corerf \
+    msb-430 \
+    msb-430h \
     nucleo-f031k6 \
     nucleo-f042k6 \
     nucleo-f303k8 \
