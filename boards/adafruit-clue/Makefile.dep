@@ -14,5 +14,9 @@ ifeq (,$(filter-out stdio_cdc_acm,$(filter stdio_% slipdev_stdio,$(USEMODULE))))
   USEMODULE += stdio_cdc_acm
 endif
 
+ifneq (,$(filter auto_init_screen,$(USEMODULE)))
+  USEMODULE += ili9341
+endif
+
 # include common nrf52 dependencies
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
