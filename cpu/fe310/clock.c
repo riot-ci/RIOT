@@ -71,7 +71,7 @@ void clock_init(void)
     /* Turn off the HFROSC */
     PRCI_REG(PRCI_HFROSCCFG) &= ~ROSC_EN(1);
 #elif CONFIG_USE_CLOCK_HFROSC_PLL
-    PRCI_set_hfrosctrim_for_f_cpu(CLOCK_DESIRED_FREQUENCY, PRCI_FREQ_UNDERSHOOT);
+    PRCI_set_hfrosctrim_for_f_cpu(CONFIG_CLOCK_DESIRED_FREQUENCY, PRCI_FREQ_UNDERSHOOT);
 #else /* Clock HFROSC */
     /* Disable Bypass */
     PRCI_REG(PRCI_PLLCFG) &= ~PLL_BYPASS(1);

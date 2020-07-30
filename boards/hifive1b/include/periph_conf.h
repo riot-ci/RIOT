@@ -32,21 +32,44 @@ extern "C" {
  * @{
  */
 #ifndef CONFIG_USE_CLOCK_HFXOSC_PLL
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HFXOSC) || IS_ACTIVE(CONFIG_USE_CLOCK_HFROSC_PLL) || \
+    IS_ACTIVE(CONFIG_USE_CLOCK_HFROSC)
+#define CONFIG_USE_CLOCK_HFXOSC_PLL         (0)
+#else
 #define CONFIG_USE_CLOCK_HFXOSC_PLL         (1)     /* Use PLL clocked by HFXOSC by default */
 #endif
+#endif /* CONFIG_USE_CLOCK_HFXOSC_PLL */
+
 #ifndef CONFIG_USE_CLOCK_HFXOSC
 #define CONFIG_USE_CLOCK_HFXOSC             (0)
-#endif
+#endif /* CONFIG_USE_CLOCK_HFXOSC */
+
 #ifndef CONFIG_USE_CLOCK_HFROSC_PLL
 #define CONFIG_USE_CLOCK_HFROSC_PLL         (0)
+#endif /* CONFIG_USE_CLOCK_HFROSC_PLL */
+
+#ifndef CONFIG_USE_CLOCK_HFROSC
+#define CONFIG_USE_CLOCK_HFROSC             (0)
+#endif /* CONFIG_USE_CLOCK_HFROSC */
+
+#if CONFIG_USE_CLOCK_HFXOSC_PLL && \
+    (CONFIG_USE_CLOCK_HFROSC_PLL || CONFIG_USE_CLOCK_HFROSC || CONFIG_USE_CLOCK_HFXOSC)
+#error "Cannot use HFXOSC_PLL with other clock configurations"
 #endif
 
-#if CONFIG_USE_CLOCK_HFROSC_PLL && (CONFIG_USE_CLOCK_HFXOSC_PLL || CONFIG_USE_CLOCK_HFXOSC)
-#error "Cannot use HFROSC_PLL with HFXOSC based configurations"
+#if CONFIG_USE_CLOCK_HFXOSC && \
+    (CONFIG_USE_CLOCK_HFROSC_PLL || CONFIG_USE_CLOCK_HFROSC || CONFIG_USE_CLOCK_HFXOSC_PLL)
+#error "Cannot use HFXOSC with other clock configurations"
 #endif
 
-#if CONFIG_USE_CLOCK_HFXOSC_PLL && CONFIG_USE_CLOCK_HFXOSC
-#error "Cannot use HFXOSC with HFXOSC_PLL"
+#if CONFIG_USE_CLOCK_HFROSC_PLL && \
+    (CONFIG_USE_CLOCK_HFXOSC_PLL || CONFIG_USE_CLOCK_HFXOSC || CONFIG_USE_CLOCK_HFROSC)
+#error "Cannot use HFROSC_PLL with other clock configurations"
+#endif
+
+#if CONFIG_USE_CLOCK_HFROSC && \
+    (CONFIG_USE_CLOCK_HFXOSC_PLL || CONFIG_USE_CLOCK_HFXOSC || CONFIG_USE_CLOCK_HFROSC_PLL)
+#error "Cannot use HFROSC with other clock configurations"
 #endif
 
 #if CONFIG_USE_CLOCK_HFXOSC_PLL
