@@ -19,60 +19,51 @@ config BOARD_HIFIVE1
     select HAS_PERIPH_UART
 
 menu "Hifive1 clock configuration"
+    depends on BOARD_HIFIVE1
 
-choice "Clock source"
+choice
 prompt "Clock source selection"
-default CONFIG_USE_CLOCK_HFXOSC_PLL
+default USE_CLOCK_HFXOSC_PLL
 
-config CONFIG_USE_CLOCK_HFXOSC_PLL
-bool
-prompt "PLL clocked by high frequency external oscillator (HFXOSC)"
+config USE_CLOCK_HFXOSC_PLL
+    bool "PLL clocked by high frequency external oscillator (HFXOSC)"
 
-config CONFIG_USE_CLOCK_HFXOSC
-bool
-prompt "Direct High frequency external oscillator (HFXOSC)"
+config USE_CLOCK_HFXOSC
+    bool "Direct High frequency external oscillator (HFXOSC)"
 
-config CONFIG_USE_CLOCK_HFROSC_PLL
-bool
-prompt "PLL clocked by High frequency internal oscillator (HFXOSC)"
+config USE_CLOCK_HFROSC_PLL
+    bool "PLL clocked by High frequency internal oscillator (HFROSC)"
 
-config CONFIG_USE_CLOCK_HFROSC
-bool
-prompt "Direct High frequency internal oscillator (HFXOSC)"
+config USE_CLOCK_HFROSC
+    bool "Direct High frequency internal oscillator (HFROSC)"
 endchoice
 
-if CONFIG_USE_CLOCK_HFXOSC_PLL
-config CONFIG_CLOCK_PLL_F
-int
-default 39
-prompt "F: REFR multiply factor"
+if USE_CLOCK_HFXOSC_PLL
+config CLOCK_PLL_F
+    int "F: REFR multiply factor"
+    default 39
 
-config CONFIG_CLOCK_PLL_Q
-int
-default 1
-prompt "Q: VCO divide factor"
+config CLOCK_PLL_Q
+    int "Q: VCO divide factor"
+    default 1
 endif
 
-if CONFIG_USE_CLOCK_HFROSC_PLL
-config CONFIG_CLOCK_DESIRED_FREQUENCY
-int
-default 320000000
-range 1000000 320000000
-prompt "Desired clock frequency"
-endif
+config CLOCK_DESIRED_FREQUENCY
+    int "Desired clock frequency"
+    default 320000000
+    range 1000000 320000000
+    depends on USE_CLOCK_HFROSC_PLL
 
-if CONFIG_USE_CLOCK_HFROSC
-config CONFIG_CLOCK_HFROSC_TRIM
-int
-default 6
-range 0 31
-prompt "TRIM: input frequency multiplier"
+if USE_CLOCK_HFROSC
+config CLOCK_HFROSC_TRIM
+    int "TRIM: input frequency multiplier"
+    default 6
+    range 0 31
 
-config CONFIG_CLOCK_HFROSC_DIV
-int
-default 1
-range 0 63
-prompt "DIV: output frequency divider"
+config CLOCK_HFROSC_DIV
+    int "DIV: output frequency divider"
+    default 1
+    range 0 63
 endif
 
 endmenu
