@@ -87,7 +87,17 @@ int cc2420_init(cc2420_t *dev)
     cc2420_reg_write(dev, CC2420_REG_MDMCTRL0, reg);
 
     /* go into RX state */
-    cc2420_set_state(dev, CC2420_GOTO_RX);
+    /* this doesn't compile, compiler complains that the enum type of
+     * CC2420_GOTO_RX cannot be converted to netopt_t as required by the
+     * function.
+     * The numerical value of CC2420_GOTO_RX would be NETOPT_ADDRESS (2), which
+     * can't be right.
+     * cc2420_set_state(dev, NETOPT_STATE_RX) in turn is not implemented
+     * (returns -ENOTSUP), so this was a noop for a while.
+     * TODO: revisit and confirm.
+     * (Kaspar 07/2020)
+     */
+    //cc2420_set_state(dev, CC2420_GOTO_RX);
 
     return 0;
 }
