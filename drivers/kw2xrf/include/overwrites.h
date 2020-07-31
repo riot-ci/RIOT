@@ -39,8 +39,8 @@ extern "C" {
 #endif
 
 typedef struct overwrites_tag {
-    unsigned char address;
-    unsigned char data;
+    uint8_t address;
+    uint8_t data;
 } overwrites_t;
 
 
