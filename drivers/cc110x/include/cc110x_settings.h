@@ -51,7 +51,7 @@ extern const uint8_t cc110x_conf[CC110X_CONF_SIZE];
  * transceiver configuration, those numbers should be checked again with the
  * SmartRF Studio
  */
-extern const unsigned char cc110x_magic_registers[3];
+extern const uint8_t cc110x_magic_registers[3];
 
 /**
  * @name    Configuration data that specify the 8 available output power levels
