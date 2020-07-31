@@ -19,6 +19,8 @@
 
 #include "periph/gpio.h"
 
+#ifndef MODULE_PERIPH_GPIO_LINUX
+
 int gpio_init(gpio_t pin, gpio_mode_t mode) {
   (void) pin;
   (void) mode;
@@ -27,6 +29,28 @@ int gpio_init(gpio_t pin, gpio_mode_t mode) {
     return 0;
   else
     return -1;
+}
+
+int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
+                  gpio_cb_t cb, void *arg)
+{
+    (void) pin;
+    (void) mode;
+    (void) flank;
+    (void) cb;
+    (void) arg;
+
+    return -1;
+}
+
+void gpio_irq_enable(gpio_t pin)
+{
+    (void) pin;
+}
+
+void gpio_irq_disable(gpio_t pin)
+{
+    (void) pin;
 }
 
 int gpio_read(gpio_t pin) {
@@ -51,4 +75,7 @@ void gpio_write(gpio_t pin, int value) {
   (void) pin;
   (void) value;
 }
+
+#endif /* !MODULE_PERIPH_GPIO_LINUX */
+
 /** @} */
