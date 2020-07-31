@@ -415,7 +415,7 @@ static int _atwinc15x0_init(netdev_t *netdev)
     assert(dev);
     assert(dev == atwinc15x0);
 
-    DEBUG("%s dev=%p\n", __func__, (void*)(uintptr_t)dev);
+    DEBUG("%s dev=%p\n", __func__, (void *)dev);
 
     atwinc15x0->bsp_isr = NULL;
     atwinc15x0->bsp_irq_enabled = true;
