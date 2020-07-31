@@ -118,7 +118,7 @@ jobs:
     steps:
     - name: Generate .riotgithubtoken
       run: |
-        echo '${{ secrets.ACCESS_TOKEN }}' > ~/.riotgithubtoken
+        echo '${{ secrets.RIOT_CI_ACCESS_TOKEN }}' > ~/.riotgithubtoken
     - name: Checkout Release-Specs
       uses: actions/checkout@v2
       with:
