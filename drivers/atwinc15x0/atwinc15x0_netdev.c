@@ -395,7 +395,7 @@ static int _atwinc15x0_set(netdev_t *netdev, netopt_t opt, const void *val,
     assert(val);
 
     DEBUG("%s dev=%p opt=%u val=%p max_len=%u\n", __func__,
-          (void*)(uintptr_t)netdev, opt, val, max_len);
+          (void *)netdev, opt, val, max_len);
 
     switch (opt) {
         case NETOPT_ADDRESS:
