@@ -492,7 +492,7 @@ static void _atwinc15x0_isr(netdev_t *netdev)
     assert(dev);
     assert(dev == atwinc15x0);
 
-    DEBUG("%s dev=%p\n", __func__, (void*)(uintptr_t)dev);
+    DEBUG("%s dev=%p\n", __func__, (void *)dev);
 
     /* handle pending ATWINC15x0 module events */
     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) { }
