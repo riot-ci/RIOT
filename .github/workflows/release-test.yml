@@ -57,7 +57,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions junit2html
+        python -m pip install tox tox-gh-actions junit2html
     - name: Pull riotbuild docker image
       run: |
         DOCKER_VERSION="${{ github.event.inputs.docker_version }}"
@@ -141,7 +141,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions junit2html
+        python -m pip install tox tox-gh-actions junit2html
     - name: Pull riotbuild docker image
       run: |
         DOCKER_VERSION="${{ github.event.inputs.docker_version }}"
