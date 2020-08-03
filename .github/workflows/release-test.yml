@@ -93,7 +93,7 @@ jobs:
           RIOTBASE=${RIOTBASE} \
           $(which tox) -- ${TOX_ARGS} -m "not iotlab_creds"
     - name: junit2html and XML deploy
-      if: ${{ always() }}
+      if: always()
       run: |
         DATE=$(date +"%Y-%m-%d-%H-%M-%S")
         if echo ${{ github.event.inputs.riot_version }} | \
@@ -108,7 +108,7 @@ jobs:
         cp $GITHUB_WORKSPACE/Release-Specs/test-report.xml \
           test-reports/test-report-native-$VER-$DATE.xml
     - uses: actions/upload-artifact@v2
-      if: ${{ always() }}
+      if: always()
       with:
         name: Upload test report
         path: test-reports/*
@@ -180,7 +180,7 @@ jobs:
           DOCKER_ENV_VARS=USEMODULE \
           $(which tox) -- ${TOX_ARGS} -m "iotlab_creds"
     - name: junit2html and XML deploy
-      if: ${{ always() }}
+      if: always()
       run: |
         DATE=$(date +"%Y-%m-%d-%H-%M-%S")
         if echo ${{ github.event.inputs.riot_version }} | \
@@ -195,7 +195,7 @@ jobs:
         cp $GITHUB_WORKSPACE/Release-Specs/test-report.xml \
           test-reports/test-report-iotlab-$VER-$DATE.xml
     - uses: actions/upload-artifact@v2
-      if: ${{ always() }}
+      if: always()
       with:
         name: Upload test report
         path: test-reports/*
