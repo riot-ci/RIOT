@@ -81,6 +81,14 @@ enum {
 };
 
 /**
+ * @brief   Accelerometer user weigh offset
+ */
+enum {
+    LSM6DSL_ACC_SMALL_SCALE = 0,
+    LSM6DSL_ACC_LARGE_SCALE,
+};
+
+/**
  * @brief   Gyroscope full scale
  */
 enum {
@@ -203,7 +211,6 @@ typedef struct {
     uint8_t gyro_fs;                        /**< gyroscope full scale */
     uint8_t acc_decimation;                 /**< accelerometer decimation */
     uint8_t gyro_decimation;                /**< gyroscope decimation */
-
     uint8_t acc_usr_ofs_w;                  /**< accelerometer user offset 
                                                 weigh */
     gpio_t alert_pins[LSM6DSL_PIN_INT_MAX]; /**< INT1 and INT2 alert pins */
@@ -515,6 +522,81 @@ int lsm6dsl_acc_configure_tap_alert(const lsm6dsl_t *dev,
 int lsm6dsl_acc_get_tap_src_alert(const lsm6dsl_t *dev,
                                     lsm6dsl_tap_src_t *reason,
                                     bool disable_flag);
+
+/**
+ * @brief set X-axis offset
+ *
+ * @note : This offset will be ADDED to
+ *         the internal measured value
+ *
+ * @param[in]   dev         Targeted device
+ * @param[in]   offset      Wanted offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_set_x_offset(const lsm6dsl_t *dev, int8_t offset);
+
+/**
+ * @brief get X-axis offset
+ *
+ * @param[in]   dev         Targeted device
+ * @param[out]  offset      Applied offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_get_x_offset(const lsm6dsl_t *dev, int8_t *offset);
+
+/**
+ * @brief set Y-axis offset
+ *
+ * @note : This offset will be ADDED to
+ *         the internal measured value
+ *
+ * @param[in]   dev         Targeted device
+ * @param[in]   offset      Wanted offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_set_y_offset(const lsm6dsl_t *dev, int8_t offset);
+
+/**
+ * @brief get Y-axis offset
+ *
+ * @param[in]   dev         Targeted device
+ * @param[out]  offset      Applied offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_get_y_offset(const lsm6dsl_t *dev, int8_t *offset);
+
+/**
+ * @brief set Z-axis offset
+ *
+ * @note : This offset will be SUBTRACTED to
+ *         the internal measured value
+ *
+ * @param[in]   dev         Targeted device
+ * @param[in]   offset      Wanted offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_set_z_offset(const lsm6dsl_t *dev, int8_t offset);
+
+/**
+ * @brief get Z-axis offset
+ *
+ * @param[in]   dev         Targeted device
+ * @param[out]  offset      Applied offset
+ *
+ * @return LSM6DSL_OK on success
+ * @return < 0 on error
+ */
+int lsm6dsl_acc_get_z_offset(const lsm6dsl_t *dev, int8_t *offset);
 
 #ifdef __cplusplus
 }

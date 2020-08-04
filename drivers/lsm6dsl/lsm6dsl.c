@@ -78,6 +78,11 @@ int lsm6dsl_init(lsm6dsl_t *dev, const lsm6dsl_params_t *params)
           dev->params.acc_decimation;
     res += i2c_write_reg(BUS, ADDR, LSM6DSL_REG_FIFO_CTRL3, tmp, 0);
 
+    res += i2c_read_reg(BUS, ADDR, LSM6DSL_REG_CTRL6_C, &tmp, 0);
+    tmp |= ((dev->params.acc_usr_ofs_w << LSM6DSL_CTRL6_C_USR_OFF_W_SHIFT)
+            & LSM6DSL_CTRL6_C_USR_OFF_W_MASK);
+    res += i2c_write_reg(BUS, ADDR, LSM6DSL_REG_CTRL6_C, tmp, 0);
+
     i2c_release(BUS);
 
     if (res < 0) {

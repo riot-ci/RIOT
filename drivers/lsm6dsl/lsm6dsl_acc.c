@@ -447,3 +447,78 @@ int lsm6dsl_acc_get_tap_src_alert(const lsm6dsl_t *dev,
     }
     return LSM6DSL_OK;
 }
+
+int lsm6dsl_acc_get_x_offset(const lsm6dsl_t *dev, int8_t *offset)
+{
+    assert(offset);
+    i2c_acquire(BUS);
+    int res = i2c_read_reg(BUS, ADDR, LSM6DSL_REG_X_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_get_x_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
+
+int lsm6dsl_acc_set_x_offset(const lsm6dsl_t *dev, int8_t offset)
+{
+    i2c_acquire(BUS);
+    int res = i2c_write_reg(BUS, ADDR, LSM6DSL_REG_X_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_set_x_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
+
+int lsm6dsl_acc_get_y_offset(const lsm6dsl_t *dev, int8_t *offset)
+{
+    assert(offset);
+    i2c_acquire(BUS);
+    int res = i2c_read_reg(BUS, ADDR, LSM6DSL_REG_Y_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_get_y_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
+
+int lsm6dsl_acc_set_y_offset(const lsm6dsl_t *dev, int8_t offset)
+{
+    i2c_acquire(BUS);
+    int res = i2c_write_reg(BUS, ADDR, LSM6DSL_REG_Y_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_set_y_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
+
+int lsm6dsl_acc_get_z_offset(const lsm6dsl_t *dev, int8_t *offset)
+{
+    assert(offset);
+    i2c_acquire(BUS);
+    int res = i2c_read_reg(BUS, ADDR, LSM6DSL_REG_Z_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_get_z_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
+
+int lsm6dsl_acc_set_z_offset(const lsm6dsl_t *dev, int8_t offset)
+{
+    i2c_acquire(BUS);
+    int res = i2c_write_reg(BUS, ADDR, LSM6DSL_REG_Z_OFS_USR, offset, 0);
+    i2c_release(BUS);
+    if (res < 0) {
+        DEBUG("[ERROR] lsm6dsl_acc_set_z_offset\n");
+        return -LSM6DSL_ERROR_BUS;
+    }
+    return LSM6DSL_OK;
+}
