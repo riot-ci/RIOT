@@ -57,7 +57,7 @@ static int _lsm6dsl_cfg_wkup_int_handler(int argc, char** argv)
         return 1;
     }
     puts("[SUCCESS]\n");
-    return 1;
+    return 0;
 }
 
 static int _lsm6dsl_cfg_ff_int_handler(int argc, char** argv)
@@ -74,7 +74,7 @@ static int _lsm6dsl_cfg_ff_int_handler(int argc, char** argv)
         return 1;
     }
     puts("[SUCCESS]\n");
-    return 1;
+    return 0;
 }
 
 static int _lsm6dsl_cfg_6d4d_int_handler(int argc, char** argv)
@@ -92,7 +92,7 @@ static int _lsm6dsl_cfg_6d4d_int_handler(int argc, char** argv)
         return 1;
     }
     puts("[SUCCESS]\n");
-    return 1;
+    return 0;
 }
 
 static int _lsm6dsl_cfg_tap_int_handler(int argc, char** argv)
@@ -113,7 +113,73 @@ static int _lsm6dsl_cfg_tap_int_handler(int argc, char** argv)
         return 1;
     }
     puts("[SUCCESS]\n");
-    return 1;
+    return 0;
+}
+
+static int _lsm6dsl_cfg_ofs_xyz_handler(int argc, char** argv)
+{
+    if (argc < 4 ) {
+        printf("Usage: %s <X-offset> <Y-offset> <Z-offset> \n", argv[0]);
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_x_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_y_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_z_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+    return 0;
+}
+
+static int _lsm6dsl_cfg_ofs_x_handler(int argc, char** argv)
+{
+    if (argc < 2 ) {
+        printf("Usage: %s <X-offset>\n", argv[0]);
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_x_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+    return 0;
+}
+
+static int _lsm6dsl_cfg_ofs_y_handler(int argc, char** argv)
+{
+    if (argc < 2 ) {
+        printf("Usage: %s <Y-offset>\n", argv[0]);
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_y_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+    return 0;
+}
+
+static int _lsm6dsl_cfg_ofs_z_handler(int argc, char** argv)
+{
+    if (argc < 2 ) {
+        printf("Usage: %s <Z-offset>\n", argv[0]);
+        return 1;
+    }
+
+    if (lsm6dsl_acc_set_z_offset(&dev, atoi(argv[1])) != LSM6DSL_OK) {
+        puts("[ERROR]");
+        return 1;
+    }
+    return 0;
 }
 
 static void _usage_configure(void)
@@ -176,10 +242,22 @@ static int _lsm6dsl_configure_handler(int argc, char **argv)
     else if (strcmp(argv[1], "tap_int") == 0) {
         return _lsm6dsl_cfg_tap_int_handler(argc -1, &argv[1]);
     }
+    else if (strcmp(argv[1], "ofs_xyz") == 0) {
+        return _lsm6dsl_cfg_ofs_xyz_handler(argc -1, &argv[1]);
+    }
+    else if (strcmp(argv[1], "ofs_x") == 0) {
+        return _lsm6dsl_cfg_ofs_x_handler(argc -1, &argv[1]);
+    }
+    else if (strcmp(argv[1], "ofs_y") == 0) {
+        return _lsm6dsl_cfg_ofs_y_handler(argc -1, &argv[1]);
+    }
+    else if (strcmp(argv[1], "ofs_z") == 0) {
+        return _lsm6dsl_cfg_ofs_z_handler(argc -1, &argv[1]);
+    }
     else {
         _usage_configure();
     }
-    return 1;
+    return 0;
 }
 
 static void _usage_enable(void)
