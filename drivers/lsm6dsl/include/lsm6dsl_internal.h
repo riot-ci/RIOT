@@ -142,6 +142,9 @@ extern "C" {
 
 #define LSM6DSL_CTRL3_C_BOOT                (0x80)
 
+#define LSM6DSL_CTRL6_C_USR_OFF_W_MASK      (0x08)
+#define LSM6DSL_CTRL6_C_USR_OFF_W_SHIFT     (3)
+
 #define LSM6DSL_CTRL8_XL_LP_ON_D6_MASK      (0x01)
 /** @} */
 

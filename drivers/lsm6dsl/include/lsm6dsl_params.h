@@ -57,7 +57,9 @@ extern "C" {
 #ifndef LSM6DSL_PARAM_GYRO_FIFO_DEC
 #define LSM6DSL_PARAM_GYRO_FIFO_DEC  (LSM6DSL_DECIMATION_NO)
 #endif
-
+#ifndef LSM6DSL_PARAM_ACC_USR_OFS_W
+#define LSM6DSL_PARAM_ACC_USR_OFS_W  (LSM6DSL_ACC_LARGE_SCALE)
+#endif
 /** @brief  Alert gpio pins */
 #ifndef LSM6DSL_PARAM_ALERT_PIN_1
 #define LSM6DSL_PARAM_ALERT_PIN_1  (GPIO_UNDEF)
@@ -75,6 +77,7 @@ extern "C" {
                                        .gyro_fs                         = LSM6DSL_PARAM_GYRO_FS,      \
                                        .acc_decimation                  = LSM6DSL_PARAM_ACC_FIFO_DEC, \
                                        .gyro_decimation                 = LSM6DSL_PARAM_GYRO_FIFO_DEC, \
+                                       .acc_usr_ofs_w                   = LSM6DSL_PARAM_ACC_USR_OFS_W, \
                                        .alert_pins                      = {LSM6DSL_PARAM_ALERT_PIN_1, LSM6DSL_PARAM_ALERT_PIN_2} }
 #endif
 #ifndef LSM6DSL_SAUL_INFO
