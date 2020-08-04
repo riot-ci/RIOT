@@ -54,8 +54,8 @@ int main(void)
 
     printf("{ \"result\" : %"PRIu32, n);
 #ifdef CLOCK_CORECLOCK
-    printf(", \"ticks\" : %"PRIu32,
-           ((TEST_DURATION/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
+    printf(", \"ticks\" : %lu",
+           (uint32_t)((TEST_DURATION/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
 #endif
     puts(" }");
 
