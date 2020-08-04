@@ -244,8 +244,21 @@ typedef enum {
      *              via the `info` parameter
      */
     NETDEV_EVENT_TX_COMPLETE_DATA_PENDING,
-    NETDEV_EVENT_TX_NOACK,                  /**< ACK requested but not received */
-    NETDEV_EVENT_TX_MEDIUM_BUSY,            /**< couldn't transfer frame */
+    /**
+     * @brief   ACK requested but not received
+     *
+     * @deprecated  Issue an NETDEV_EVENT_TX_COMPLETE event instead and return
+     *              `-ECOMM` in netdev_driver_t::confirm_send. Via the `info`
+     *              parameter additional details about the error can be passed
+     */
+    NETDEV_EVENT_TX_NOACK,
+    /**
+     * @brief   couldn't transfer frame
+     *
+     * @deprecated  Issue an NETDEV_EVENT_TX_COMPLETE event instead and return
+     *              `-EBUSY` in netdev_driver_t::confirm_send.
+     */
+    NETDEV_EVENT_TX_MEDIUM_BUSY,
     NETDEV_EVENT_LINK_UP,                   /**< link established */
     NETDEV_EVENT_LINK_DOWN,                 /**< link gone */
     NETDEV_EVENT_TX_TIMEOUT,                /**< timeout when sending */
@@ -327,7 +340,7 @@ typedef struct netdev_driver {
      * This function will cause the driver to start the transmission in an
      * async fashion. The driver will "own" the `iolist` until a subsequent
      * call to @ref netdev_driver_t::confirm_send returns something different
-     * than `-EBUSY`. The driver must signal completion using the
+     * than `-EAGAIN`. The driver must signal completion using the
      * NETDEV_EVENT_TX_COMPLETE event, regardless of success or failure.
      *
      * Old drivers might not be ported to the new API and have
@@ -351,18 +364,19 @@ typedef struct netdev_driver {
      *          bit stuffing, escaping, headers, trailers, preambles, start of
      *          frame delimiters, etc. May be an estimate for performance
      *          reasons.)
-     * @retval  -EBUSY      Transmission still ongoing. (Call later again!)
+     * @retval  -EAGAIN     Transmission still ongoing. (Call later again!)
      * @retval  -ECOMM      Any kind of transmission error, such as collision
      *                      detected, layer 2 ACK timeout, etc.
      *                      Use @p info for more details
+     * @retval  -EBUSY      Medium is busy. (E.g. Auto-CCA failed / timed out)
      * @retval  <0          Other error. (Please use a negative errno code.)
      *
      * @warning After netdev_driver_t::send was called and returned zero, this
      *          function must be called until it returns anything other than
-     *          `-EBUSY`.
+     *          `-EAGAIN`.
      * @note    The driver will signal completion using the
      *          NETDEV_EVENT_TX_COMPLETE event. This function must not return
-     *          `-EBUSY` after that event was received.
+     *          `-EAGAIN` after that event was received.
      */
     int (*confirm_send)(netdev_t *dev, void *info);
 
