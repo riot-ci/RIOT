@@ -40,8 +40,7 @@ jobs:
     - name: Checkout Release-Specs
       uses: actions/checkout@v2
       with:
-        # TODO: change to RIOT-OS/Release-Specs
-        repository: miri64/Release-Specs
+        repository: RIOT-OS/Release-Specs
         path: Release-Specs
         fetch-depth: 1
         ref: ${{ github.event.inputs.release_specs_version }}
@@ -122,8 +121,7 @@ jobs:
     - name: Checkout Release-Specs
       uses: actions/checkout@v2
       with:
-        # TODO: change to RIOT-OS/Release-Specs
-        repository: miri64/Release-Specs
+        repository: RIOT-OS/Release-Specs
         path: Release-Specs
         fetch-depth: 1
         ref: ${{ github.event.inputs.release_specs_version }}
