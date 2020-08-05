@@ -3,6 +3,4 @@ CPU_FAM  = samd21
 
 FEATURES_PROVIDED += puf_sram
 
-KCONFIG_ADD_CONFIG += $(RIOTCPU)/sam0_common/sam0_common.config
-
 -include $(RIOTCPU)/sam0_common/Makefile.features
