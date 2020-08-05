@@ -1,4 +1,4 @@
-name: Release tests
+name: release-tests
 
 on:
   schedule:
