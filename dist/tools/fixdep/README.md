@@ -7,7 +7,7 @@
 - This way, `make` is able to draw correct dependencies between
   compilation units and configuration symbols
 - => `--sync-deps` and `fixdep` enable incremental compilations, i.e.,
-  only those compilcation units are rebuilt, which are affected by
+  only those compilation units are rebuilt, which are affected by
   configuration changes.
 
 [1] https://github.com/torvalds/linux/blob/83bdc7275e6206f560d247be856bceba3e1ed8f2/scripts/basic/fixdep.c
