@@ -128,7 +128,7 @@ $(KCONFIG_EDITED_CONFIG): FORCE
 
 # Generates a merged configuration file from the given sources, only when the
 # configuration has not been updated by some interface like menuconfig
-$(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(MERGE_SOURCES) $(GENERATED_DEPENDENCIES_DEP) | $(GENERATED_DIR)
+$(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(MERGE_SOURCES) $(GENERATED_DEPENDENCIES_DEP) $(CLEAN) | $(GENERATED_DIR)
 	$(Q)\
 	if ! test -f $(KCONFIG_EDITED_CONFIG); then \
 	  $(MERGECONFIG) $(KCONFIG) $@ $(MERGE_SOURCES); \
