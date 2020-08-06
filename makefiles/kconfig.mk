@@ -49,6 +49,13 @@ KCONFIG_EDITED_CONFIG = $(GENERATED_DIR)/.editedconfig
 
 # Add configurations to merge, in ascendent priority (i.e. a file overrides the
 # previous ones).
+ifeq (1, $(TEST_KCONFIG))
+  # KCONFIG_ADD_CONFIG holds a list of .config files that are merged for the
+  # initial configuration. This allows to split configurations in common files
+  # and share them among boards or cpus.
+  MERGE_SOURCES += $(KCONFIG_ADD_CONFIG)
+endif
+
 MERGE_SOURCES += $(wildcard $(KCONFIG_APP_CONFIG))
 MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
 
@@ -85,10 +92,17 @@ CFLAGS += -include '$(KCONFIG_GENERATED_AUTOCONF_HEADER_C)'
 USEMODULE_W_PREFIX = $(addprefix MODULE_,$(USEMODULE))
 USEPKG_W_PREFIX = $(addprefix PKG_,$(USEPKG))
 
+# Variable used to conditionally depend on KCONFIG_GENERATED_DEPDENDENCIES
+# When testing Kconfig module modelling this file is not needed
+ifneq (1, $(TEST_KCONFIG))
+  GENERATED_DEPENDENCIES_DEP = $(KCONFIG_GENERATED_DEPENDENCIES)
+endif
+
 # Build a Kconfig file defining all used modules and packages. This is done by
 # defining symbols like 'MODULE_<MODULE_NAME>' or PKG_<PACKAGE_NAME> which
 # default to 'y'. Then, every module and package Kconfig menu will depend on
 # that symbol being set to show its options.
+# Do nothing when testing Kconfig module dependency modelling.
 $(KCONFIG_GENERATED_DEPENDENCIES): FORCE | $(GENERATED_DIR)
 	$(Q)printf "%s " $(USEMODULE_W_PREFIX) $(USEPKG_W_PREFIX) \
 	  | awk 'BEGIN {RS=" "}{ gsub("-", "_", $$0); \
@@ -114,7 +128,7 @@ $(KCONFIG_EDITED_CONFIG): FORCE
 
 # Generates a merged configuration file from the given sources, only when the
 # configuration has not been updated by some interface like menuconfig
-$(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(KCONFIG_GENERATED_DEPENDENCIES) $(MERGE_SOURCES)
+$(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(MERGE_SOURCES) $(GENERATED_DEPENDENCIES_DEP) $(CLEAN) | $(GENERATED_DIR)
 	$(Q)\
 	if ! test -f $(KCONFIG_EDITED_CONFIG); then \
 	  $(MERGECONFIG) $(KCONFIG) $@ $(MERGE_SOURCES); \
@@ -125,7 +139,7 @@ $(KCONFIG_MERGED_CONFIG): $(MERGECONFIG) $(KCONFIG_GENERATED_DEPENDENCIES) $(MER
 # The rule is not included when only `make clean` is called in order to keep the
 # $(BINDIR) folder clean
 ifneq (clean,$(MAKECMDGOALS))
-$(KCONFIG_OUT_CONFIG) $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) &: $(KCONFIG_GENERATED_DEPENDENCIES) $(GENCONFIG) $(MERGE_CONFIG_DEP)
+$(KCONFIG_OUT_CONFIG) $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) &: $(GENCONFIG) $(MERGE_CONFIG_DEP) $(GENERATED_DEPENDENCIES_DEP) | $(GENERATED_DIR)
 	$(Q) \
 	KCONFIG_CONFIG=$(KCONFIG_MERGED_CONFIG) $(GENCONFIG) \
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
