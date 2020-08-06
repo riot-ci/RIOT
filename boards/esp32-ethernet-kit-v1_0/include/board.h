@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     boards_esp32_esp-ethernet-kit
+ * @ingroup     boards_esp32_esp-ethernet-kit-v1_0
  * @file
  * @{
  */
