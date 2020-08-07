@@ -163,9 +163,8 @@
 #error "rtc: unable to determine RTC SYNC and ASYNC prescalers from LSI value"
 #endif
 
-/* struct tm counts years since 1900 but RTC has only two-digit year hence the
- * offset of 100 years. */
-#define YEAR_OFFSET         (100)
+/* struct tm counts years since 1900 but RTC has only two-digit year, hence the offset */
+#define YEAR_OFFSET         (RIOT_EPOCH - 1900)
 
 /* Use a magic number to determine the initial RTC source. This will be used
    to know if a reset of the RTC is required at initialization. */
