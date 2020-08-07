@@ -1,0 +1,4 @@
+PSEUDOMODULES += esp32_ethernet_kit_v1_1
+
+INCLUDES += -I$(RIOTBOARD)/esp32-ethernet-kit-v1_0/include
+include $(RIOTBOARD)/esp32-ethernet-kit-v1_0/Makefile.include

@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     boards_esp32_esp-ethernet-kit-v1_0
+ * @ingroup     boards_esp32_esp-ethernet-kit
  * @brief       Peripheral MCU configuration for Espressif ESP32-Ethernet-Kit
  * @file
  * @author      Gunar Schorcht <gunar@schorcht.net>
