@@ -1036,6 +1036,49 @@ void dma_wait(dma_t dma);
 void dma_cancel(dma_t dma);
 /** @} */
 
+/**
+ * @name sam0 User Configuration
+ *
+ *      The MCUs of this family contain a region of memory that is used to store
+ *      CPU configuration & calibration data.
+ *      It can be used to set persistent settings and has some additional space
+ *      to store user configuration data.
+ * @{
+ */
+
+/**
+ * @brief MCU configuration applied on start. The contents of this struct differ
+ *        between families.
+ */
+typedef struct sam0_aux_cfg_mapping nvm_user_page_t;
+
+/**
+ * @brief   Reset the configuration area, apply a new configuration.
+ *
+ *
+ * @param   cfg     New MCU configuration, may be NULL.
+ *                  In that case, this will clear the remaining user area
+ *                  and apply the old configuration again.
+ */
+void sam0_flashpage_aux_reset(nvm_user_page_t *cfg);
+
+/**
+ * @brief   Write data to the user configuration area.
+ *          This will write data to the remaining space after @see nvm_user_page_t
+ *          The size of this area depends on the MCU family used.
+ *
+ *          Will only write bits 1 -> 0. To reset bits to 1, call @see sam0_flashpage_aux_reset
+ *          This will reset the whole user area configuration.
+ *
+ *          Arbitrary data lengths and offsets are supported.
+ *
+ * @param   offset  Byte offset after @see nvm_user_page_t
+ * @param   data    The data to write
+ * @param   len     Size of the data
+ */
+void sam0_flashpage_aux_write_raw(uint32_t offset, const void *data, size_t len);
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
