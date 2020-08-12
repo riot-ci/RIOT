@@ -27,7 +27,14 @@ extern kernel_pid_t semtech_loramac_pid;
 
 void TimerInit(TimerEvent_t *obj, void (*cb)(void))
 {
-    obj->dev = (ztimer_t) { 0 };
+    obj->dev = (ztimer_t) {
+        .base = {
+            .next =  NULL,
+            .offset = 0,
+        },
+        .callback = NULL,
+        .arg = NULL,
+    };
     obj->running = 0;
     obj->cb = cb;
 }
