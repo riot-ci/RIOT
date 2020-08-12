@@ -4,3 +4,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     nucleo-l031k6 \
     stm32f030f4-demo \
     #
+
+BOARD_BLACKLIST := \
+    mega-xplained # conflict between RTC and RTT features \
+    #
