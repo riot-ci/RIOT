@@ -24,6 +24,10 @@ USEMODULE += $(DRIVER)
 USEMODULE += fmt
 FEATURES_REQUIRED += periph_rtc
 
+# on EFM32 CPUs RTC and RTT features are using the same peripheral and thus
+# cannot be used at the same time (this application requires both rtc and rtt)
+FEATURES_BLACKLIST += arch_efm32
+
 CFLAGS += -DDEVEUI=\"$(DEVEUI)\" -DAPPEUI=\"$(APPEUI)\" -DAPPKEY=\"$(APPKEY)\"
 
 # Comment this out to disable code in RIOT that does safety checking
