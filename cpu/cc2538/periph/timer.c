@@ -33,7 +33,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define LOAD_VALUE              (0xffff)
+#define LOAD_VALUE              (0xffffffff)
 
 #define TIMER_A_IRQ_MASK        (0x000000ff)
 #define TIMER_B_IRQ_MASK        (0x0000ff00)
