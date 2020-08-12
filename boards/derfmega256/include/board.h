@@ -30,9 +30,8 @@ extern "C" {
  * @{
  */
 #define XTIMER_WIDTH        (16)
-#define XTIMER_HZ           (CLOCK_CORECLOCK / 64)
+#define XTIMER_HZ           (250000UL)
 #define XTIMER_BACKOFF      (40)
-
 /** @} */
 
 /**
