@@ -20,11 +20,15 @@
  */
 
 #include <stdio.h>
+#include "kernel_defines.h"
 
 int main(void)
 {
     puts("Hello World!");
 
+    if (IS_USED(MODULE_THIS_IS_A_TEST)) {
+        puts("The pseudomodule is active now");
+    }
     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
 

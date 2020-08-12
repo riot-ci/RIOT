@@ -265,3 +265,4 @@ NO_PSEUDOMODULES += auto_init_security
 NO_PSEUDOMODULES += auto_init_usbus
 
 # Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.
+PSEUDOMODULES += this_is_a_test
