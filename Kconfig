@@ -33,6 +33,11 @@ rsource "pkg/Kconfig"
 comment "RIOT is in a migration phase."
 comment "Some configuration options may not be here. Use CFLAGS instead."
 
+config MOD_THIS_IS_A_TEST
+    bool "This is a pseudomodule to test"
+    default y
+    depends on TEST_KCONFIG
+
 config TEST_KCONFIG
     bool
     default y if '$(TEST_KCONFIG)' = '1'
