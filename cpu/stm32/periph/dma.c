@@ -209,7 +209,7 @@ static IRQn_Type dma_get_irqn(int stream)
 #endif
     }
 #endif
-#endif
+#endif /* !defined(CPU_FAM_STM32F3) */
 #endif
 
     return -1;
