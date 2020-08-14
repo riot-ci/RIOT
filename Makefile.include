@@ -567,7 +567,7 @@ else
 link: ..compiler-check ..build-message $(BASELIBS) $(ARCHIVES)
 endif # RIOTNOLINK
 
-$(ELFFILE): $(BASELIBS)
+$(ELFFILE): $(BASELIBS) $(ARCHIVES)
 	$(Q)$(_LINK) -o $@
 
 .PHONY: $(APPLICATION_MODULE).module
@@ -578,7 +578,7 @@ $(APPLICATION_MODULE).module: pkg-build $(BUILDDEPS)
 $(APPLICATION_MODULE).module: FORCE
 
 # Other modules are built by application.inc.mk and packages building
-_SUBMAKE_LIBS = $(filter-out $(APPLICATION_MODULE).module $(APPDEPS), $(BASELIBS))
+_SUBMAKE_LIBS = $(filter-out $(APPLICATION_MODULE).module $(APPDEPS), $(BASELIBS) $(ARCHIVES))
 $(_SUBMAKE_LIBS): $(APPLICATION_MODULE).module pkg-build
 
 # 'print-size' triggers a rebuild. Use 'info-buildsize' if you do not need to rebuild.
@@ -622,7 +622,7 @@ endif
 	@$(COLOR_ECHO)
 
 # The `clean` needs to be serialized before everything else.
-all $(BASELIBS) $(BUILDDEPS) ..in-docker-container: | $(CLEAN)
+all $(BASELIBS) $(ARCHIVES) $(BUILDDEPS) ..in-docker-container: | $(CLEAN)
 
 .PHONY: pkg-prepare pkg-build pkg-build-%
 pkg-prepare:
@@ -642,7 +642,7 @@ endif
 # Remove intermediates, but keep the .elf, .hex and .map etc.
 clean-intermediates:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
-	-@rm -rf $(BINDIR)/*/
+	-@rm -rf $(BINDIR)/*.a $(BINDIR)/*/
 
 clean-pkg:
 	-@for i in $(USEPKG) ; do "$(MAKE)" -C $(RIOTPKG)/$$i distclean ; done
