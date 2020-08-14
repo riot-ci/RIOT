@@ -181,6 +181,8 @@ int timer_set(tim_t tim, int channel, unsigned int timeout)
     lpc23xx_timer_t *dev = get_dev(tim);
 
     unsigned state = irq_disable();
+    dev->TCR = 0;
+
     unsigned absolute = timeout + dev->TC;
     unsigned mask = 1 << (channel * 3);
 
@@ -188,15 +190,7 @@ int timer_set(tim_t tim, int channel, unsigned int timeout)
     dev->MCR |= mask;
     set_oneshot(tim, channel);
 
-    if (absolute - dev->TC > timeout) {
-        /* Timer already expired. Trigger the interrupt now and loop until it
-         * is triggered.
-         */
-        while ((dev->IR & mask) == 0) {
-            dev->MR[channel] = dev->TC;
-        }
-    }
-
+    dev->TCR = 1;
     irq_restore(state);
 
     return 0;
