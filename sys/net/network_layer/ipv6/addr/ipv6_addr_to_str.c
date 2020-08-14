@@ -54,8 +54,8 @@ char *ipv6_addr_to_str(char *result, const ipv6_addr_t *addr, uint8_t result_len
      * Preprocess:
      *  Find the longest run of 0x0000's in address for :: shorthanding.
      */
-    for (uint8_t i = 0; i < IPV6_ADDR_WORD_LEN; i++) {
-        if (addr->u16[i].u16 == 0) {
+    for (uint8_t i = 0; i < sizeof(*addr); i += 2) {
+        if ((addr->u8[i] == 0) && (addr->u8[i+1] == 0)) {
             if (cur.base == -1) {
                 cur.base = i;
                 cur.len = 1;
@@ -117,20 +117,20 @@ char *ipv6_addr_to_str(char *result, const ipv6_addr_t *addr, uint8_t result_len
         }
 #endif
 
-        if ((addr->u16[i].u8[0] & 0xf0) != 0x00) {
-            *tp++ = HEX_L[addr->u16[i].u8[0] >> 4];
-            *tp++ = HEX_L[addr->u16[i].u8[0] & 0x0f];
-            *tp++ = HEX_L[addr->u16[i].u8[1] >> 4];
+        if ((addr->u8[2 * i] & 0xf0) != 0x00) {
+            *tp++ = HEX_L[addr->u8[2 * i] >> 4];
+            *tp++ = HEX_L[addr->u8[2 * i] & 0x0f];
+            *tp++ = HEX_L[addr->u8[2 * i + 1] >> 4];
         }
-        else if ((addr->u16[i].u8[0] & 0x0f) != 0x00) {
-            *tp++ = HEX_L[addr->u16[i].u8[0] & 0x0f];
-            *tp++ = HEX_L[addr->u16[i].u8[1] >> 4];
+        else if ((addr->u8[2 * i] & 0x0f) != 0x00) {
+            *tp++ = HEX_L[addr->u8[2 * i] & 0x0f];
+            *tp++ = HEX_L[addr->u8[2 * i + 1] >> 4];
         }
-        else if ((addr->u16[i].u8[1] & 0xf0) != 0x00) {
-            *tp++ = HEX_L[addr->u16[i].u8[1] >> 4];
+        else if ((addr->u8[2 * i + 1] & 0xf0) != 0x00) {
+            *tp++ = HEX_L[addr->u8[2 * i + 1] >> 4];
         }
 
-        *tp++ = HEX_L[addr->u16[i].u8[1] & 0xf];
+        *tp++ = HEX_L[addr->u8[2 * i + 1] & 0xf];
 
         i++;
     }
