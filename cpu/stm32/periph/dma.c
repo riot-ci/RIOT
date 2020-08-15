@@ -192,7 +192,7 @@ static IRQn_Type dma_get_irqn(int stream)
     if (stream < 7) {
         return ((IRQn_Type)((int)DMA1_Channel1_IRQn + stream));
     }
-#if !defined(CPU_FAM_STM32F3) && !defined(CPU_LINE_STM32F103xB)
+#if defined(DMA2_BASE)
 #if defined(CPU_FAM_STM32F1)
     else if (stream < 11) {
 #else
@@ -209,7 +209,7 @@ static IRQn_Type dma_get_irqn(int stream)
 #endif
     }
 #endif
-#endif /* !defined(CPU_FAM_STM32F3) && !defined(CPU_LINE_STM32F103xB) */
+#endif /* defined(DMA2_BASE) */
 #endif
 
     return -1;
