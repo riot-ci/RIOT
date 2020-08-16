@@ -15,6 +15,7 @@ export CPU_MODEL             # The specific identifier of the used CPU, used for
 export CPU_CORE              # The specific identifier of the core present in the CPU. Needed for depency resolution.
 export CPU_ARCH              # The specific identifier of the architecture of the core defined in CPU_CORE.
 export CPU_FAM               # An intermediate identifier between CPU and CPU_MODEL that represents a sub-group of a Manufacturers CPU's.
+export CPU_LINE              # An intermediate identifier between CPU_FAM and CPU_MODEL that represents a sub-group of a STM32 CPU's
 export MCU                   # The MCU, set by the board's Makefile.include, or defaulted to the same value as CPU.
 export INCLUDES              # The extra include paths, set by the various Makefile.include files.
 export CXXINCLUDES           # The extra include paths for c++, set by the various Makefile.include files.
