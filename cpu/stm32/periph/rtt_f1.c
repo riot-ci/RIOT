@@ -23,7 +23,7 @@
 #include "periph/rtt.h"
 #include "periph_conf.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 
 #define RTT_PRESCALER        ((RTT_CLOCK_FREQUENCY / RTT_FREQUENCY) - 1 )
@@ -189,9 +189,18 @@ void RTT_ISR(void)
 {
     if (RTT_DEV->CRL & RTC_CRL_ALRF) {
         RTT_DEV->CRL &= ~(RTC_CRL_ALRF);
-        alarm_cb(alarm_arg);
+        if(alarm_cb) {
+            rtt_cb_t tmp = alarm_cb;
+            alarm_cb = NULL;
+            tmp(alarm_arg);
+        }
     }
     if (RTT_DEV->CRL & RTC_CRL_OWF) {
+        if(overflow_cb) {
+            rtt_cb_t tmp = overflow_cb;
+            overflow_cb = NULL;
+            tmp(overflow_arg);
+        }
         RTT_DEV->CRL &= ~(RTC_CRL_OWF);
         overflow_cb(overflow_arg);
     }
