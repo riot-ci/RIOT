@@ -28,9 +28,9 @@
 
 #include "xtimer.h"
 
-/* min. amount of time to wait between set_alarm() */
-#define MIN_WAIT_US     (100UL)
 #define US_PER_TICK     (US_PER_SEC / RTT_FREQUENCY)
+/* min. amount of time to wait between set_alarm() */
+#define MIN_WAIT_US     (3 * US_PER_TICK)
 
 #ifndef SAMPLES
 #define SAMPLES 1024LU
