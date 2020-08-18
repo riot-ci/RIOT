@@ -256,9 +256,10 @@ static void _transfer_dma(spi_t bus, const void *out, void *in, size_t len)
     dma_wait(spi_config[bus].rx_dma);
     dma_wait(spi_config[bus].tx_dma);
 
+#ifdef DMA_CCR_EN 
     dma_stop(spi_config[bus].rx_dma);
     dma_stop(spi_config[bus].tx_dma);
-
+#endif
     _wait_for_end(bus);
 }
 #endif
