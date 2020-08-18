@@ -89,10 +89,30 @@ void luid_get_eui48(eui48_t *addr)
     eui48_clear_group(addr);
 }
 
+void luid_netdev_get_eui48(const netdev_t *netdev, eui48_t *addr)
+{
+    luid_base(addr, sizeof(*addr));
+    addr->uint8[4] ^= netdev->type;
+    addr->uint8[5] ^= netdev->index;
+
+    eui48_set_local(addr);
+    eui48_clear_group(addr);
+}
+
 void luid_get_eui64(eui64_t *addr)
 {
     luid_base(addr, sizeof(*addr));
     addr->uint8[7] ^= lastused++;
+
+    eui64_set_local(addr);
+    eui64_clear_group(addr);
+}
+
+void luid_netdev_get_eui64(const netdev_t *netdev, eui64_t *addr)
+{
+    luid_base(addr, sizeof(*addr));
+    addr->uint8[6] ^= netdev->type;
+    addr->uint8[7] ^= netdev->index;
 
     eui64_set_local(addr);
     eui64_clear_group(addr);
