@@ -26,6 +26,7 @@
 #include "at25xxx.h"
 #include "at25xxx_constants.h"
 #include "at25xxx_params.h"
+#include "bitarithm.h"
 #include "byteorder.h"
 
 #include "xtimer.h"
@@ -113,7 +114,7 @@ static int _at25xxx_write_page(const at25xxx_t *dev, uint32_t page, uint32_t off
     return len;
 }
 
-static int at25xxx_write_page(const at25xxx_t *dev, uint32_t page, uint32_t offset, const void *data, size_t len)
+int at25xxx_write_page(const at25xxx_t *dev, uint32_t page, uint32_t offset, const void *data, size_t len)
 {
     int res;
 
