@@ -1,7 +1,7 @@
 include ../Makefile.tests_common
 USEMODULE += embunit
 USEMODULE += usbus
-USEMODULE += periph_usbdev_mock
+USEMODULE += usbdev_mock
 
 DISABLE_MODULE += auto_init_usbus
 

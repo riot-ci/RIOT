@@ -19,7 +19,7 @@
 
 #include "periph/usbdev.h"
 #include "test_utils/expect.h"
-#include "periph/usbdev_mock.h"
+#include "usbdev_mock.h"
 
 #define ENABLE_DEBUG    (0)
 #include "debug.h"

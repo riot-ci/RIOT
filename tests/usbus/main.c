@@ -25,7 +25,7 @@
 #include "periph/usbdev.h"
 #include "embUnit.h"
 
-#include "periph/usbdev_mock.h"
+#include "usbdev_mock.h"
 #include "usb/descriptor.h"
 #include "usb/usbus.h"
 
