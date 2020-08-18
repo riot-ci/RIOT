@@ -14,3 +14,8 @@ config MOD_SAM0_COMMON_PERIPH
     depends on TEST_KCONFIG
     help
         SAM0 common peripheral code.
+
+config MOD_PERIPH_RTC_RTT
+    bool
+    default y if MOD_PERIPH_RTT || MOD_PERIPH_RTC
+    depends on TEST_KCONFIG
