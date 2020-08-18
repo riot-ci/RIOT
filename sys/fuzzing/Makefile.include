@@ -1,0 +1,4 @@
+# The fuzzing module uses gnrc pktbuf malloc implementation
+ifeq (,$(filter gnrc_pktbuf_malloc,$(USEMODULE)))
+  $(error "The fuzzing module needs gnrc_pktbuf_malloc implementation.")
+endif

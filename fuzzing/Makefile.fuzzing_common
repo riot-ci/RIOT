@@ -17,5 +17,8 @@ CFLAGS += -D_FORTIFY_SOURCE=2  # Compiler hardening
 USEMODULE += fuzzing
 USEMODULE += ssp
 
+# use malloc implementation of pktbuf
+USEMODULE += gnrc_pktbuf_malloc
+
 # Enable DEVELHELP by default
 DEVELHELP ?= 1
