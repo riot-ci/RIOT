@@ -36,12 +36,12 @@
 #define SAMPLES 1024LU
 #endif
 
-static atomic_bool cb_triggered;
+static mutex_t _mtx = MUTEX_INIT_LOCKED;
 
 void cb(void *arg)
 {
     (void)arg;
-    cb_triggered = true;
+    mutex_unlock(&_mtx);
 }
 
 int main(void)
@@ -55,12 +55,14 @@ int main(void)
 
     for (unsigned i = 0; i < SAMPLES; i++) {
         uint32_t offset = 0;
-        cb_triggered = false;
-        while (cb_triggered == false) {
+        int ret = -1;
+        while (ret != 0) {
             offset++;
             uint32_t now = rtt_get_counter();
+            mutex_trylock(&_mtx);
             rtt_set_alarm((now + offset) % RTT_MAX_VALUE, cb, 0);
-            xtimer_usleep(offset * US_PER_TICK + MIN_WAIT_US);
+            ret = xtimer_mutex_lock_timeout(
+                &_mtx, offset * US_PER_TICK + MIN_WAIT_US);
         }
         if (offset > value) {
             value = offset;
