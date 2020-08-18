@@ -36,17 +36,15 @@
 #define SAMPLES 1024LU
 #endif
 
-static mutex_t _mtx = MUTEX_INIT_LOCKED;
-
 void cb(void *arg)
 {
-    (void)arg;
-    mutex_unlock(&_mtx);
+    mutex_unlock(arg);
 }
 
 int main(void)
 {
     uint32_t value = 0;
+    mutex_t lock = MUTEX_INIT_LOCKED;
 
     rtt_init();
 
@@ -59,10 +57,12 @@ int main(void)
         while (ret != 0) {
             offset++;
             uint32_t now = rtt_get_counter();
-            mutex_trylock(&_mtx);
-            rtt_set_alarm((now + offset) % RTT_MAX_VALUE, cb, 0);
+            /* Enforce that mutex is locked, so that on each iteration
+               xtimer_mutex_lock_timeout() does not return immediately. */
+            mutex_trylock(&lock);
+            rtt_set_alarm((now + offset) % RTT_MAX_VALUE, cb, &lock);
             ret = xtimer_mutex_lock_timeout(
-                &_mtx, offset * US_PER_TICK + MIN_WAIT_US);
+                &lock, offset * US_PER_TICK + MIN_WAIT_US);
         }
         if (offset > value) {
             value = offset;
