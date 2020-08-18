@@ -44,7 +44,7 @@ void cb(void *arg)
 int main(void)
 {
     uint32_t value = 0;
-    /* mutex starts out locked, and each time an rtt callback is succesfully
+    /* mutex starts out locked, and each time an rtt callback is successfully
        called it will be locked again for the next iteration */
     mutex_t lock = MUTEX_INIT_LOCKED;
 
@@ -58,8 +58,11 @@ int main(void)
         int ret = -1;
         while (ret != 0) {
             offset++;
+            rtt_clear_alarm();
+            uint8_t state = irq_disable();
             uint32_t now = rtt_get_counter();
             rtt_set_alarm((now + offset) % RTT_MAX_VALUE, cb, &lock);
+            irq_restore(state);
             ret = xtimer_mutex_lock_timeout(
                 &lock, offset * US_PER_TICK + MIN_WAIT_US);
         }
