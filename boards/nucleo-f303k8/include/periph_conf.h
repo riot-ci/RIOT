@@ -89,8 +89,7 @@ static const uart_conf_t uart_config[] = {
         .bus        = APB1,
         .irqn       = USART2_IRQn,
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 3,
-        .dma_chan   = 2
+        .dma        = 3
 #endif
     },
     {
@@ -103,8 +102,7 @@ static const uart_conf_t uart_config[] = {
         .bus        = APB2,
         .irqn       = USART1_IRQn,
 #ifdef MODULE_PERIPH_DMA
-        .dma        = 2,
-        .dma_chan   = 2
+        .dma        = 2
 #endif
     }
 };
@@ -164,9 +162,7 @@ static const spi_conf_t spi_config[] = {
         .apbbus   = APB2,
 #ifdef MODULE_PERIPH_DMA
         .tx_dma   = 1,
-        .tx_dma_chan = 1,
-        .rx_dma   = 0,
-        .rx_dma_chan = 1,
+        .rx_dma   = 0
 #endif
     }
 };
