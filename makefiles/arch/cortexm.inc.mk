@@ -8,6 +8,9 @@ TARGET_ARCH ?= arm-none-eabi
 # define build specific options
 CFLAGS_CPU   = -mcpu=$(MCPU) -mlittle-endian -mthumb $(CFLAGS_FPU)
 
+# enable LTO by default
+LTO ?= 1
+
 ifneq (llvm,$(TOOLCHAIN))
   # Clang (observed with v3.7) does not understand  -mno-thumb-interwork, only add if
   # not building with LLVM
