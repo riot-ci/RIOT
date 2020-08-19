@@ -1,0 +1,231 @@
+From 76c9b35489a94d80e43457210479386ea57452e0 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Mon, 31 Aug 2020 13:43:36 +0200
+Subject: [PATCH 11/11] kernel: add riot based scheduler
+
+---
+ kernel/openos/scheduler_types.h | 37 ++++++++++++++
+ kernel/riotos/scheduler.c       | 88 +++++++++++++++++++++++++++++++++
+ kernel/riotos/scheduler_types.h | 30 +++++++++++
+ kernel/scheduler.h              | 19 +------
+ 4 files changed, 157 insertions(+), 17 deletions(-)
+ create mode 100644 kernel/openos/scheduler_types.h
+ create mode 100644 kernel/riotos/scheduler.c
+ create mode 100644 kernel/riotos/scheduler_types.h
+
+diff --git a/kernel/openos/scheduler_types.h b/kernel/openos/scheduler_types.h
+new file mode 100644
+index 00000000..eb8f5160
+--- /dev/null
++++ b/kernel/openos/scheduler_types.h
+@@ -0,0 +1,37 @@
++#ifndef __SCHEDULER_TYPES_H
++#define __SCHEDULER_TYPES_H
++
++/**
++\addtogroup kernel
++\{
++\addtogroup Scheduler
++\{
++*/
++
++#include "opendefs.h"
++#include "scheduler.h"
++
++typedef struct task_llist_t {
++   task_cbt                       cb;
++   task_prio_t                    prio;
++   void*                          next;
++} taskList_item_t;
++
++typedef struct {
++   taskList_item_t                taskBuf[TASK_LIST_DEPTH];
++   taskList_item_t*               task_list;
++   uint8_t                        numTasksCur;
++   uint8_t                        numTasksMax;
++} scheduler_vars_t;
++
++typedef struct {
++   uint8_t                        numTasksCur;
++   uint8_t                        numTasksMax;
++} scheduler_dbg_t;
++
++/**
++\}
++\}
++*/
++
++#endif
+\ No newline at end of file
+diff --git a/kernel/riotos/scheduler.c b/kernel/riotos/scheduler.c
+new file mode 100644
+index 00000000..02cd7d19
+--- /dev/null
++++ b/kernel/riotos/scheduler.c
+@@ -0,0 +1,88 @@
++/**
++\brief RIOT based task scheduler.
++
++\author Francisco Molina <francois-xavier.molina@inria.fr>, August 2020.
++*/
++
++#include "opendefs.h"
++#include "scheduler.h"
++#include "debugpins.h"
++#include "leds.h"
++
++#include "event/callback.h"
++
++#include "openwsn_log.h"
++
++//=========================== variables =======================================
++
++scheduler_vars_t scheduler_vars;
++scheduler_dbg_t scheduler_dbg;
++
++event_queue_t _queues[TASKPRIO_MAX] = { EVENT_QUEUE_INIT_DETACHED };
++
++//=========================== public ==========================================
++
++event_callback_t* _scheduler_get_free_event(void)
++{
++    for(uint8_t i = 0; i < TASK_LIST_DEPTH; i++) {
++        if(scheduler_vars.task_buff[i].super.handler == NULL) {
++            return &scheduler_vars.task_buff[i];
++        }
++    }
++
++    /* task list has overflown. This should never happen! */
++    LOG_RIOT_ERROR("[openos/scheduler]: critical, task list overflow\n");
++    leds_error_blink();
++    board_reset();
++}
++
++void scheduler_init(void) {
++    memset(&scheduler_vars,0,sizeof(scheduler_vars_t));
++    memset(&scheduler_dbg,0,sizeof(scheduler_dbg_t));
++
++    for(uint8_t i = 0; i < TASK_LIST_DEPTH; i++) {
++        scheduler_vars.task_buff[i].super.handler = NULL;
++    }
++
++    for (uint8_t i = 0; i < TASKPRIO_MAX; i++) {
++        event_queue_init_detached(&_queues[i]);
++    }
++}
++
++void scheduler_start(unsigned state) {
++    irq_restore(state);
++    event_t *event;
++
++    for (uint8_t i = 0; i < TASKPRIO_MAX; i++) {
++        event_queue_claim(&_queues[i]);
++    }
++
++    /* wait for events */
++    while ((event = event_wait_multi(&_queues, TASKPRIO_MAX))) {
++        debugpins_task_clr();
++        event->handler(event);
++        /* remove from task list */
++        event->handler = NULL;
++        scheduler_dbg.numTasksCur--;
++        debugpins_task_set();
++    }
++}
++
++void scheduler_push_task(task_cbt cb, task_prio_t prio)
++{
++    INTERRUPT_DECLARATION();
++    DISABLE_INTERRUPTS();
++    /* get a free event from the queue */
++    event_callback_t* event = _scheduler_get_free_event();
++    event_callback_init(event, cb, NULL);
++    /* post and sort the list */
++    event_post(&_queues[prio], (event_t*) event);
++
++    scheduler_dbg.numTasksCur++;
++    if (scheduler_dbg.numTasksCur > scheduler_dbg.numTasksMax) {
++        scheduler_dbg.numTasksMax = scheduler_dbg.numTasksCur;
++    }
++    ENABLE_INTERRUPTS();
++}
++
++//=========================== private =========================================
+diff --git a/kernel/riotos/scheduler_types.h b/kernel/riotos/scheduler_types.h
+new file mode 100644
+index 00000000..7e9d4754
+--- /dev/null
++++ b/kernel/riotos/scheduler_types.h
+@@ -0,0 +1,30 @@
++#ifndef __SCHEDULER_TYPES_H
++#define __SCHEDULER_TYPES_H
++
++/**
++\addtogroup kernel
++\{
++\addtogroup Scheduler
++\{
++*/
++
++#include "opendefs.h"
++#include "scheduler.h"
++#include "event/callback.h"
++
++typedef struct {
++   event_callback_t task_buff[TASK_LIST_DEPTH];
++   uint8_t numTasksCur;
++   uint8_t numTasksMax;
++} scheduler_vars_t;
++
++typedef struct {
++   uint8_t numTasksCur;
++   uint8_t numTasksMax;
++} scheduler_dbg_t;
++
++/**
++\}
++\}
++*/
++#endif
+diff --git a/kernel/scheduler.h b/kernel/scheduler.h
+index f3f64570..d329dca3 100644
+--- a/kernel/scheduler.h
++++ b/kernel/scheduler.h
+@@ -41,25 +41,8 @@ typedef enum {
+ 
+ typedef void (*task_cbt)(void);
+ 
+-typedef struct task_llist_t {
+-   task_cbt                       cb;
+-   task_prio_t                    prio;
+-   void*                          next;
+-} taskList_item_t;
+-
+ //=========================== module variables ================================
+ 
+-typedef struct {
+-   taskList_item_t                taskBuf[TASK_LIST_DEPTH];
+-   taskList_item_t*               task_list;
+-   uint8_t                        numTasksCur;
+-   uint8_t                        numTasksMax;
+-} scheduler_vars_t;
+-
+-typedef struct {
+-   uint8_t                        numTasksCur;
+-   uint8_t                        numTasksMax;
+-} scheduler_dbg_t;
+ 
+ //=========================== prototypes ======================================
+ 
+@@ -67,6 +50,8 @@ void scheduler_init(void);
+ void scheduler_start(unsigned state);
+ void scheduler_push_task(task_cbt task_cb, task_prio_t prio);
+ 
++#include "scheduler_types.h"
++
+ /**
+ \}
+ \}
+-- 
+2.28.0
+
