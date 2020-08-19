@@ -1065,6 +1065,7 @@ ifneq (,$(filter xtimer,$(USEMODULE)))
       FEATURES_REQUIRED += periph_timer
     else
       # will use *ztimer_usec as low-level timer*
+      USEMODULE += ztimer_usec
     endif
   else
   # ztimer_xtimer_compat is used, all of *xtimer's API will be mapped on ztimer.*
