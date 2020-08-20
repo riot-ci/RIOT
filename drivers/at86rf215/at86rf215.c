@@ -66,7 +66,7 @@ void at86rf215_reset_and_cfg(at86rf215_t *dev)
 
     /* set device address */
     luid_get_short((network_uint16_t *)&dev->netdev.short_addr);
-    luid_get_eui64((eui64_t *)&dev->netdev.long_addr);
+    luid_netdev_get_eui64(&dev->netdev.netdev, (eui64_t *)&dev->netdev.long_addr);
 
     if (is_subGHz(dev)) {
         dev->netdev.chan = CONFIG_AT86RF215_DEFAULT_SUBGHZ_CHANNEL;
