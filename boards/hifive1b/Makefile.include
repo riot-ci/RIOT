@@ -9,6 +9,8 @@ include $(RIOTMAKE)/tools/serial.inc.mk
 PROGRAMMER ?= jlink
 
 ifeq (openocd,$(PROGRAMMER))
+  DEBUG_ADAPTER = jlink
+  OPENOCD_TRANSPORT = jtag
   include $(RIOTMAKE)/tools/openocd.inc.mk
 else ifeq (jlink,$(PROGRAMMER))
   # setup JLink for flashing
