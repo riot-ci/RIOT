@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "board.h"
+#include "macros/units.h"
 #include "thread.h"
 #include "thread_flags.h"
 
@@ -33,6 +34,18 @@
  * not used */
 #ifndef XTIMER_DEV
 #define XTIMER_DEV TIMER_DEV(0)
+#endif
+#ifndef XTIMER_HZ
+#define XTIMER_HZ MHZ(1)
+#endif
+#ifndef XTIMER_WIDTH
+# if (TIMER_0_MAX_VALUE) == 0xfffffful
+#  define XTIMER_WIDTH (24)
+# elif (TIMER_0_MAX_VALUE) == 0xffff
+#  define XTIMER_WIDTH (16)
+# else
+#  define XTIMER_WIDTH (32)
+# endif
 #endif
 
 #ifndef TEST_TIMER_FREQ
