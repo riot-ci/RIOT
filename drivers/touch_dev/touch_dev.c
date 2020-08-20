@@ -85,6 +85,6 @@ uint8_t touch_dev_touches(const touch_dev_t *dev, touch_t *touches, size_t len)
 
 void touch_dev_set_touch_event_callback(const touch_dev_t *dev, touch_event_cb_t cb, void *arg)
 {
-    assert (dev);
+    assert(dev);
     dev->driver->set_event_callback(dev, cb, arg);
 }
