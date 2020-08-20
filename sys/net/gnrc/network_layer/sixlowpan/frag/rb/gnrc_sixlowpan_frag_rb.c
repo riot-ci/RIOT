@@ -507,8 +507,8 @@ static int _rbuf_get(const void *src, size_t src_len,
     }
 
     if (res->pkt->data) {
-        *((uint64_t *)res->pkt->data) = 0;  /* clean first few bytes for later
-                                             * look-ups */
+        /* clean first few bytes for later look-ups */
+        memset(res->pkt->data, 0, sizeof(uint64_t));
     }
     res->super.datagram_size = size;
     res->super.arrival = now_usec;
