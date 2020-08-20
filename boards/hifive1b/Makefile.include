@@ -11,6 +11,7 @@ PROGRAMMER ?= jlink
 ifeq (openocd,$(PROGRAMMER))
   DEBUG_ADAPTER = jlink
   OPENOCD_TRANSPORT = jtag
+  OPENOCD_PRE_FLASH_CMDS += "-c flash protect 0 1 last off"
   include $(RIOTMAKE)/tools/openocd.inc.mk
 else ifeq (jlink,$(PROGRAMMER))
   # setup JLink for flashing
