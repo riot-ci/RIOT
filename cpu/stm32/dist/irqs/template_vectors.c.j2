@@ -14,8 +14,17 @@ void dummy_handler(void) {
 }
 
 /* {{ cpu_line }} specific interrupt vectors */
+{% set vars = {'exti': False} %}
 {% for isr in isrs %}
+    {% if isr.func == "exti" %}
+        {% if not vars.exti %}
 WEAK_DEFAULT void isr_{{ isr.func }}(void);
+        {% if vars.update({'exti': True}) %}{% endif %}
+        {% endif %}
+    {% endif %}
+    {% if isr.func != "exti" %}
+WEAK_DEFAULT void isr_{{ isr.func }}(void);
+    {% endif %}
 {% endfor %}
 
 /* CPU specific interrupt vector table */

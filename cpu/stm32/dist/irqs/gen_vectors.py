@@ -69,7 +69,10 @@ def parse_cmsis(cpu_line):
             irq_lines.append(irq_line)
 
     isrs = [
-        {"irq": irq, "func": irq.lower().rsplit("_", 1)[0]}
+        {
+            "irq": irq,
+            "func": "exti" if "EXTI" in irq else irq.lower().rsplit("_", 1)[0]
+        }
         for irq in irq_lines
     ]
 
