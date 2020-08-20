@@ -45,4 +45,7 @@ config MOD_CORE_PANIC
 config MOD_CORE_THREAD_FLAGS
     bool "Thread flags"
 
+config MOD_SCHED_CB
+    bool "Callback support on the scheduler"
+
 endif # MOD_CORE
