@@ -28,15 +28,17 @@
 
 #include "periph/timer.h"
 
-#ifndef TEST_TIMER_DEV
-# include "xtimer.h"
-# define TEST_TIMER_DEV      XTIMER_DEV
-# define TEST_TIMER_FREQ     XTIMER_HZ
-# define TEST_TIMER_WIDTH    XTIMER_WIDTH
-#else
-# ifndef TEST_TIMER_FREQ
-#  define TEST_TIMER_FREQ     (1000000LU)
-# endif
+/* recreate logic to obtain valid XTIMER_DEV used in xtimer.h, but don't include
+ * xtimer.h, as this leads to issues on some boards when the xtimer module is
+ * not used */
+#ifndef XTIMER_DEV
+#define XTIMER_DEV TIMER_DEV(0)
+#endif
+
+#ifndef TEST_TIMER_FREQ
+# define TEST_TIMER_DEV     XTIMER_DEV
+# define TEST_TIMER_FREQ    XTIMER_HZ
+# define TEST_TIMER_WIDTH   XTIMER_WIDTH
 #endif
 
 #ifndef TEST_MAX_DIFF
