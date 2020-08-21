@@ -65,10 +65,10 @@ $(STM32FAM_INCLUDE_FILE):
 	$(Q)make -C $(RIOTCPU)/stm32/include/vendor
 
 $(STM32IRQS_INCLUDE_FILE): $(STM32FAM_INCLUDE_FILE)
-	$(Q)$(RIOTCPU)/stm32/dist/irqs/gen_irqs.py $(CPU_FAM)
+	$(Q)$(RIOTBASE)/cpu/stm32/dist/irqs/gen_irqs.py $(CPU_FAM)
 
 $(VECTORS_FILE): $(STM32FAM_INCLUDE_FILE)
-	$(Q)$(RIOTCPU)/stm32/dist/irqs/gen_vectors.py $(CPU_LINE)
+	$(Q)$(RIOTBASE)/cpu/stm32/dist/irqs/gen_vectors.py $(CPU_LINE)
 endif
 
 include $(RIOTMAKE)/arch/cortexm.inc.mk
