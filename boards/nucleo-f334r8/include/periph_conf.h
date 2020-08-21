@@ -107,6 +107,7 @@ static const uart_conf_t uart_config[] = {
         .dma_chan   = DMA_CHAN_CONFIG_UNSUPPORTED
 #endif
     },
+#if !defined(MODULE_PERIPH_SPI) || !defined(MODULE_PERIPH_DMA)
     {
         .dev        = USART3,
         .rcc_mask   = RCC_APB1ENR_USART3EN,
@@ -121,6 +122,7 @@ static const uart_conf_t uart_config[] = {
         .dma_chan   = DMA_CHAN_CONFIG_UNSUPPORTED
 #endif
     }
+#endif /* !defined(MODULE_PERIPH_SPI) || !defined(MODULE_PERIPH_DMA) */
 };
 
 #define UART_0_ISR          (isr_usart2)
