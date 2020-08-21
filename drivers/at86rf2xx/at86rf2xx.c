@@ -25,7 +25,6 @@
  */
 
 
-#include "luid.h"
 #include "byteorder.h"
 #include "net/ieee802154.h"
 #include "net/gnrc.h"
@@ -91,23 +90,19 @@ static void at86rf2xx_enable_smart_idle(at86rf2xx_t *dev)
 
 void at86rf2xx_reset(at86rf2xx_t *dev)
 {
-    eui64_t addr_long;
-    network_uint16_t addr_short;
-
     netdev_ieee802154_reset(&dev->netdev);
+
+    /* generate EUI-64 and short address */
+    netdev_ieee802154_setup(&dev->netdev);
 
     /* Reset state machine to ensure a known state */
     if (dev->state == AT86RF2XX_STATE_P_ON) {
         at86rf2xx_set_state(dev, AT86RF2XX_STATE_FORCE_TRX_OFF);
     }
 
-    /* generate EUI-64 and short address */
-    luid_get_eui64(&addr_long);
-    luid_get_short(&addr_short);
-
     /* set short and long address */
-    at86rf2xx_set_addr_long(dev, &addr_long);
-    at86rf2xx_set_addr_short(dev, &addr_short);
+    at86rf2xx_set_addr_long(dev, (eui64_t*)&dev->netdev.long_addr);
+    at86rf2xx_set_addr_short(dev, (network_uint16_t*)&dev->netdev.short_addr);
 
     /* set default channel */
     at86rf2xx_set_chan(dev, AT86RF2XX_DEFAULT_CHANNEL);
