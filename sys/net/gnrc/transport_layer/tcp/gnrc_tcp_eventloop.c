@@ -55,7 +55,7 @@ static evtimer_t _tcp_msg_timer;
 /**
  * @brief TCPs eventloop pid
  */
-kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
+static kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
 
 void _gnrc_tcp_event_loop_sched(evtimer_msg_event_t *event, uint32_t offset,
                                 uint16_t type, void *context)
