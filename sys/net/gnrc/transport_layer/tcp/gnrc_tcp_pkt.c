@@ -280,7 +280,8 @@ int _pkt_send(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *out_pkt, const uint16_t seq_c
     }
 
     /* Pass packet down the network stack */
-    if (gnrc_netapi_send(_tcp_eventloop_pid, out_pkt) < 1) {
+    if (!gnrc_netapi_dispatch_send(GNRC_NETTYPE_TCP, GNRC_NETREG_DEMUX_CTX_ALL,
+                                   out_pkt)) {
         DEBUG("gnrc_tcp_pkt.c : _pkt_send() : unable to send packet\n");
         gnrc_pktbuf_release(out_pkt);
     }
