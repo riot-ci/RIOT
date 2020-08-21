@@ -22,7 +22,6 @@
 #include <utlist.h>
 
 #include "evtimer.h"
-#include "evtimer_msg.h"
 #include "evtimer_mbox.h"
 #include "mbox.h"
 #include "net/af.h"
@@ -46,9 +45,8 @@
 
 
 /**
- * @brief Central evtimers used by gnrc_tcp
+ * @brief Central MBOX evtimer used by gnrc_tcp
  */
-evtimer_t _tcp_msg_timer;
 evtimer_t _tcp_mbox_timer;
 
 /**
@@ -348,7 +346,6 @@ int gnrc_tcp_init(void)
     _rcvbuf_init();
 
     /* Initialize timers */
-    evtimer_init_msg(&_tcp_msg_timer);
     evtimer_init_mbox(&_tcp_mbox_timer);
 
     /* Start TCP processing thread */

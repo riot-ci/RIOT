@@ -122,7 +122,6 @@ extern kernel_pid_t _tcp_eventloop_pid;
 /**
  * @brief Central timers used by gnrc_tcp
  */
-extern evtimer_t _tcp_msg_timer;
 extern evtimer_t _tcp_mbox_timer;
 
 /**
