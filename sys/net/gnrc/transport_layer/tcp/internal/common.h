@@ -117,12 +117,13 @@ extern "C" {
 /**
  * @brief PID of GNRC TCP event handling thread
  */
-extern kernel_pid_t gnrc_tcp_pid;
+extern kernel_pid_t _tcp_eventloop_pid;
 
 /**
- * @brief Central evtimer used by gnrc_tcp
+ * @brief Central timers used by gnrc_tcp
  */
-extern evtimer_t gnrc_tcp_timer;
+extern evtimer_t _tcp_msg_timer;
+extern evtimer_t _tcp_mbox_timer;
 
 /**
  * @brief Head of linked TCB list.
