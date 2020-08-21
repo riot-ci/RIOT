@@ -40,7 +40,7 @@ void netdev_eui48_get(netdev_t *netdev, eui48_t *addr)
         }
     }
 
-    luid_get_eui48(addr);
+    luid_netdev_get_eui48(netdev, addr);
 }
 
 void netdev_eui64_get(netdev_t *netdev, eui64_t *addr)
@@ -65,7 +65,7 @@ void netdev_eui64_get(netdev_t *netdev, eui64_t *addr)
         }
     }
 
-    luid_get_eui64(addr);
+    luid_netdev_get_eui64(netdev, addr);
 }
 
 /** @} */
