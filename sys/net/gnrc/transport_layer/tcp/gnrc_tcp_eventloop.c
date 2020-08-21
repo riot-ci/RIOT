@@ -48,9 +48,28 @@ static char _stack[TCP_EVENTLOOP_STACK_SIZE];
 #endif
 
 /**
+ * @brief Central evtimer for gnrc_tcp event loop
+ */
+static evtimer_t _tcp_msg_timer;
+
+/**
  * @brief TCPs eventloop pid
  */
 kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
+
+void _gnrc_tcp_event_loop_sched(evtimer_msg_event_t *event, uint32_t offset,
+                                uint16_t type, void *context)
+{
+    event->event.offset = offset;
+    event->msg.type = type;
+    event->msg.content.ptr = context;
+    evtimer_add_msg(&_tcp_msg_timer, event, _tcp_eventloop_pid);
+}
+
+void _gnrc_tcp_event_loop_unsched(evtimer_msg_event_t *event)
+{
+    evtimer_del(&_tcp_msg_timer, (evtimer_event_t *)event);
+}
 
 /**
  * @brief Send function, pass packet down the network stack.
@@ -327,6 +346,9 @@ int _gnrc_tcp_event_loop_init(void)
     if (_tcp_eventloop_pid != KERNEL_PID_UNDEF) {
         return -EEXIST;
     }
+
+    /* Initialize timers */
+    evtimer_init_msg(&_tcp_msg_timer);
 
     return thread_create(_stack, sizeof(_stack), TCP_EVENTLOOP_PRIO,
                          THREAD_CREATE_STACKTEST, _event_loop, NULL,

@@ -25,6 +25,7 @@
 #include "net/inet_csum.h"
 #include "net/gnrc.h"
 #include "internal/common.h"
+#include "internal/eventloop.h"
 #include "internal/option.h"
 #include "internal/pkt.h"
 
@@ -416,11 +417,8 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
     }
 
     /* Setup retransmission timer, msg to TCP thread with ptr to TCB */
-    tcb->event_retransmit.event.offset = tcb->rto;
-    tcb->event_retransmit.msg.type = MSG_TYPE_RETRANSMISSION;
-    tcb->event_retransmit.msg.content.ptr = (void *) tcb;
-    evtimer_add_msg(&_tcp_msg_timer, (evtimer_msg_event_t *) &(tcb->event_retransmit),
-                    _tcp_eventloop_pid);
+    _gnrc_tcp_event_loop_sched(&tcb->event_retransmit, tcb->rto,
+                               MSG_TYPE_RETRANSMISSION, tcb);
     return 0;
 }
 
@@ -444,7 +442,7 @@ int _pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack)
 
     /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
     if (LSS_32_BIT(seg, ack)) {
-        evtimer_del(&_tcp_msg_timer, (evtimer_event_t *) &(tcb->event_retransmit));
+        _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
         gnrc_pktbuf_release(tcb->pkt_retransmit);
         tcb->pkt_retransmit = NULL;
 
