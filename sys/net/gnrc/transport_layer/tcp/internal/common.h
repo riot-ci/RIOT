@@ -115,11 +115,6 @@ extern "C" {
 #define GET_OFFSET( x ) (((x) & MSK_OFFSET) >> 12)
 
 /**
- * @brief Central timers used by gnrc_tcp
- */
-extern evtimer_t _tcp_mbox_timer;
-
-/**
  * @brief Head of linked TCB list.
  */
 extern gnrc_tcp_tcb_t *_list_tcb_head;

@@ -47,7 +47,7 @@
 /**
  * @brief Central MBOX evtimer used by gnrc_tcp
  */
-evtimer_t _tcp_mbox_timer;
+static evtimer_t _tcp_mbox_timer;
 
 /**
  * @brief Head of liked TCB list.
@@ -58,6 +58,25 @@ gnrc_tcp_tcb_t *_list_tcb_head;
  * @brief Mutex for TCB list synchronization.
  */
 mutex_t _list_tcb_lock;
+
+static void _sched_mbox(evtimer_mbox_event_t *event, uint32_t offset,
+                        uint16_t type, mbox_t *mbox)
+{
+    event->event.offset = offset;
+    event->msg.type = type;
+    evtimer_add_mbox(&_tcp_mbox_timer, event, mbox);
+}
+
+static void _sched_connection_timeout(evtimer_mbox_event_t *event, mbox_t *mbox)
+{
+    _sched_mbox(event, CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION,
+                MSG_TYPE_CONNECTION_TIMEOUT, mbox);
+}
+
+static void _unsched_mbox(evtimer_mbox_event_t *event)
+{
+    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *)event);
+}
 
 /**
  * @brief   Establishes a new TCP connection
@@ -143,10 +162,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
         tcb->peer_port = remote->port;
 
         /* Setup connection timeout */
-        tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-        tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-        evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
-
+        _sched_connection_timeout(&tcb->event_misc, &mbox);
     }
 
     /* Call FSM with event: CALL_OPEN */
@@ -170,10 +186,8 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
                  * send SYN+ACK we received upon entering SYN_RCVD is never acknowledged
                  * by the peer. */
                 if ((tcb->state == FSM_STATE_SYN_RCVD) && (tcb->status & STATUS_PASSIVE)) {
-                    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
-                    tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-                    tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-                    evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
+                    _unsched_mbox(&tcb->event_misc);
+                    _sched_connection_timeout(&tcb->event_misc, &mbox);
                 }
                 break;
 
@@ -201,7 +215,7 @@ static int _gnrc_tcp_open(gnrc_tcp_tcb_t *tcb, const gnrc_tcp_ep_t *remote,
 
     /* Cleanup */
     _fsm_set_mbox(tcb, NULL);
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
+    _unsched_mbox(&tcb->event_misc);
     if (tcb->state == FSM_STATE_CLOSED && ret == 0) {
         ret = -ECONNREFUSED;
     }
@@ -443,14 +457,11 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
     _fsm_set_mbox(tcb, &mbox);
 
     /* Setup connection timeout */
-    tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-    tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-    evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
+    _sched_connection_timeout(&tcb->event_misc, &mbox);
 
     if (timeout_duration_ms > 0) {
-        event_user_timeout.event.offset = timeout_duration_ms;
-        event_user_timeout.msg.type = MSG_TYPE_USER_SPEC_TIMEOUT;
-        evtimer_add_mbox(&_tcp_mbox_timer, &event_user_timeout, &mbox);
+        _sched_mbox(&event_user_timeout, timeout_duration_ms,
+                    MSG_TYPE_USER_SPEC_TIMEOUT, &mbox);
     }
 
     /* Loop until something was sent and acked */
@@ -469,10 +480,9 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
                 probe_timeout_duration_ms = tcb->rto;
             }
             /* Setup probe timeout */
-            evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &event_probe_timeout);
-            event_probe_timeout.event.offset = probe_timeout_duration_ms;
-            event_probe_timeout.msg.type = MSG_TYPE_PROBE_TIMEOUT;
-            evtimer_add_mbox(&_tcp_mbox_timer, &event_probe_timeout, &mbox);
+            _unsched_mbox(&event_probe_timeout);
+            _sched_mbox(&event_probe_timeout, probe_timeout_duration_ms,
+                        MSG_TYPE_PROBE_TIMEOUT, &mbox);
         }
 
         /* Try to send data in case there nothing has been sent and we are not probing */
@@ -514,15 +524,13 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
                 DEBUG("gnrc_tcp.c : gnrc_tcp_send() : NOTIFY_USER\n");
 
                 /* Connection is alive: Reset Connection Timeout */
-                evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
-                tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-                tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-                evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
+                _unsched_mbox(&tcb->event_misc);
+                _sched_connection_timeout(&tcb->event_misc, &mbox);
 
                 /* If the window re-opened and we are probing: Stop it */
                 if (tcb->snd_wnd > 0 && probing_mode) {
                     probing_mode = false;
-                    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &event_probe_timeout);
+                    _unsched_mbox(&event_probe_timeout);
                 }
                 break;
 
@@ -533,9 +541,9 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
 
     /* Cleanup */
     _fsm_set_mbox(tcb, NULL);
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &event_probe_timeout);
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &event_user_timeout);
+    _unsched_mbox(&tcb->event_misc);
+    _unsched_mbox(&event_probe_timeout);
+    _unsched_mbox(&event_user_timeout);
     mutex_unlock(&(tcb->function_lock));
     return ret;
 }
@@ -584,14 +592,11 @@ ssize_t gnrc_tcp_recv(gnrc_tcp_tcb_t *tcb, void *data, const size_t max_len,
     _fsm_set_mbox(tcb, &mbox);
 
     /* Setup connection timeout */
-    tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-    tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-    evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
+    _sched_connection_timeout(&tcb->event_misc, &mbox);
 
     if (timeout_duration_ms > 0) {
-        event_user_timeout.event.offset = timeout_duration_ms;
-        event_user_timeout.msg.type = MSG_TYPE_USER_SPEC_TIMEOUT;
-        evtimer_add_mbox(&_tcp_mbox_timer, &event_user_timeout, &mbox);
+        _sched_mbox(&event_user_timeout, timeout_duration_ms,
+                    MSG_TYPE_USER_SPEC_TIMEOUT, &mbox);
     }
 
     /* Processing loop */
@@ -638,8 +643,8 @@ ssize_t gnrc_tcp_recv(gnrc_tcp_tcb_t *tcb, void *data, const size_t max_len,
 
     /* Cleanup */
     _fsm_set_mbox(tcb, NULL);
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &event_user_timeout);
+    _unsched_mbox(&tcb->event_misc);
+    _unsched_mbox(&event_user_timeout);
     mutex_unlock(&(tcb->function_lock));
     return ret;
 }
@@ -665,9 +670,7 @@ void gnrc_tcp_close(gnrc_tcp_tcb_t *tcb)
     _fsm_set_mbox(tcb, &mbox);
 
     /* Setup connection timeout */
-    tcb->event_misc.event.offset = CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION;
-    tcb->event_misc.msg.type = MSG_TYPE_CONNECTION_TIMEOUT;
-    evtimer_add_mbox(&_tcp_mbox_timer, &(tcb->event_misc), &mbox);
+    _sched_connection_timeout(&tcb->event_misc, &mbox);
 
     /* Start connection teardown sequence */
     _fsm(tcb, FSM_EVENT_CALL_CLOSE, NULL, NULL, 0);
@@ -692,7 +695,7 @@ void gnrc_tcp_close(gnrc_tcp_tcb_t *tcb)
 
     /* Cleanup */
     _fsm_set_mbox(tcb, NULL);
-    evtimer_del(&_tcp_mbox_timer, (evtimer_event_t *) &(tcb->event_misc));
+    _unsched_mbox(&tcb->event_misc);
     mutex_unlock(&(tcb->function_lock));
 }
 
