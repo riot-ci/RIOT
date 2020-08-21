@@ -25,13 +25,13 @@ extern "C" {
 #endif
 
 /**
- * @brief GNRC TCPs main processing thread.
+ * @brief Starts GNRC TCP's main processing thread.
  *
- * @param[in] arg   Thread arguments (unused).
- *
- * @returns   Never, its an endless loop
+ * @retval  PID of processing thread on success
+ * @retval  -EEXIST if processing thread was already started
+ * @retval  see @ref thread_create() for more error cases.
  */
-void *_event_loop(__attribute__((unused)) void *arg);
+int _gnrc_tcp_event_loop_init(void);
 
 #ifdef __cplusplus
 }

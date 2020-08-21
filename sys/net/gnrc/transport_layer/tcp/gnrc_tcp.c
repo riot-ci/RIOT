@@ -44,19 +44,6 @@
 
 #define TCP_MSG_QUEUE_SIZE (1 << CONFIG_GNRC_TCP_MSG_QUEUE_SIZE_EXP)
 
-/**
- * @brief Allocate memory for GNRC TCP thread stack.
- */
-#if ENABLE_DEBUG
-static char _stack[TCP_EVENTLOOP_STACK_SIZE + THREAD_EXTRA_STACKSIZE_PRINTF];
-#else
-static char _stack[TCP_EVENTLOOP_STACK_SIZE];
-#endif
-
-/**
- * @brief TCPs eventloop pid, declared externally.
- */
-kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
 
 /**
  * @brief Central evtimers used by gnrc_tcp
@@ -353,11 +340,6 @@ int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str)
 
 int gnrc_tcp_init(void)
 {
-    /* Guard: Check if thread is already running */
-    if (_tcp_eventloop_pid != KERNEL_PID_UNDEF) {
-        return -1;
-    }
-
     /* Initialize mutex for TCB list synchronization */
     mutex_init(&(_list_tcb_lock));
 
@@ -370,9 +352,7 @@ int gnrc_tcp_init(void)
     evtimer_init_mbox(&_tcp_mbox_timer);
 
     /* Start TCP processing thread */
-    return thread_create(_stack, sizeof(_stack), TCP_EVENTLOOP_PRIO,
-                         THREAD_CREATE_STACKTEST, _event_loop, NULL,
-                         "gnrc_tcp");
+    return _gnrc_tcp_event_loop_init();
 }
 
 void gnrc_tcp_tcb_init(gnrc_tcp_tcb_t *tcb)
