@@ -115,11 +115,6 @@ extern "C" {
 #define GET_OFFSET( x ) (((x) & MSK_OFFSET) >> 12)
 
 /**
- * @brief PID of GNRC TCP event handling thread
- */
-extern kernel_pid_t _tcp_eventloop_pid;
-
-/**
  * @brief Central timers used by gnrc_tcp
  */
 extern evtimer_t _tcp_mbox_timer;
