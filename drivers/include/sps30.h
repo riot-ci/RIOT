@@ -287,6 +287,24 @@ int sps30_read_serial_number(const sps30_t *dev, char *str, size_t len);
  */
 int sps30_reset(const sps30_t *dev);
 
+/**
+ * @brief       Sleep the sensor.
+ *
+ * @param[in]   dev        Pointer to an SPS30 device handle
+ *
+ * @return      #SPS30_OK on success, negative #sps30_error_code_t on error
+ */
+int sps30_sleep(const sps30_t *dev);
+
+/**
+ * @brief       Wake the sensor.
+ *
+ * @param[in]   dev        Pointer to an SPS30 device handle
+ *
+ * @return      #SPS30_OK on success, negative #sps30_error_code_t on error
+ */
+int sps30_wake(const sps30_t *dev);
+
 #ifdef __cplusplus
 }
 #endif
