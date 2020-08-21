@@ -39,6 +39,20 @@
 static msg_t _eventloop_msg_queue[TCP_EVENTLOOP_MSG_QUEUE_SIZE];
 
 /**
+ * @brief Allocate memory for GNRC TCP thread stack.
+ */
+#if ENABLE_DEBUG
+static char _stack[TCP_EVENTLOOP_STACK_SIZE + THREAD_EXTRA_STACKSIZE_PRINTF];
+#else
+static char _stack[TCP_EVENTLOOP_STACK_SIZE];
+#endif
+
+/**
+ * @brief TCPs eventloop pid
+ */
+kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
+
+/**
  * @brief Send function, pass packet down the network stack.
  *
  * @param[in] pkt   Packet to send.
@@ -243,7 +257,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
     return 0;
 }
 
-void *_event_loop(__attribute__((unused)) void *arg)
+static void *_event_loop(__attribute__((unused)) void *arg)
 {
     msg_t msg;
     msg_t reply;
@@ -305,4 +319,16 @@ void *_event_loop(__attribute__((unused)) void *arg)
     }
     /* Never reached */
     return NULL;
+}
+
+int _gnrc_tcp_event_loop_init(void)
+{
+    /* Guard: Check if thread is already running */
+    if (_tcp_eventloop_pid != KERNEL_PID_UNDEF) {
+        return -EEXIST;
+    }
+
+    return thread_create(_stack, sizeof(_stack), TCP_EVENTLOOP_PRIO,
+                         THREAD_CREATE_STACKTEST, _event_loop, NULL,
+                         "gnrc_tcp");
 }
