@@ -109,7 +109,7 @@ int main(void)
     xtimer_sleep(SENSOR_SLEEP_WAKE_DELAY_S);
 
     /* Wake-up the sensor */
-    ec = sps30_wake(&dev);
+    ec = sps30_wakeup(&dev);
     error |= _print_error("wake-up", ec);
     xtimer_sleep(SENSOR_SLEEP_WAKE_DELAY_S);
 

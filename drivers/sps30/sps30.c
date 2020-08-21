@@ -292,9 +292,10 @@ int sps30_sleep(const sps30_t *dev)
     return _rx_tx_data(dev, SPS30_CMD_SLEEP, NULL, 0, false);
 }
 
-int sps30_wake(const sps30_t *dev)
+int sps30_wakeup(const sps30_t *dev)
 {
     assert(dev);
+    /* Send I2C start stop sequence to re-enable I2C interface on sensor */
     i2c_write_bytes(dev->p.i2c_dev, SPS30_I2C_ADDR, NULL, 0, 0);
     return _rx_tx_data(dev, SPS30_CMD_WAKE_UP, NULL, 0, false);
 }
