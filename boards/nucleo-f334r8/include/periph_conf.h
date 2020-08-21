@@ -107,6 +107,8 @@ static const uart_conf_t uart_config[] = {
         .dma_chan   = DMA_CHAN_CONFIG_UNSUPPORTED
 #endif
     },
+/* SPI1 RX and USART3 are sharing the same DMA channel, so disable the
+ * third UART when both SPI and DMA features are enabled. */
 #if !defined(MODULE_PERIPH_SPI) || !defined(MODULE_PERIPH_DMA)
     {
         .dev        = USART3,
