@@ -21,7 +21,7 @@
 #include <errno.h>
 #include "byteorder.h"
 #include "evtimer.h"
-#include "evtimer_msg_mbox.h"
+#include "evtimer_msg.h"
 #include "net/inet_csum.h"
 #include "net/gnrc.h"
 #include "internal/common.h"
@@ -280,7 +280,7 @@ int _pkt_send(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *out_pkt, const uint16_t seq_c
     }
 
     /* Pass packet down the network stack */
-    if (gnrc_netapi_send(gnrc_tcp_pid, out_pkt) < 1) {
+    if (gnrc_netapi_send(_tcp_eventloop_pid, out_pkt) < 1) {
         DEBUG("gnrc_tcp_pkt.c : _pkt_send() : unable to send packet\n");
         gnrc_pktbuf_release(out_pkt);
     }
@@ -418,8 +418,8 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
     tcb->event_retransmit.event.offset = tcb->rto;
     tcb->event_retransmit.msg.type = MSG_TYPE_RETRANSMISSION;
     tcb->event_retransmit.msg.content.ptr = (void *) tcb;
-    evtimer_add_msg(&gnrc_tcp_timer, (evtimer_msg_event_t *) &(tcb->event_retransmit),
-                    gnrc_tcp_pid);
+    evtimer_add_msg(&_tcp_msg_timer, (evtimer_msg_event_t *) &(tcb->event_retransmit),
+                    _tcp_eventloop_pid);
     return 0;
 }
 
@@ -443,7 +443,7 @@ int _pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack)
 
     /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
     if (LSS_32_BIT(seg, ack)) {
-        evtimer_del(&gnrc_tcp_timer, (evtimer_event_t *) &(tcb->event_retransmit));
+        evtimer_del(&_tcp_msg_timer, (evtimer_event_t *) &(tcb->event_retransmit));
         gnrc_pktbuf_release(tcb->pkt_retransmit);
         tcb->pkt_retransmit = NULL;
 

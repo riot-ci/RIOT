@@ -231,7 +231,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
         DEBUG("gnrc_tcp_eventloop.c : _receive() : Can't find fitting tcb\n");
         if ((ctl & MSK_RST) != MSK_RST) {
             _pkt_build_reset_from_pkt(&reset, pkt);
-            if (gnrc_netapi_send(gnrc_tcp_pid, reset) < 1) {
+            if (gnrc_netapi_send(_tcp_eventloop_pid, reset) < 1) {
                 DEBUG("gnrc_tcp_eventloop.c : _receive() : unable to send reset packet\n");
                 gnrc_pktbuf_release(reset);
             }
@@ -249,10 +249,7 @@ void *_event_loop(__attribute__((unused)) void *arg)
     msg_t reply;
 
     /* Store pid */
-    gnrc_tcp_pid = thread_getpid();
-
-    /* Initialize timer */
-    evtimer_init_msg_mbox(&gnrc_tcp_timer);
+    _tcp_eventloop_pid = thread_getpid();
 
     /* Setup reply message */
     reply.type = GNRC_NETAPI_MSG_TYPE_ACK;
@@ -263,7 +260,7 @@ void *_event_loop(__attribute__((unused)) void *arg)
 
     /* Register GNRC TCPs handling thread in netreg */
     gnrc_netreg_entry_t entry;
-    gnrc_netreg_entry_init_pid(&entry, GNRC_NETREG_DEMUX_CTX_ALL, gnrc_tcp_pid);
+    gnrc_netreg_entry_init_pid(&entry, GNRC_NETREG_DEMUX_CTX_ALL, _tcp_eventloop_pid);
     gnrc_netreg_register(GNRC_NETTYPE_TCP, &entry);
 
     /* dispatch NETAPI messages */
