@@ -72,7 +72,7 @@ static void *_cnt_thread(void *arg)
 int main(void)
 {
     /* setup */
-    _thread_main = (thread_t *)thread_get(thread_getpid());
+    _thread_main = thread_getactive();
 
     puts("[START] event_wait_timeout test application.\n");
 
