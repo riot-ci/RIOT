@@ -29,7 +29,7 @@
 
 static void time_evt(void *arg)
 {
-    thread_flags_set((thread_t *)arg, 0x1);
+    thread_flags_set(arg, 0x1);
 }
 
 int main(void)
@@ -37,7 +37,7 @@ int main(void)
     puts("START");
     xtimer_t timer;
     timer.callback = time_evt;
-    timer.arg = (void *)sched_active_thread;
+    timer.arg = thread_get_active();
     uint32_t last = xtimer_now_usec();
 
     puts("Test setting thread flags from (x)timer callback");
