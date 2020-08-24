@@ -64,9 +64,9 @@ extern "C" {
 #define CONFIG_BOARD_HAS_HSE            (0)
 #endif
 #ifndef CLOCK_HSE
-#define CLOCK_HSE                       (24000000U)
+#define CLOCK_HSE                       MHZ(24)
 #endif
-#if CONFIG_BOARD_HAS_HSE && (CLOCK_HSE < 4000000 || CLOCK_HSE > 48000000)
+#if CONFIG_BOARD_HAS_HSE && (CLOCK_HSE < MHZ(4) || CLOCK_HSE > MHZ(48))
 #error "HSE clock frequency must be between 4MHz and 48MHz"
 #endif
 
@@ -79,7 +79,7 @@ extern "C" {
 #define CLOCK_LSE                       (0)
 #endif
 
-#define CLOCK_HSI                       (16000000U)
+#define CLOCK_HSI                       MHZ(16)
 
 #if CONFIG_USE_CLOCK_HSI
 #ifndef CONFIG_CLOCK_HSISYS_DIV
@@ -111,7 +111,7 @@ extern "C" {
 #endif
 #define CLOCK_CORECLOCK                 \
         ((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_M) * CONFIG_CLOCK_PLL_N) / CONFIG_CLOCK_PLL_R
-#if CLOCK_CORECLOCK > 170000000U
+#if CLOCK_CORECLOCK > MHZ(170)
 #error "SYSCLK cannot exceed 170MHz"
 #endif
 #endif /* CONFIG_USE_CLOCK_PLL */
