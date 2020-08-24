@@ -15,6 +15,7 @@ ifneq (,$(filter newlib picolibc,$(USEMODULE)))
 endif
 
 ifneq (,$(filter stdio_cdc_acm,$(USEMODULE)))
+  USEMODULE += picolibc_stdout_buffered
   USEMODULE += usbus_cdc_acm
   USEMODULE += isrpipe
 endif
@@ -27,6 +28,11 @@ ifneq (,$(filter stdio_ethos,$(USEMODULE)))
   USEMODULE += ethos
   USEMODULE += stdin
   USEMODULE += stdio_uart
+  USEMODULE += picolibc_stdout_buffered
+endif
+
+ifneq (,$(filter slipdev_stdio,$(USEMODULE)))
+  USEMODULE += picolibc_stdout_buffered
 endif
 
 ifneq (,$(filter stdin,$(USEMODULE)))
@@ -53,5 +59,6 @@ endif
 
 ifneq (,$(filter stdio_semihosting,$(USEMODULE)))
   USEMODULE += xtimer
+  USEMODULE += picolibc_stdout_buffered
   FEATURES_REQUIRED += cpu_core_cortexm
 endif
