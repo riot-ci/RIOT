@@ -49,7 +49,7 @@ void init_schedstatistics(void)
 {
     /* Init laststart for the thread starting schedstatistics since the callback
        wasn't registered when it was first scheduled */
-    schedstat_t *active_stat = &sched_pidlist[sched_active_pid];
+    schedstat_t *active_stat = &sched_pidlist[thread_getpid()];
     active_stat->laststart = xtimer_now().ticks32;
     active_stat->schedules = 1;
     sched_register_cb(sched_statistics_cb);
