@@ -121,3 +121,5 @@ config CLOCK_APB2_DIV
     default 16 if CLOCK_APB2_DIV_16
 
 endmenu
+
+source "$(RIOTBOARD)/common/stm32/Kconfig"
