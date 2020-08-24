@@ -41,9 +41,6 @@ endif
 
 ifneq (,$(filter cpp11-compat,$(USEMODULE)))
   USEMODULE_INCLUDES += $(RIOTBASE)/sys/cpp11-compat/include
-  # make sure cppsupport.o is linked explicitly because __dso_handle is not
-  # found if it is hidden away inside a static object.
-  UNDEF += $(BINDIR)/cpp11-compat/cppsupport.o
 endif
 
 ifneq (,$(filter embunit,$(USEMODULE)))
@@ -118,12 +115,6 @@ endif
 
 ifneq (,$(filter zptr,$(USEMODULE)))
   include $(RIOTBASE)/sys/zptr/Makefile.include
-endif
-
-# Convert xtimer into a pseudo module if its API is already implemented by
-# ztimer's compatibility wrapper
-ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
-  PSEUDOMODULES += xtimer
 endif
 
 ifneq (,$(filter prng,$(USEMODULE)))
