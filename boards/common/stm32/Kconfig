@@ -7,8 +7,10 @@
 
 config BOARD_HAS_HSE
     bool
-    help "Indicates that the board provide an LSE oscillator"
+    help
+        Indicates that the board provide an LSE oscillator
 
 config BOARD_HAS_LSE
     bool
-    help "Indicates that the board provide an HSE oscillator"
+    help
+        Indicates that the board provide an HSE oscillator
