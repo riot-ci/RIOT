@@ -15,10 +15,12 @@ config CPU_COMMON_SAMD21
 config CPU_FAM_SAMD21
     bool
     select CPU_COMMON_SAMD21
+    select HAS_PERIPH_DMA
 
 config CPU_FAM_SAMR21
     bool
     select CPU_COMMON_SAMD21
+    select HAS_PERIPH_DMA
 
 ## Definition of specific features
 config HAS_CPU_SAMD21
