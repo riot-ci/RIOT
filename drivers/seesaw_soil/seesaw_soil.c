@@ -101,7 +101,7 @@ int seesaw_soil_temperature(const seesaw_soil_t *dev, int16_t *temp)
     return status;
 }
 
-int seesaw_soil_moisture(const seesaw_soil_t *dev, int16_t *moist)
+int seesaw_soil_moisture(const seesaw_soil_t *dev, uint16_t *moist)
 {
     int status = SEESAW_SOIL_OK;
     uint16_t raw_moist;

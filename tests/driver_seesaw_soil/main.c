@@ -30,7 +30,8 @@
 int main(void)
 {
     seesaw_soil_t dev;
-    int16_t temp, moist;
+    int16_t temp;
+    uint16_t moist;
     char tstr[8];
     char mstr[8];
 
@@ -52,9 +53,9 @@ int main(void)
 
         len = fmt_s16_dfp(tstr, temp, -2);
         tstr[len] = '\0';
-        len = fmt_s16_dfp(hstr, moist, -2);
-        hstr[len] = '\0';
-        printf("Reading: T: %s °C  Moist: %s %%\n", tstr, hstr);
+        len = fmt_u16_dec(mstr, moist);
+        mstr[len] = '\0';
+        printf("Reading: T: %s °C  Moist: %s\n", tstr, mstr);
 
         xtimer_usleep(SLEEP_USEC);
     }

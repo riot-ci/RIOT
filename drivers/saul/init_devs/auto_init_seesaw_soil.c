@@ -66,9 +66,9 @@ void auto_init_seesaw_soil(void)
             continue;
         }
 
-        saul_entries[(i * 2)].dev = &(seesaw_soil_devs[i]);
-        saul_entries[(i * 2)].name = seesaw_soil_saul_info[i].name;
-        saul_entries[(i * 2)].driver = &seesaw_soil_saul_temp_driver;
-        saul_reg_add(&(saul_entries[(i * 2)]));
+        saul_entries[i].dev = &(seesaw_soil_devs[i]);
+        saul_entries[i].name = seesaw_soil_saul_info[i].name;
+        saul_entries[i].driver = &seesaw_soil_saul_temp_driver;
+        saul_reg_add(&(saul_entries[i]));
     }
 }
