@@ -155,9 +155,22 @@ void stmclk_init_sysclk(void)
     RCC->CR |= RCC_CR_PLLON;
     while (!(RCC->CR & RCC_CR_PLLRDY)) {}
 
+#if CLOCK_AHB > 80000000
+    /* Divide HCLK by before enabling the PLL */
+    RCC->CFGR |= RCC_CFGR_HPRE_DIV2;
+#endif
+
     /* now that the PLL is running, we use it as system clock */
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
+
+#if CLOCK_AHB > 80000000
+    /* Wait 1us before switching back to full speed */
+    uint8_t count = CLOCK_CORECLOCK / 1000000;
+    while (count--) {}
+    RCC->CFGR &= ~RCC_CFGR_HPRE_DIV2;
+#endif
+
 #endif
 
     stmclk_disable_hsi();
