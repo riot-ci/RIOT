@@ -26,4 +26,13 @@ config BOARD_NUCLEO_G474RE
     # Put other features for this board (in alphabetical order)
     select HAS_RIOTBOOT
 
+config BOARD_HAS_HSE
+    bool
+    default y
+
+config BOARD_HAS_LSE
+    bool
+    default y
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.g4"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
