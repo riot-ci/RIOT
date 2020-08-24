@@ -23,13 +23,8 @@ config BOARD_NUCLEO_G070RB
     # Put other features for this board (in alphabetical order)
     select HAS_RIOTBOOT
 
-config BOARD_HAS_HSE
-    bool
-    default n
-
-config BOARD_HAS_LSE
-    bool
-    default y
+    # Clock configuration
+    select BOARD_HAS_LSE
 
 source "$(RIOTBOARD)/common/stm32/Kconfig.g0"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
