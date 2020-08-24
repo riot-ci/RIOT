@@ -89,7 +89,7 @@ int seesaw_soil_temperature(const seesaw_soil_t *dev, int16_t *temp)
     uint32_t raw_temp;
 
     i2c_acquire(dev->params.i2c);
-    if (_seesaw_read_regs(dev, SEESAW_SOIL_TEMPERATURE, &raw_temp, 4) < 0) {
+    if (_seesaw_read_regs(dev, SEESAW_SOIL_TEMPERATURE, &raw_temp, sizeof(raw_temp)) < 0) {
         status = SEESAW_SOIL_BUSERR;
     }
     i2c_release(dev->params.i2c);
