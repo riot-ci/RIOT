@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#if defined(__WITH_AVRLIBC__) || defined(__mips__) || defined(MODULE_PICOLIBC)
+#if defined(__WITH_AVRLIBC__) || defined(__mips__) || defined(MODULE_PICOLIBC) || defined(MODULE_VFS)
 #define USE_FWRITE
 #include <stdio.h>  /* for fwrite() */
 #else
