@@ -297,7 +297,7 @@ int sps30_reset(const sps30_t *dev);
 int sps30_sleep(const sps30_t *dev);
 
 /**
- * @brief       Wake up the sensor from sleep mode.
+ * @brief       Wake up sensor from sleep mode (returns sensor to Idle mode)
  *
  * @param[in]   dev        Pointer to an SPS30 device handle
  *

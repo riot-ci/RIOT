@@ -289,6 +289,7 @@ int sps30_reset(const sps30_t *dev)
 int sps30_sleep(const sps30_t *dev)
 {
     assert(dev);
+    sps30_stop_measurement(dev);
     return _rx_tx_data(dev, SPS30_CMD_SLEEP, NULL, 0, false);
 }
 
