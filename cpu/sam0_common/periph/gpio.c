@@ -75,9 +75,27 @@ typedef enum {
 static gpio_isr_ctx_t gpio_config[NUMOF_IRQS];
 #endif /* MODULE_PERIPH_GPIO_IRQ */
 
-static inline PortGroup *_port(gpio_t pin)
+/* The Cortex-m0 based ATSAM devices can use the Single-cycle I/O Port for GPIO.
+ * When used, the gpio_t is mapped to the IOBUS area and must be mapped back to
+ * the peripheral memory space for configuration access. When it is not
+ * available, the _port_iobus() and _port() functions behave identical.
+ */
+static inline PortGroup *_port_iobus(gpio_t pin)
 {
     return (PortGroup *)(pin & ~(0x1f));
+}
+
+static inline PortGroup *_port(gpio_t pin)
+{
+#ifdef PORT_IOBUS
+    /* Shift the PortGroup address back from the IOBUS region to the peripheral
+     * region
+     */
+    return (PortGroup *)((uintptr_t)_port_iobus(pin) -
+                         (uintptr_t)PORT_IOBUS + (uintptr_t)PORT);
+#else
+    return _port_iobus(pin);
+#endif
 }
 
 static inline int _pin_pos(gpio_t pin)
@@ -156,25 +174,25 @@ int gpio_read(gpio_t pin)
 
 void gpio_set(gpio_t pin)
 {
-    _port(pin)->OUTSET.reg = _pin_mask(pin);
+    _port_iobus(pin)->OUTSET.reg = _pin_mask(pin);
 }
 
 void gpio_clear(gpio_t pin)
 {
-    _port(pin)->OUTCLR.reg = _pin_mask(pin);
+    _port_iobus(pin)->OUTCLR.reg = _pin_mask(pin);
 }
 
 void gpio_toggle(gpio_t pin)
 {
-    _port(pin)->OUTTGL.reg = _pin_mask(pin);
+    _port_iobus(pin)->OUTTGL.reg = _pin_mask(pin);
 }
 
 void gpio_write(gpio_t pin, int value)
 {
     if (value) {
-        _port(pin)->OUTSET.reg = _pin_mask(pin);
+        _port_iobus(pin)->OUTSET.reg = _pin_mask(pin);
     } else {
-        _port(pin)->OUTCLR.reg = _pin_mask(pin);
+        _port_iobus(pin)->OUTCLR.reg = _pin_mask(pin);
     }
 }
 
