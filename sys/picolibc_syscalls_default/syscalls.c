@@ -23,10 +23,13 @@
 #include <errno.h>
 #include <stdio.h>
 #include <sys/times.h>
+#include <unistd.h>
 
 #include "log.h"
 #include "periph/pm.h"
 #include "stdio_base.h"
+
+#define VFS_FD_OFFSET   (STDERR_FILENO + 1)
 
 /**
  * @brief Exit a program without cleaning up files
@@ -55,8 +58,8 @@ _exit(int n)
 __attribute__ ((weak))
 int kill(pid_t pid, int sig)
 {
-    (void) pid;
-    (void) sig;
+    (void)pid;
+    (void)sig;
     errno = ESRCH;                         /* not implemented yet */
     return -1;
 }
@@ -129,6 +132,9 @@ pid_t getpid(void)
 
 #if MODULE_VFS
 #include "vfs.h"
+#else
+#include <sys/stat.h>
+#endif
 
 /**
  * @brief Open a file
@@ -144,13 +150,21 @@ pid_t getpid(void)
  */
 int open(const char *name, int flags, int mode)
 {
+#ifdef MODULE_VFS
     int fd = vfs_open(name, flags, mode);
     if (fd < 0) {
         /* vfs returns negative error codes */
         errno = -fd;
         return -1;
     }
-    return fd;
+    return fd + VFS_FS_OFFSET;
+#else
+    (void)name;
+    (void)flags;
+    (void)mode;
+    errno = ENODEV;
+    return -1;
+#endif
 }
 
 /**
@@ -167,13 +181,22 @@ int open(const char *name, int flags, int mode)
  */
 _READ_WRITE_RETURN_TYPE read(int fd, void *dest, size_t count)
 {
-    int res = vfs_read(fd, dest, count);
+    if (fd == STDIN_FILENO) {
+        return stdio_read(dest, count);
+    } else if ((fd < VFS_FD_OFFSET) || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    res = vfs_read(fd - VFS_FD_OFFSET, dest, count);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return res;
+#endif
 }
 
 /**
@@ -190,13 +213,22 @@ _READ_WRITE_RETURN_TYPE read(int fd, void *dest, size_t count)
  */
 _READ_WRITE_RETURN_TYPE write(int fd, const void *src, size_t count)
 {
-    int res = vfs_write(fd, src, count);
+    if (fd == STDOUT_FILENO || fd == STDERR_FILENO) {
+        return stdio_write(src, count);
+    } else if ((fd < VFS_FD_OFFSET) || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    int res = vfs_write(fd - VFS_FD_OFFSET, src, count);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return res;
+#endif
 }
 
 /**
@@ -214,13 +246,20 @@ _READ_WRITE_RETURN_TYPE write(int fd, const void *src, size_t count)
  */
 int close(int fd)
 {
-    int res = vfs_close(fd);
+    if (fd < VFS_FD_OFFSET || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    int res = vfs_close(fd - VFS_FD_OFFSET);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return res;
+#endif
 }
 
 /**
@@ -250,15 +289,25 @@ clock_t times(struct tms *ptms)
  * @return       0 on success
  * @return       -1 on error, @c errno set to a constant from errno.h to indicate the error
  */
-int fcntl (int fd, int cmd, int arg)
+int fcntl(int fd, int cmd, int arg)
 {
-    int res = vfs_fcntl(fd, cmd, arg);
+    if (fd < VFS_FD_OFFSET || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    int res = vfs_fcntl(fd - VFS_FD_OFFSET, cmd, arg);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return res;
+#else
+    (void)cmd;
+    (void)arg;
+#endif
 }
 
 /**
@@ -282,13 +331,23 @@ int fcntl (int fd, int cmd, int arg)
  */
 off_t lseek(int fd, _off_t off, int whence)
 {
-    int res = vfs_lseek(fd, off, whence);
+    if (fd < VFS_FD_OFFSET || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    int res = vfs_lseek(fd - VFS_FD_OFFSET, off, whence);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return res;
+#else
+    (void)off;
+    (void)whence;
+#endif
 }
 
 /**
@@ -304,13 +363,22 @@ off_t lseek(int fd, _off_t off, int whence)
  */
 int fstat(int fd, struct stat *buf)
 {
-    int res = vfs_fstat(fd, buf);
+    if (fd < VFS_FD_OFFSET || !IS_USED(MODULE_VFS)) {
+        errno = ENOTSUP;
+        return -1;
+    }
+
+#ifdef MODULE_VFS
+    int res = vfs_fstat(fd - VFS_FD_OFFSET, buf);
     if (res < 0) {
         /* vfs returns negative error codes */
         errno = -res;
         return -1;
     }
     return 0;
+#else
+    (void)buf;
+#endif
 }
 
 /**
@@ -326,6 +394,7 @@ int fstat(int fd, struct stat *buf)
  */
 int stat(const char *name, struct stat *st)
 {
+#ifdef MODULE_VFS
     int res = vfs_stat(name, st);
     if (res < 0) {
         /* vfs returns negative error codes */
@@ -333,6 +402,12 @@ int stat(const char *name, struct stat *st)
         return -1;
     }
     return 0;
+#else
+    (void)name;
+    (void)st;
+    errno = ENODEV;
+    return -1;
+#endif
 }
 
 /**
@@ -345,6 +420,7 @@ int stat(const char *name, struct stat *st)
  */
 int unlink(const char *path)
 {
+#ifdef MODULE_VFS
     int res = vfs_unlink(path);
     if (res < 0) {
         /* vfs returns negative error codes */
@@ -352,6 +428,9 @@ int unlink(const char *path)
         return -1;
     }
     return 0;
+#else
+    (void)path;
+    errno = ENODEV;
+    return -1;
+#endif
 }
-
-#endif /* MODULE_VFS */
