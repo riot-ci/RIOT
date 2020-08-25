@@ -30,16 +30,11 @@ extern "C" {
 
 /**
  * @name    Clock configuration
- *
- * @note    The radio will not work with the internal RC oscillator!
- *
+ *          The E104-BT5010A module does not have any external oscillators
  * @{
  */
-#define CLOCK_HFCLK         (0U)            /* set to  0: internal RC oscillator
-                                             *        32: 32MHz crystal */
-#define CLOCK_LFCLK         (0)             /* set to  0: internal RC oscillator
-                                             *         1: 32.768 kHz crystal
-                                             *         2: derived from HFCLK */
+#define CLOCK_HFCLK         (0U)            /* internal RC oscillator */
+#define CLOCK_LFCLK         (0)             /* internal RC oscillator */
 /** @} */
 
 /**
