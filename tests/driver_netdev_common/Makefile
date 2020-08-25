@@ -13,6 +13,9 @@ endif
 # gnrc is a meta module including all required, basic gnrc networking modules
 USEMODULE += gnrc
 
+# use the default network interface for the board
+USEMODULE += netdev_default
+
 # automatically initialize the network interface
 USEMODULE += auto_init_gnrc_netif
 
