@@ -139,15 +139,9 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 
     /* set pin direction */
     if (mode & 0x2) {
-#ifdef PORT_IOBUS
-        port->CTRL.reg |= pin_mask;
-#endif
         port->DIRCLR.reg = pin_mask;
     }
     else {
-#ifdef PORT_IOBUS
-        port->CTRL.reg &= ~pin_mask;
-#endif
         port->DIRSET.reg = pin_mask;
     }
 
@@ -167,7 +161,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 
 int gpio_read(gpio_t pin)
 {
-    PortGroup *port = _port_iobus(pin);
+    PortGroup *port = _port(pin);
     int mask = _pin_mask(pin);
 
     if (port->DIR.reg & mask) {
