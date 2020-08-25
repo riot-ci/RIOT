@@ -166,7 +166,7 @@ int timer_set_absolute(tim_t dev, int channel, unsigned int value)
     if (!_is_letimer(dev)) {
         TIMER_TypeDef *tim = timer_config[dev].timer.dev;
 
-        if (channel < 0 || channel >= timer_config[dev].ch_numof) {
+        if (channel < 0 || channel >= timer_config[dev].channel_numof) {
             return -1;
         }
 
@@ -284,7 +284,7 @@ static void _timer_isr(tim_t dev)
     if (_is_letimer(dev)) {
         LETIMER_TypeDef *tim = timer_config[dev].timer.dev;
 
-        for (int i = 0; i < timer_config[dev].ch_numof; i++) {
+        for (int i = 0; i < timer_config[dev].channel_numof; i++) {
             if (tim->IF & (LETIMER_IF_COMP0 << i))
             {
                 LETIMER_IntDisable(tim, LETIMER_IEN_COMP0 << i);
@@ -296,7 +296,7 @@ static void _timer_isr(tim_t dev)
     else {
         TIMER_TypeDef *tim = timer_config[dev].timer.dev;
 
-        for (int i = 0; i < timer_config[dev].ch_numof; i++) {
+        for (int i = 0; i < timer_config[dev].channel_numof; i++) {
             if (tim->IF & (TIMER_IF_CC0 << i)) {
                 tim->CC[i].CTRL = _TIMER_CC_CTRL_MODE_OFF;
                 tim->IFC = (TIMER_IFC_CC0 << i);

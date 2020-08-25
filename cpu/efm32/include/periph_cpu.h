@@ -357,7 +357,7 @@ typedef struct {
     timer_dev_t prescaler;  /**< the lower neighboring timer (not initialized for LETIMER) */
     timer_dev_t timer;      /**< the higher numbered timer */
     IRQn_Type irq;          /**< number of the higher timer IRQ channel */
-    uint8_t ch_numof;       /**< number of channels per timer */
+    uint8_t channel_numof;       /**< number of channels per timer */
 } timer_conf_t;
 /** @} */
 
@@ -369,11 +369,6 @@ typedef struct {
 #define CONFIG_EFM32_XTIMER_USE_LETIMER   0
 #endif
 
-/**
- * @brief   This timer implementation has two or three available channels
- *          depending on the used timer, use the lowest.
- */
-#define TIMER_CHANNEL_NUMOF     (2)
 
 /**
  * @brief   UART device configuration.
