@@ -14,7 +14,7 @@
  * @brief       Test application for the candev abstraction
  *
  * @author      Toon Stegen <tstegen@nalys-group.com>
- * @author      Wouter Symons <wsymons@nalys-group.com>
+ * @author      Wouter Symons <wosym@airsantelmo.com>
  *
  * @}
  */
@@ -23,21 +23,25 @@
 
 #include <debug.h>
 #include <errno.h>
+#include <isrpipe.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <isrpipe.h>
 #include "shell.h"
 #include "can/device.h"
 
 #if IS_USED(MODULE_CAN_LINUX)
-
 #include <candev_linux.h>
-
 static candev_linux_t linux_dev;
 
+#elif defined(MODULE_MCP2515)
+#include "candev_mcp2515.h"
+#include "mcp2515_params.h"
+
+static candev_mcp2515_t mcp2515_dev = { 0 };
+
 #else
-/* add other candev drivers here */
+/* add includes for other candev drivers here */
 #endif
 
 #define RX_RINGBUFFER_SIZE 128      /* Needs to be a power of 2! */
@@ -105,7 +109,9 @@ static int _receive(int argc, char **argv)
                 ((uint32_t)buf[3]);
         isrpipe_read(&rxbuf, buf, 1);       /* can-dlc */
         can_dlc = buf[0];
-        isrpipe_read(&rxbuf, buf, can_dlc); /* data */
+        if(can_dlc > 0) {
+            isrpipe_read(&rxbuf, buf, can_dlc); /* data */
+        }
 
         printf("id: %" PRIx32 " dlc: %" PRIx8 " Data: \n", can_id, can_dlc);
         for (int i = 0; i < can_dlc; i++) {
@@ -196,6 +202,12 @@ int main(void)
     puts("Initializing Linux Can device");
     candev_linux_init( &linux_dev, &(candev_linux_conf[0]));    /* vcan0 */
     candev = (candev_t *)&linux_dev;
+
+#elif  defined(MODULE_MCP2515)
+    puts("Initializing MCP2515");
+    candev_mcp2515_init(&mcp2515_dev, &candev_mcp2515_conf[0]);
+    candev = (candev_t *)&mcp2515_dev;
+
 #else
     /* add initialization for other candev drivers here */
 #endif
