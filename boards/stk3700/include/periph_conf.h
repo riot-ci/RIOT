@@ -210,7 +210,7 @@ static const timer_conf_t timer_config[] = {
             .cmu = cmuClock_TIMER1
         },
         .irq = TIMER1_IRQn,
-        .ch_numof = 3
+        .channel_numof = 3
     },
     {
         .prescaler = {
@@ -222,7 +222,7 @@ static const timer_conf_t timer_config[] = {
             .cmu = cmuClock_LETIMER0
         },
         .irq = LETIMER0_IRQn,
-        .ch_numof = 2
+        .channel_numof = 2
     },
 };
 
