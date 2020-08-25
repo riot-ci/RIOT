@@ -314,9 +314,9 @@ void sam0_flashpage_aux_write_raw(uint32_t offset, const void *data, size_t len)
     uintptr_t dst = NVMCTRL_USER + sizeof(nvm_user_page_t) + offset;
 
 #ifdef FLASH_USER_PAGE_SIZE
-    assert(dst + len < NVMCTRL_USER + FLASH_USER_PAGE_SIZE);
+    assert(dst + len <= NVMCTRL_USER + FLASH_USER_PAGE_SIZE);
 #else
-    assert(dst + len < NVMCTRL_USER + AUX_PAGE_SIZE * AUX_NB_OF_PAGES);
+    assert(dst + len <= NVMCTRL_USER + AUX_PAGE_SIZE * AUX_NB_OF_PAGES);
 #endif
 
     _write_row((void*)dst, data, len, AUX_CHUNK_SIZE, _cmd_write_aux);

@@ -1053,6 +1053,15 @@ void dma_cancel(dma_t dma);
 typedef struct sam0_aux_cfg_mapping nvm_user_page_t;
 
 /**
+ * @brief   Size of the free to use auxiliary area in the user page
+ */
+#ifdef FLASH_USER_PAGE_SIZE
+#define FLASH_USER_PAGE_AUX_SIZE (FLASH_USER_PAGE_SIZE - sizeof(nvm_user_page_t))
+#else
+#define FLASH_USER_PAGE_AUX_SIZE (AUX_PAGE_SIZE * AUX_NB_OF_PAGES - sizeof(nvm_user_page_t))
+#endif
+
+/**
  * @brief   Reset the configuration area, apply a new configuration.
  *
  *
@@ -1073,10 +1082,21 @@ void sam0_flashpage_aux_reset(nvm_user_page_t *cfg);
  *          Arbitrary data lengths and offsets are supported.
  *
  * @param   offset  Byte offset after @see nvm_user_page_t
+ *                  must be less than `FLASH_USER_PAGE_AUX_SIZE`
  * @param   data    The data to write
  * @param   len     Size of the data
  */
 void sam0_flashpage_aux_write_raw(uint32_t offset, const void *data, size_t len);
+
+/**
+ * @brief   Get pointer to data in the user configuration area.
+ *
+ * @param   offset  Byte offset after @see nvm_user_page_t
+ *                  must be less than `FLASH_USER_PAGE_AUX_SIZE`
+ * @return  Pointer to the data in the User Page
+ */
+#define sam0_flashpage_aux_get(offset)  \
+    (void*)((uint8_t*)NVMCTRL_USER + sizeof(nvm_user_page_t) + (offset))
 /** @} */
 
 #ifdef __cplusplus
