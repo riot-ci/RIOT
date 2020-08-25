@@ -5,6 +5,10 @@
 This application is a test for using the candev abstraction directly.
 Use this if you want to use a single CAN driver and thus don't need the CAN-DLL layer.
 
+Include the module for your desired driver in the Makefile. The application will automatically adapt its initialization procedure to the selected driver.
+By default the mcp2515 driver is used. Change this line to your desired driver.
+If the line is removed, the application will default to native-can.
+
 Native prerequisites
 ============
 For using the can stack on top of socketCAN, available for linux, you need:
