@@ -27,7 +27,7 @@ SUIT_CLASS ?= $(BOARD)
 
 #
 $(SUIT_MANIFEST): $(SLOT0_RIOT_BIN) $(SLOT1_RIOT_BIN)
-	$(RIOTBASE)/dist/tools/suit_v3/gen_manifest.py \
+	$(RIOTBASE)/dist/tools/suit/gen_manifest.py \
 	  --urlroot $(SUIT_COAP_ROOT) \
 	  --seqnr $(SUIT_SEQNR) \
 	  --uuid-vendor $(SUIT_VENDOR) \
