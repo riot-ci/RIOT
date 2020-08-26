@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Freie Universität Berlin
+ * Copyright (C) 2014-20 Freie Universität Berlin
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -27,9 +27,7 @@
 #include "net/gnrc/ipv6/nib.h"
 #include "net/gnrc/ipv6.h"
 #endif /* MODULE_GNRC_IPV6_NIB */
-#ifdef MODULE_GNRC_NETIF_PKTQ
 #include "net/gnrc/netif/pktq.h"
-#endif
 #ifdef MODULE_NETSTATS
 #include "net/netstats.h"
 #endif
@@ -1164,12 +1162,12 @@ static void _configure_netdev(netdev_t *dev)
     if (res < 0) {
         DEBUG("gnrc_netif: enable NETOPT_RX_END_IRQ failed: %d\n", res);
     }
-#if defined(MODULE_NETSTATS_L2) || defined(MODULE_GNRC_NETIF_PKTQ)
-    res = dev->driver->set(dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
-    if (res < 0) {
-        DEBUG("gnrc_netif: enable NETOPT_TX_END_IRQ failed: %d\n", res);
+    if (IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ)) {
+        res = dev->driver->set(dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
+        if (res < 0) {
+            DEBUG("gnrc_netif: enable NETOPT_TX_END_IRQ failed: %d\n", res);
+        }
     }
-#endif
 }
 
 #ifdef DEVELHELP
@@ -1295,7 +1293,7 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
 #endif
 }
 
-static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool requeue);
+static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool push_back);
 
 #if IS_USED(MODULE_GNRC_NETIF_EVENTS)
 /**
@@ -1384,56 +1382,44 @@ static void _process_events_await_msg(gnrc_netif_t *netif, msg_t *msg)
     }
 }
 
-#ifdef MODULE_GNRC_NETIF_PKTQ
-static void _sched_dequeue(gnrc_netif_t *netif)
-{
-    netif->dequeue_msg.type = GNRC_NETIF_PKTQ_DEQUEUE_MSG;
-    unsigned state = irq_disable();
-    xtimer_set_msg(&netif->dequeue_timer, GNRC_NETIF_PKTQ_TIMER_US,
-                   &netif->dequeue_msg, netif->pid);
-    irq_restore(state);
-}
-
 static void _send_queued_pkt(gnrc_netif_t *netif)
 {
-    gnrc_pktsnip_t *pkt;
+    if (IS_USED(MODULE_GNRC_NETIF_PKTQ)) {
+        gnrc_pktsnip_t *pkt;
 
-    if ((pkt = gnrc_netif_pktq_get(netif)) != NULL) {
-        _send(netif, pkt, true);
-        _sched_dequeue(netif);
+        if ((pkt = gnrc_netif_pktq_get(netif)) != NULL) {
+            _send(netif, pkt, true);
+            gnrc_netif_pktq_sched_get(netif);
+        }
     }
 }
-#else   /* MODULE_GNRC_NETIF_PKTQ */
-#define _send_queued_pkt(netif) (void)netif
-#endif  /* MODULE_GNRC_NETIF_PKTQ */
 
-static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool requeue)
+static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool push_back)
 {
-#ifdef MODULE_GNRC_NETIF_PKTQ
-    /* send queued packets first to keep order */
-    if (!requeue && !gnrc_netif_pktq_empty(netif)) {
-        int put_res;
+    int res;
 
-        put_res = gnrc_netif_pktq_put(netif, pkt);
-        if (put_res == 0) {
-            DEBUG("gnrc_netif: (re-)queued pkt %p\n", (void *)pkt);
-            _send_queued_pkt(netif);
-            return;
+    if (IS_USED(MODULE_GNRC_NETIF_PKTQ)) {
+        /* send queued packets first to keep order */
+        if (!push_back && !gnrc_netif_pktq_empty(netif)) {
+            int put_res;
+
+            put_res = gnrc_netif_pktq_put(netif, pkt);
+            if (put_res == 0) {
+                DEBUG("gnrc_netif: (re-)queued pkt %p\n", (void *)pkt);
+                _send_queued_pkt(netif);
+                return;
+            }
+            else {
+                LOG_WARNING("gnrc_netif: can't queue packet for sending\n");
+                /* try to send anyway */
+            }
         }
-        else {
-            LOG_WARNING("gnrc_netif: can't queue packet for sending\n");
-            /* try to send anyway */
-        }
+        /* hold in case device was busy to not having to rewrite *all* the link
+         * layer implementations in case `gnrc_netif_pktq` is included */
+        gnrc_pktbuf_hold(pkt, 1);
     }
-    /* hold in case device was busy to not having to rewrite *all* the link
-     * layer implementations in case `gnrc_netif_pktq` is included */
-    gnrc_pktbuf_hold(pkt, 1);
-#else
-    (void)requeue;
-#endif  /* MODULE_GNRC_NETIF_PKTQ */
-    int res = netif->ops->send(netif, pkt);
-#ifdef MODULE_GNRC_NETIF_PKTQ
-    if (res == -EBUSY) {
+    res = netif->ops->send(netif, pkt);
+    if (IS_USED(MODULE_GNRC_NETIF_PKTQ) && (res == -EBUSY)) {
         int put_res;
 
         /* Lower layer was busy.
@@ -1442,12 +1428,12 @@ static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool requeue)
          * could run into the risk of overriding the received packet on send
          * Rather, queue the packet within the netif now and try to send them
          * again after the device completed its busy state. */
-        if (requeue) {
-            put_res = gnrc_netif_pktq_push(netif, pkt);
+        if (push_back) {
+            put_res = gnrc_netif_pktq_push_back(netif, pkt);
         }
         else {
             put_res = gnrc_netif_pktq_put(netif, pkt);
-            _sched_dequeue(netif);
+            gnrc_netif_pktq_sched_get(netif);
         }
         if (put_res == 0) {
             DEBUG("gnrc_netif: (re-)queued pkt %p\n", (void *)pkt);
@@ -1458,11 +1444,10 @@ static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool requeue)
         }
         return;
     }
-    else {
+    else if (IS_USED(MODULE_GNRC_NETIF_PKTQ)) {
         /* remove previously held packet */
         gnrc_pktbuf_release(pkt);
     }
-#endif  /* MODULE_GNRC_NETIF_PKTQ */
     if (res < 0) {
         DEBUG("gnrc_netif: error sending packet %p (code: %i)\n",
               (void *)pkt, res);
@@ -1536,12 +1521,12 @@ static void *_gnrc_netif_thread(void *args)
         /* dispatch netdev, MAC and gnrc_netapi messages */
         DEBUG("gnrc_netif: message %u\n", (unsigned)msg.type);
         switch (msg.type) {
-#ifdef MODULE_GNRC_NETIF_PKTQ
+#if IS_USED(MODULE_GNRC_NETIF_PKTQ)
             case GNRC_NETIF_PKTQ_DEQUEUE_MSG:
                 DEBUG("gnrc_netif: send from packet send queue\n");
                 _send_queued_pkt(netif);
                 break;
-#endif
+#endif  /* IS_USED(MODULE_GNRC_NETIF_PKTQ) */
             case NETDEV_MSG_TYPE_EVENT:
                 DEBUG("gnrc_netif: GNRC_NETDEV_MSG_TYPE_EVENT received\n");
                 dev->driver->isr(dev);
