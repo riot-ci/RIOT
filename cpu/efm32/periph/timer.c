@@ -111,7 +111,6 @@ static void _timer_init(tim_t dev, unsigned long freq)
     TIMER_Init_TypeDef init_pre = TIMER_INIT_DEFAULT;
     TIMER_Init_TypeDef init_tim = TIMER_INIT_DEFAULT;
 
-    /* leave the prescaler enabled and toggle only the primary timer */
     init_pre.enable = false;
     init_pre.prescale = timerPrescale1;
     init_tim.enable = false;
