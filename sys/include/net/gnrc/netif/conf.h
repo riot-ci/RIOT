@@ -70,7 +70,7 @@ extern "C" {
  *              latest
  *
  * Set to -1 to deactivate dequeing by timer. For this it has to be ensured that
- * non of the notifications by the driver are missed!
+ * none of the notifications by the driver are missed!
  *
  * @see         net_gnrc_netif_pktq
  */
