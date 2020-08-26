@@ -61,8 +61,8 @@ extern "C" {
  *              all fragments of the minimum MTU.
  * @see         net_gnrc_netif_pktq
  */
-#ifndef GNRC_NETIF_PKTQ_POOL_SIZE
-#define GNRC_NETIF_PKTQ_POOL_SIZE  (16U)
+#ifndef CONFIG_GNRC_NETIF_PKTQ_POOL_SIZE
+#define CONFIG_GNRC_NETIF_PKTQ_POOL_SIZE      (16U)
 #endif
 
 /**
@@ -71,8 +71,8 @@ extern "C" {
  *
  * @see         net_gnrc_netif_pktq
  */
-#ifndef GNRC_NETIF_PKTQ_TIMER_US
-#define GNRC_NETIF_PKTQ_TIMER_US   (5000U)
+#ifndef CONFIG_GNRC_NETIF_PKTQ_TIMER_US
+#define CONFIG_GNRC_NETIF_PKTQ_TIMER_US       (5000U)
 #endif
 
 /**
