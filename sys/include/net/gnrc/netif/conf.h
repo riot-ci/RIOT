@@ -69,6 +69,9 @@ extern "C" {
  * @brief       Time in microseconds for when to try send a queued packet at the
  *              latest
  *
+ * Set to -1 to deactivate dequeing by timer. For this it has to be ensured that
+ * non of the notifications by the driver are missed!
+ *
  * @see         net_gnrc_netif_pktq
  */
 #ifndef CONFIG_GNRC_NETIF_PKTQ_TIMER_US

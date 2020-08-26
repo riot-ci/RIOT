@@ -47,6 +47,7 @@ int gnrc_netif_pktq_put(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 
 void gnrc_netif_pktq_sched_get(gnrc_netif_t *netif)
 {
+#if CONFIG_GNRC_NETIF_PKTQ_TIMER_US >= 0
     assert(netif != NULL);
     netif->send_queue.dequeue_msg.type = GNRC_NETIF_PKTQ_DEQUEUE_MSG;
     /* Prevent timer from firing while we add this.
@@ -60,6 +61,9 @@ void gnrc_netif_pktq_sched_get(gnrc_netif_t *netif)
                    CONFIG_GNRC_NETIF_PKTQ_TIMER_US,
                    &netif->send_queue.dequeue_msg, netif->pid);
     irq_restore(state);
+#else   /* CONFIG_GNRC_NETIF_PKTQ_TIMER_US >= 0 */
+    (void)netif;
+#endif  /* CONFIG_GNRC_NETIF_PKTQ_TIMER_US >= 0 */
 }
 
 int gnrc_netif_pktq_push_back(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
