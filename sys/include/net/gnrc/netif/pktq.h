@@ -42,7 +42,7 @@ extern "C" {
  *
  * @return  0 on success
  * @return  -1 when the pool of available gnrc_pktqueue_t entries (of size
- *          @ref GNRC_NETIF_PKTQ_POOL_SIZE) is depleted
+ *          @ref CONFIG_GNRC_NETIF_PKTQ_POOL_SIZE) is depleted
  */
 int gnrc_netif_pktq_put(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt);
 
@@ -78,7 +78,10 @@ static inline gnrc_pktsnip_t *gnrc_netif_pktq_get(gnrc_netif_t *netif)
 }
 
 /**
- * @brief   Schedule a @ref GNRC_NETIF_PKTQ_DEQUEUE_MSG in @ref CONFIG_GNRC_NETIF_PKTQ_TIMER_US
+ * @brief   Schedule a dequeue notification to network interface
+ *
+ * The notification will be scheduled in @ref CONFIG_GNRC_NETIF_PKTQ_TIMER_US
+ * microseconds.
  *
  * @pre `netif != NULL`
  *
@@ -101,7 +104,7 @@ void gnrc_netif_pktq_sched_get(gnrc_netif_t *netif);
  *
  * @return  0 on success
  * @return  -1 when the pool of available gnrc_pktqueue_t entries (of size
- *          @ref GNRC_NETIF_PKTQ_POOL_SIZE) is depleted
+ *          @ref CONFIG_GNRC_NETIF_PKTQ_POOL_SIZE) is depleted
  */
 int gnrc_netif_pktq_push_back(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt);
 
