@@ -59,7 +59,7 @@
 #if IS_USED(MODULE_GNRC_NETIF_MAC)
 #include "net/gnrc/netif/mac.h"
 #endif
-#ifdef MODULE_GNRC_NETIF_PKTQ
+#if IS_USED(MODULE_GNRC_NETIF_PKTQ)
 #include "net/gnrc/netif/pktq/type.h"
 #endif
 #include "net/ndp.h"
@@ -175,7 +175,7 @@ typedef struct {
 #if IS_USED(MODULE_GNRC_NETIF_6LO) || defined(DOXYGEN)
     gnrc_netif_6lo_t sixlo;                 /**< 6Lo component */
 #endif
-#if defined(MODULE_GNRC_NETIF_PKTQ) || DOXYGEN
+#if IS_USED(MODULE_GNRC_NETIF_PKTQ) || defined(DOXYGEN)
     /**
      * @brief   Packet queue for sending
      *

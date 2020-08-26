@@ -1633,36 +1633,34 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                     _pass_on_packet(pkt);
                 }
                 break;
-#if defined(MODULE_NETSTATS_L2) || defined(MODULE_GNRC_NETIF_PKTQ)
+#if IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ)
             case NETDEV_EVENT_TX_COMPLETE:
                 /* send packet previously queued within netif due to the lower
                  * layer being busy.
                  * Further packets will be sent on later TX_COMPLETE or
                  * TX_MEDIUM_BUSY */
                 _send_queued_pkt(netif);
-#ifdef MODULE_NETSTATS_L2
+#if IS_USED(MODULE_NETSTATS_L2)
                 /* we are the only ones supposed to touch this variable,
                  * so no acquire necessary */
                 netif->stats.tx_success++;
-#endif
+#endif  /* IS_USED(MODULE_NETSTATS_L2) */
                 break;
-#endif
-#ifdef MODULE_NETSTATS_L2
-#endif
-#if defined(MODULE_NETSTATS_L2) || defined(MODULE_GNRC_NETIF_PKTQ)
+#endif  /* IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ) */
+#if IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ)
             case NETDEV_EVENT_TX_MEDIUM_BUSY:
                 /* send packet previously queued within netif due to the lower
                  * layer being busy.
                  * Further packets will be sent on later TX_COMPLETE or
                  * TX_MEDIUM_BUSY */
                 _send_queued_pkt(netif);
-#ifdef MODULE_NETSTATS_L2
+#if IS_USED(MODULE_NETSTATS_L2)
                 /* we are the only ones supposed to touch this variable,
                  * so no acquire necessary */
                 netif->stats.tx_failed++;
-#endif
+#endif  /* IS_USED(MODULE_NETSTATS_L2) */
                 break;
-#endif
+#endif  /* IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ) */
             default:
                 DEBUG("gnrc_netif: warning: unhandled event %u.\n", event);
         }
