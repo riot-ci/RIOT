@@ -1459,7 +1459,6 @@ static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool push_back)
 #endif
 }
 
-
 static void *_gnrc_netif_thread(void *args)
 {
     gnrc_netapi_opt_t *opt;
