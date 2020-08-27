@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <sys/times.h>
 
+#include "irq_arch.h"
 #include "log.h"
 #include "periph/pm.h"
 #include "stdio_base.h"
