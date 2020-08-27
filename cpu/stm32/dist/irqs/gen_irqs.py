@@ -123,6 +123,8 @@ def generate_irqs(context):
         )
     dest_file = os.path.join(STM32_IRQS_DIR.format(context["cpu_fam"]))
 
+    if not os.path.exists(os.path.dirname(dest_file)):
+        os.makedirs(os.path.dirname(dest_file))
     with open(dest_file, "w") as f_dest:
         f_dest.write(irqs_content)
 
