@@ -9,8 +9,9 @@ from testrunner import TIMEOUT as DEFAULT_TIMEOUT
 # native is the default platform for this test
 BOARD = os.environ.get("BOARD", "native")
 # Increase timeout on "real" hardware
-# CURVE25519 takes +160s on samr21-xpro
-TEST_TIMEOUT = 200 if BOARD != 'native' else DEFAULT_TIMEOUT
+# ED25519 takes +160s on samr21-xpro
+# ED25519 takes +230s on nucleo-l073rz
+TEST_TIMEOUT = 300 if BOARD != 'native' else DEFAULT_TIMEOUT
 # ECDSA 256 takes +30s on samr21-xpro
 BENCH_TIMEOUT = 30 if BOARD != 'native' else DEFAULT_TIMEOUT
 
