@@ -12,8 +12,6 @@ import os
 import argparse
 import re
 
-from jinja2 import Environment, FileSystemLoader
-
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 RIOTBASE = os.getenv(
