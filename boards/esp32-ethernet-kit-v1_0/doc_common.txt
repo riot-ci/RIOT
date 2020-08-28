@@ -67,6 +67,7 @@ Flashing RIOT is quite straight forward. The board has a Micro-USB connector wit
 ```
 make flash BOARD=esp32-ethernet-kit-v1_X ...
 ```
+where `X` is the minor revision number of the board.
 
 The USB bridge is based on FDI FT2232HL and offers two USB interfaces:
 
