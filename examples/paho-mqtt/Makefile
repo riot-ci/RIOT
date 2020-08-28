@@ -17,6 +17,16 @@ QUIET ?= 1
 WIFI_SSID ?= "Your_WiFi_name"
 WIFI_PASS ?= "Your_secure_password"
 
+ifneq (, $(DEFAULT_MQTT_CLIENT_ID))
+  CFLAGS += -DDEFAULT_MQTT_CLIENT_ID=\"$(DEFAULT_MQTT_CLIENT_ID)\"
+endif
+ifneq (, $(DEFAULT_MQTT_USER))
+  CFLAGS += -DDEFAULT_MQTT_USER=\"$(DEFAULT_MQTT_USER)\"
+endif
+ifneq (, $(DEFAULT_MQTT_PWD))
+  CFLAGS += -DDEFAULT_MQTT_PWD=\"$(DEFAULT_MQTT_PWD)\"
+endif
+
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
