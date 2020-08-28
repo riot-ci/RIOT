@@ -30,6 +30,7 @@ The Espressif [ESP32-Ethernet-Kit](https://docs.espressif.com/projects/esp-idf/e
 - USB bridge with JTAG interface
 
 Furthermore, some GPIOs are broken out for extension. The USB bridge based on FDI FT2232HL provides a JTAG interface for OCD debugging through the USB interface.
+For flashing and debugging the board, see \ref boards_esp32_esp-ethernet-kit common board documentation.
 
 ## <a name="hardware"> Hardware </a> &nbsp;&nbsp; [[TOC](#toc)]
 
