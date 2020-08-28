@@ -7,7 +7,7 @@ ifneq (,$(filter arduino,$(USEMODULE)))
   USEMODULE += $(SKETCH_MODULE)
 endif
 
-ifneq (,$(filter auto_init_actuators_sensors_%,$(USEMODULE)))
+ifneq (,$(filter auto_init_actuators_sensors_%,$(filter-out auto_init_actuators_sensors_default,$(USEMODULE))))
   USEMODULE += auto_init_actuators_sensors
 endif
 
