@@ -547,7 +547,11 @@ static int cmd_dump_config(int argc, char **argv)
     (void) argc;
     (void) argv;
 
+#ifdef FLASH_USER_PAGE_SIZE
     od_hex_dump((void*)NVMCTRL_USER, FLASH_USER_PAGE_SIZE, 0);
+#else
+    od_hex_dump((void*)NVMCTRL_USER, AUX_PAGE_SIZE * AUX_NB_OF_PAGES, 0);
+#endif
 
     return 0;
 }
@@ -568,7 +572,7 @@ static int cmd_test_config(int argc, char **argv)
     /* check if the AUX page has been cleared */
     for (uint32_t i = 0; i < FLASH_USER_PAGE_AUX_SIZE; ++i) {
         if (*(uint8_t*)sam0_flashpage_aux_get(i) != 0xFF) {
-            printf("user page not cleared at offset 0x%lx\n", i);
+            printf("user page not cleared at offset 0x%"PRIx32"\n", i);
             return -1;
         }
     }
@@ -582,13 +586,13 @@ static int cmd_test_config(int argc, char **argv)
     /* check if half-word was written correctly */
     uint16_t data_in = *(uint16_t*)sam0_flashpage_aux_get(dst + sizeof(test_data));
     if (data_in != single_data) {
-        printf("%x != %x, offset = 0x%lx\n", single_data, data_in, dst + sizeof(test_data));
+        printf("%x != %x, offset = 0x%"PRIx32"\n", single_data, data_in, dst + sizeof(test_data));
         return -1;
     }
 
     /* check if test data was written correctly */
     if (memcmp(sam0_flashpage_aux_get(dst), test_data, sizeof(test_data))) {
-        printf("write test_data failed, offset = 0x%lx\n", dst);
+        printf("write test_data failed, offset = 0x%"PRIx32"\n", dst);
         return -1;
     }
 
