@@ -29,4 +29,5 @@ config BOARD_NUCLE0_L152RE
     # Put other features for this board (in alphabetical order)
     select HAS_RIOTBOOT
 
+source "$(RIOTBOARD)/common/stm32/Kconfig.l0l1"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
