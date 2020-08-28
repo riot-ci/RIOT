@@ -53,7 +53,7 @@ extern "C" {
  * @{
  */
 /**
- * @brief Timeout duration for user calls. Default is 2 minutes.
+ * @brief Timeout duration in milliseconds for user calls. Default is 2 minutes.
  */
 #ifndef CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION
 #define CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION (120U * MS_PER_SEC)
