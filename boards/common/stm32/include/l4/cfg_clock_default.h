@@ -93,6 +93,10 @@ extern "C" {
 
 #define CLOCK_HSI                       MHZ(16)
 
+#ifndef CONFIG_CLOCK_MSI
+#define CONFIG_CLOCK_MSI                MHZ(48)
+#endif
+
 #if CONFIG_USE_CLOCK_HSI
 #define CLOCK_CORECLOCK                 (CLOCK_HSI)
 
@@ -103,9 +107,6 @@ extern "C" {
 #define CLOCK_CORECLOCK                 (CLOCK_HSE)
 
 #elif CONFIG_USE_CLOCK_MSI
-#ifndef CONFIG_CLOCK_MSI
-#define CONFIG_CLOCK_MSI                MHZ(48)
-#endif
 #define CLOCK_CORECLOCK                 (CONFIG_CLOCK_MSI)
 
 #elif CONFIG_USE_CLOCK_PLL
@@ -127,9 +128,6 @@ extern "C" {
 #endif
 #ifndef CONFIG_CLOCK_PLL_SRC_HSI
 #define CONFIG_CLOCK_PLL_SRC_HSI        (0)
-#endif
-#ifndef CONFIG_CLOCK_MSI
-#define CONFIG_CLOCK_MSI                MHZ(48)
 #endif
 #ifndef CONFIG_CLOCK_PLL_M
 #define CONFIG_CLOCK_PLL_M              (6)
