@@ -230,7 +230,7 @@ void stmclk_init_sysclk(void)
         RCC->CFGR &= ~RCC_CFGR_SW;
         RCC->CFGR |= RCC_CFGR_SW_HSE;
     }
-    else if(CONFIG_USE_CLOCK_MSI) {
+    else if (CONFIG_USE_CLOCK_MSI) {
 #if defined(CPU_FAM_STM32WB)
         RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION);
 #else
