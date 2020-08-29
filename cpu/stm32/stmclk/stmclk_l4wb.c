@@ -45,7 +45,6 @@
  * @name    PLL configuration
  * @{
  */
-#if CONFIG_USE_CLOCK_PLL
 /* figure out which input to use */
 #if CONFIG_CLOCK_PLL_SRC_MSI
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_MSI
@@ -85,7 +84,6 @@
 #error "PLL configuration: PLL R value is invalid"
 #endif
 #endif
-#endif /* CONFIG_USE_CLOCK_PLL */
 /** @} */
 
 #if CONFIG_CLOCK_MSI == KHZ(100)
@@ -248,78 +246,80 @@ void stmclk_init_sysclk(void)
              (instead of MSIRANGE in the RCC_CR) */
     RCC->CR = (RCC_CR_HSION);
 
-#if CONFIG_USE_CLOCK_HSE
-    RCC->CR |= (RCC_CR_HSEON);
-    while (!(RCC->CR & RCC_CR_HSERDY)) {}
+    if (CONFIG_USE_CLOCK_HSE) {
+        RCC->CR |= (RCC_CR_HSEON);
+        while (!(RCC->CR & RCC_CR_HSERDY)) {}
 
-    /* Select HSE as system clock and configure the different prescalers */
-    RCC->CFGR = (RCC_CFGR_SW_HSE | CLOCK_AHB_DIV | CLOCK_APB1_DIV | CLOCK_APB2_DIV);
-
-#elif CONFIG_USE_CLOCK_MSI
+        /* Select HSE as system clock and configure the different prescalers */
+        RCC->CFGR &= ~RCC_CFGR_SW;
+        RCC->CFGR |= RCC_CFGR_SW_HSE;
+    }
+    else if(CONFIG_USE_CLOCK_MSI) {
 #if defined(CPU_FAM_STM32WB)
-    RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION);
+        RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION);
 #else
-    RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION | RCC_CR_MSIRGSEL);
+        RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION | RCC_CR_MSIRGSEL);
 #endif
-    while (!(RCC->CR & RCC_CR_MSIRDY)) {}
+        while (!(RCC->CR & RCC_CR_MSIRDY)) {}
 
-#if CONFIG_CLOCK_MSI == MHZ(48)
-    /* select the MSI clock for the 48MHz clock tree (USB, RNG) */
-    RCC->CCIPR = (RCC_CCIPR_CLK48SEL_0 | RCC_CCIPR_CLK48SEL_1);
-#endif
-    /* Select MSI as system clock and configure the different prescalers */
-    RCC->CFGR = (RCC_CFGR_SW_MSI | CLOCK_AHB_DIV | CLOCK_APB1_DIV | CLOCK_APB2_DIV);
+        if (CONFIG_CLOCK_MSI == MHZ(48)) {
+            /* select the MSI clock for the 48MHz clock tree (USB, RNG) */
+            RCC->CCIPR = (RCC_CCIPR_CLK48SEL_0 | RCC_CCIPR_CLK48SEL_1);
+        }
+        /* Select MSI as system clock and configure the different prescalers */
+        RCC->CFGR = (RCC_CFGR_SW_MSI | CLOCK_AHB_DIV | CLOCK_APB1_DIV | CLOCK_APB2_DIV);
+    }
+    else if (CONFIG_USE_CLOCK_PLL) {
+        if (CONFIG_BOARD_HAS_HSE && CONFIG_CLOCK_PLL_SRC_HSE) {
+            /* if configured, we need to enable the HSE clock now */
+            RCC->CR |= (RCC_CR_HSEON);
+            while (!(RCC->CR & RCC_CR_HSERDY)) {}
+        }
 
-#elif CONFIG_USE_CLOCK_PLL
-#if CONFIG_BOARD_HAS_HSE && CONFIG_CLOCK_PLL_SRC_HSE
-    /* if configured, we need to enable the HSE clock now */
-    RCC->CR |= (RCC_CR_HSEON);
-    while (!(RCC->CR & RCC_CR_HSERDY)) {}
-#endif /* CONFIG_BOARD_HAS_HSE && CONFIG_CLOCK_PLL_SRC_HSE */
-
-#if CONFIG_CLOCK_PLL_SRC_MSI
-    /* reset clock to MSI with 48MHz, disables all other clocks */
+        if (CONFIG_CLOCK_PLL_SRC_MSI) {
+            /* reset clock to MSI with 48MHz, disables all other clocks */
 #if defined(CPU_FAM_STM32WB)
-    RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION);
+            RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION);
 #else
-    RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION | RCC_CR_MSIRGSEL);
+            RCC->CR |= (CLOCK_MSIRANGE | RCC_CR_MSION | RCC_CR_MSIRGSEL);
 #endif
-    while (!(RCC->CR & RCC_CR_MSIRDY)) {}
+            while (!(RCC->CR & RCC_CR_MSIRDY)) {}
 
-#if CONFIG_BOARD_HAS_LSE
-    /* configure the low speed clock domain */
-    stmclk_enable_lfclk();
-    /* now we can enable the MSI PLL mode to enhance accuracy of the MSI*/
-    RCC->CR |= RCC_CR_MSIPLLEN;
-    while (!(RCC->CR & RCC_CR_MSIRDY)) {}
-#endif /* CONFIG_BOARD_HAS_LSE */
+            if (CONFIG_BOARD_HAS_LSE) {
+                /* configure the low speed clock domain */
+                stmclk_enable_lfclk();
+                /* now we can enable the MSI PLL mode to enhance accuracy of the MSI */
+                RCC->CR |= RCC_CR_MSIPLLEN;
+                while (!(RCC->CR & RCC_CR_MSIRDY)) {}
+            }
 
-#if CONFIG_CLOCK_MSI == MHZ(48)
-    /* select the MSI clock for the 48MHz clock tree (USB, RNG) */
-    RCC->CCIPR = (RCC_CCIPR_CLK48SEL_0 | RCC_CCIPR_CLK48SEL_1);
-#endif
-#endif /* CONFIG_CLOCK_PLL_SRC_MSI */
+            if (CONFIG_CLOCK_MSI == MHZ(48)) {
+                /* select the MSI clock for the 48MHz clock tree (USB, RNG) */
+                RCC->CCIPR = (RCC_CCIPR_CLK48SEL_0 | RCC_CCIPR_CLK48SEL_1);
+            }
+        }
 
-    /* now we can safely configure and start the PLL */
-    RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_R | RCC_PLLCFGR_PLLREN);
-    RCC->CR |= (RCC_CR_PLLON);
-    while (!(RCC->CR & RCC_CR_PLLRDY)) {}
+        /* now we can safely configure and start the PLL */
+        RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_R | RCC_PLLCFGR_PLLREN);
+        RCC->CR |= (RCC_CR_PLLON);
+        while (!(RCC->CR & RCC_CR_PLLRDY)) {}
 
-    /* now that the PLL is running, we use it as system clock */
-    RCC->CFGR |= RCC_CFGR_SW_PLL;
-    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
-#endif /* CONFIG_USE_CLOCK_PLL */
+        /* now that the PLL is running, we use it as system clock */
+        RCC->CFGR |= RCC_CFGR_SW_PLL;
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
+    }
 
     stmclk_disable_hsi();
     irq_restore(is);
 
-#ifdef MODULE_PERIPH_RTT
-    /* Ensure LPTIM1 clock source (LSI or LSE) is correctly reset when initializing
-       the clock, this is particularly useful after waking up from deep sleep */
-#if CLOCK_LSE
-    RCC->CCIPR |= RCC_CCIPR_LPTIM1SEL_0 | RCC_CCIPR_LPTIM1SEL_1;
-#else
-    RCC->CCIPR |= RCC_CCIPR_LPTIM1SEL_0;
-#endif /* CLOCK_LSE */
-#endif /* MODULE_PERIPH_RTT */
+    if (IS_USED(MODULE_PERIPH_RTT)) {
+        /* Ensure LPTIM1 clock source (LSI or LSE) is correctly reset when initializing
+           the clock, this is particularly useful after waking up from deep sleep */
+        if (CONFIG_BOARD_HAS_LSE) {
+            RCC->CCIPR |= RCC_CCIPR_LPTIM1SEL_0 | RCC_CCIPR_LPTIM1SEL_1;
+        }
+        else {
+            RCC->CCIPR |= RCC_CCIPR_LPTIM1SEL_0;
+        }
+    }
 }
