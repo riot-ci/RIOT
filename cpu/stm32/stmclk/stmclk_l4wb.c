@@ -110,6 +110,8 @@
 #define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_10)
 #elif CONFIG_CLOCK_MSI == MHZ(48)
 #define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_11)
+#else
+#error "Invalid MSI clock"
 #endif
 
 #if defined(CPU_FAM_STM32WB)
@@ -138,7 +140,7 @@
 #elif CONFIG_CLOCK_APB2_DIV == 16
 #define CLOCK_APB2_DIV              (RCC_CFGR_PPRE2_2 | RCC_CFGR_PPRE2_1 | RCC_CFGR_PPRE2_0)
 #endif
-#else /* STM32L4 */
+#else /* CPU_FAM_STM32L4 */
 #define CLOCK_AHB_DIV               (RCC_CFGR_HPRE_DIV1)
 
 #if CONFIG_CLOCK_APB1_DIV == 1
@@ -163,32 +165,6 @@
 #define CLOCK_APB2_DIV              (RCC_CFGR_PPRE2_DIV8)
 #elif CONFIG_CLOCK_APB2_DIV == 16
 #define CLOCK_APB2_DIV              (RCC_CFGR_PPRE2_DIV16)
-#endif
-
-#if CONFIG_CLOCK_MSI == KHZ(100)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_0)
-#elif CONFIG_CLOCK_MSI == KHZ(200)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_1)
-#elif CONFIG_CLOCK_MSI == KHZ(400)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_2)
-#elif CONFIG_CLOCK_MSI == KHZ(800)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_3)
-#elif CONFIG_CLOCK_MSI == MHZ(1)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_4)
-#elif CONFIG_CLOCK_MSI == MHZ(2)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_5)
-#elif CONFIG_CLOCK_MSI == MHZ(4)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_6)
-#elif CONFIG_CLOCK_MSI == MHZ(8)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_7)
-#elif CONFIG_CLOCK_MSI == MHZ(16)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_8)
-#elif CONFIG_CLOCK_MSI == MHZ(24)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_9)
-#elif CONFIG_CLOCK_MSI == MHZ(32)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_10)
-#elif CONFIG_CLOCK_MSI == MHZ(48)
-#define CLOCK_MSIRANGE              (RCC_CR_MSIRANGE_11)
 #endif
 #endif /* CPU_FAM_STM32WB */
 
