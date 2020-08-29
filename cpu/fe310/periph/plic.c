@@ -48,22 +48,22 @@ static inline volatile uint32_t *_get_irq_reg(unsigned irq)
     uint32_t hart_id = read_csr(mhartid);
 
     return &PLIC_REG(PLIC_ENABLE_OFFSET +
-                     (hart_id << PLIC_ENABLE_SHIFT_PER_TARGET) +
-                     (irq >> 5));
+                     (hart_id << PLIC_ENABLE_SHIFT_PER_TARGET)) +
+                     (irq >> 5); /* Intentionally outside the PLIC_REG macro */
 }
 
 void plic_enable_interrupt(unsigned irq)
 {
     volatile uint32_t *irq_reg = _get_irq_reg(irq);
 
-    *irq_reg |= (1 << (irq & 0x1F));
+    __atomic_fetch_or(irq_reg, 1 << (irq & 0x1f), __ATOMIC_RELAXED);
 }
 
 void plic_disable_interrupt(unsigned irq)
 {
     volatile uint32_t *irq_reg = _get_irq_reg(irq);
 
-    *irq_reg &= ~((1 << (irq & 0x1F)));
+    __atomic_fetch_and(irq_reg, ~(1 << (irq & 0x1f)), __ATOMIC_RELAXED);
 }
 
 void plic_set_threshold(unsigned threshold)
