@@ -1,0 +1,48 @@
+From ce4d497b32ac874225562404e0512c684a68fc58 Mon Sep 17 00:00:00 2001
+From: Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+Date: Sun, 30 Aug 2020 20:41:10 +0200
+Subject: [PATCH] RIOT support: Fix access to sched internals
+
+User proper APIs instead directly accessing scheduler internal data.
+---
+ src/ccnl-riot/include/ccn-lite-riot.h | 3 ++-
+ src/ccnl-riot/src/ccn-lite-riot.c     | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/ccnl-riot/include/ccn-lite-riot.h b/src/ccnl-riot/include/ccn-lite-riot.h
+index 21d92330..99fa01af 100644
+--- a/src/ccnl-riot/include/ccn-lite-riot.h
++++ b/src/ccnl-riot/include/ccn-lite-riot.h
+@@ -35,6 +35,7 @@
+ #include "irq.h"
+ #include "evtimer.h"
+ #include "evtimer_msg.h"
++#include "thread.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -325,7 +326,7 @@ static inline void ccnl_riot_interest_remove(evtimer_t *et, struct ccnl_interest
+ 
+     unsigned state = irq_disable();
+     /* remove messages that relate to this interest from the message queue */
+-    thread_t *me = (thread_t*) sched_threads[sched_active_pid];
++    thread_t *me = thread_get_active();
+     for (unsigned j = 0; j <= me->msg_queue.mask; j++) {
+         if (me->msg_array[j].content.ptr == i) {
+             /* removing is done by setting to zero */
+diff --git a/src/ccnl-riot/src/ccn-lite-riot.c b/src/ccnl-riot/src/ccn-lite-riot.c
+index 47a5c802..10127375 100644
+--- a/src/ccnl-riot/src/ccn-lite-riot.c
++++ b/src/ccnl-riot/src/ccn-lite-riot.c
+@@ -480,7 +480,7 @@ ccnl_wait_for_chunk(void *buf, size_t buf_len, uint64_t timeout)
+ 
+         /* TODO: receive from socket or interface */
+         _timeout_msg.type = CCNL_MSG_TIMEOUT;
+-        xtimer_set_msg64(&_wait_timer, timeout, &_timeout_msg, sched_active_pid);
++        xtimer_set_msg64(&_wait_timer, timeout, &_timeout_msg, thread_getpid());
+         msg_t m;
+         msg_receive(&m);
+         if (m.type == GNRC_NETAPI_MSG_TYPE_RCV) {
+-- 
+2.28.0
+
