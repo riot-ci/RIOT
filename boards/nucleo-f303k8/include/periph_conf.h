@@ -19,6 +19,9 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
+/* This board provides an LSE */
+#define CLOCK_LSE            (1)
+
 #include "periph_cpu.h"
 #include "cfg_timer_tim2.h"
 
