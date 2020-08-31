@@ -124,7 +124,7 @@ static int _request_transmit(ieee802154_dev_t *dev)
 static int _len(ieee802154_dev_t *dev)
 {
     (void) dev;
-   return rfcore_peek_rx_fifo(0) - IEEE802154_FCS_LEN;
+    return rfcore_peek_rx_fifo(0) - IEEE802154_FCS_LEN;
 }
 
 static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t size, ieee802154_rx_info_t *info)
