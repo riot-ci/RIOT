@@ -8,11 +8,6 @@
 
 #include "net/ieee802154/radio.h"
 
-#define CC2538_ACCEPT_FT_2_ACK     (1 << 5)
-
-#define CC2538_STATE_SFD_WAIT_RANGE_MIN  (0x03U)  /**< min range value of SFD wait state */
-#define CC2538_STATE_SFD_WAIT_RANGE_MAX  (0x06U)  /**< max range value of SFD wait state */
-
 #if IS_USED(MODULE_IEEE802154_RADIO_HAL)
 static const ieee802154_radio_ops_t cc2538_rf_ops;
 
