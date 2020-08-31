@@ -116,10 +116,10 @@ extern "C" {
 
 #define CLOCK_AHB                       CLOCK_CORECLOCK  /* max: 48MHz */
 
-#ifndef CONFIG_CLOCK_APB1_DIV
-#define CONFIG_CLOCK_APB1_DIV           (1)
+#ifndef CONFIG_CLOCK_APB_DIV
+#define CONFIG_CLOCK_APB_DIV            (1)
 #endif
-#define CLOCK_APB1                      (CLOCK_CORECLOCK / CONFIG_CLOCK_APB1_DIV)   /* max: 48MHz */
+#define CLOCK_APB1                      (CLOCK_CORECLOCK / CONFIG_CLOCK_APB_DIV)   /* max: 48MHz */
 /** @} */
 
 #ifdef __cplusplus
