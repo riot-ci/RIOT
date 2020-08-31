@@ -19,7 +19,7 @@ ieee802154_dev_t cc2538_rf_dev = {
 
 static uint8_t cc2538_min_be = CONFIG_IEEE802154_DEFAULT_CSMA_CA_MIN_BE;
 static uint8_t cc2538_max_be = CONFIG_IEEE802154_DEFAULT_CSMA_CA_MAX_BE;
-static int cc2538_retries = CONFIG_IEEE802154_DEFAULT_CSMA_CA_RETRIES;
+static int cc2538_csma_ca_retries = CONFIG_IEEE802154_DEFAULT_CSMA_CA_RETRIES;
 
 static bool cc2538_cca_status;  /**< status of the last CCA request */
 static bool cc2538_cca;         /**< used to check wether the last CCA result
@@ -54,7 +54,7 @@ static int _confirm_transmit(ieee802154_dev_t *dev, ieee802154_tx_info_t *info)
     }
 
     if (info) {
-        if (cc2538_retries >= 0 && RFCORE_XREG_CSPZ == 0) {
+        if (cc2538_csma_ca_retries >= 0 && RFCORE_XREG_CSPZ == 0) {
             info->status = TX_STATUS_MEDIUM_BUSY;
         }
         else {
@@ -69,7 +69,7 @@ static int _request_transmit(ieee802154_dev_t *dev)
 {
     (void) dev;
 
-    if (cc2538_retries < 0) {
+    if (cc2538_csma_ca_retries < 0) {
         RFCORE_SFR_RFST = ISTXON;
     }
     else {
@@ -110,8 +110,8 @@ static int _request_transmit(ieee802154_dev_t *dev)
         RFCORE_XREG_CSPX = 0; /* Holds timer value */
         RFCORE_XREG_CSPY = cc2538_min_be; /* Holds MinBE */
 
-        assert(cc2538_retries >= 0);
-        RFCORE_XREG_CSPZ = cc2538_retries + 1; /* Holds attempts (retries + 1) */
+        assert(cc2538_csma_ca_retries >= 0);
+        RFCORE_XREG_CSPZ = cc2538_csma_ca_retries + 1; /* Holds attempts (retries + 1) */
 
         RFCORE_XREG_CSPCTRL &= ~CC2538_CSP_MCU_CTRL_MASK;
 
@@ -442,7 +442,7 @@ static int _set_csma_params(ieee802154_dev_t *dev, ieee802154_csma_be_t *bd, int
         cc2538_max_be = bd->max;
     }
 
-    cc2538_retries = retries;
+    cc2538_csma_ca_retries = retries;
 
     return 0;
 }
