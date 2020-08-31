@@ -17,12 +17,14 @@ ieee802154_dev_t cc2538_rf_dev = {
     .driver = &cc2538_rf_ops,
 };
 
-static uint8_t cc2538_min_be = 3;
-static uint8_t cc2538_max_be = 5;
-static int cc2538_retries = 4;
+static uint8_t cc2538_min_be = CONFIG_IEEE802154_DEFAULT_CSMA_CA_MIN_BE;
+static uint8_t cc2538_max_be = CONFIG_IEEE802154_DEFAULT_CSMA_CA_MAX_BE;
+static int cc2538_retries = CONFIG_IEEE802154_DEFAULT_CSMA_CA_RETRIES;
 
-static bool cc2538_cca_status;
-static bool cc2538_cca;
+static bool cc2538_cca_status;  /**< status of the last CCA request */
+static bool cc2538_cca;         /**< used to check wether the last CCA result
+                                     corresponds to a CCA request or send with
+                                     CSMA-CA */
 
 static int _write(ieee802154_dev_t *dev, iolist_t *iolist)
 {
