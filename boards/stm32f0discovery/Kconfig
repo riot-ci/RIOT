@@ -23,4 +23,4 @@ config BOARD_STM32F0DISCOVERY
     # Clock configuration
     select BOARD_HAS_HSE
 
-source "$(RIOTBOARD)/common/stm32/Kconfig.f0"
+source "$(RIOTBOARD)/common/stm32/Kconfig.f0f1f3"
