@@ -26,5 +26,5 @@ config BOARD_NUCLEO_F091RC
     select BOARD_HAS_HSE
     select BOARD_HAS_LSE
 
-source "$(RIOTBOARD)/common/stm32/Kconfig.f0"
+source "$(RIOTBOARD)/common/stm32/Kconfig.f0f1f3"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
