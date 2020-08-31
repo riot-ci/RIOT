@@ -31,7 +31,9 @@
 /*
  * @brief MAC timer period
  *
- * The period is set to the CSMA-CA Backoff Period Unit (20 symbols, 320 us)
+ * The period is set to the CSMA-CA Backoff Period Unit (20 symbols, 320 us).
+ * The system clock runs at 32 MHz. Thus, the timeout period is
+ * 320us * 32MHz = ~10738 (0x29F2)
  */
 #define TIMER_PERIOD_LSB           (0xF2)
 #define TIMER_PERIOD_MSB           (0x29)
