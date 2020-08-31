@@ -51,7 +51,6 @@ extern "C" {
  * @{
  */
 #define UART_NUMOF          (1U)
-#define UART_0_EN           (1U)
 
 #define UART_USE_USCI
 #define UART_BASE           (USCI_0)
