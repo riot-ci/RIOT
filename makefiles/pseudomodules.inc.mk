@@ -118,7 +118,7 @@ PSEUDOMODULES += stm32_eth
 PSEUDOMODULES += suit_transport_%
 PSEUDOMODULES += wakaama_objects_%
 PSEUDOMODULES += wifi_enterprise
-PSEUDOMODULES += xtimer_on_ztimer
+PSEUDOMODULES += xtimer_on_%
 PSEUDOMODULES += zptr
 PSEUDOMODULES += ztimer%
 
