@@ -11,9 +11,9 @@
  * @{
  *
  * @file
- * @brief       Test application for AT86RF2xx network device driver
+ * @brief       Test application for IEEE 802.15.4 Radio HAL
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      José I. Alamos <jose.alamos@haw-hamburg.de>
  *
  * @}
  */
