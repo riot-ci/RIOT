@@ -97,19 +97,6 @@ extern "C" {
 #define CONFIG_CLOCK_MSI                MHZ(48)
 #endif
 
-#if CONFIG_USE_CLOCK_HSI
-#define CLOCK_CORECLOCK                 (CLOCK_HSI)
-
-#elif CONFIG_USE_CLOCK_HSE
-#if CONFIG_BOARD_HAS_HSE == 0
-#error "The board doesn't provide an HSE oscillator"
-#endif
-#define CLOCK_CORECLOCK                 (CLOCK_HSE)
-
-#elif CONFIG_USE_CLOCK_MSI
-#define CLOCK_CORECLOCK                 (CONFIG_CLOCK_MSI)
-
-#elif CONFIG_USE_CLOCK_PLL
 /* The following parameters configure a 80MHz system clock with PLL as input clock */
 #ifndef CONFIG_CLOCK_PLL_SRC_MSI
 #if IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) || IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI) || \
@@ -138,6 +125,20 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_R
 #define CONFIG_CLOCK_PLL_R              (2)
 #endif
+
+#if CONFIG_USE_CLOCK_HSI
+#define CLOCK_CORECLOCK                 (CLOCK_HSI)
+
+#elif CONFIG_USE_CLOCK_HSE
+#if CONFIG_BOARD_HAS_HSE == 0
+#error "The board doesn't provide an HSE oscillator"
+#endif
+#define CLOCK_CORECLOCK                 (CLOCK_HSE)
+
+#elif CONFIG_USE_CLOCK_MSI
+#define CLOCK_CORECLOCK                 (CONFIG_CLOCK_MSI)
+
+#elif CONFIG_USE_CLOCK_PLL
 #if CONFIG_CLOCK_PLL_SRC_MSI
 #define CLOCK_PLL_SRC                   (CONFIG_CLOCK_MSI)
 #elif CONFIG_CLOCK_PLL_SRC_HSE
