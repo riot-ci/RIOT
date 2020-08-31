@@ -97,6 +97,10 @@ extern "C" {
 #define CC2538_RSSI_OFFSET          (-73)  /**< Signal strength offset value */
 #define CC2538_RF_SENSITIVITY       (-97)  /**< dBm typical, normal conditions */
 
+#define CC2538_ACCEPT_FT_2_ACK           (1 << 5) /**< enable or disable the ACK filter */
+#define CC2538_STATE_SFD_WAIT_RANGE_MIN  (0x03U)  /**< min range value of SFD wait state */
+#define CC2538_STATE_SFD_WAIT_RANGE_MAX  (0x06U)  /**< max range value of SFD wait state */
+
 #define RFCORE_ASSERT(expr) (void)( (expr) || RFCORE_ASSERT_failure(#expr, __FUNCTION__, __LINE__) )
 
 #if DEVELHELP
