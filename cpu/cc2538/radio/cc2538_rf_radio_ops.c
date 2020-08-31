@@ -411,11 +411,11 @@ static int _set_rx_mode(ieee802154_dev_t *dev, ieee802154_rx_mode_t mode)
             break;
         case IEEE802154_RX_AACK_ENABLED:
             RFCORE->XREG_FRMCTRL0bits.AUTOACK = 1;
-            RFCORE_XREG_FRMCTRL1 &= ~0x4;
+            RFCORE_XREG_FRMCTRL1 &= ~CC2538_FRMCTRL1_PENDING_OR_MASK;
             break;
         case IEEE802154_RX_AACK_FRAME_PENDING:
             RFCORE->XREG_FRMCTRL0bits.AUTOACK = 1;
-            RFCORE_XREG_FRMCTRL1 |= 0x4;
+            RFCORE_XREG_FRMCTRL1 |= CC2538_FRMCTRL1_PENDING_OR_MASK;
             break;
         case IEEE802154_RX_PROMISC:
             promisc = true;
