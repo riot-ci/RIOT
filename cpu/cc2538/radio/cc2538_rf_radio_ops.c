@@ -296,6 +296,9 @@ void _irq_handler(void)
 
     }
 
+    /* Check if the interrupt was triggered because the CSP finished its routine
+     * (CSMA-CA or CCA request)
+     */
     if (flags_f1 & CSP_STOP) {
         RFCORE_XREG_CSPCTRL |= CC2538_CSP_MCU_CTRL_MASK;
         if (!cc2538_cca) {
