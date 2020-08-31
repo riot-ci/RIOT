@@ -100,9 +100,9 @@ static int _request_transmit(ieee802154_dev_t *dev)
         RFCORE_SFR_RFST = DECZ;
         RFCORE_SFR_RFST = INCMAXY | (cc2538_max_be & CC2538_CSP_INCMAXY_MAX_MASK);
 
-        RFCORE_SFR_RFST = RPT_C |
-                          CC2538_CSP_SKIP_N_MASK |
-                          CC2538_CSP_SKIP_COND_CSPZ;
+        RFCORE_SFR_RFST = RPT_C
+                          | CC2538_CSP_SKIP_N_MASK
+                          | CC2538_CSP_SKIP_COND_CSPZ;
 
         /* Stop the program */
         RFCORE_SFR_RFST = STOP;
