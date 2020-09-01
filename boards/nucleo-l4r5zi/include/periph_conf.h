@@ -25,7 +25,7 @@
 #define CLOCK_CORECLOCK_MAX             MHZ(120)
 
 #ifndef CONFIG_BOARD_HAS_LSE
-#define CONFIG_BOARD_HAS_LSE            (1)
+#define CONFIG_BOARD_HAS_LSE            1
 #endif
 
 #ifndef CONFIG_CLOCK_PLL_N
