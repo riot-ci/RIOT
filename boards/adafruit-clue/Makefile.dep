@@ -14,7 +14,7 @@ ifeq (,$(filter-out stdio_cdc_acm,$(filter stdio_% slipdev_stdio,$(USEMODULE))))
   USEMODULE += stdio_cdc_acm
 endif
 
-ifneq (,$(filter auto_init_screen,$(USEMODULE)))
+ifneq (,$(filter disp_dev,$(USEMODULE)))
   USEMODULE += ili9341
 endif
 
