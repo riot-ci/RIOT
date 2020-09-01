@@ -12,3 +12,6 @@ EXTDEFINES = $(addprefix -D,$(call uppercase_and_underscore,$(ED)))
 REALMODULES += $(filter-out $(PSEUDOMODULES), $(_ALLMODULES))
 REALMODULES += $(filter $(NO_PSEUDOMODULES), $(_ALLMODULES))
 BASELIBS += $(REALMODULES:%=%.module)
+
+GENERATED_MODULES = $(notdir $(wildcard $(MODULE_LIST_DIR)/*))
+NON_GENERATED_MODULES = $(filter-out $(GENERATED_MODULES),$(REALMODULES))

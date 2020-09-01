@@ -19,7 +19,7 @@ MODULE ?= $(_MOD)
 
 .PHONY: all clean $(DIRS:%=ALL--%) $(DIRS:%=CLEAN--%) $(MODULE).module
 
-all: $(MODULE).module ..nothing
+all: $(MODULE).module $(MODULE_LIST_DIR)/$(MODULE) ..nothing
 
 ..nothing:
 	@:
@@ -46,6 +46,9 @@ ifeq (1, $(SUBMODULES))
   # remove duplicates
   SRC := $(sort $(SRC))
 endif
+
+$(MODULE_LIST_DIR)/$(MODULE):
+	$(Q)touch $@
 
 # By default consider C++ files has a .cpp extension
 SRCXXEXT ?= cpp

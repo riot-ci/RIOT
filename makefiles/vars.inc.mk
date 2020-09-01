@@ -42,6 +42,7 @@ export BINDIR                # This is the folder where the application should b
 export BUILD_DIR             # This is the base folder to store common build files and artifacts, e.g. test results.
 export APPDIR                # The base folder containing the application
 export PKGDIRBASE            # The base folder for building packages
+export MODULE_LIST_DIR       # Folder that contain a file per module built. Used to perform ..module-check target.
 
 export PYTHONPATH            # Python default search path for module filesi, with RIOT specific packages
 
