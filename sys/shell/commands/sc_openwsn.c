@@ -46,7 +46,7 @@ extern openqueue_vars_t openqueue_vars;
 extern schedule_vars_t schedule_vars;
 extern scheduler_dbg_t scheduler_dbg;
 
-char _addr_str[IPV6_ADDR_MAX_STR_LEN];
+static char _addr_str[IPV6_ADDR_MAX_STR_LEN];
 
 static const struct {
     char *name;
