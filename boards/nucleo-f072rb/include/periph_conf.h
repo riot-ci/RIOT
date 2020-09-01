@@ -22,12 +22,12 @@
 
 /* HSE available on this board */
 #ifndef CONFIG_BOARD_HAS_HSE
-#define CONFIG_BOARD_HAS_HSE        (1)
+#define CONFIG_BOARD_HAS_HSE        1
 #endif
 
 /* This board provides an LSE */
 #ifndef CONFIG_BOARD_HAS_LSE
-#define CONFIG_BOARD_HAS_LSE        (1)
+#define CONFIG_BOARD_HAS_LSE        1
 #endif
 
 #include "periph_cpu.h"

@@ -24,7 +24,7 @@
 
 /* This board provides an HSE */
 #ifndef CONFIG_BOARD_HAS_HSE
-#define CONFIG_BOARD_HAS_HSE        (1)
+#define CONFIG_BOARD_HAS_HSE        1
 #endif
 
 #include "periph_cpu.h"
