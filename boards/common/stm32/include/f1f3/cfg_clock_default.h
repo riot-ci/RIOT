@@ -1,5 +1,7 @@
 /*
- * Copyright (C) 2020 Inria
+ * Copyright (C) 2015 TriaGnoSys GmbH
+ *               2017 Alexander Kurth, Sören Tempel, Tristan Bruns
+ *               2020 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -11,15 +13,18 @@
  * @{
  *
  * @file
- * @brief       Default clock configuration for STM32F0
+ * @brief       Default clock configuration for STM32F1/F3
  *
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      José Ignacio Alamos <jialamos@uc.cl>
+ * @author      Víctor Ariño <victor.arino@triagnosys.com>
+ * @author      Sören Tempel <tempel@uni-bremen.de>
+ * @author      Tristan Bruns <tbruns@uni-bremen.de>
+ * @author      Alexander Kurth <kurth1@uni-bremen.de>
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
+ *
  */
 
-#ifndef F0_CFG_CLOCK_DEFAULT_H
-#define F0_CFG_CLOCK_DEFAULT_H
+#ifndef F1F3_CFG_CLOCK_DEFAULT_H
+#define F1F3_CFG_CLOCK_DEFAULT_H
 
 #include "periph_cpu.h"
 
@@ -85,12 +90,12 @@ extern "C" {
 
 #define CLOCK_HSI                       MHZ(8)
 
-/* The following parameters configure a 48MHz system clock with HSI (or default HSE) as input clock */
+/* The following parameters configure a 72MHz system clock with HSI (or default HSE) as input clock */
 #ifndef CONFIG_CLOCK_PLL_PREDIV
 #define CONFIG_CLOCK_PLL_PREDIV         (1)
 #endif
 #ifndef CONFIG_CLOCK_PLL_MUL
-#define CONFIG_CLOCK_PLL_MUL            (6)
+#define CONFIG_CLOCK_PLL_MUL            (9)
 #endif
 
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSI)
@@ -109,22 +114,26 @@ extern "C" {
 #define CLOCK_PLL_SRC                   (CLOCK_HSI)
 #endif
 #define CLOCK_CORECLOCK                 ((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_PREDIV) * CONFIG_CLOCK_PLL_MUL)
-#if CLOCK_CORECLOCK > MHZ(48)
-#error "SYSCLK cannot exceed 48MHz"
+#if CLOCK_CORECLOCK > MHZ(72)
+#error "SYSCLK cannot exceed 72MHz"
 #endif
 #endif /* CONFIG_USE_CLOCK_PLL */
 
-#define CLOCK_AHB                       CLOCK_CORECLOCK  /* max: 48MHz */
+#define CLOCK_AHB                       CLOCK_CORECLOCK  /* max: 72MHz */
 
-#ifndef CONFIG_CLOCK_APB_DIV
-#define CONFIG_CLOCK_APB_DIV            (1)
+#ifndef CONFIG_CLOCK_APB1_DIV
+#define CONFIG_CLOCK_APB1_DIV           (2)
 #endif
-#define CLOCK_APB1                      (CLOCK_CORECLOCK / CONFIG_CLOCK_APB_DIV)   /* max: 48MHz */
+#define CLOCK_APB1                      (CLOCK_CORECLOCK / CONFIG_CLOCK_APB1_DIV)   /* max: 36MHz */
+#ifndef CONFIG_CLOCK_APB2_DIV
+#define CONFIG_CLOCK_APB2_DIV           (1)
+#endif
+#define CLOCK_APB2                      (CLOCK_CORECLOCK / CONFIG_CLOCK_APB2_DIV)   /* max: 72MHz */
 /** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* F0_CFG_CLOCK_DEFAULT_H */
+#endif /* F1F3_CFG_CLOCK_DEFAULT_H */
 /** @} */
