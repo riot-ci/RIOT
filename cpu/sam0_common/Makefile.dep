@@ -2,7 +2,7 @@ ifneq (,$(filter periph_uart_nonblocking,$(USEMODULE)))
   USEMODULE += tsrb
 endif
 
-ifneq (,$(filter periph_rtc periph_rtt periph_gpio_irq,$(USEMODULE)))
+ifneq (,$(filter periph_rtc periph_rtt,$(USEMODULE)))
   USEMODULE += periph_rtc_rtt
 endif
 
