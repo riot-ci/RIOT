@@ -34,22 +34,22 @@ extern "C" {
 #ifndef CONFIG_USE_CLOCK_PLL
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
     IS_ACTIVE(CONFIG_USE_CLOCK_MSI)
-#define CONFIG_USE_CLOCK_PLL            (0)
+#define CONFIG_USE_CLOCK_PLL            0
 #else
-#define CONFIG_USE_CLOCK_PLL            (1)     /* Use PLL by default */
+#define CONFIG_USE_CLOCK_PLL            1       /* Use PLL by default */
 #endif
 #endif /* CONFIG_USE_CLOCK_PLL */
 
 #ifndef CONFIG_USE_CLOCK_MSI
-#define CONFIG_USE_CLOCK_MSI            (0)
+#define CONFIG_USE_CLOCK_MSI            0
 #endif /* CONFIG_USE_CLOCK_MSI */
 
 #ifndef CONFIG_USE_CLOCK_HSE
-#define CONFIG_USE_CLOCK_HSE            (0)
+#define CONFIG_USE_CLOCK_HSE            0
 #endif /* CONFIG_USE_CLOCK_HSE */
 
 #ifndef CONFIG_USE_CLOCK_HSI
-#define CONFIG_USE_CLOCK_HSI            (0)
+#define CONFIG_USE_CLOCK_HSI            0
 #endif /* CONFIG_USE_CLOCK_HSI */
 
 #if CONFIG_USE_CLOCK_PLL && \
@@ -73,17 +73,17 @@ extern "C" {
 #endif
 
 #ifndef CONFIG_BOARD_HAS_HSE
-#define CONFIG_BOARD_HAS_HSE            (0)
+#define CONFIG_BOARD_HAS_HSE            0
 #endif
 #ifndef CLOCK_HSE
 #define CLOCK_HSE                       MHZ(8)
 #endif
-#if CONFIG_BOARD_HAS_HSE && (CLOCK_HSE < MHZ(4) || CLOCK_HSE > MHZ(48))
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE < MHZ(4) || CLOCK_HSE > MHZ(48))
 #error "HSE clock frequency must be between 4MHz and 48MHz"
 #endif
 
 #ifndef CONFIG_BOARD_HAS_LSE
-#define CONFIG_BOARD_HAS_LSE            (0)
+#define CONFIG_BOARD_HAS_LSE            0
 #endif
 #if CONFIG_BOARD_HAS_LSE
 #define CLOCK_LSE                       (1)
@@ -101,20 +101,20 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_SRC_MSI
 #if IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) || IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI) || \
     CONFIG_BOARD_HAS_HSE
-#define CONFIG_CLOCK_PLL_SRC_MSI        (0)
+#define CONFIG_CLOCK_PLL_SRC_MSI        0
 #else
-#define CONFIG_CLOCK_PLL_SRC_MSI        (1)     /* Use MSI an input clock by default */
+#define CONFIG_CLOCK_PLL_SRC_MSI        1       /* Use MSI an input clock by default */
 #endif
 #endif /* CONFIG_CLOCK_PLL_SRC_MSI */
 #ifndef CONFIG_CLOCK_PLL_SRC_HSE
-#if CONFIG_BOARD_HAS_HSE
-#define CONFIG_CLOCK_PLL_SRC_HSE        (1)
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
+#define CONFIG_CLOCK_PLL_SRC_HSE        1
 #else
-#define CONFIG_CLOCK_PLL_SRC_HSE        (0)
+#define CONFIG_CLOCK_PLL_SRC_HSE        0
 #endif
 #endif
 #ifndef CONFIG_CLOCK_PLL_SRC_HSI
-#define CONFIG_CLOCK_PLL_SRC_HSI        (0)
+#define CONFIG_CLOCK_PLL_SRC_HSI        0
 #endif
 #ifndef CONFIG_CLOCK_PLL_M
 #define CONFIG_CLOCK_PLL_M              (6)
@@ -139,9 +139,9 @@ extern "C" {
 #define CLOCK_CORECLOCK                 (CONFIG_CLOCK_MSI)
 
 #elif CONFIG_USE_CLOCK_PLL
-#if CONFIG_CLOCK_PLL_SRC_MSI
+#if IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_MSI)
 #define CLOCK_PLL_SRC                   (CONFIG_CLOCK_MSI)
-#elif CONFIG_CLOCK_PLL_SRC_HSE
+#elif IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE)
 #define CLOCK_PLL_SRC                   (CLOCK_HSE)
 #else /* CONFIG_CLOCK_PLL_SRC_ */
 #define CLOCK_PLL_SRC                   (CLOCK_HSI)
