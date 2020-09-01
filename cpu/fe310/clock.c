@@ -22,7 +22,9 @@
 
 #include "vendor/prci_driver.h"
 
+#if CONFIG_USE_CLOCK_HFROSC || CONFIG_USE_CLOCK_HFROSC_PLL
 static uint32_t _cpu_frequency = 0;
+#endif
 
 void clock_init(void)
 {
