@@ -89,17 +89,17 @@ void clock_init(void)
 
 uint32_t cpu_freq(void)
 {
-    if (CONFIG_USE_CLOCK_HFROSC || CONFIG_USE_CLOCK_HFROSC_PLL) {
-        /* Clock frequency with HFROSC cannot be determined precisely from
-           settings */
-        /* If not done already, estimate the CPU frequency */
-        if (_cpu_frequency == 0) {
-            /* Ignore the first run (for icache reasons) */
-            _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
-            _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
-        }
-        return _cpu_frequency;
+#if CONFIG_USE_CLOCK_HFROSC || CONFIG_USE_CLOCK_HFROSC_PLL
+    /* Clock frequency with HFROSC cannot be determined precisely from
+       settings */
+    /* If not done already, estimate the CPU frequency */
+    if (_cpu_frequency == 0) {
+        /* Ignore the first run (for icache reasons) */
+        _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
+        _cpu_frequency = PRCI_measure_mcycle_freq(3000, RTC_FREQ);
     }
-
+    return _cpu_frequency;
+#else
     return CLOCK_CORECLOCK;
+#endif
 }
