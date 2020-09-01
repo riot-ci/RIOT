@@ -16,6 +16,15 @@
  * @file        gpio.c
  * @brief       Low-level GPIO driver implementation
  *
+ * On processors that support Deep Sleep the External Interrupt Controller
+ * will be off during Deep Sleep.
+ * To wake the CPU up from Deep Sleep the RTC Tamper Detection will be
+ * used instead.
+ * Only a few pins (@ref rtc_tamper_pins) can be used for that purpose.
+ *
+ * Note that when configuring those pins as interrupt, the RTC/RTT will be
+ * stopped briefly.
+ *
  * @author      Troels Hoffmeyer <troels.d.hoffmeyer@gmail.com>
  * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
