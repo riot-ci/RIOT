@@ -1,0 +1,98 @@
+From 14e75411a630bb9476bc500ad8f74f3ae7e31356 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Tue, 1 Sep 2020 09:51:40 +0200
+Subject: [PATCH 11/11] kernel: move scheduler vars definitons to
+ scheduler_types.h
+
+---
+ kernel/openos/scheduler_types.h | 37 +++++++++++++++++++++++++++++++++
+ kernel/scheduler.h              | 19 ++---------------
+ 2 files changed, 39 insertions(+), 17 deletions(-)
+ create mode 100644 kernel/openos/scheduler_types.h
+
+diff --git a/kernel/openos/scheduler_types.h b/kernel/openos/scheduler_types.h
+new file mode 100644
+index 00000000..eb8f5160
+--- /dev/null
++++ b/kernel/openos/scheduler_types.h
+@@ -0,0 +1,37 @@
++#ifndef __SCHEDULER_TYPES_H
++#define __SCHEDULER_TYPES_H
++
++/**
++\addtogroup kernel
++\{
++\addtogroup Scheduler
++\{
++*/
++
++#include "opendefs.h"
++#include "scheduler.h"
++
++typedef struct task_llist_t {
++   task_cbt                       cb;
++   task_prio_t                    prio;
++   void*                          next;
++} taskList_item_t;
++
++typedef struct {
++   taskList_item_t                taskBuf[TASK_LIST_DEPTH];
++   taskList_item_t*               task_list;
++   uint8_t                        numTasksCur;
++   uint8_t                        numTasksMax;
++} scheduler_vars_t;
++
++typedef struct {
++   uint8_t                        numTasksCur;
++   uint8_t                        numTasksMax;
++} scheduler_dbg_t;
++
++/**
++\}
++\}
++*/
++
++#endif
+\ No newline at end of file
+diff --git a/kernel/scheduler.h b/kernel/scheduler.h
+index f3f64570..d329dca3 100644
+--- a/kernel/scheduler.h
++++ b/kernel/scheduler.h
+@@ -41,25 +41,8 @@ typedef enum {
+ 
+ typedef void (*task_cbt)(void);
+ 
+-typedef struct task_llist_t {
+-   task_cbt                       cb;
+-   task_prio_t                    prio;
+-   void*                          next;
+-} taskList_item_t;
+-
+ //=========================== module variables ================================
+ 
+-typedef struct {
+-   taskList_item_t                taskBuf[TASK_LIST_DEPTH];
+-   taskList_item_t*               task_list;
+-   uint8_t                        numTasksCur;
+-   uint8_t                        numTasksMax;
+-} scheduler_vars_t;
+-
+-typedef struct {
+-   uint8_t                        numTasksCur;
+-   uint8_t                        numTasksMax;
+-} scheduler_dbg_t;
+ 
+ //=========================== prototypes ======================================
+ 
+@@ -67,6 +50,8 @@ void scheduler_init(void);
+ void scheduler_start(unsigned state);
+ void scheduler_push_task(task_cbt task_cb, task_prio_t prio);
+ 
++#include "scheduler_types.h"
++
+ /**
+ \}
+ \}
+-- 
+2.28.0
+
