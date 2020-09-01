@@ -10,14 +10,16 @@
 
 import os
 import argparse
+import re
 
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 RIOTBASE = os.getenv(
     "RIOTBASE", os.path.abspath(os.path.join(CURRENT_DIR, "../../../..")))
 STM32_VECTORS_DIR = os.path.join(RIOTBASE, "cpu/stm32/vectors")
+STM32_VENDOR_DIR = os.path.join(RIOTBASE, "cpu/stm32/include/vendor")
 STM32_CMSIS_FILE = os.path.join(
-    RIOTBASE, "cpu/stm32/include/vendor/cmsis/{}/Include/{}.h")
+    RIOTBASE, STM32_VENDOR_DIR, "cmsis/{}/Include/{}.h")
 
 VECTORS_FORMAT = """
 /*
@@ -48,7 +50,13 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {{
 def parse_cmsis(cpu_line):
     """Parse the CMSIS to get the list IRQs."""
     cpu_fam = cpu_line[5:7]
-    cpu_line_cmsis = STM32_CMSIS_FILE.format(cpu_fam.lower(), cpu_line.lower())
+    if cpu_line == "STM32F030x4":
+        # STM32F030x4 is provided in the RIOT codebase in a different location
+        cpu_line_cmsis = os.path.join(
+            STM32_VENDOR_DIR, "{}.h".format(cpu_line.lower()))
+    else:
+        cpu_line_cmsis = STM32_CMSIS_FILE.format(
+            cpu_fam.lower(), cpu_line.lower())
 
     with open(cpu_line_cmsis, 'rb') as cmsis:
         cmsis_content = cmsis.readlines()
@@ -64,22 +72,17 @@ def parse_cmsis(cpu_line):
         # start filling lines after interrupt Doxygen comment
         if line.startswith("typedef enum"):
             use_line = True
-        # skip useless lines
-        if (
-            # Skip lines with comments
-            line.startswith("/*") or
-            # Skip lines with negative IRQs indices
-            "= -" in line or
-            # Skip line with enum opening brace
-            line.startswith("{") or
-            # Skip line defining the enum
-            line.startswith("typedef enum") or
-            # Skip line starting with too many spaces
-            line.startswith(" " * 8) or
-            # Skip remapped USB interrupt
-            # (set as alias for USBWakeUp_IRQn on stm32f3)
-            "USBWakeUp_RMP_IRQn" in line
-        ):
+
+        # use a regexp to get the available IRQs
+        match = re.match(r"[ ]+([a-zA-Z0-9_]+_IRQn)[ ]+= \d+,", line)
+
+        # Skip lines that don't match
+        if match is None:
+            continue
+
+        # Skip remapped USB interrupt
+        # (set as alias for USBWakeUp_IRQn on stm32f3)
+        if "USBWakeUp_RMP_IRQn" in line:
             continue
 
         # Stop at the end of the IRQn_Type enum definition
@@ -87,9 +90,8 @@ def parse_cmsis(cpu_line):
             break
 
         # Only append IRQ line if it should be used and is not empty
-        irq_line = line.split("=")[0].strip()
-        if use_line and irq_line:
-            irq_lines.append(irq_line)
+        if use_line:
+            irq_lines.append(match.group(1).strip())
 
     isrs = [
         {
@@ -121,7 +123,7 @@ def generate_vectors(context):
     )
 
     dest_file = os.path.join(
-        STM32_VECTORS_DIR, "gen_{}.c".format(context["cpu_line"])
+        STM32_VECTORS_DIR, "{}.c".format(context["cpu_line"])
     )
 
     with open(dest_file, "w") as f_dest:
