@@ -108,8 +108,7 @@ int _openwsn_ifconfig(char *arg)
     hwaddr = idmanager_getMyID(ADDR_16B);
     printf("\tHWaddr: %s  ", netif_addr_to_str(hwaddr->addr_16b, 2, _addr_str));
     hwaddr = idmanager_getMyID(ADDR_PANID);
-    printf("NID: %s\n", netif_addr_to_str(hwaddr->panid, 2, _addr_str));
-    printf("\n");
+    printf("NID: %s\n\n", netif_addr_to_str(hwaddr->panid, 2, _addr_str));
 
     hwaddr = idmanager_getMyID(ADDR_64B);
     printf("\t\tLong HWaddr: %s\n",
@@ -118,15 +117,14 @@ int _openwsn_ifconfig(char *arg)
     if(IS_USED(ODULE_OPENWSN_IPV6)) {
         ipv6_addr_to_str(_addr_str, (ipv6_addr_t *)temp_my128bID.addr_128b,
                         sizeof(_addr_str));
-        printf("\t\tinet6 addr: %s\n", _addr_str);
-        printf("\n");
+        printf("\t\tinet6 addr: %s\n\n", _addr_str);
     }
 
     printf("\t\tIEEE802154E sync: %i\n", ieee154e_isSynch());
     if (IS_USED(MODULE_OPENWSN_CJOIN)) {
         printf("\t\t6TiSCH joined: %i\n", cjoin_getIsJoined());
     }
-    printf("\n");
+    puts(" ");
 
     if (IS_USED(MODULE_OPENWSN_IPV6)) {
         extern icmpv6rpl_vars_t icmpv6rpl_vars;
