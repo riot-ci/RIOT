@@ -133,8 +133,8 @@
 extern "C" {
 #endif
 
-#if defined(DEVELHELP) && !defined(THREAD_NAMES)
-#define THREAD_NAMES
+#if defined(DEVELHELP) && !defined(CONFIG_THREAD_NAMES)
+#define CONFIG_THREAD_NAMES
 #endif
 
 /**
@@ -176,7 +176,7 @@ struct _thread {
     || defined(MODULE_MPU_STACK_GUARD) || defined(DOXYGEN)
     char *stack_start;              /**< thread's stack start address   */
 #endif
-#if defined(THREAD_NAMES) || defined(DOXYGEN)
+#if defined(CONFIG_THREAD_NAMES) || defined(DOXYGEN)
     const char *name;               /**< thread's name                  */
 #endif
 #if defined(DEVELHELP) || defined(DOXYGEN)

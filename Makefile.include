@@ -246,7 +246,7 @@ endif
 # Set this to 1 to enable thread names
 THREAD_NAMES ?= 0
 ifeq ($(THREAD_NAMES),1)
-  CFLAGS += -DTHREAD_NAMES
+  CFLAGS += -DCONFIG_THREAD_NAMES
 endif
 
 # Override LOG_LEVEL if variable is set and if CFLAGS doesn't already contain
