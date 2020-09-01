@@ -18,7 +18,7 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_ipv6_default
 
 # Specify DTLS implementation
-USEPKG += tinydlts
+USEPKG += tinydtls
 
 # Pull in sock APIs
 USEMODULE += sock_dtls
