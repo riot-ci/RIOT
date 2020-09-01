@@ -37,12 +37,8 @@
 #include "02b-MAChigh/neighbors.h"
 #include "02b-MAChigh/sixtop.h"
 #include "02b-MAChigh/msf.h"
-#ifdef MODULE_OPENWSN_IPV6
 #include "03b-IPv6/icmpv6rpl.h"
-#endif
-#ifdef MODULE_OPENWSN_CJOIN
 #include "cjoin.h"
-#endif
 
 extern idmanager_vars_t idmanager_vars;
 extern neighbors_vars_t neighbors_vars;
@@ -50,11 +46,7 @@ extern openqueue_vars_t openqueue_vars;
 extern schedule_vars_t schedule_vars;
 extern scheduler_dbg_t scheduler_dbg;
 
-#ifdef MODULE_OPENWSN_IPV6
-extern icmpv6rpl_vars_t icmpv6rpl_vars;
-#endif
-
-char addr_str[IPV6_ADDR_MAX_STR_LEN];
+char _addr_str[IPV6_ADDR_MAX_STR_LEN];
 
 static const struct {
     char *name;
@@ -92,7 +84,7 @@ static const struct {
     { "uinject", COMPONENT_UINJECT },
 };
 
-char *_get_component(int id)
+static char *_get_component(int id)
 {
     for (unsigned i = 0; i < ARRAY_SIZE(components); i++) {
         if (id == components[i].id) {
@@ -114,70 +106,71 @@ int _openwsn_ifconfig(char *arg)
 
     printf("Iface  %d  ", openwsn_get_pid());
     hwaddr = idmanager_getMyID(ADDR_16B);
-    printf("\tHWaddr: %s  ", netif_addr_to_str(hwaddr->addr_16b, 2, addr_str));
+    printf("\tHWaddr: %s  ", netif_addr_to_str(hwaddr->addr_16b, 2, _addr_str));
     hwaddr = idmanager_getMyID(ADDR_PANID);
-    printf("NID: %s\n", netif_addr_to_str(hwaddr->panid, 2, addr_str));
+    printf("NID: %s\n", netif_addr_to_str(hwaddr->panid, 2, _addr_str));
     printf("\n");
 
     hwaddr = idmanager_getMyID(ADDR_64B);
     printf("\t\tLong HWaddr: %s\n",
-           netif_addr_to_str(hwaddr->addr_64b, 8, addr_str));
+           netif_addr_to_str(hwaddr->addr_64b, 8, _addr_str));
 
-#ifdef MODULE_OPENWSN_IPV6
-    ipv6_addr_to_str(addr_str, (ipv6_addr_t *)temp_my128bID.addr_128b,
-                     sizeof(addr_str));
-    printf("\t\tinet6 addr: %s\n", addr_str);
-    printf("\n");
-#endif
+    if(IS_USED(ODULE_OPENWSN_IPV6)) {
+        ipv6_addr_to_str(_addr_str, (ipv6_addr_t *)temp_my128bID.addr_128b,
+                        sizeof(_addr_str));
+        printf("\t\tinet6 addr: %s\n", _addr_str);
+        printf("\n");
+    }
 
     printf("\t\tIEEE802154E sync: %i\n", ieee154e_isSynch());
-#ifdef MODULE_OPENWSN_CJOIN
-    printf("\t\t6TiSCH joined: %i\n", cjoin_getIsJoined());
-#endif
+    if (IS_USED(MODULE_OPENWSN_CJOIN)) {
+        printf("\t\t6TiSCH joined: %i\n", cjoin_getIsJoined());
+    }
     printf("\n");
 
-#ifdef MODULE_OPENWSN_IPV6
-    if (idmanager_vars.isDAGroot) {
-        puts("\t\tNode is DAG root");
-    }
-    else {
-        if (icmpv6rpl_vars.haveParent) {
-            printf("\t\tRPL rank: %i\n", icmpv6rpl_vars.myDAGrank);
-            printf("\t\tRPL parent: %s\n", \
-                   netif_addr_to_str(neighbors_vars.neighbors[icmpv6rpl_vars.
-                                                              ParentIndex].
-                                     addr_64b.addr_64b, 8, addr_str));
-            printf("\t\tRPL children:\n");
-            for (uint8_t i = 0; i < MAXNUMNEIGHBORS; i++) {
-                if ((neighbors_isNeighborWithHigherDAGrank(i)) == true) {
-                    printf("\t\t\t%s\n", \
-                           netif_addr_to_str(neighbors_vars.neighbors[i].
-                                             addr_64b.addr_64b, 8, addr_str));
-                }
-            }
-            ipv6_addr_to_str(addr_str,
-                             (ipv6_addr_t *)icmpv6rpl_vars.dao.DODAGID,
-                             sizeof(addr_str));
-            printf("\t\tRPL DODAG ID: %16s\n", addr_str);
+    if (IS_USED(MODULE_OPENWSN_IPV6)) {
+        extern icmpv6rpl_vars_t icmpv6rpl_vars;
+        if (idmanager_vars.isDAGroot) {
+            puts("\t\tNode is DAG root");
         }
         else {
-            puts("\t\tNO RPL parent");
+            if (icmpv6rpl_vars.haveParent) {
+                printf("\t\tRPL rank: %i\n", icmpv6rpl_vars.myDAGrank);
+                printf("\t\tRPL parent: %s\n", \
+                    netif_addr_to_str(neighbors_vars.neighbors[icmpv6rpl_vars.
+                                                                ParentIndex].
+                                        addr_64b.addr_64b, 8, _addr_str));
+                printf("\t\tRPL children:\n");
+                for (uint8_t i = 0; i < MAXNUMNEIGHBORS; i++) {
+                    if ((neighbors_isNeighborWithHigherDAGrank(i)) == true) {
+                        printf("\t\t\t%s\n", \
+                            netif_addr_to_str(neighbors_vars.neighbors[i].
+                                                addr_64b.addr_64b, 8, _addr_str));
+                    }
+                }
+                ipv6_addr_to_str(_addr_str,
+                                (ipv6_addr_t *)icmpv6rpl_vars.dao.DODAGID,
+                                sizeof(_addr_str));
+                printf("\t\tRPL DODAG ID: %16s\n", _addr_str);
+            }
+            else {
+                puts("\t\tNO RPL parent");
+            }
         }
     }
-#endif
 
     return 0;
 }
 
-static int _neighbours_cmd(char *arg)
+static int _neighbors_cmd(char *arg)
 {
     (void)arg;
 
     for (int i = 0; i < MAXNUMNEIGHBORS; i++) {
         netif_addr_to_str(neighbors_vars.neighbors[i].addr_64b.addr_64b, 8,
-                          addr_str);
-        if (memcmp(addr_str, "00:00:00:00:00:00:00:00", 8) != 0) {
-            printf("%02i. %s\n", i, addr_str);
+                          _addr_str);
+        if (memcmp(_addr_str, "00:00:00:00:00:00:00:00", 8) != 0) {
+            printf("%02i. %s\n", i, _addr_str);
         }
     }
     return 0;
@@ -203,7 +196,7 @@ static int _cell_list_cmd(char *arg)
                 printf("neigh: %s, slot: %03i, chan: %02i, type: TX\n", \
                        netif_addr_to_str(
                            schedule_vars.scheduleBuf[i].neighbor.addr_64b,
-                           8, addr_str),
+                           8, _addr_str),
                        schedule_vars.scheduleBuf[i].slotOffset, \
                        schedule_vars.scheduleBuf[i].channelOffset);
                 break;
@@ -216,7 +209,7 @@ static int _cell_list_cmd(char *arg)
                 printf("neigh: %s, slot: %03i, chan: %02i, type: RXTX\n", \
                        netif_addr_to_str(
                            schedule_vars.scheduleBuf[i].neighbor.addr_64b,
-                           8, addr_str),
+                           8, _addr_str),
                        schedule_vars.scheduleBuf[i].slotOffset, \
                        schedule_vars.scheduleBuf[i].channelOffset);
                 break;
@@ -311,13 +304,13 @@ static int _cell_cmd(int argc, char **argv)
 static void _print_6top_usage(void)
 {
     puts("Usage:");
-    puts("\t6top clear [<neighbour>]: request neighbour to clear all cells");
+    puts("\t6top clear [<neighbor>]: request neighbor to clear all cells");
     puts(
-        "\t6top add <num> <adv|tx|rx> [<neighbour>]: request parent to add num cells");
+        "\t6top add <num> <adv|tx|rx> [<neighbor>]: request parent to add num cells");
     puts(
-        "\t6top rmv <num> <adv|tx|rx> [<neighbour>]: request parent to remove num cells");
+        "\t6top rmv <num> <adv|tx|rx> [<neighbor>]: request parent to remove num cells");
     puts(
-        "\t6top rel <num> <adv|tx|rx> [<neighbour>]: request parent to relocate num cells");
+        "\t6top rel <num> <adv|tx|rx> [<neighbor>]: request parent to relocate num cells");
 }
 
 static int _6top_manage_cmd(int argc, char **argv)
@@ -351,7 +344,7 @@ static int _6top_manage_cmd(int argc, char **argv)
             }
         }
         else {
-            puts("Error: a neighbour address must be supplied");
+            puts("Error: a neighbor address must be supplied");
             return -1;
         }
     }
@@ -384,7 +377,7 @@ static int _6top_manage_cmd(int argc, char **argv)
         code = IANA_6TOP_CMD_DELETE;
         if (!msf_candidateRemoveCellList(celllist_delete, &neigh, num,
                                          cell_options)) {
-            puts("Error: can't remove the specifide cells");
+            puts("Error: can't remove the specified cells");
             return -1;
         }
     }
@@ -439,7 +432,7 @@ static int _6top_cmd(int argc, char **argv)
                 }
             }
             else {
-                puts("Error: a neighbour address must be supplied");
+                puts("Error: a neighbor address must be supplied");
                 return -1;
             }
         }
@@ -475,12 +468,12 @@ static int _queue_cmd(int argc, char **argv)
     }
 
     if (!strcmp(argv[1], "list")) {
-        bool queue = 1;
+        bool empty_queue = true;
 
         for (uint8_t i = 0; i < QUEUELENGTH; i++) {
             if (openqueue_vars.queue[i].creator ||
                 openqueue_vars.queue[i].owner) {
-                queue = 0;
+                empty_queue = false;
                 uint8_t creator = openqueue_vars.queue[i].creator;
                 uint8_t owner = openqueue_vars.queue[i].owner;
                 printf("Creator: %.9s [%d], ", _get_component(creator),
@@ -488,8 +481,8 @@ static int _queue_cmd(int argc, char **argv)
                 printf("Owner: %.9s [%d]\n", _get_component(owner), owner);
             }
         }
-        if (queue) {
-            puts("openqueue empty");
+        if (empty_queue) {
+            puts("Queue is empty");
         }
         return 0;
     }
@@ -546,7 +539,7 @@ int _openwsn_handler(int argc, char **argv)
     }
 
     if (!strcmp(argv[1], "neigh")) {
-        return _neighbours_cmd(NULL);
+        return _neighbors_cmd(NULL);
     }
 
     if (!strcmp(argv[1], "queue")) {
