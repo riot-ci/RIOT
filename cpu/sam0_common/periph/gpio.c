@@ -69,7 +69,7 @@
  */
 #if RTC_NUM_OF_TAMPERS && (defined(PM_SLEEPCFG_SLEEPMODE_BACKUP) \
                        || defined(PM_SLEEPCFG_SLEEPMODE_HIBERNATE))
-#define USE_TAMPER_WAKE (1)
+#define USE_TAMPER_WAKE 1
 #endif
 
 /**
@@ -204,10 +204,10 @@ static int _exti(gpio_t pin)
     return exti_config[port_num][_pin_pos(pin)];
 }
 
-#if USE_TAMPER_WAKE
 /* check if an RTC tamper pin was configured as interrupt */
 static bool _rtc_irq_enabled(void)
 {
+#if USE_TAMPER_WAKE
     for (unsigned i = 0; i < ARRAY_SIZE(rtc_tamper_pins); ++i) {
         int exti = _exti(rtc_tamper_pins[i]);
 
@@ -219,19 +219,16 @@ static bool _rtc_irq_enabled(void)
             return true;
         }
     }
+#endif
     return false;
 }
-#endif
 
 static void _init_rtc_pin(gpio_t pin, gpio_flank_t flank)
 {
-#if USE_TAMPER_WAKE
-    rtc_tamper_init();
-    rtc_tamper_register(pin, flank);
-#else
-    (void) pin;
-    (void) flank;
-#endif
+    if (IS_ACTIVE(USE_TAMPER_WAKE)) {
+        rtc_tamper_init();
+        rtc_tamper_register(pin, flank);
+    }
 }
 
 int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
@@ -333,11 +330,11 @@ void gpio_pm_cb_enter(int deep)
         DEBUG_PUTS("gpio: switching EIC to slow clock");
         reenable_eic(_EIC_CLOCK_SLOW);
     }
-#if USE_TAMPER_WAKE
-    else if (mode > PM_SLEEPCFG_SLEEPMODE_STANDBY && _rtc_irq_enabled()) {
+    else if (IS_ACTIVE(USE_TAMPER_WAKE)
+          && mode > PM_SLEEPCFG_SLEEPMODE_STANDBY
+          && _rtc_irq_enabled()) {
         rtc_tamper_enable();
     }
-#endif /* USE_TAMPER_WAKE */
 #else
     if (deep) {
         DEBUG_PUTS("gpio: switching EIC to slow clock");
