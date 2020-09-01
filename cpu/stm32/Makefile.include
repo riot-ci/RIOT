@@ -70,9 +70,11 @@ $(STM32FAM_INCLUDE_FILE): FORCE
 $(VECTORS_FILE): $(STM32FAM_INCLUDE_FILE)
 	$(Q)$(RIOTBASE)/cpu/stm32/dist/irqs/gen_vectors.py $(CPU_LINE)
 
-ifneq (,$(filter STM32F030x4,$(CPU_LINE)))
+ifneq (STM32F030x4,$(CPU_LINE))
   # IRQs of STM32F030x4 family are not available in the CMSIS package so they
   # are hardcoded in RIOTs codebase.
+  # For other lines, the IRQs are automatically generated once from the whole
+  # list of CMSIS headers available in a given family
   STM32IRQS_INCLUDE_FILE = $(RIOTCPU)/stm32/include/irqs/$(CPU_FAM)/irqs.h
   BUILDDEPS += $(STM32IRQS_INCLUDE_FILE)
 
