@@ -26,7 +26,7 @@
 #include "periph_conf.h"
 
 /* PLL configuration */
-#if CONFIG_BOARD_HAS_HSE
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
 #define PLL_SRC                 (RCC_CFGR_PLLSRC_HSE_PREDIV | RCC_CFGR_PLLXTPRE_HSE_PREDIV_DIV1)
 #else
 #define PLL_SRC                 (RCC_CFGR_PLLSRC_HSI_DIV2)
@@ -80,15 +80,15 @@ void stmclk_init_sysclk(void)
     /* disable all active clocks except HSI -> resets the clk configuration */
     RCC->CR = (RCC_CR_HSION | RCC_CR_HSITRIM_4);
 
-    if (CONFIG_USE_CLOCK_HSE) {
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
 
         RCC->CFGR |= RCC_CFGR_SW_HSE;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
-    else if (CONFIG_USE_CLOCK_PLL) {
-        if (CONFIG_BOARD_HAS_HSE) {
+    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
+        if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE)) {
             /* if available, enable the HSE clock now */
             RCC->CR |= (RCC_CR_HSEON);
             while (!(RCC->CR & RCC_CR_HSERDY)) {}
@@ -112,7 +112,8 @@ void stmclk_init_sysclk(void)
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
-    if (CONFIG_USE_CLOCK_HSE || (CONFIG_USE_CLOCK_PLL && CONFIG_BOARD_HAS_HSE)) {
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || 
+        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && IS_ACTIVE(CONFIG_BOARD_HAS_HSE))) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
     }
