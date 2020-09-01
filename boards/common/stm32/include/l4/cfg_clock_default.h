@@ -76,7 +76,7 @@ extern "C" {
 #define CONFIG_BOARD_HAS_HSE            (0)
 #endif
 #ifndef CLOCK_HSE
-#define CLOCK_HSE                       MHZ(24)
+#define CLOCK_HSE                       MHZ(8)
 #endif
 #if CONFIG_BOARD_HAS_HSE && (CLOCK_HSE < MHZ(4) || CLOCK_HSE > MHZ(48))
 #error "HSE clock frequency must be between 4MHz and 48MHz"
