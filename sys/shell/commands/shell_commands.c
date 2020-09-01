@@ -252,11 +252,7 @@ const shell_command_t _shell_command_list[] = {
 #endif
 #endif
 #ifdef MODULE_OPENWSN
-#ifndef MODULE_GNRC_NETIF
     {"ifconfig", "Shows assigned IPv6 addresses", _openwsn_ifconfig},
-#else
-    {"openwsn-ifconfig", "Shows assigned IPv6 addresses", _openwsn_ifconfig},
-#endif
     {"openwsn", "OpenWSN commands", _openwsn_handler},
 #endif
 #ifdef MODULE_FIB

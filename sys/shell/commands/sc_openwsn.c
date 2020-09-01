@@ -284,7 +284,7 @@ static int _cell_cmd(int argc, char **argv)
 {
     if (argc < 2) {
         _print_cell_usage();
-        return 1;
+        return -1;
     }
 
     if (!strcmp(argv[1], "list")) {
@@ -296,7 +296,7 @@ static int _cell_cmd(int argc, char **argv)
     }
 
     _print_cell_usage();
-    return 1;
+    return -1;
 }
 
 static void _print_6top_usage(void)
@@ -407,7 +407,7 @@ static int _6top_cmd(int argc, char **argv)
 {
     if (argc < 2) {
         _print_6top_usage();
-        return 1;
+        return -1;
     }
 
     if (!strcmp(argv[1], "clear")) {
@@ -448,7 +448,7 @@ static int _6top_cmd(int argc, char **argv)
     }
 
     _print_6top_usage();
-    return 1;
+    return -1;
 }
 
 static void _print_queue_usage(void)
@@ -462,7 +462,7 @@ static int _queue_cmd(int argc, char **argv)
 {
     if (argc < 2) {
         _print_queue_usage();
-        return 1;
+        return -1;
     }
 
     if (!strcmp(argv[1], "list")) {
@@ -495,7 +495,7 @@ static int _queue_cmd(int argc, char **argv)
 
         if (creator == 0) {
             puts("Error: invalid input value\n");
-            return 1;
+            return -1;
         }
         else {
             printf("Removing entries created by: %.9s [%d]\n", \
@@ -506,7 +506,7 @@ static int _queue_cmd(int argc, char **argv)
     }
 
     _print_queue_usage();
-    return 1;
+    return -1;
 }
 
 static int _scheduler_cmd(char *arg)
@@ -533,7 +533,7 @@ int _openwsn_handler(int argc, char **argv)
 {
     if (argc < 2) {
         _print_usage();
-        return 1;
+        return -1;
     }
 
     if (!strcmp(argv[1], "neigh")) {
@@ -565,5 +565,5 @@ int _openwsn_handler(int argc, char **argv)
     }
 
     _print_usage();
-    return 1;
+    return -1;
 }
