@@ -124,7 +124,7 @@ int _openwsn_ifconfig(char *arg)
     if (IS_USED(MODULE_OPENWSN_CJOIN)) {
         printf("\t\t6TiSCH joined: %i\n", cjoin_getIsJoined());
     }
-    puts(" ");
+    puts("");
 
     if (IS_USED(MODULE_OPENWSN_IPV6)) {
         extern icmpv6rpl_vars_t icmpv6rpl_vars;
