@@ -12,6 +12,7 @@ IGNORE_MODULES  := openwsn_leds \
                    openwsn_icmpv6_echo \
                    openwsn_iee802154e_security \
                    openwsn_radio \
+                   openwsn_riotos \
                    openwsn_serial \
                    openwsn_sctimer \
                    openwsn_sctimer_rtt \
@@ -42,7 +43,6 @@ OPENWSN_PATH_openweb        = openweb
 OPENWSN_PATH_drivers        = drivers/common
 OPENWSN_PATH_crypto         = drivers/common/crypto
 OPENWSN_PATH_openos         = kernel/openos
-OPENWSN_PATH_riotos         = kernel/riotos
 OPENWSN_PATH_cjoin          = openapps/cjoin
 OPENWSN_PATH_opencoap       = openweb/opencoap
 OPENWSN_PATH_mac_low        = openstack/02a-MAClow
