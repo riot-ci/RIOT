@@ -300,19 +300,19 @@ endif
 
 ifneq (,$(filter gnrc_ndp,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
-  USEMODULE += gnrc_ipv6_hdr_build
+  USEMODULE += gnrc_ipv6_hdr
   USEMODULE += gnrc_netif
 endif
 
 ifneq (,$(filter gnrc_icmpv6_echo,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
-  USEMODULE += gnrc_ipv6_hdr_build
+  USEMODULE += gnrc_ipv6_hdr
   USEMODULE += gnrc_netif_hdr
 endif
 
 ifneq (,$(filter gnrc_icmpv6_error,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
-  USEMODULE += gnrc_ipv6_hdr_build
+  USEMODULE += gnrc_ipv6_hdr
   USEMODULE += gnrc_netif_hdr
 endif
 
