@@ -33,7 +33,7 @@
 static scheduler_vars_t _scheduler_vars;
 scheduler_dbg_t scheduler_dbg;
 /* event queues for every priority */
-static event_queue_t _queues[TASKPRIO_MAX] = { EVENT_QUEUE_INIT_DETACHED };
+static event_queue_t _queues[TASKPRIO_MAX];
 
 static event_callback_t *_scheduler_get_free_event(void)
 {
@@ -58,9 +58,7 @@ void scheduler_init(void)
         _scheduler_vars.task_buff[i].super.handler = NULL;
     }
 
-    for (uint8_t i = 0; i < TASKPRIO_MAX; i++) {
-        event_queue_init_detached(&_queues[i]);
-    }
+    event_queues_init_detached(_queues, TASKPRIO_MAX);
 }
 
 void scheduler_start(unsigned state)
@@ -68,9 +66,7 @@ void scheduler_start(unsigned state)
     irq_restore(state);
 
     /* claim all queues */
-    for (uint8_t i = 0; i < TASKPRIO_MAX; i++) {
-        event_queue_claim(&_queues[i]);
-    }
+    event_queues_claim(_queues, TASKPRIO_MAX);
 
     /* wait for events */
     event_t *event;
