@@ -119,6 +119,36 @@ static const uart_conf_t uart_config[] = {
 /** @} */
 
 /**
+ * @name PWM configuration
+ * @{
+ */
+#define PWM_0_EN            1
+
+#if PWM_0_EN
+/* PWM0 channels */
+static const pwm_conf_chan_t pwm_chan0_config[] = {
+    /* GPIO pin, MUX value, TC channel */
+    { GPIO_PIN(PA, 18), GPIO_MUX_E, 0 },
+    { GPIO_PIN(PA, 19), GPIO_MUX_E, 1 },
+};
+#endif
+
+/* PWM device configuration */
+static const pwm_conf_t pwm_config[] = {
+#if PWM_0_EN
+    { .tim  = TC_CONFIG(TC2),
+      .chan = pwm_chan0_config,
+      .chan_numof = ARRAY_SIZE(pwm_chan0_config),
+      .gclk_src = SAM0_GCLK_MAIN,
+    },
+#endif
+};
+
+/* number of devices that are actually defined */
+#define PWM_NUMOF           ARRAY_SIZE(pwm_config)
+/** @} */
+
+/**
  * @name    SPI configuration
  * @{
  */
