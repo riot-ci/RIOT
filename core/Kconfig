@@ -47,13 +47,13 @@ config MODULE_CORE_THREAD_FLAGS
 
 endif # MODULE_CORE
 
-menuconfig KCONFIG_MODULE_CORE
+menuconfig KCONFIG_USEMODULE_CORE
     bool "Configure RIOT Core"
-    depends on MODULE_CORE
+    depends on USEMODULE_CORE
     help
         Configure RIOT Core using Kconfig.
 
-if KCONFIG_MODULE_CORE
+if KCONFIG_USEMODULE_CORE
 
 config THREAD_NAMES
     bool "Store thread name strings"
