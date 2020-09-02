@@ -295,7 +295,7 @@ void _irq_handler(void)
     if (flags_f1 & TXDONE) {
         cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
     }
-     
+
     if (flags_f0 & RXPKTDONE) {
         /* CRC check */
         uint8_t pkt_len = rfcore_peek_rx_fifo(0);
@@ -351,7 +351,7 @@ static bool _get_cap(ieee802154_dev_t *dev, ieee802154_rf_caps_t cap)
 }
 
 static int _set_hw_addr_filter(ieee802154_dev_t *dev, const network_uint16_t *short_addr,
-                               const eui64_t *ext_addr, uint16_t pan_id)
+                               const eui64_t *ext_addr, const uint16_t *pan_id)
 {
     (void) dev;
     if (short_addr) {
@@ -370,8 +370,11 @@ static int _set_hw_addr_filter(ieee802154_dev_t *dev, const network_uint16_t *sh
         RFCORE_FFSM_EXT_ADDR7 = ext_addr->uint8[0];
     }
 
-    RFCORE_FFSM_PAN_ID0 = pan_id;
-    RFCORE_FFSM_PAN_ID1 = pan_id >> 8;
+    if (pan_id) {
+        RFCORE_FFSM_PAN_ID0 = *pan_id;
+        RFCORE_FFSM_PAN_ID1 = (*pan_id) >> 8;
+    }
+
     return 0;
 }
 
