@@ -20,7 +20,6 @@
  */
 
 #include <string.h>
-#include "malloc.h"
 #include "xtimer.h"
 #include "thread.h"
 
