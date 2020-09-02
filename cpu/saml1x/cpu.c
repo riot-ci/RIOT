@@ -137,16 +137,13 @@ void cpu_init(void)
                          | MCLK_APBAMASK_PORT
 #endif
 #ifdef MODULE_PERIPH_RTC_RTT
-                        /* If RTC was running from a previous boot, unsure we
-                           don't disable it, otherwise the clock will be enable
-                           later if RTT or RTC is used by the application  */
-                         | ((RTC->MODE2.CTRLA.bit.ENABLE) ? MCLK_APBAMASK_RTC : 0)
+                         | MCLK_APBAMASK_RTC
 #endif
                          ;
 
 
     /* Disable the RTC module to prevent synchronization issues during CPU init
-       if the RTC was running from a previous boot (e.g wakeup from backup) 
+       if the RTC was running from a previous boot (e.g wakeup from backup)
        as the module will be re-init during the boot process */
     if (RTC->MODE2.CTRLA.bit.ENABLE && IS_ACTIVE(MODULE_PERIPH_RTC_RTT)) {
         while (RTC->MODE2.SYNCBUSY.reg) {}
