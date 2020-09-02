@@ -61,4 +61,4 @@ config THREAD_NAMES
         By default, thread names are not stored if DEVELHELP is not used.
         Use this parameter to store them for non-devel builds.
 
-endif
+endif # KCONFIG_USEMODULE_CORE
