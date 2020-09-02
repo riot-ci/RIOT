@@ -159,7 +159,7 @@ void stmclk_init_sysclk(void)
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || 
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) ||
         (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && IS_ACTIVE(CONFIG_BOARD_HAS_HSE))) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
