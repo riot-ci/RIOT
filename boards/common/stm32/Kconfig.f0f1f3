@@ -27,8 +27,11 @@ endchoice
 if USE_CLOCK_PLL
 config CLOCK_PLL_PREDIV
     int "PLLIN division factor"
-    default 1
-    range 1 16 if CPU_FAM_F0
+    # iotlab based boards provide a 16MHz HSE so they need a predivider of 2
+    # to remain with a 72MHz sysclk by default.
+    default 1 if !BOARD_IOTLAB_M3 && !BOARD_IOTLAB_A8_M3 && !BOARD_FOX
+    default 2 if BOARD_IOTLAB_M3 || BOARD_IOTLAB_A8_M3 || BOARD_FOX
+    range 1 16
 
 config CLOCK_PLL_MUL
     int "PLLIN multiply factor"
