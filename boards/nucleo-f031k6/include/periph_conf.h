@@ -20,12 +20,13 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
-/* No HSE available on this board */
-#define CLOCK_HSE            (0U)
-
 /* Adjust PLL factors when PLL is clocked by HSI */
-#define CLOCK_PLL_PREDIV     (2)
-#define CLOCK_PLL_MUL        (12)
+#ifndef CONFIG_CLOCK_PLL_PREDIV
+#define CONFIG_CLOCK_PLL_PREDIV     (2)
+#endif
+#ifndef CONFIG_CLOCK_PLL_MUL
+#define CONFIG_CLOCK_PLL_MUL        (12)
+#endif
 
 #include "periph_cpu.h"
 #include "f0/cfg_clock_default.h"
