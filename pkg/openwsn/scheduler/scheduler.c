@@ -20,8 +20,8 @@
 #include "event.h"
 #include "event/callback.h"
 #include "memarray.h"
+#include "periph/pm.h"
 
-#include "openwsn_board.h"
 #include "scheduler.h"
 #include "debugpins.h"
 #include "leds.h"
@@ -35,18 +35,6 @@ static scheduler_vars_t _scheduler_vars;
 scheduler_dbg_t scheduler_dbg;
 /* event queues for every priority */
 static event_queue_t _queues[TASKPRIO_MAX];
-
-static event_callback_t *_scheduler_get_free_event(void)
-{
-    event_callback_t *new = memarray_alloc(&_scheduler_vars.memarray);
-    if (!new) {
-        /* task list has overflown. This should never happen! */
-        LOG_ERROR("[openos/scheduler]: critical, task list overflow\n");
-        leds_error_blink();
-        board_reset();
-    }
-    return new;
-}
 
 void scheduler_init(void)
 {
@@ -81,10 +69,15 @@ void scheduler_push_task(task_cbt cb, task_prio_t prio)
 {
     unsigned state = irq_disable();
     /* get a free event from the queue */
-    event_callback_t *event = _scheduler_get_free_event();
-    if (event == NULL) {
-        return;
+    event_callback_t *event = memarray_calloc(&_scheduler_vars.memarray);
+
+    if (!event) {
+        /* task list has overflown. This should never happen! */
+        LOG_ERROR("[openos/scheduler]: critical, task list overflow\n");
+        leds_error_blink();
+        pm_off();
     }
+
     event_callback_init(event, (void (*)(void *)) cb, NULL);
     event_post(&_queues[prio], (event_t *)event);
 
