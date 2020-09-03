@@ -90,7 +90,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
     assert(params != NULL);
     assert(params->exp < PCF857X_EXP_MAX);
 #if MODULE_PCF857X_IRQ
-    assert(params->int_pin != GPIO_UNDEF);
+    assert(gpio_is_valid(params->int_pin));
 #endif
 
     DEBUG_DEV("params=%p", dev, params);
@@ -131,7 +131,7 @@ int pcf857x_init(pcf857x_t *dev, const pcf857x_params_t *params)
         dev->enabled[i] = false;
     }
 
-    /* initialize the interrupt pin if defined */
+    /* initialize the interrupt pin */
     EXEC_RET(gpio_init_int(dev->params.int_pin, GPIO_IN, GPIO_FALLING,
                                                 _irq_isr, (void*)dev));
 #endif /* MODULE_PCF857X_IRQ */
@@ -259,12 +259,7 @@ int pcf857x_gpio_read (pcf857x_t *dev, gpio_t pin)
      * stored in the device data structure and which can be used directly.
      * Otherwise we have to read the pins first.
      */
-#if MODULE_PCF857X_IRQ
-    if (dev->params.int_pin == GPIO_UNDEF) {
-        /* if the interrupt pin is not defined we don't use interrupt */
-        EXEC_RET(_read(dev, &dev->in));
-    }
-#else
+#ifndef MODULE_PCF857X_IRQ
     EXEC_RET(_read(dev, &dev->in));
 #endif
     return (dev->in & (1 << pin)) ? 1 : 0;
