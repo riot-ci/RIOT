@@ -285,8 +285,11 @@ void stmclk_init_sysclk(void)
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
-    stmclk_disable_hsi();
-    irq_restore(is);
+    if (!IS_ACTIVE(CONFIG_USE_CLOCK_HSI) ||
+        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && !IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI))) {
+        /* Disable HSI only if not used */
+        stmclk_disable_hsi();
+    }
 
     if (IS_USED(MODULE_PERIPH_RTT)) {
         /* Ensure LPTIM1 clock source (LSI or LSE) is correctly reset when initializing
@@ -298,4 +301,6 @@ void stmclk_init_sysclk(void)
             RCC->CCIPR |= RCC_CCIPR_LPTIM1SEL_0;
         }
     }
+
+    irq_restore(is);
 }
