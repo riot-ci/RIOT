@@ -101,15 +101,6 @@ ifneq (,$(filter pcf857%,$(USEMODULE)))
   USEMODULE += pcf857x
 endif
 
-ifneq (,$(filter pcf857x,$(USEMODULE)))
-  FEATURES_REQUIRED += periph_gpio
-  FEATURES_REQUIRED += periph_i2c
-  ifneq (,$(filter pcf857x_irq,$(USEMODULE)))
-    FEATURES_REQUIRED += periph_gpio_irq
-    USEMODULE += event_thread_medium
-  endif
-endif
-
 ifneq (,$(filter qmc5883l_%,$(USEMODULE)))
   USEMODULE += qmc5883l
 endif
