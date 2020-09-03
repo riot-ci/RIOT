@@ -28,10 +28,10 @@
  *
  * For each of these PCF857X I2C I/O expanders variants, the driver defines
  * a separate pseudomodule. Multiple PCF857X I2C I/O expanders and different
- * variants can be used at the same time. The application has to specify used
- * PCF857X I2C I/O expander variants as a list of used pseudomodules. For
- * example, to use PCF8574A and PCF857X I/O expanders at the same time, the
- * make command would be:
+ * variants can be used at the same time. Either the board definition or the
+ * application must specify used PCF857X I/O expander variants by a list of
+ * used pseudomodules. For example, to use a PCF8574A and a PCF8575 I/O
+ * expander in one application, the make command would be:
  *
  *      USEMODULE="pcf8574a pcf8575" make -C tests/driver_pcf857x BOARD=...
  *
@@ -62,19 +62,20 @@
  * without the use of a data-direction control signal. Output pins are latched
  * and have high-current drive capability for directly driving LEDs.
  * The quasi-bidirectional expander I/O pins without direction control
- * works as follows:
+ * work as follows:
  *
  * - INPUT:
- *   Writing a 1 to an expander pin configures the pin as an INPUT. The pin is
- *   pulled up to HIGH high by a weak 100 μA pull-up, which corresponds to the
- *   behavior of the #GPIO_IN_PU and #GPIO_OD_PU modes.
+ *   Writing 1 to an expander pin configures the pin as an input, which is
+ *   pulled up to HIGH by a very weak 100 μA pull-up. When reading the pin,
+ *   its value then depends on the actual voltage. This corresponds to the
+ *   behavior of the #GPIO_IN_PU mode.
  * - OUTPUT:
- *   Writing a 0 to an expander pin configures the pin as an OUTPUT and
- *   actively drives the pin to LOW, which corresponds to the behavior of
- *   the #GPIO_OUT and #GPIO_OD_PU modes.
+ *   Writing 0 to an expander pin configures the pin as an output and
+ *   actively drives the pin to LOW. This corresponds to the behavior of
+ *   the #GPIO_OD_PU mode.
  *
- * @note The driver therefore supports the #GPIO_IN_PU and #GPIO_OD modes as
- * well as the physically identical modes #GPIO_IN, #GPIO_OUT and #GPIO_OD_PU.
+ * @note The driver therefore supports the #GPIO_IN_PU and #GPIO_OD_PU modes as
+ * well as the physically identical modes #GPIO_IN, #GPIO_OUT and #GPIO_OD.
  * Please keep this in mind when connecting these pins to other open-drain
  * or output pins that do not generate active signals.
  *
@@ -97,9 +98,9 @@
  *
  * ## Interrupts
  *
- * PCF857X expander has an open-drain, low-active interrupt (INT) signal, which
- * generates an interrupt by any rising or falling edge of the expander pins
- * in the input mode. Using this expander interrupt signal, the following
+ * PCF857X expanders have an open-drain, low-active interrupt (INT) signal,
+ * which generates an interrupt by any rising or falling edge of the expander
+ * pins in the input mode. Using this expander interrupt signal, the following
  * features become available:
  *
  * - An interrupt service function can be attached to an expander input pin with
@@ -108,8 +109,8 @@
  *
  * - The driver can keep an internal up-to-date state of all expander input
  *   pins. Using this internal up-to-date state of all expander input pins
- *   avoids to read all expander input pins via I2C each time a single input
- *   value of an expander GPIO pin is read with #pcf857x_gpio_read.
+ *   avoids to read all expander input pins via I2C each time the input
+ *   value of a single expander GPIO pin is read with #pcf857x_gpio_read.
  *
  * Since interrupts are handled in the context of a separate event thread,
  * enabling interrupts requires more RAM. Therefore, interrupts have to be
@@ -161,18 +162,20 @@
  *
  * ## Using Multiple Devices
  *
- * It is possible to used multiple devices and different variants of PCF857X
- * I/O expanders at the same time. The application has to specify used PCF857X
- * I/O expander variants by a list of used pseudomodules. For example, to use
- * one PCF8574A and one PCF857X I/O expander the make command would be:
+ * It is possible to use multiple devices and different variants of PCF857X
+ * I/O expanders at the same time. Either the board definition or the
+ * application must specify used PCF857X I/O expander variants by a list of
+ * used pseudomodules. For example, to use a PCF8574A and a PCF8575 I/O
+ * expander in one application, the make command would be:
  *
  *      USEMODULE="pcf8574a pcf8575" make -C tests/driver_pcf857x BOARD=...
  *
  * Furthermore, used devices have to be configured by defining the
  * configuration parameter array `pcf857x_params` of type #pcf857x_params_t.
  * The default configuration for one device is defined in
- * `drivers/pcf857x/pcf857x_params.h`. The application can override it by by
- * placing a file `pcf857x_params.h` in the application directory `$APPDIR`.
+ * `drivers/pcf857x/pcf857x_params.h`. Either the board definition or the
+ * application can override it by placing a file `pcf857x_params.h` in the
+ * board definition directory or the application directory `$APPDIR`.
  * For example, the definition of the configuration parameter array for the
  * two devices above could be:
  *
@@ -250,7 +253,7 @@ extern "C"
 
 
 /** conversion of (port x : pin y) to a pin number */
-#define PCF857X_GPIO_PIN(x,y)  ((gpio_t)((x & 0) | y))
+#define PCF857X_GPIO_PIN(x,y)  ((gpio_t)((x << 3) | y))
 
 /**
  * @name   Module dependent definitions and declarations
