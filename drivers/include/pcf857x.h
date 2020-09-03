@@ -118,7 +118,7 @@
  * defined by the parameter pcf857x_params_t::int_pin either in the parameter
  * file or at the command line, e.g.
  *
- *      CFLAGS="-DPCF857X_PARAM_INT_PIN=\(GPIO\(0,6\)\)" \
+ *      CFLAGS="-DPCF857X_PARAM_INT_PIN=\(GPIO_PIN\(0,6\)\)" \
  *      USEMODULE="pcf8575 pcf857x_irq" make -C tests/driver_pcf857x BOARD=...
  *
  * <br>
@@ -181,13 +181,13 @@
  *              .dev = I2C_DEV(0),
  *              .addr = 0,
  *              .exp = PCF857X_EXP_PCF8574A,
- *              .int_pin = GPIO(0,1),
+ *              .int_pin = GPIO_PIN(0,1),
  *          },
  *          {
  *              .dev = I2C_DEV(0),
  *              .addr = 0,
  *              .exp = PCF857X_EXP_PCF8575,
- *              .int_pin = GPIO(0,2),
+ *              .int_pin = GPIO_PIN(0,2),
  *          },
  *      };
  *
