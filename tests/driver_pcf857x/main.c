@@ -29,19 +29,23 @@
  * `pcf8574`, `pcf8574a` or `pcf8575` to enable the driver for your
  * expander modules. Please check the default configuration parameters in
  * `$(RIOTBASE)/drivers/pcf857x/include/pcf857x_params.h` and adopt them
- * if necessary.
+ * if necessary. Alternatively, a modified version of this file could be
+ * placed in the directory of this test application to override it.
  *
  *      USEMODULE=pcf8575 make -C tests/driver_pcf857x BOARD=...
  *
  * @note When no pseudomodule is given, `pcf8575` is used by default.
  *
- * The usage of the PCF857X low-active open-drain interrupt signal is
- * recommended to be able to use external interrupts with the expander I/O
- * pins. Add module `periph_gpio_irq` for this purpose and define the
- * MCU interrupt pin by parameter `PCF857X_PARAM_INT_PIN`, e.g.
+ * To use external interrupts with the expander I/O pins, the PCF857X
+ * low-active open-drain interrupt signal has to be enabled. Add module
+ * `pcf857x_irq` for this purpose and define the MCU interrupt pin by
+ * parameter `PCF857X_PARAM_INT_PIN`, e.g.
  *
- *      CFLAGS="-DPCF857X_PARAM_INT_PIN=\(GPIO\(0,6\)\)" \
- *      USEMODULE="pcf8575 periph_gpio_irq" make -C tests/driver_pcf857x BOARD=...
+ *      CFLAGS="-DPCF857X_PARAM_INT_PIN=\(GPIO_PIN\(0,6\)\)" \
+ *      USEMODULE="pcf8575 pcf857x_irq" make -C tests/driver_pcf857x BOARD=...
+ *
+ * @note Since interrupts are handled in the context of a separate event thread,
+ * enabling interrupts requires more RAM.
  */
 
 #include <stdio.h>

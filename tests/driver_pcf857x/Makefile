@@ -1,3 +1,5 @@
+INCLUDES += $(APPDIR)
+
 include ../Makefile.tests_common
 
 ifeq (,$(filter pcf857%,$(USEMODULE)))
