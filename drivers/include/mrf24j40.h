@@ -236,7 +236,7 @@ uint64_t mrf24j40_get_addr_long(mrf24j40_t *dev);
  * @param[in] dev           device to write to
  * @param[in] addr          (8-byte) long address to set
  */
-void mrf24j40_set_addr_long(mrf24j40_t *dev, uint64_t addr);
+void mrf24j40_set_addr_long(mrf24j40_t *dev, const uint64_t *addr);
 
 /**
  * @brief   Get the configured channel number of the given device
