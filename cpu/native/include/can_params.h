@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief Default parameters (device names)
  */
-static candev_params_t candev_linux_params[] = {
+static candev_params_t candev_params[] = {
     { .name = "can0", },
     { .name = "can1", },
 };
