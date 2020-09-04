@@ -111,9 +111,9 @@ extern uint32_t _sstack;
  */
 #if defined(CPU_CORE_CORTEX_M0) || defined(CPU_CORE_CORTEX_M0PLUS) \
     || defined(CPU_CORE_CORTEX_M23)
-#define CPU_CORE_CORTEX_FULL_THUMB 0
+#define CPU_CORE_CORTEXM_FULL_THUMB 0
 #else
-#define CPU_CORE_CORTEX_FULL_THUMB 1
+#define CPU_CORE_CORTEXM_FULL_THUMB 1
 #endif
 
 
@@ -206,7 +206,7 @@ char *thread_stack_init(thread_task_func_t task_func,
     /* exception return code  - return to task-mode process stack pointer */
     stk--;
     *stk = (uint32_t)EXCEPT_RET_TASK_MODE;
-#if !CPU_CORE_CORTEX_FULL_THUMB
+#if !CPU_CORE_CORTEXM_FULL_THUMB
     /* start with r7 - r4 */
     for (int i = 7; i >= 4; i--) {
         stk--;
@@ -308,7 +308,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     /* skip context saving if sched_active_thread == NULL */
     "ldr    r1, =sched_active_thread  \n" /* r1 = &sched_active_thread  */
-#if CPU_CORE_CORTEX_FULL_THUMB
+#if CPU_CORE_CORTEXM_FULL_THUMB
     "ldr    r12, [r1]                 \n" /* r12 = sched_active_thread   */
 #else
     "ldr    r1, [r1]                  \n"
@@ -318,7 +318,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     "bl     sched_run                 \n" /* perform scheduling */
 
-#if CPU_CORE_CORTEX_FULL_THUMB
+#if CPU_CORE_CORTEXM_FULL_THUMB
     "cmp    r0, r12                   \n" /* if r0 == 0: (no switch required) */
     "it     eq                        \n"
     "popeq  {pc}                      \n" /* Pop exception to pc to return */
@@ -351,7 +351,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "msr    psp, r0                   \n" /* restore user mode SP to PSP reg */
     "bx     lr                        \n" /* load exception return value to PC,
                                            * causes end of exception*/
-#else
+#else /* CPU_CORE_CORTEXM_FULL_THUMB */
 
     /* Cortex-M0(+) and Cortex-M23 */
     "cmp    r0, r12                   \n" /* if r0 == previous_thread: */
@@ -362,7 +362,8 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     "pop    {r2}                      \n" /* Pop LR from the exception stack */
     "mov    lr, r2                    \n" /* Store LR in lr */
-    "movs   r1,r12                    \n" /* r1 = sched_active_thread and update flags */
+    "mov    r1,r12                    \n" /* r1 = sched_active_thread */
+    "cmp    r1, #0                    \n" /* Test if r1 == NULL */
     "mov    r12, sp                   \n" /* remember the exception SP in r12 */
     "beq    restore_context           \n" /* goto restore_context if r1 == NULL */
 
@@ -371,7 +372,13 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     /* Calculate the expected stack offset beforehand so that we don't have to
      * store the old SP from here on, saves a register we don't have */
-    "sub    r0, r0, #36               \n" /* Move saved SP with 9 words */
+#if defined (__clang__)
+    /* Clang doesn't like the 'sub' instruction, swap for a subs. Generates
+     * identical bytecode as the GCC instruction used below */
+    "subs   r0, #36                   \n" /* Move saved SP with 9 words */
+#else
+    "sub   r0, #36                    \n" /* Move saved SP with 9 words */
+#endif
     "str    r0, [r1]                  \n" /* And store */
 
     /* we can not push high registers directly, so we move R11-R8 into
