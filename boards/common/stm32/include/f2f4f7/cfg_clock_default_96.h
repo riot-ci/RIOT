@@ -20,8 +20,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef F4_CFG_CLOCK_96_DEFAULT_H
-#define F4_CFG_CLOCK_96_DEFAULT_H
+#ifndef F2F4F7_CFG_CLOCK_96_DEFAULT_H
+#define F2F4F7_CFG_CLOCK_96_DEFAULT_H
 
 #include "f2f4f7/cfg_clock_common.h"
 
@@ -83,5 +83,5 @@ extern "C" {
 #error "SYSCLK cannot exceed 100MHz"
 #endif
 
-#endif /* F4_CFG_CLOCK_96_DEFAULT_H */
+#endif /* F2F4F7_CFG_CLOCK_96_DEFAULT_H */
 /** @} */
