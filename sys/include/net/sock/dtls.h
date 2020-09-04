@@ -492,9 +492,11 @@ extern "C" {
 #endif
 
 /**
- * @ingroup net_sock_util_conf
+ * @defgroup net_sock_dtls_conf    SOCK DTLS compile configuration
+ * @ingroup  net_sock_conf
  * @{
- *
+ */
+/**
  * @brief   Default buffer size for DTLS handshake (as exponent of 2^n)
  *
  * As the buffer size ALWAYS needs to be power of two, this option represents
