@@ -58,8 +58,6 @@ static inline int _at24mac_get_eui48(const void *arg, eui48_t *addr)
  * @{
  */
 #define EUI48_PROVIDER_FUNC   _at24mac_get_eui48
-#define EUI48_PROVIDER_TYPE   NETDEV_ANY
-#define EUI48_PROVIDER_INDEX  0
 /** @} */
 
 /**
