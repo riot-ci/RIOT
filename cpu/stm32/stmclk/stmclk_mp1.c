@@ -135,32 +135,10 @@ and 512 allowed)"
 #define CLOCK_ENABLE_HSE                0
 #endif
 
-/* Check whether HSI must be enabled:
-  - When HSI is used as SYSCLK
-  - When PLL is used as SYSCLK and the board doesn't provide HSE (since HSI will be
-    used as PLL input clock)
-*/
-#if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
-    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL))
-#define CLOCK_ENABLE_HSI                1
-#else
-#define CLOCK_ENABLE_HSI                0
-#endif
-
 void stmclk_enable_hsi(void)
 {
     RCC->OCENSETR |= RCC_OCENSETR_HSION;
     while (!(RCC->OCRDYR & RCC_OCRDYR_HSIRDY)) {}
-}
-
-void stmclk_disable_hsi(void)
-{
-    /* we only disable the HSI clock if not used as input for the PLL and if
-     * not used directly as system clock */
-    if (CLOCK_HSE) {
-        RCC->OCENCLRR |= RCC_OCENCLRR_HSION;
-        while (!(RCC->OCRDYR & RCC_OCRDYR_HSIRDY)) {}
-    }
 }
 
 static void stmclk_enable_hse(void)
@@ -207,10 +185,11 @@ void stmclk_init_sysclk(void)
     RCC->OCENCLRR = ~(RCC_OCENSETR_HSION);
 
     /* if configured, we need to enable the HSE clock now */
-#if (CLOCK_HSE)
+#if (IS_ACTIVE(CLOCK_ENABLE_HSE))
     stmclk_enable_hse();
 #endif
 
+#if (IS_ACTIVE(CLOCK_ENABLE_PLL))
     /* now we can safely configure the PLL */
     RCC->PLL3CFGR1 = (PLL_M | PLL_N);
     RCC->PLL3CFGR2 = (PLL_P | PLL_Q | PLL_R);
@@ -222,6 +201,7 @@ void stmclk_init_sysclk(void)
     RCC->PLL3CR |= (RCC_PLL3CR_DIVPEN | RCC_PLL3CR_DIVQEN
             | RCC_PLL3CR_DIVREN | RCC_PLL3CR_PLLON);
     while (!(RCC->PLL3CR & RCC_PLL3CR_PLL3RDY)) {}
+ #endif
 
     /* Configure SYSCLK */
     if (IS_ACTIVE(CLOCK_ENABLE_PLL)) {
