@@ -24,14 +24,13 @@ config USE_CLOCK_HSI
 
 endchoice
 
-if USE_CLOCK_PLL
 config CLOCK_PLL_M
-    int "Division factor (PLLM) for the main PLL input clock"
+    int "Division factor (PLLM) for the main PLL input clock" if USE_CLOCK_PLL
     default 4
     range 2 63
 
 config CLOCK_PLL_N
-    int "Main PLL multiplication factor (PLLN) for VCO"
+    int "Main PLL multiplication factor (PLLN) for VCO" if USE_CLOCK_PLL
     default 120 if CPU_FAM_F2 && BOARD_HAS_HSE
     default 60 if CPU_FAM_F2 && !BOARD_HAS_HSE
     default 200 if CPU_FAM_F4 && BOARD_HAS_HSE
@@ -41,7 +40,7 @@ config CLOCK_PLL_N
     range 50 432
 
 choice
-bool "Main PLL division factor (PLLP) for main system clock"
+bool "Main PLL division factor (PLLP) for main system clock" if USE_CLOCK_PLL
 default PLL_P_DIV_4 if CPU_FAM_F4
 default PLL_P_DIV_2 if CPU_FAM_F2 || CPU_FAM_F7
 
@@ -67,10 +66,9 @@ config CLOCK_PLL_P
     default 8 if PLL_P_DIV_8
 
 config CLOCK_PLL_Q
-    int "Main PLL division factor (PLLQ) for USB OTG FS, and SDIO clocks"
+    int "Main PLL division factor (PLLQ) for USB OTG FS, and SDIO clocks" if USE_CLOCK_PLL
     default 8
     range 2 15
-endif
 
 choice
 bool "APB1 prescaler (division factor of HCLK to produce PCLK1)"
@@ -101,7 +99,6 @@ config CLOCK_APB1_DIV
     default 8 if CLOCK_APB1_DIV_8
     default 16 if CLOCK_APB1_DIV_16
 
-if CPU_FAM_F1 || CPU_FAM_F3
 choice
 bool "APB2 prescaler (division factor of HCLK to produce PCLK2)"
 default CLOCK_APB2_DIV_1
@@ -130,8 +127,6 @@ config CLOCK_APB2_DIV
     default 4 if CLOCK_APB2_DIV_4
     default 8 if CLOCK_APB2_DIV_8
     default 16 if CLOCK_APB2_DIV_16
-
-endif
 
 endmenu
 
