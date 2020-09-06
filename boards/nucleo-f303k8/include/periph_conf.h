@@ -19,12 +19,13 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
-/* No HSE available for this board */
-#define CLOCK_HSE           (0U)
-
-/* Adjust PLL prescalers to reach 72MHz sysclock */
-#define CLOCK_PLL_PREDIV    (2)
-#define CLOCK_PLL_MUL       (16)
+/* Adjust PLL prescalers to reach 64MHz sysclock */
+#ifndef CONFIG_CLOCK_PLL_PREDIV
+#define CONFIG_CLOCK_PLL_PREDIV     (2)
+#endif
+#ifndef CONFIG_CLOCK_PLL_MUL
+#define CONFIG_CLOCK_PLL_MUL        (16)
+#endif
 
 #include "periph_cpu.h"
 #include "f1f3/cfg_clock_default.h"
