@@ -21,3 +21,11 @@ config BOARD_STM32F723E_DISCO
     select HAS_PERIPH_TIMER
     select HAS_PERIPH_UART
     select HAS_PERIPH_USBDEV
+
+    # Clock configuration
+    select BOARD_HAS_HSE
+    select BOARD_USE_HSE_25MHZ
+    select BOARD_HAS_LSE
+    select CLOCK_MAX_216MHZ
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
