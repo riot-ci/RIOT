@@ -51,6 +51,9 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_Q
 #define CONFIG_CLOCK_PLL_Q              (8)
 #endif
+#ifndef CONFIG_CLOCK_PLL_R
+#define CONFIG_CLOCK_PLL_R              (8)
+#endif
 /** @} */
 
 /**
