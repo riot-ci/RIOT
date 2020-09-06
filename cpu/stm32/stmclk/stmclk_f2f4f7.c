@@ -52,9 +52,6 @@
    the PLL parameters and if not possible on CPU lines which can provide 48MHz
    from PLLI2S or PLLSAI */
 
-/* Compute the clock frequency output PLLQ */
-#define CLOCK_PLLQ                  (((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_M) * CONFIG_CLOCK_PLL_N) / CONFIG_CLOCK_PLL_Q)
-
 /* Determine if PLL is required, even if not used as SYSCLK
    This is the case when USB is used in application and PLLQ is configured to
    output 48MHz */
