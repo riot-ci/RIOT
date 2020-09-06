@@ -30,16 +30,98 @@
 #define PLL_SRC                     RCC_PLLCFGR_PLLSRC_HSI
 #endif
 
-#ifndef CONFIG_CLOCK_I2S_SRC
-#if IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S)
-#define CONFIG_CLOCK_I2S_SRC        (0)     /* PLLI2S used as I2S clock source */
+/* I2S clock source */
+#ifndef CONFIG_PLLI2S_SRC
+#define CONFIG_PLLI2S_SRC           (0)     /* PLLI2S used as I2S clock source */
 #else
-#define CONFIG_CLOCK_I2S_SRC        (1)
-#endif
+#define CONFIG_PLLI2S_SRC           (1)     /* Use external I2S source */
 #endif
 
-#if (CONFIG_CLOCK_I2S_SRC == 0) && !IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S)
-#error "PLLI2S selected as I2S clock source but is not enabled"
+/* now we get the actual bitfields */
+#define PLL_M                       (CONFIG_CLOCK_PLL_M << RCC_PLLCFGR_PLLM_Pos)
+#define PLL_N                       (CONFIG_CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
+#define PLL_P                       (((CONFIG_CLOCK_PLL_P / 2) - 1) << RCC_PLLCFGR_PLLP_Pos)
+#define PLL_Q                       (CONFIG_CLOCK_PLL_Q << RCC_PLLCFGR_PLLQ_Pos)
+#if defined(CONFIG_CLOCK_PLL_R)
+#define PLL_R                       (CONFIG_CLOCK_PLL_R << RCC_PLLCFGR_PLLR_Pos)
+#else
+#define PLL_R                       (0)
+#endif
+
+/* Select 48MHz clock source between PLLQ, PLLI2SQ or PLLSAIQ. This depends on
+   the PLL parameters and if not possible on CPU lines which can provide 48MHz
+   from PLLI2S or PLLSAI */
+
+/* Compute the clock frequency output PLLQ */
+#define CLOCK_PLLQ                  (((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_M) * CONFIG_CLOCK_PLL_N) / CONFIG_CLOCK_PLL_Q)
+
+/* Determine if PLL is required, even if not used as SYSCLK
+   This is the case when USB is used in application and PLLQ is configured to
+   output 48MHz */
+#if IS_USED(MODULE_PERIPH_USBDEV) && (CLOCK_PLLQ == MHZ(48))
+#define CONFIG_CLOCK_REQUIRE_PLLQ    1
+#else
+#define CONFIG_CLOCK_REQUIRE_PLLQ    0
+#endif
+
+/* PLLI2S can only be used for USB with F412/F413/F423 lines
+   PLLI2S is only enabled if no suitable 48MHz clock source can be generated with PLLQ */
+#if (defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
+     defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+     defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx)) && \
+    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ)
+#define CONFIG_CLOCK_REQUIRE_PLLI2SR 1
+#else
+/* Disable PLLI2S if USB is not required or is required but PLLQ cannot generate 48MHz clock */
+#define CONFIG_CLOCK_REQUIRE_PLLI2SR 0
+#endif
+
+/* PLLSAI can only be used for USB with F446/469/479 lines and F7
+   PLLSAI is only enabled if no suitable 48MHz clock source can be generated with PLLQ */
+#if (defined(CPU_LINE_STM32F446xx) || defined(CPU_LINE_STM32F469xx) || \
+     defined(CPU_LINE_STM32F479xx) || defined(CPU_FAM_STM32F7)) && \
+    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ)
+#define CONFIG_CLOCK_REQUIRE_PLLSAIP  1
+#else
+/* Disable PLLSAI if USB is not required or is required but PLLQ cannot generate 48MHz clock */
+#define CONFIG_CLOCK_REQUIRE_PLLSAIP  0
+#endif
+
+#if IS_USED(MODULE_PERIPH_USBDEV) && \
+    !(IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ) || \
+      IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLI2SR) || \
+      IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLSAIP))
+#error No suitable 48MHz found, USB will not work
+#endif
+
+/* PLLI2S configuration: the following parameters configure a 48MHz I2S clock
+   with HSE (8MHz) or HSI (16MHz) as PLL input clock */
+#ifndef CONFIG_CLOCK_PLLI2S_M
+/* PLLM factor is not shared with PLLI2S on F412/413/423/446 cpu lines */
+#if defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
+    defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+    defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx) || \
+    defined(CPU_LINE_STM32F446xx)
+#define CONFIG_CLOCK_PLLI2S_M       (4)
+#else
+#define CONFIG_CLOCK_PLLI2S_M       CONFIG_CLOCK_PLL_M
+#endif
+#endif
+#ifndef CONFIG_CLOCK_PLLI2S_N
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
+#define CONFIG_CLOCK_PLLI2S_N       (192)
+#else
+#define CONFIG_CLOCK_PLLI2S_N       (96)
+#endif
+#endif
+#ifndef CONFIG_CLOCK_PLLI2S_P
+#define CONFIG_CLOCK_PLLI2S_P       (0)     /* Unused */
+#endif
+#ifndef CONFIG_CLOCK_PLLI2S_Q
+#define CONFIG_CLOCK_PLLI2S_Q       (8)     /* Alternative 48MHz clock (USB) and/or MCO2 PLLI2S */
+#endif
+#ifndef CONFIG_CLOCK_PLLI2S_R
+#define CONFIG_CLOCK_PLLI2S_R       (8)     /* I2S clock, 48MHz by default */
 #endif
 
 #if defined(RCC_PLLI2SCFGR_PLLI2SM_Pos)
@@ -57,15 +139,45 @@
 #else
 #define PLLI2S_P                    (0)
 #endif
-#if defined(RCC_PLLI2SCFGR_PLLI2SQ_Pos) && defined(CONFIG_CLOCK_PLLI2S_Q)
+#if defined(RCC_PLLI2SCFGR_PLLI2SQ_Pos)
 #define PLLI2S_Q                    (CONFIG_CLOCK_PLLI2S_Q << RCC_PLLI2SCFGR_PLLI2SQ_Pos)
 #else
 #define PLLI2S_Q                    (0)
 #endif
-#if defined(RCC_PLLI2SCFGR_PLLI2SR_Pos) && defined(CONFIG_CLOCK_PLLI2S_R)
+#if defined(RCC_PLLI2SCFGR_PLLI2SR_Pos)
 #define PLLI2S_R                    (CONFIG_CLOCK_PLLI2S_R << RCC_PLLI2SCFGR_PLLI2SR_Pos)
 #else
 #define PLLI2S_R                    (0)
+#endif
+
+/* PLLSAI configuration: the following parameters configure a 48MHz SAI clock
+   with HSE (8MHz) or HSI (16MHz) as PLL input clock */
+#ifndef CONFIG_CLOCK_PLLSAI_M
+/* PLLM factor is not shared with PLLSAI on F412/413/423/446 cpu lines */
+#if defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
+    defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+    defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx) || \
+    defined(CPU_LINE_STM32F446xx)
+#define CONFIG_CLOCK_PLLSAI_M       (4)
+#else
+#define CONFIG_CLOCK_PLLSAI_M       CONFIG_CLOCK_PLL_M
+#endif
+#endif
+#ifndef CONFIG_CLOCK_PLLSAI_N
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
+#define CONFIG_CLOCK_PLLSAI_N       (192)
+#else
+#define CONFIG_CLOCK_PLLSAI_N       (96)
+#endif
+#endif
+#ifndef CONFIG_CLOCK_PLLSAI_P
+#define CONFIG_CLOCK_PLLSAI_P       (8)     /* Alternative 48MHz clock (USB) */
+#endif
+#ifndef CONFIG_CLOCK_PLLSAI_Q
+#define CONFIG_CLOCK_PLLSAI_Q       (8)     /* SAI clock, 48MHz by default */
+#endif
+#ifndef CONFIG_CLOCK_PLLSAI_R
+#define CONFIG_CLOCK_PLLSAI_R       (8)     /* LCD clock, 48MHz by default */
 #endif
 
 #if defined(RCC_PLLSAICFGR_PLLSAIM_Pos)
@@ -92,17 +204,6 @@
 #define PLLSAI_R                    (CONFIG_CLOCK_PLLSAI_R << RCC_PLLSAICFGR_PLLSAIR_Pos)
 #else
 #define PLLSAI_R                    (0)
-#endif
-
-/* now we get the actual bitfields */
-#define PLL_P                       (((CONFIG_CLOCK_PLL_P / 2) - 1) << RCC_PLLCFGR_PLLP_Pos)
-#define PLL_M                       (CONFIG_CLOCK_PLL_M << RCC_PLLCFGR_PLLM_Pos)
-#define PLL_N                       (CONFIG_CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
-#define PLL_Q                       (CONFIG_CLOCK_PLL_Q << RCC_PLLCFGR_PLLQ_Pos)
-#if defined(RCC_PLLCFGR_PLLR_Pos) && defined(CONFIG_CLOCK_PLL_R)
-#define PLL_R                       (CONFIG_CLOCK_PLL_R << RCC_PLLCFGR_PLLR_Pos)
-#else
-#define PLL_R                       (0)
 #endif
 
 /* Configure HLCK and PCLK prescalers */
@@ -318,10 +419,33 @@
 #error "Invalid MCO1 prescaler"
 #endif
 
-#if IS_USED(MODULE_PERIPH_USBDEV) && \
-    (!CONFIG_CLOCK_ENABLE_PLLI2S || !CONFIG_CLOCK_ENABLE_PLLSAI)
-#error "48MHz clock is required for USB but is not enabled"
+/* Check whether PLL must be enabled */
+#ifndef CONFIG_CLOCK_ENABLE_PLL
+#if IS_ACTIVE(CONFIG_USE_CLOCK_PLL) || IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLQ) || \
+    IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLL)
+#define CONFIG_CLOCK_ENABLE_PLL     1
+#else
+#define CONFIG_CLOCK_ENABLE_PLL     0
 #endif
+#endif /* CONFIG_CLOCK_ENABLE_PLL */
+
+/* Check whether PLLI2S must be enabled */
+#ifndef CONFIG_CLOCK_ENABLE_PLLI2S
+#if IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLI2SR) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S)
+#define CONFIG_CLOCK_ENABLE_PLLI2S     1
+#else
+#define CONFIG_CLOCK_ENABLE_PLLI2S     0
+#endif
+#endif /* CONFIG_CLOCK_ENABLE_PLLI2S */
+
+/* Check whether PLLSAI must be enabled */
+#ifndef CONFIG_CLOCK_ENABLE_PLLSAI
+#if IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLSAIP)
+#define CONFIG_CLOCK_ENABLE_PLLSAI     1
+#else
+#define CONFIG_CLOCK_ENABLE_PLLSAI     0
+#endif
+#endif /* CONFIG_CLOCK_ENABLE_PLLSAI */
 
 void stmclk_init_sysclk(void)
 {
@@ -360,8 +484,8 @@ void stmclk_init_sysclk(void)
         RCC->CFGR |= (RCC_CFGR_SW_HSE);
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
-    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
 
+    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLL)) {
         /* if configured, we need to enable the HSE clock now */
         if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE)) {
             RCC->CR |= (RCC_CR_HSEON);
@@ -373,9 +497,11 @@ void stmclk_init_sysclk(void)
         RCC->CR |= (RCC_CR_PLLON);
         while (!(RCC->CR & RCC_CR_PLLRDY)) {}
 
-        /* now that the PLL is running, we use it as system clock */
-        RCC->CFGR |= (RCC_CFGR_SW_PLL);
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
+        if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
+            /* now that the PLL is running, we use it as system clock */
+            RCC->CFGR |= (RCC_CFGR_SW_PLL);
+            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
+        }
     }
 
     if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) ||
@@ -386,14 +512,14 @@ void stmclk_init_sysclk(void)
 
 #if defined(RCC_CR_PLLI2SON)
     if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S)) {
-        RCC->PLLI2SCFGR = (CONFIG_CLOCK_I2S_SRC | PLLI2S_M | PLLI2S_N | PLLI2S_P | PLLI2S_Q | PLLI2S_R);
+        RCC->PLLI2SCFGR = (CONFIG_PLLI2S_SRC | PLLI2S_M | PLLI2S_N | PLLI2S_P | PLLI2S_Q | PLLI2S_R);
         RCC->CR |= (RCC_CR_PLLI2SON);
         while (!(RCC->CR & RCC_CR_PLLI2SRDY)) {}
     }
 #endif
 
 #if defined(RCC_CR_PLLSAION)
-    if (IS_ACTIVE(CLOCK_ENABLE_PLL_SAI)) {
+    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLL_SAI)) {
         RCC->PLLSAICFGR = (PLLSAI_M | PLLSAI_N | PLLSAI_P | PLLSAI_Q | PLLSAI_R);
         RCC->CR |= (RCC_CR_PLLSAION);
         while (!(RCC->CR & RCC_CR_PLLSAIRDY)) {}
@@ -401,8 +527,8 @@ void stmclk_init_sysclk(void)
 #endif
 
 #if defined(RCC_DCKCFGR2_CK48MSEL)
-    if (IS_USED(MODULE_PERIPH_USBDEV)) {
-        /* Use PLLSAI_P (PLLI2S_Q depending on the case) clock source */
+    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S) || IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLSAI)) {
+        /* Use PLLSAI_P or PLLI2S_Q clock source */
         RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
     }
 #endif
