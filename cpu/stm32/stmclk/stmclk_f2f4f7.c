@@ -115,7 +115,7 @@
 #endif
 #endif
 #ifndef CONFIG_CLOCK_PLLI2S_P
-#define CONFIG_CLOCK_PLLI2S_P       (0)     /* Unused */
+#define CONFIG_CLOCK_PLLI2S_P       (8)     /* SPDIF-Rx clock, 48MHz by default */
 #endif
 #ifndef CONFIG_CLOCK_PLLI2S_Q
 #define CONFIG_CLOCK_PLLI2S_Q       (8)     /* Alternative 48MHz clock (USB) and/or MCO2 PLLI2S */
