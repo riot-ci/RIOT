@@ -37,14 +37,15 @@ extern "C" {
    (8MHz, 12MHz or 16MHz) or HSI (16MHz) as PLL input clock */
 #ifndef CONFIG_CLOCK_PLL_M
 #if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(12))
-#define CONFIG_CLOCK_PLL_M              (6)
+#define CONFIG_CLOCK_PLL_M              (12)
 #else
 #define CONFIG_CLOCK_PLL_M              (4)
 #endif
 #endif
 #ifndef CONFIG_CLOCK_PLL_N
-#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && \
-    ((CLOCK_HSE == MHZ(8)) || (CLOCK_HSE == MHZ(12)))
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(12))
+#define CONFIG_CLOCK_PLL_N              (336)
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(8))
 #define CONFIG_CLOCK_PLL_N              (168)
 #else
 #define CONFIG_CLOCK_PLL_N              (84)
