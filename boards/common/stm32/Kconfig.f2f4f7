@@ -5,6 +5,56 @@
 # directory for more details.
 #
 
+config CLOCK_MAX_84MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 84MHz
+
+config CLOCK_MAX_96MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 96MHz
+
+config CLOCK_MAX_100MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 100MHz
+
+config CLOCK_MAX_120MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 120MHz
+
+config CLOCK_MAX_168MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 168MHz
+
+config CLOCK_MAX_180MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 180MHz
+
+config CLOCK_MAX_216MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 216MHz
+
+config BOARD_USE_HSE_12MHZ
+    bool
+    help
+        Indicates that the board uses a 12MHz HSE
+
+config BOARD_USE_HSE_16MHZ
+    bool
+    help
+        Indicates that the board uses a 16MHz HSE
+
+config BOARD_USE_HSE_25MHZ
+    bool
+    help
+        Indicates that the board uses a 25MHz HSE
+
 menu "STM32 F2/F4/F7 clock configuration"
     depends on CPU_FAM_F2 || CPU_FAM_F4 || CPU_FAM_F7
 
@@ -26,23 +76,36 @@ endchoice
 
 config CLOCK_PLL_M
     int "Division factor (PLLM) for the main PLL input clock" if USE_CLOCK_PLL
-    default 4
+    default 12 if BOARD_USE_HSE_12MHZ
+    default 25 if BOARD_USE_HSE_25MHZ
+    default 4 if !BOARD_USE_HSE_12MHZ && !BOARD_USE_HSE_25MHZ
     range 2 63
 
 config CLOCK_PLL_N
     int "Main PLL multiplication factor (PLLN) for VCO" if USE_CLOCK_PLL
-    default 120 if CPU_FAM_F2 && BOARD_HAS_HSE
-    default 60 if CPU_FAM_F2 && !BOARD_HAS_HSE
-    default 200 if CPU_FAM_F4 && BOARD_HAS_HSE
-    default 100 if CPU_FAM_F4 && !BOARD_HAS_HSE
-    default 216 if CPU_FAM_F7 && BOARD_HAS_HSE
-    default 108 if CPU_FAM_F7 && !BOARD_HAS_HSE
+    default 84 if BOARD_HAS_HSE && CLOCK_MAX_84MHZ
+    default 42 if !BOARD_HAS_HSE && CLOCK_MAX_84MHZ
+    default 192 if BOARD_HAS_HSE && CLOCK_MAX_96MHZ && BOARD_USE_HSE_25MHZ
+    default 96 if BOARD_HAS_HSE && CLOCK_MAX_96MHZ
+    default 48 if !BOARD_HAS_HSE && CLOCK_MAX_96MHZ
+    default 100 if BOARD_HAS_HSE && CLOCK_MAX_100MHZ
+    default 50 if !BOARD_HAS_HSE && CLOCK_MAX_100MHZ
+    default 120 if BOARD_HAS_HSE && CLOCK_MAX_120MHZ
+    default 60 if !BOARD_HAS_HSE && CLOCK_MAX_120MHZ
+    default 336 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ && BOARD_USE_HSE_12MHZ
+    default 84 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ && BOARD_USE_HSE_16MHZ
+    default 168 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ
+    default 84 if !BOARD_HAS_HSE && CLOCK_MAX_168MHZ
+    default 180 if BOARD_HAS_HSE && CLOCK_MAX_180MHZ
+    default 90 if !BOARD_HAS_HSE && CLOCK_MAX_180MHZ
+    default 432 if BOARD_HAS_HSE && CLOCK_MAX_216MHZ && BOARD_USE_HSE_25MHZ
+    default 216 if BOARD_HAS_HSE && CLOCK_MAX_216MHZ
+    default 108 if !BOARD_HAS_HSE && CLOCK_MAX_216MHZ
     range 50 432
 
 choice
 bool "Main PLL division factor (PLLP) for main system clock" if USE_CLOCK_PLL
-default PLL_P_DIV_4 if CPU_FAM_F4
-default PLL_P_DIV_2 if CPU_FAM_F2 || CPU_FAM_F7
+default PLL_P_DIV_2
 
 config PLL_P_DIV_2
     bool "Divide by 2"
