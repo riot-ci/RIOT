@@ -45,7 +45,7 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_N
 #if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(12))
 #define CONFIG_CLOCK_PLL_N              (336)
-#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(8))
+#elif IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(8))
 #define CONFIG_CLOCK_PLL_N              (168)
 #else
 #define CONFIG_CLOCK_PLL_N              (84)
