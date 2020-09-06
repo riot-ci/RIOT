@@ -82,63 +82,6 @@ extern "C" {
 
 #define CLOCK_HSI                       MHZ(16)
 
-/* The following parameters configure a 48MHz I2S clock with HSE (8MHz) or HSI (16MHz) as PLL input clock */
-#ifndef CONFIG_CLOCK_PLLI2S_M
-#define CONFIG_CLOCK_PLLI2S_M           (4)
-#endif
-#ifndef CONFIG_CLOCK_PLLI2S_N
-#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
-#define CONFIG_CLOCK_PLLI2S_N           (192)
-#else
-#define CONFIG_CLOCK_PLLI2S_N           (96)
-#endif
-#endif
-#ifndef CONFIG_CLOCK_PLLI2S_P
-#define CONFIG_CLOCK_PLLI2S_P           (8)
-#endif
-#ifndef CONFIG_CLOCK_PLLI2S_Q
-#define CONFIG_CLOCK_PLLI2S_Q           (8)
-#endif
-#ifndef CONFIG_CLOCK_PLLI2S_R
-#define CONFIG_CLOCK_PLLI2S_R           (8)
-#endif
-/* The following parameters configure a 48MHz SAI clock with HSE (8MHz) or HSI (16MHz) as PLL input clock */
-#ifndef CONFIG_CLOCK_PLLSAI_M
-#define CONFIG_CLOCK_PLLSAI_M           (4)
-#endif
-#ifndef CONFIG_CLOCK_PLLSAI_N
-#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
-#define CONFIG_CLOCK_PLLSAI_N           (192)
-#else
-#define CONFIG_CLOCK_PLLSAI_N           (96)
-#endif
-#endif
-#ifndef CONFIG_CLOCK_PLLSAI_P
-#define CONFIG_CLOCK_PLLSAI_P           (8)
-#endif
-#ifndef CONFIG_CLOCK_PLLSAI_Q
-#define CONFIG_CLOCK_PLLSAI_Q           (8)
-#endif
-#ifndef CONFIG_CLOCK_PLLSAI_R
-#define CONFIG_CLOCK_PLLSAI_R           (8)
-#endif
-
-#ifndef CONFIG_CLOCK_ENABLE_PLLI2S
-#if defined(MODULE_PERIPH_USBDEV)
-#define CONFIG_CLOCK_ENABLE_PLLI2S      1
-#else
-#define CONFIG_CLOCK_ENABLE_PLLI2S      0
-#endif
-#endif
-
-#ifndef CONFIG_CLOCK_ENABLE_PLLSAI
-#if defined(MODULE_PERIPH_USBDEV)
-#define CONFIG_CLOCK_ENABLE_PLLSAI      1
-#else
-#define CONFIG_CLOCK_ENABLE_PLLSAI      0
-#endif
-#endif
-
 #ifdef __cplusplus
 }
 #endif
