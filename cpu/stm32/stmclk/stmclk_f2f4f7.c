@@ -37,12 +37,12 @@
 #define CONFIG_PLLI2S_SRC           (1)     /* Use external I2S source */
 #endif
 
-/* now we get the actual bitfields */
+/* Compute the bitfields for the PLL configuration */
 #define PLL_M                       (CONFIG_CLOCK_PLL_M << RCC_PLLCFGR_PLLM_Pos)
 #define PLL_N                       (CONFIG_CLOCK_PLL_N << RCC_PLLCFGR_PLLN_Pos)
 #define PLL_P                       (((CONFIG_CLOCK_PLL_P / 2) - 1) << RCC_PLLCFGR_PLLP_Pos)
 #define PLL_Q                       (CONFIG_CLOCK_PLL_Q << RCC_PLLCFGR_PLLQ_Pos)
-#if defined(CONFIG_CLOCK_PLL_R)
+#if defined(RCC_PLLCFGR_PLLR_Pos)
 #define PLL_R                       (CONFIG_CLOCK_PLL_R << RCC_PLLCFGR_PLLR_Pos)
 #else
 #define PLL_R                       (0)
