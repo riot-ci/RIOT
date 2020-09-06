@@ -66,8 +66,8 @@
 
 /* PLLI2S can only be used for USB with F412/F413/F423 lines
    PLLI2S is only enabled if no suitable 48MHz clock source can be generated with PLLQ */
-#if (defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
-     defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+#if (defined(CPU_LINE_STM32F412Cx) || defined(CPU_LINE_STM32F412Rx) || \
+     defined(CPU_LINE_STM32F412Vx) || defined(CPU_LINE_STM32F412Zx) || \
      defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx)) && \
     IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ)
 #define CONFIG_CLOCK_REQUIRE_PLLI2SR 1
@@ -98,8 +98,8 @@
    with HSE (8MHz) or HSI (16MHz) as PLL input clock */
 #ifndef CONFIG_CLOCK_PLLI2S_M
 /* PLLM factor is not shared with PLLI2S on F412/413/423/446 cpu lines */
-#if defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
-    defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+#if defined(CPU_LINE_STM32F412Cx) || defined(CPU_LINE_STM32F412Rx) || \
+    defined(CPU_LINE_STM32F412Vx) || defined(CPU_LINE_STM32F412Zx) || \
     defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx) || \
     defined(CPU_LINE_STM32F446xx)
 #define CONFIG_CLOCK_PLLI2S_M       (4)
@@ -154,8 +154,8 @@
    with HSE (8MHz) or HSI (16MHz) as PLL input clock */
 #ifndef CONFIG_CLOCK_PLLSAI_M
 /* PLLM factor is not shared with PLLSAI on F412/413/423/446 cpu lines */
-#if defined(CPU_LINE_STM32F412cx) || defined(CPU_LINE_STM32F412rx) || \
-    defined(CPU_LINE_STM32F412vx) || defined(CPU_LINE_STM32F412zx) || \
+#if defined(CPU_LINE_STM32F412Cx) || defined(CPU_LINE_STM32F412Rx) || \
+    defined(CPU_LINE_STM32F412Vx) || defined(CPU_LINE_STM32F412Zx) || \
     defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx) || \
     defined(CPU_LINE_STM32F446xx)
 #define CONFIG_CLOCK_PLLSAI_M       (4)
