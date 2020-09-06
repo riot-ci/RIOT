@@ -25,4 +25,5 @@ config BOARD_NUCLEO_F303K8
     # Put other features for this board (in alphabetical order)
     select HAS_RIOTBOOT
 
+source "$(RIOTBOARD)/common/stm32/Kconfig.f0f1f3"
 source "$(RIOTBOARD)/common/nucleo32/Kconfig"

@@ -1,0 +1,206 @@
+# Copyright (c) 2020 Inria
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+
+config CLOCK_MAX_84MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 84MHz
+
+config CLOCK_MAX_96MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 96MHz
+
+config CLOCK_MAX_100MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 100MHz
+
+config CLOCK_MAX_120MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 120MHz
+
+config CLOCK_MAX_168MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 168MHz
+
+config CLOCK_MAX_180MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 180MHz
+
+config CLOCK_MAX_216MHZ
+    bool
+    help
+        Indicates that the CPU max core clock frequency is 216MHz
+
+config BOARD_USE_HSE_12MHZ
+    bool
+    help
+        Indicates that the board uses a 12MHz HSE
+
+config BOARD_USE_HSE_16MHZ
+    bool
+    help
+        Indicates that the board uses a 16MHz HSE
+
+config BOARD_USE_HSE_25MHZ
+    bool
+    help
+        Indicates that the board uses a 25MHz HSE
+
+menu "STM32 F2/F4/F7 clock configuration"
+    depends on CPU_FAM_F2 || CPU_FAM_F4 || CPU_FAM_F7
+
+choice
+bool "Clock source selection"
+default USE_CLOCK_PLL
+
+config USE_CLOCK_PLL
+    bool "Use PLL as system clock"
+
+config USE_CLOCK_HSE
+    bool "Use HSE as system clock"
+    depends on BOARD_HAS_HSE
+
+config USE_CLOCK_HSI
+    bool "Use HSI as system clock"
+
+endchoice
+
+config CLOCK_PLL_M
+    int "Division factor (PLLM) for the main PLL input clock" if USE_CLOCK_PLL
+    default 12 if BOARD_USE_HSE_12MHZ
+    default 25 if BOARD_USE_HSE_25MHZ
+    default 4 if !BOARD_USE_HSE_12MHZ && !BOARD_USE_HSE_25MHZ
+    range 2 63
+
+config CLOCK_PLL_N
+    int "Main PLL multiplication factor (PLLN) for VCO" if USE_CLOCK_PLL
+    default 84 if BOARD_HAS_HSE && CLOCK_MAX_84MHZ
+    default 42 if !BOARD_HAS_HSE && CLOCK_MAX_84MHZ
+    default 192 if BOARD_HAS_HSE && CLOCK_MAX_96MHZ && BOARD_USE_HSE_25MHZ
+    default 96 if BOARD_HAS_HSE && CLOCK_MAX_96MHZ
+    default 48 if !BOARD_HAS_HSE && CLOCK_MAX_96MHZ
+    default 100 if BOARD_HAS_HSE && CLOCK_MAX_100MHZ
+    default 50 if !BOARD_HAS_HSE && CLOCK_MAX_100MHZ
+    default 120 if BOARD_HAS_HSE && CLOCK_MAX_120MHZ
+    default 60 if !BOARD_HAS_HSE && CLOCK_MAX_120MHZ
+    default 336 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ && BOARD_USE_HSE_12MHZ
+    default 84 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ && BOARD_USE_HSE_16MHZ
+    default 168 if BOARD_HAS_HSE && CLOCK_MAX_168MHZ
+    default 84 if !BOARD_HAS_HSE && CLOCK_MAX_168MHZ
+    default 180 if BOARD_HAS_HSE && CLOCK_MAX_180MHZ
+    default 90 if !BOARD_HAS_HSE && CLOCK_MAX_180MHZ
+    default 432 if BOARD_HAS_HSE && CLOCK_MAX_216MHZ && BOARD_USE_HSE_25MHZ
+    default 216 if BOARD_HAS_HSE && CLOCK_MAX_216MHZ
+    default 108 if !BOARD_HAS_HSE && CLOCK_MAX_216MHZ
+    range 50 432
+
+choice
+bool "Main PLL division factor (PLLP) for main system clock" if USE_CLOCK_PLL
+default PLL_P_DIV_2 if !CLOCK_MAX_84MHZ
+default PLL_P_DIV_4 if CLOCK_MAX_84MHZ
+
+config PLL_P_DIV_2
+    bool "Divide by 2"
+
+config PLL_P_DIV_4
+    bool "Divide by 4"
+
+config PLL_P_DIV_6
+    bool "Divide by 6"
+
+config PLL_P_DIV_8
+    bool "Divide by 8"
+
+endchoice
+
+config CLOCK_PLL_P
+    int
+    default 2 if PLL_P_DIV_2
+    default 4 if PLL_P_DIV_4
+    default 6 if PLL_P_DIV_6
+    default 8 if PLL_P_DIV_8
+
+config CLOCK_PLL_Q
+    int "Main PLL division factor (PLLQ) for USB OTG FS, and SDIO clocks" if USE_CLOCK_PLL
+    default 7 if CLOCK_MAX_84MHZ
+    default 4 if CLOCK_MAX_96MHZ
+    default 4 if CLOCK_MAX_100MHZ
+    default 5 if CLOCK_MAX_120MHZ
+    default 7 if CLOCK_MAX_168MHZ
+    default 8 if CLOCK_MAX_180MHZ
+    default 9 if CLOCK_MAX_216MHZ
+
+    range 2 15
+
+choice
+bool "APB1 prescaler (division factor of HCLK to produce PCLK1)"
+default CLOCK_APB1_DIV_2 if CLOCK_MAX_84MHZ || CLOCK_MAX_96MHZ || CLOCK_MAX_100MHZ
+default CLOCK_APB1_DIV_4 if CLOCK_MAX_120MHZ || CLOCK_MAX_68MHZ || CLOCK_MAX_180MHZ || CLOCK_MAX_216MHZ
+
+config CLOCK_APB1_DIV_1
+    bool "Divide HCLK by 1"
+
+config CLOCK_APB1_DIV_2
+    bool "Divide HCLK by 2"
+
+config CLOCK_APB1_DIV_4
+    bool "Divide HCLK by 4"
+
+config CLOCK_APB1_DIV_8
+    bool "Divide HCLK by 8"
+
+config CLOCK_APB1_DIV_16
+    bool "Divide HCLK by 16"
+
+endchoice
+
+config CLOCK_APB1_DIV
+    int
+    default 1 if CLOCK_APB1_DIV_1
+    default 2 if CLOCK_APB1_DIV_2
+    default 4 if CLOCK_APB1_DIV_4
+    default 8 if CLOCK_APB1_DIV_8
+    default 16 if CLOCK_APB1_DIV_16
+
+choice
+bool "APB2 prescaler (division factor of HCLK to produce PCLK2)"
+default CLOCK_APB2_DIV_1 if CLOCK_MAX_84MHZ || CLOCK_MAX_96MHZ || CLOCK_MAX_100MHZ
+default CLOCK_APB2_DIV_2 if CLOCK_MAX_120MHZ || CLOCK_MAX_68MHZ || CLOCK_MAX_180MHZ || CLOCK_MAX_216MHZ
+
+config CLOCK_APB2_DIV_1
+    bool "Divide HCLK by 1"
+
+config CLOCK_APB2_DIV_2
+    bool "Divide HCLK by 2"
+
+config CLOCK_APB2_DIV_4
+    bool "Divide HCLK by 4"
+
+config CLOCK_APB2_DIV_8
+    bool "Divide HCLK by 8"
+
+config CLOCK_APB2_DIV_16
+    bool "Divide HCLK by 16"
+
+endchoice
+
+config CLOCK_APB2_DIV
+    int
+    default 1 if CLOCK_APB2_DIV_1
+    default 2 if CLOCK_APB2_DIV_2
+    default 4 if CLOCK_APB2_DIV_4
+    default 8 if CLOCK_APB2_DIV_8
+    default 16 if CLOCK_APB2_DIV_16
+
+endmenu
+
+source "$(RIOTBOARD)/common/stm32/Kconfig"
