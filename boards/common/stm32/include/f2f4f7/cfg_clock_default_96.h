@@ -36,7 +36,7 @@ extern "C" {
  * frequency of 100MHz.
  * @{
  */
-/* The following parameters configure a 96MHz system clock with HSE (8MHz or
+/* The following parameters configure a 96MHz system clock with HSE (8MHz, 16MHz or
    25MHz) or HSI (16MHz) as PLL input clock */
 #ifndef CONFIG_CLOCK_PLL_M
 #if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(25))
@@ -48,7 +48,7 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_N
 #if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(25))
 #define CONFIG_CLOCK_PLL_N              (384)
-#elif IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
+#elif IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(8))
 #define CONFIG_CLOCK_PLL_N              (192)
 #else
 #define CONFIG_CLOCK_PLL_N              (96)

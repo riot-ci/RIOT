@@ -33,13 +33,13 @@ extern "C" {
  * @name    Clock PLL settings (100MHz)
  * @{
  */
-/* The following parameters configure a 100MHz system clock with HSE (8MHz) or
-   HSI (16MHz) as PLL input clock */
+/* The following parameters configure a 100MHz system clock with HSE (8MHz or
+   16MHz) or HSI (16MHz) as PLL input clock */
 #ifndef CONFIG_CLOCK_PLL_M
 #define CONFIG_CLOCK_PLL_M              (4)
 #endif
 #ifndef CONFIG_CLOCK_PLL_N
-#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
+#if IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && (CLOCK_HSE == MHZ(8))
 #define CONFIG_CLOCK_PLL_N              (200)
 #else
 #define CONFIG_CLOCK_PLL_N              (100)
