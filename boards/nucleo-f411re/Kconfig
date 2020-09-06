@@ -27,6 +27,7 @@ config BOARD_NUCLEO_F411RE
     # Clock configuration
     select BOARD_HAS_HSE
     select BOARD_HAS_LSE
+    select CLOCK_MAX_100MHZ
 
 source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
