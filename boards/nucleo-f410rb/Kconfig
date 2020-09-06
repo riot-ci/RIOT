@@ -23,4 +23,10 @@ config BOARD_NUCLEO_F410RB
     select HAS_PERIPH_TIMER
     select HAS_PERIPH_UART
 
+    # Clock configuration
+    select BOARD_HAS_HSE
+    select BOARD_HAS_LSE
+    select CLOCK_MAX_96MHZ
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"

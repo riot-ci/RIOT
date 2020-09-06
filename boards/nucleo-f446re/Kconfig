@@ -30,4 +30,10 @@ config BOARD_NUCLEO_F446RE
     select HAS_MOTOR_DRIVER
     select HAS_RIOTBOOT
 
+    # Clock configuration
+    select BOARD_HAS_HSE
+    select BOARD_HAS_LSE
+    select CLOCK_MAX_180MHZ
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"

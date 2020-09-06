@@ -25,4 +25,10 @@ config BOARD_NUCLEO_F429ZI
     select HAS_PERIPH_UART
     select HAS_PERIPH_USBDEV
 
+    # Clock configuration
+    select BOARD_HAS_HSE
+    select BOARD_HAS_LSE
+    select CLOCK_MAX_168MHZ
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
 source "$(RIOTBOARD)/common/nucleo144/Kconfig"
