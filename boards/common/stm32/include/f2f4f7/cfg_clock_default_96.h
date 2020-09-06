@@ -20,8 +20,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef F2F4F7_CFG_CLOCK_96_DEFAULT_H
-#define F2F4F7_CFG_CLOCK_96_DEFAULT_H
+#ifndef F2F4F7_CFG_CLOCK_DEFAULT_96_H
+#define F2F4F7_CFG_CLOCK_DEFAULT_96_H
 
 #include "f2f4f7/cfg_clock_common.h"
 
@@ -32,7 +32,7 @@ extern "C" {
 /**
  * @name    Clock PLL settings (100MHz)
  *
- * The PLL settings provided here can be used for USB on CPU wich a max
+ * The PLL settings provided here can be used for USB on CPU with a max
  * frequency of 100MHz.
  * @{
  */
@@ -86,5 +86,5 @@ extern "C" {
 #error "SYSCLK cannot exceed 100MHz"
 #endif
 
-#endif /* F2F4F7_CFG_CLOCK_96_DEFAULT_H */
+#endif /* F2F4F7_CFG_CLOCK_DEFAULT_96_H */
 /** @} */
