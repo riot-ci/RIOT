@@ -20,8 +20,8 @@
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-#ifndef F4_CFG_CLOCK_COMMON_H
-#define F4_CFG_CLOCK_COMMON_H
+#ifndef F2F4F7_CFG_CLOCK_COMMON_H
+#define F2F4F7_CFG_CLOCK_COMMON_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,5 +86,5 @@ extern "C" {
 }
 #endif
 
-#endif /* F4_CFG_CLOCK_COMMON_H */
+#endif /* F2F4F7_CFG_CLOCK_COMMON_H */
 /** @} */
