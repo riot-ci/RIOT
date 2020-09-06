@@ -27,3 +27,9 @@ config BOARD_STM32F4DISCOVERY
 
     # Various other features (if any)
     select HAS_ARDUINO
+
+    # Clock configuration
+    select BOARD_HAS_HSE
+    select CLOCK_MAX_168MHZ
+
+source "$(RIOTBOARD)/common/stm32/Kconfig.f2f4f7"
