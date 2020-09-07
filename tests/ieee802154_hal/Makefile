@@ -29,13 +29,8 @@ USEMODULE += event_thread_highest
 USEMODULE += event_callback
 USEMODULE += xtimer
 USEMODULE += ieee802154_radio_hal
+USEMODULE += netdev_default
 
 CFLAGS += -DEVENT_THREAD_HIGHEST_STACKSIZE=1024
-
-# define the driver to be used for selected boards
-DRIVER := cc2538_rf
-
-# include the selected driver
-USEMODULE += $(DRIVER)
 
 include $(RIOTBASE)/Makefile.include
