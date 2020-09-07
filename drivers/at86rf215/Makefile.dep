@@ -15,6 +15,10 @@ ifeq (,$(filter at86rf215m,$(USEMODULE)))
   DEFAULT_MODULE += at86rf215_24ghz
 endif
 
+ifneq (,$(filter at86rf215_batmon,$(USEMODULE)))
+  USEMODULE += sys_bus_power
+endif
+
 USEMODULE += xtimer
 USEMODULE += netif
 USEMODULE += ieee802154
