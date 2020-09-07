@@ -111,4 +111,13 @@ void auto_init_at86rf215(void)
         _setup_netif(netif_24, dev_24, stack_24, AT86RF215_MAC_PRIO);
     }
 }
+
+at86rf215_t *netif_get_at86rf215(uint8_t idx)
+{
+    if (idx >= AT86RF215_NUM) {
+        return NULL;
+    }
+
+    return &at86rf215_devs[idx];
+}
 /** @} */
