@@ -32,7 +32,7 @@
 #define PLL_SRC                 (RCC_CFGR_PLLSRC_HSI_DIV2)
 #endif
 
-#define PLL_MUL                 ((CONFIG_CLOCK_PLL_MUL - 2) << 18)
+#define PLL_MUL                 ((CONFIG_CLOCK_PLL_MUL - 2) << RCC_CFGR_PLLMUL_Pos)
 #define PLL_PREDIV              (CONFIG_CLOCK_PLL_PREDIV - 1)
 
 #define CLOCK_AHB_DIV           (RCC_CFGR_HPRE_DIV1)
@@ -80,19 +80,18 @@ void stmclk_init_sysclk(void)
     /* disable all active clocks except HSI -> resets the clk configuration */
     RCC->CR = (RCC_CR_HSION | RCC_CR_HSITRIM_4);
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
+    /* HSE is only used if provided by board and core clock input is using HSE
+       or PLL */
+    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && !IS_ACTIVE(CONFIG_USE_CLOCK_HSI)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
+    }
 
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
         RCC->CFGR |= RCC_CFGR_SW_HSE;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
     else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
-        if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE)) {
-            /* if available, enable the HSE clock now */
-            RCC->CR |= (RCC_CR_HSEON);
-            while (!(RCC->CR & RCC_CR_HSERDY)) {}
-        }
         /* now the PLL can safely be configured and started */
         /* reset PLL configuration bits */
         RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
