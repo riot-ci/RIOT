@@ -331,8 +331,8 @@
 #endif
 
 /* Default is not configure MCO2 */
-#ifndef CONFIG_CLOCK_ENABLE_MCO1
-#define CONFIG_CLOCK_ENABLE_MCO1        0
+#ifndef CONFIG_CLOCK_ENABLE_MCO2
+#define CONFIG_CLOCK_ENABLE_MCO2        0
 #endif
 
 #if !defined(RCC_CFGR_MCO2) && IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO2)
@@ -473,22 +473,20 @@ void stmclk_init_sysclk(void)
         RCC->CFGR |= CLOCK_MCO2_SRC | CLOCK_MCO2_PRE;
     }
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
+    /* HSE is only used if provided by board and core clock input is using HSE
+       or PLL */
+    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && !IS_ACTIVE(CONFIG_USE_CLOCK_HSI)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
+    }
 
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
         /* Enable HSE as system clock */
         RCC->CFGR |= (RCC_CFGR_SW_HSE);
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
 
     if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLL)) {
-        /* if configured, we need to enable the HSE clock now */
-        if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE)) {
-            RCC->CR |= (RCC_CR_HSEON);
-            while (!(RCC->CR & RCC_CR_HSERDY)) {}
-        }
-
         /* now we can safely configure and start the PLL */
         RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q | PLL_R);
         RCC->CR |= (RCC_CR_PLLON);
