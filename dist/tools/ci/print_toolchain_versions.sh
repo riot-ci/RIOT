@@ -126,6 +126,7 @@ for p in \
          arm-none-eabi \
          avr mips-mti-elf \
          msp430-elf \
+         riscv-none-elf \
          riscv-none-embed \
          xtensa-esp32-elf \
          xtensa-esp8266-elf \
@@ -141,6 +142,7 @@ for p in \
          arm-none-eabi \
          mips-mti-elf \
          msp430-elf \
+         riscv-none-elf \
          riscv-none-embed \
          xtensa-esp32-elf \
          xtensa-esp8266-elf \
