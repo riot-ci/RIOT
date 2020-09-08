@@ -206,6 +206,9 @@ ifneq (,$(filter gnrc_netif,$(USEMODULE)))
   ifneq (,$(filter gnrc_lorawan,$(USEMODULE)))
     USEMODULE += gnrc_netif_lorawan
   endif
+  ifneq (,$(filter netif_pktq,$(USEMODULE)))
+    USEMODULE += gnrc_netif_pktq
+  endif
 endif
 
 ifneq (,$(filter gnrc_netif_bus,$(USEMODULE)))
