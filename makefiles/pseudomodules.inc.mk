@@ -21,6 +21,7 @@ PSEUDOMODULES += dhcpv6_%
 PSEUDOMODULES += ecc_%
 PSEUDOMODULES += event_%
 PSEUDOMODULES += evtimer_mbox
+PSEUDOMODULES += fatfs_vfs_format
 PSEUDOMODULES += fmt_%
 PSEUDOMODULES += gnrc_dhcpv6_%
 PSEUDOMODULES += gnrc_ipv6_default
