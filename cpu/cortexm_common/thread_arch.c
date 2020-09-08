@@ -305,6 +305,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     /* save context by pushing unsaved registers to the stack */
     /* {r0-r3,r12,LR,PC,xPSR,s0-s15,FPSCR} are saved automatically on exception entry */
     ".thumb_func                      \n"
+    ".syntax unified                  \n"
 
     /* skip context saving if sched_active_thread == NULL */
     "ldr    r1, =sched_active_thread  \n" /* r1 = &sched_active_thread  */
@@ -372,13 +373,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     /* Calculate the expected stack offset beforehand so that we don't have to
      * store the old SP from here on, saves a register we don't have */
-#if defined (__clang__)
-    /* Clang doesn't like the 'sub' instruction, swap for a subs. Generates
-     * identical bytecode as the GCC instruction used below */
     "subs   r0, #36                   \n" /* Move saved SP with 9 words */
-#else
-    "sub   r0, #36                    \n" /* Move saved SP with 9 words */
-#endif
     "str    r0, [r1]                  \n" /* And store */
 
     /* we can not push high registers directly, so we move R11-R8 into
