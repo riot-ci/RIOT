@@ -16,28 +16,26 @@ config USE_CLOCK_PLL
     bool "PLL"
 
 config USE_CLOCK_HSE
-    bool "Direct High frequency external oscillator (HSE)"
-    depends on BOARD_HAS_HSE
+    bool "Direct High frequency external oscillator (HSE)" if BOARD_HAS_HSE
 
 config USE_CLOCK_HSI
     bool "Direct High frequency internal oscillator (HSI16)"
 
 endchoice
 
-if USE_CLOCK_PLL
 config CLOCK_PLL_M
-    int "M: Division factor for the main PLL input clock"
+    int "M: Division factor for the main PLL input clock" if USE_CLOCK_PLL
     default 6 if BOARD_HAS_HSE
     default 4 if !BOARD_HAS_HSE
     range 1 16
 
 config CLOCK_PLL_N
-    int "N: Multiply factor for the VCO"
+    int "N: Multiply factor for the VCO" if USE_CLOCK_PLL
     default 40
     range 8 127
 
 choice
-bool "R: Main PLL division factor for PLL 'R' clock (system clock)"
+bool "R: Main PLL division factor for PLL 'R' clock (system clock)" if USE_CLOCK_PLL
 default PLL_R_DIV_2
 
 config PLL_R_DIV_2
@@ -60,7 +58,6 @@ config CLOCK_PLL_R
     default 4 if PLL_R_DIV_4
     default 6 if PLL_R_DIV_6
     default 8 if PLL_R_DIV_8
-endif
 
 choice
 bool "APB1 prescaler (division factor of HCLK to produce PCLK1)"
