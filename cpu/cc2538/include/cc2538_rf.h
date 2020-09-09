@@ -248,13 +248,6 @@ void cc2538_get_addr_long(uint8_t *addr);
 void cc2538_get_addr_short(uint8_t *addr);
 
 /**
- * @brief   Get the primary (burned-in) EUI-64 of the device
- *
- * @return  The primary EUI-64 of the device
- */
-uint64_t cc2538_get_eui64_primary(void);
-
-/**
  * @brief   Get the configured channel number of the device
  *
  * @return  The currently set channel number
