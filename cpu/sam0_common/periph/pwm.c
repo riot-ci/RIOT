@@ -79,8 +79,38 @@ static inline bool _use_tcc(pwm_t dev)
            pwm_config[dev].tim.type == TIMER_TYPE_TCC;
 }
 
+static inline void _check_defines(void)
+{
+#ifdef TCC_CTRLA_PRESCALER_DIV1024_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV1024_Val == TC_CTRLA_PRESCALER_DIV1024_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+#ifdef TCC_CTRLA_PRESCALER_DIV256_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV256_Val == TC_CTRLA_PRESCALER_DIV256_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+#ifdef TCC_CTRLA_PRESCALER_DIV64_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV64_Val == TC_CTRLA_PRESCALER_DIV64_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+#ifdef TCC_CTRLA_PRESCALER_DIV16_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV16_Val == TC_CTRLA_PRESCALER_DIV16_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+#ifdef TCC_CTRLA_PRESCALER_DIV8_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV8_Val == TC_CTRLA_PRESCALER_DIV8_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+#ifdef TCC_CTRLA_PRESCALER_DIV4_Val
+    static_assert(TCC_CTRLA_PRESCALER_DIV4_Val == TC_CTRLA_PRESCALER_DIV4_Val,
+                  "TCC and TC prescaler not equal");
+#endif
+}
+
 static uint8_t _get_prescaler(unsigned int target, int *scale)
 {
+    _check_defines();
+
     if (target == 0) {
         return 0xff;
     }
@@ -194,6 +224,7 @@ static void _tc_init(Tc *tc, pwm_mode_t mode, uint8_t prescaler, uint8_t res)
             break;
         case PWM_CENTER:        /* currently not supported */
         default:
+            assert(0);
             return;
     }
 
@@ -245,6 +276,7 @@ static void _tcc_init(Tcc *tcc, pwm_mode_t mode, uint8_t prescaler, uint16_t res
             break;
         case PWM_CENTER:        /* currently not supported */
         default:
+            assert(0);
             return;
     }
     while (tcc->SYNCBUSY.reg & TCC_SYNCBUSY_CTRLB) {}
