@@ -11,7 +11,10 @@
  * @{
  *
  * @file
- * @brief       STDIO over ARM Semihosting implementation
+ * @brief       STDIO over ARM and RISC-V Semihosting implementation
+ *
+ * RISC-V semihosting closely mimics ARM semihosting, only the break sequence is
+ * different.
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -54,6 +57,41 @@
 #define STDIO_SEMIHOSTING_SYS_READ      (0x06) /**< Read command  */
 /** @} */
 
+#ifdef CPU_ARCH_RISCV
+static bool _semihosting_connected(void) {
+    return true;
+}
+
+static uint32_t _semihosting_raw(int cmd, uint32_t *args)
+{
+    uint32_t result = 0;
+    /* Moves cmd and args to r0 and r1. Then triggers a breakpoint.
+     * Finally moves the results stored in r0 to result
+     */
+    __asm__(
+        ".option norvc      \n"
+        "mv a0, %[cmd]      \n"
+        "mv a1, %[args]     \n"
+        /* Wrapping the ebreak instruction in two NOP SLLI and SRAI instructions
+         * act as indicator to the GDB session that this is a
+         * semihosting trap */
+        "slli x0, x0, 0x1f  \n"
+        "ebreak             \n"
+        "srai x0, x0, 7     \n"
+        "mv %[result], a0   \n"
+        : /* Outputs */
+        [result] "=r" (result)
+        : /* Inputs */
+        [cmd] "r" (cmd),
+        [args] "r" (args)
+        : /* Clobbered registers */
+        "a0", "a1", "memory"
+    );
+    return result;
+}
+
+#elif defined(MODULE_CORTEXM_COMMON)
+
 static bool _semihosting_connected(void) {
 #ifdef CoreDebug_DHCSR_C_DEBUGEN_Msk
     /* Best effort attempt to detect if a debug session is active */
@@ -84,6 +122,7 @@ static uint32_t _semihosting_raw(int cmd, uint32_t *args)
     );
     return result;
 }
+#endif
 
 static size_t _semihosting_write(const uint8_t *buffer, size_t len)
 {
