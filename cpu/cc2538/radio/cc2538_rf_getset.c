@@ -85,28 +85,24 @@ unsigned int cc2538_get_chan(void)
     return IEEE802154_FREQ2CHAN(CC2538_MIN_FREQ + RFCORE_XREG_FREQCTRL);
 }
 
-uint64_t cc2538_get_eui64_primary(void)
+int cc2538_get_eui64_primary(const void *arg, eui64_t *addr)
 {
+    (void) arg;
+
     /*
      * The primary EUI-64 seems to be written to memory in a non-sequential
      * byte order, with both 4-byte halves of the address flipped.
      */
-    uint64_t eui64 = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[4];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[5];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[6];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[7];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[0];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[1];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[2];
-    eui64 <<= 8;
-    eui64 |= ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[3];
-    return eui64;
+    addr->uint8[0] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[4];
+    addr->uint8[1] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[5];
+    addr->uint8[2] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[6];
+    addr->uint8[3] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[7];
+    addr->uint8[4] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[0];
+    addr->uint8[5] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[1];
+    addr->uint8[6] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[2];
+    addr->uint8[7] = ((uint8_t*)CC2538_EUI64_LOCATION_PRI)[3];
+
+    return 0;
 }
 
 bool cc2538_get_monitor(void)
