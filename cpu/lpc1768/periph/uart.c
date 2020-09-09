@@ -82,10 +82,10 @@ static inline void init_base(uart_t uart, uint32_t baudrate)
     /* power on UART device and select peripheral clock */
     LPC_SC->PCONP |= (1 << _DEV_OFFSET(uart));
     if (_DEV_OFFSET(uart) >= 16) {
-        LPC_SC->PCLKSEL1 &= ~(0x3 << ((_DEV_OFFSET(uart) * 2) - 32));
+        LPC_SC->PCLKSEL1 &= ~((uint32_t)0x3 << ((_DEV_OFFSET(uart) * 2) - 32));
     }
     else {
-        LPC_SC->PCLKSEL0 &= ~(0x3 << (_DEV_OFFSET(uart) * 2));
+        LPC_SC->PCLKSEL0 &= ~((uint32_t)0x3 << (_DEV_OFFSET(uart) * 2));
     }
     /* set mode to 8N1 and enable access to divisor latch */
     dev(uart)->LCR = ((0x3 << 0) | (1 << 7));
@@ -96,20 +96,24 @@ static inline void init_base(uart_t uart, uint32_t baudrate)
     dev(uart)->FCR = 1;
 
     /* Clear register for mux selection */
-    *(&LPC_PINCON->PINSEL0 + cfg->pinsel) &= ~(0xF << (cfg->pinsel_shift));
+    *(&LPC_PINCON->PINSEL0 + cfg->pinsel) &=
+            ~((uint32_t)0xF << (cfg->pinsel_shift * 2));
     /* Select uart TX mux */
     *(&LPC_PINCON->PINSEL0 + cfg->pinsel) |=
-            (cfg->pinsel_af << (cfg->pinsel_shift));
+            (cfg->pinsel_af << (cfg->pinsel_shift * 2));
     /* Select uart RX mux */
     *(&LPC_PINCON->PINSEL0 + cfg->pinsel) |=
-            (cfg->pinsel_af << (cfg->pinsel_shift + 2));
+            (cfg->pinsel_af << (cfg->pinsel_shift * 2 + 2));
 
     /* Clear modes for RX and TX pins */
-    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) &= ~(0xF << (cfg->pinsel_shift));
+    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) &=
+            ~((uint32_t)0xF << (cfg->pinsel_shift * 2));
     /* Set TX mode */
-    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) |= (0x2 << (cfg->pinsel_shift));
+    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) |=
+            ((uint32_t)0x2 << (cfg->pinsel_shift * 2));
     /* Set RX mode */
-    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) |= (0x2 << (cfg->pinsel_shift + 2));
+    *(&LPC_PINCON->PINMODE0 + cfg->pinsel) |=
+            ((uint32_t)0x2 << (cfg->pinsel_shift * 2 + 2));
 
     /* disable access to divisor latch */
     dev(uart)->LCR &= ~(1 << 7);
