@@ -133,11 +133,19 @@ void systick_timer_clear(void)
 
 unsigned int systick_timer_read(void)
 {
+    uint32_t val, load;
+
+    /* re-read registers if VAL wraps around */
+    do {
+        val  = SysTick->VAL;
+        load = SysTick->LOAD;
+    } while (SysTick->VAL > val);
+
     if (IS_USED(MODULE_SYSTICK_PRESCALER)) {
-        uint32_t current_offset = SysTick->LOAD - SysTick->VAL;
+        uint32_t current_offset = load - val;
         return now + (current_offset + now_offset) / prescaler;
     } else {
-        return now + SysTick->LOAD - SysTick->VAL;
+        return now + load - val;
     }
 }
 
