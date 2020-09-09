@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2020 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     drivers_nrf52_802154
+ * @{
+ *
+ * @file
+ * @brief       Implementation of the IEEE 802.15.4 for nRF52 radios
+ *
+ * @author      José I. Alamos <jose.alamos@haw-hamburg.de>
+ * @}
+ */
 #include <string.h>
 #include <errno.h>
 
@@ -229,14 +247,14 @@ static int _confirm_cca(ieee802154_dev_t *dev)
     (void) dev;
     int res;
     switch (_state) {
-        case STATE_CCA_CLEAR:
-            res = true;
-            break;
-        case STATE_CCA_BUSY:
-            res = false;
-            break;
-        default:
-            res = -EAGAIN;
+    case STATE_CCA_CLEAR:
+        res = true;
+        break;
+    case STATE_CCA_BUSY:
+        res = false;
+        break;
+    default:
+        res = -EAGAIN;
     }
 
     _state = STATE_RX;
@@ -363,18 +381,18 @@ static int _request_set_trx_state(ieee802154_dev_t *dev, ieee802154_trx_state_t 
     while (NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled);
 
     switch(state) {
-        case IEEE802154_TRX_STATE_TRX_OFF:
-            _state = STATE_IDLE;
-            break;
-        case IEEE802154_TRX_STATE_RX_ON:
-            NRF_RADIO->PACKETPTR = (uint32_t)rxbuf;
-            NRF_RADIO->TASKS_RXEN = 1;
-            _state = STATE_RX;
-            break;
-        case IEEE802154_TRX_STATE_TX_ON:
-            NRF_RADIO->PACKETPTR = (uint32_t)txbuf;
-            _state = STATE_IDLE;
-            break;
+    case IEEE802154_TRX_STATE_TRX_OFF:
+        _state = STATE_IDLE;
+        break;
+    case IEEE802154_TRX_STATE_RX_ON:
+        NRF_RADIO->PACKETPTR = (uint32_t)rxbuf;
+        NRF_RADIO->TASKS_RXEN = 1;
+        _state = STATE_RX;
+        break;
+    case IEEE802154_TRX_STATE_TX_ON:
+        NRF_RADIO->PACKETPTR = (uint32_t)txbuf;
+        _state = STATE_IDLE;
+        break;
     }
 
     return 0;
@@ -476,7 +494,7 @@ void isr_radio(void)
 
     if (NRF_RADIO->EVENTS_CCABUSY) {
         NRF_RADIO->EVENTS_CCABUSY = 0;
-        if (_state == STATE_TX) { 
+        if (_state == STATE_TX) {
             _state = STATE_CCA_BUSY;
             dev->cb(dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
         }
@@ -490,65 +508,65 @@ void isr_radio(void)
         NRF_RADIO->EVENTS_END = 0;
 
         switch (_state) {
-            case STATE_TX:
-                DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
+        case STATE_TX:
+            DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
 
-                _set_ifs_timer(txbuf[0] > SIFS_MAXPKTSIZE);
-                _state = STATE_IDLE;
-                dev->cb(dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
-                break;
-            case STATE_RX:
-                if (NRF_RADIO->CRCSTATUS) {
-                    bool l2filter_passed = _l2filter(rxbuf+1);
-                    bool is_auto_ack_en = ack[1];
-                    bool is_ack = rxbuf[1] & IEEE802154_FCF_TYPE_ACK;
-                    bool ack_req = rxbuf[1] & IEEE802154_FCF_ACK_REQ;
+            _set_ifs_timer(txbuf[0] > SIFS_MAXPKTSIZE);
+            _state = STATE_IDLE;
+            dev->cb(dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
+            break;
+        case STATE_RX:
+            if (NRF_RADIO->CRCSTATUS) {
+                bool l2filter_passed = _l2filter(rxbuf+1);
+                bool is_auto_ack_en = ack[1];
+                bool is_ack = rxbuf[1] & IEEE802154_FCF_TYPE_ACK;
+                bool ack_req = rxbuf[1] & IEEE802154_FCF_ACK_REQ;
 
-                    /* If radio is in promiscuos mode, indicate packet and
-                     * don't event think of sending an ACK frame :) */
-                    if (cfg.promisc) {
-                        dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
+                /* If radio is in promiscuos mode, indicate packet and
+                 * don't event think of sending an ACK frame :) */
+                if (cfg.promisc) {
+                    dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
+                }
+                /* If the L2 filter passes, device if the frame is indicated
+                 * directly or if the driver should send an ACK frame before
+                 * the indication */
+                else if (l2filter_passed) {
+                    if (ack_req && is_auto_ack_en) {
+                        timer_set(NRF802154_TIMER, MAC_TIMER_CHAN_ACK, SIFS);
+                        timer_start(NRF802154_TIMER);
+                        _disable();
+                        _state = STATE_ACK;
                     }
-                    /* If the L2 filter passes, device if the frame is indicated
-                     * directly or if the driver should send an ACK frame before
-                     * the indication */
-                    else if (l2filter_passed) {
-                        if (ack_req && is_auto_ack_en) {
-                            timer_set(NRF802154_TIMER, MAC_TIMER_CHAN_ACK, SIFS);
-                            timer_start(NRF802154_TIMER);
-                            _disable();
-                            _state = STATE_ACK;
-                        }
-                        else {
-                            dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
-                        }
-                    }
-                    /* In case the packet is an ACK and the ACK filter is disabled,
-                     * indicate the frame reception */
-                    else if (is_ack && !cfg.ack_filter) {
-                        dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
-                    }
-                    /* If all failed, simply drop the frame and continue listening
-                     * to incoming frames */
                     else {
-                        NRF_RADIO->TASKS_START = 1;
+                        dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
                     }
                 }
+                /* In case the packet is an ACK and the ACK filter is disabled,
+                 * indicate the frame reception */
+                else if (is_ack && !cfg.ack_filter) {
+                    dev->cb(dev, IEEE802154_RADIO_INDICATION_RX_DONE);
+                }
+                /* If all failed, simply drop the frame and continue listening
+                 * to incoming frames */
                 else {
                     NRF_RADIO->TASKS_START = 1;
                 }
-                break;
-            case STATE_ACK:
-                _state = STATE_RX;
-                NRF_RADIO->PACKETPTR = (uint32_t) rxbuf;
-                _disable();
-                /* This will take around 0.5 us */
-                while(NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled);
-                NRF_RADIO->TASKS_RXEN = 1;
-                _set_ifs_timer(false);
-                break;
-            default:
-                assert(false);
+            }
+            else {
+                NRF_RADIO->TASKS_START = 1;
+            }
+            break;
+        case STATE_ACK:
+            _state = STATE_RX;
+            NRF_RADIO->PACKETPTR = (uint32_t) rxbuf;
+            _disable();
+            /* This will take around 0.5 us */
+            while(NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled);
+            NRF_RADIO->TASKS_RXEN = 1;
+            _set_ifs_timer(false);
+            break;
+        default:
+            assert(false);
         }
     }
 
@@ -594,12 +612,12 @@ static bool _get_cap(ieee802154_dev_t *dev, ieee802154_rf_caps_t cap)
 {
     (void) dev;
     switch (cap) {
-        case IEEE802154_CAP_24_GHZ:
-        case IEEE802154_CAP_IRQ_TX_DONE:
-        case IEEE802154_CAP_IRQ_CCA_DONE:
-            return true;
-        default:
-            return false;
+    case IEEE802154_CAP_24_GHZ:
+    case IEEE802154_CAP_IRQ_TX_DONE:
+    case IEEE802154_CAP_IRQ_CCA_DONE:
+        return true;
+    default:
+        return false;
     }
 }
 
@@ -617,18 +635,18 @@ int _set_cca_mode(ieee802154_dev_t *dev, ieee802154_cca_mode_t mode)
     uint8_t tmp = 0;
 
     switch (mode) {
-        case IEEE802154_CCA_MODE_ED_THRESHOLD:
-            tmp = RADIO_CCACTRL_CCAMODE_EdMode;
-            break;
-        case IEEE802154_CCA_MODE_CARRIER_SENSING:
-            tmp = RADIO_CCACTRL_CCAMODE_CarrierOrEdMode;
-            break;
-        case IEEE802154_CCA_MODE_ED_THRESH_AND_CS:
-            tmp = RADIO_CCACTRL_CCAMODE_CarrierAndEdMode;
-            break;
-        case IEEE802154_CCA_MODE_ED_THRESH_OR_CS:
-            tmp = RADIO_CCACTRL_CCAMODE_CarrierOrEdMode;
-            break;
+    case IEEE802154_CCA_MODE_ED_THRESHOLD:
+        tmp = RADIO_CCACTRL_CCAMODE_EdMode;
+        break;
+    case IEEE802154_CCA_MODE_CARRIER_SENSING:
+        tmp = RADIO_CCACTRL_CCAMODE_CarrierOrEdMode;
+        break;
+    case IEEE802154_CCA_MODE_ED_THRESH_AND_CS:
+        tmp = RADIO_CCACTRL_CCAMODE_CarrierAndEdMode;
+        break;
+    case IEEE802154_CCA_MODE_ED_THRESH_OR_CS:
+        tmp = RADIO_CCACTRL_CCAMODE_CarrierOrEdMode;
+        break;
     }
 
     NRF_RADIO->CCACTRL |= tmp;
@@ -661,21 +679,21 @@ static int _set_rx_mode(ieee802154_dev_t *dev, ieee802154_rx_mode_t mode)
     bool ackf = true;
     bool _promisc = false;
     switch (mode) {
-        case IEEE802154_RX_AACK_DISABLED:
-            ack[1] = 0;
-            break;
-        case IEEE802154_RX_AACK_ENABLED:
-            ack[1] = IEEE802154_FCF_TYPE_ACK;
-            break;
-        case IEEE802154_RX_AACK_FRAME_PENDING:
-            ack[1] = IEEE802154_FCF_TYPE_ACK | IEEE802154_FCF_FRAME_PEND;
-            break;
-        case IEEE802154_RX_PROMISC:
-            _promisc = true;
-            break;
-        case IEEE802154_RX_WAIT_FOR_ACK:
-            ackf = false;
-            break;
+    case IEEE802154_RX_AACK_DISABLED:
+        ack[1] = 0;
+        break;
+    case IEEE802154_RX_AACK_ENABLED:
+        ack[1] = IEEE802154_FCF_TYPE_ACK;
+        break;
+    case IEEE802154_RX_AACK_FRAME_PENDING:
+        ack[1] = IEEE802154_FCF_TYPE_ACK | IEEE802154_FCF_FRAME_PEND;
+        break;
+    case IEEE802154_RX_PROMISC:
+        _promisc = true;
+        break;
+    case IEEE802154_RX_WAIT_FOR_ACK:
+        ackf = false;
+        break;
     }
 
     cfg.ack_filter = ackf;
