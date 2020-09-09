@@ -79,7 +79,7 @@ void soft_spi_init_pins(soft_spi_t bus)
         gpio_clear(soft_spi_config[bus].mosi_pin);
     }
     if (gpio_is_valid(soft_spi_config[bus].miso_pin)) {
-        gpio_init(soft_spi_config[bus].mosi_pin, GPIO_IN);
+        gpio_init(soft_spi_config[bus].miso_pin, GPIO_IN);
     }
 }
 
