@@ -12,6 +12,10 @@ LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts
 LINKER_SCRIPT ?= $(CPU_MODEL).ld
 LINKFLAGS += -T$(LINKER_SCRIPT)
 
+CFLAGS += -DCPU_ARCH_$(call uppercase_and_underscore,$(CPU_ARCH))
+CFLAGS += -DCPU_CORE_$(call uppercase_and_underscore,$(CPU_CORE))
+CFLAGS += -DCPU_MODEL_$(call uppercase_and_underscore,$(CPU_MODEL))
+
 CFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG) $(CFLAGS_OPT) $(CFLAGS_LINK)
 ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
 # export linker flags
