@@ -30,19 +30,14 @@
 #define ENABLE_DEBUG    (0)
 #include "debug.h"
 
-#define ED_RSSISCALE        (4U)
-#define ED_RSSIOFFS         (-92)
-
-#define LIFS                (40U)       /**< Long frame IFS time (in symbols) */
-#define SIFS                (12U)       /**< Short frame IFS time (in symbols) */
-#define SIFS_MAXPKTSIZE     (18U)       /**< Maximum packet size, from where a
-                                             frame is considered long */
+#define ED_RSSISCALE        (4U)    /**< RSSI scale for internal HW value */
+#define ED_RSSIOFFS         (-92)   /**< RSSI offset for internal HW value */
 
 /* Set timer period to 16 us (IEEE 802.15.4 symbol time) */
 #define TIMER_FREQ          (62500UL)
 
-#define TX_POWER_MIN        (-40)
-#define TX_POWER_MAX        (8)
+#define TX_POWER_MIN        (-40)   /* in dBm */
+#define TX_POWER_MAX        (8)     /* in dBm */
 
 /**
  * @brief Default nrf802154 radio shortcuts
@@ -346,10 +341,10 @@ static void _set_ifs_timer(bool lifs)
     uint8_t timeout;
     cfg.ifs = true;
     if (lifs) {
-        timeout = LIFS;
+        timeout = IEEE802154_LIFS_SYMS;
     }
     else {
-        timeout = SIFS;
+        timeout = IEEE802154_SIFS_SYMS;
     }
 
     timer_set(NRF802154_TIMER, MAC_TIMER_CHAN_IFS, timeout);
@@ -472,7 +467,7 @@ void isr_radio(void)
         case STATE_TX:
             DEBUG("[nrf802154] TX state: %x\n", (uint8_t)NRF_RADIO->STATE);
 
-            _set_ifs_timer(txbuf[0] > SIFS_MAXPKTSIZE);
+            _set_ifs_timer(txbuf[0] > IEEE802154_SIFS_MAX_FRAME_SIZE);
             _state = STATE_IDLE;
             dev->cb(dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
             break;
@@ -493,7 +488,7 @@ void isr_radio(void)
                  * the indication */
                 else if (l2filter_passed) {
                     if (ack_req && is_auto_ack_en) {
-                        timer_set(NRF802154_TIMER, MAC_TIMER_CHAN_ACK, SIFS);
+                        timer_set(NRF802154_TIMER, MAC_TIMER_CHAN_ACK, IEEE802154_SIFS_SYMS);
                         timer_start(NRF802154_TIMER);
                         _disable();
                         _state = STATE_ACK;
