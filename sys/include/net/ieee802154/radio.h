@@ -490,7 +490,7 @@ struct ieee802154_radio_ops {
      * @post the transceiver state is @ref IEEE802154_TRX_STATE_TRX_OFF
      * During boot or in case the radio doesn't support @ref
      * IEEE802154_CAP_REG_RETENTION when @ref off was called, the
-     * Physical Information Base will be undefined. Thus, for take into
+     * Physical Information Base will be undefined. Thus, take into
      * consideration that the following functions should be called right after
      * the radio is turned on again:
      * - @ref set_cca_threshold
