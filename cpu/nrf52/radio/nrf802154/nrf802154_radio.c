@@ -241,6 +241,7 @@ static int _confirm_cca(ieee802154_dev_t *dev)
 {
     (void) dev;
     int res;
+
     switch (_state) {
     case STATE_CCA_CLEAR:
         res = true;
@@ -373,9 +374,9 @@ static int _request_set_trx_state(ieee802154_dev_t *dev, ieee802154_trx_state_t 
     _disable();
 
     /* This will take in worst case 21 us */
-    while (NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled);
+    while (NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled) {};
 
-    switch(state) {
+    switch (state) {
     case IEEE802154_TRX_STATE_TRX_OFF:
         _state = STATE_IDLE;
         break;
@@ -517,7 +518,7 @@ void isr_radio(void)
             NRF_RADIO->PACKETPTR = (uint32_t) rxbuf;
             _disable();
             /* This will take around 0.5 us */
-            while(NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled);
+            while (NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled) {};
             NRF_RADIO->TASKS_RXEN = 1;
             _set_ifs_timer(false);
             break;
@@ -663,8 +664,10 @@ static int _set_hw_addr_filter(ieee802154_dev_t *dev, const network_uint16_t *sh
 static int _set_rx_mode(ieee802154_dev_t *dev, ieee802154_rx_mode_t mode)
 {
     (void) dev;
+
     bool ackf = true;
     bool _promisc = false;
+
     switch (mode) {
     case IEEE802154_RX_AACK_DISABLED:
         ack[1] = 0;
