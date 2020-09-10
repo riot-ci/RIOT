@@ -223,7 +223,7 @@ typedef struct {
  * @brief   IRQ handler for RF events
  *
  */
-void _irq_handler(void);
+void cc2538_irq_handler(void);
 
 /**
  * @brief   Trigger a clear channel assessment
@@ -236,23 +236,16 @@ bool cc2538_channel_clear(void);
 /**
  * @brief   Get the configured long address of the device
  *
- * @return  The currently set (8-byte) long address
+ * @param[out] addr The currently set (8-byte) long address
  */
-uint64_t cc2538_get_addr_long(void);
+void cc2538_get_addr_long(uint8_t *addr);
 
 /**
  * @brief   Get the configured short address of the device
  *
- * @return  The currently set (2-byte) short address
+ * @param[out] addr The currently set (2-byte) short address
  */
-uint16_t cc2538_get_addr_short(void);
-
-/**
- * @brief   Get the primary (burned-in) EUI-64 of the device
- *
- * @return  The primary EUI-64 of the device
- */
-uint64_t cc2538_get_eui64_primary(void);
+void cc2538_get_addr_short(uint8_t *addr);
 
 /**
  * @brief   Get the configured channel number of the device
@@ -321,14 +314,14 @@ void cc2538_setup(cc2538_rf_t *dev);
  *
  * @param[in] addr          (2-byte) short address to set
  */
-void cc2538_set_addr_short(uint16_t addr);
+void cc2538_set_addr_short(const uint8_t *addr);
 
 /**
  * @brief   Set the long address of the device
  *
  * @param[in] addr          (8-byte) short address to set
  */
-void cc2538_set_addr_long(uint64_t addr);
+void cc2538_set_addr_long(const uint8_t *addr);
 
 /**
  * @brief   Set the channel number of the device
