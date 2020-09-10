@@ -398,44 +398,6 @@ static int _request_set_trx_state(ieee802154_dev_t *dev, ieee802154_trx_state_t 
     return 0;
 }
 
-void nrf802154_on(void)
-{
-    NRF_RADIO->POWER = 1;
-    /* make sure the radio is disabled/stopped */
-    _disable();
-    /* we configure it to run in IEEE802.15.4 mode */
-    NRF_RADIO->MODE = RADIO_MODE_MODE_Ieee802154_250Kbit;
-    /* and set some fitting configuration */
-    NRF_RADIO->PCNF0 = ((8 << RADIO_PCNF0_LFLEN_Pos) |
-                        (RADIO_PCNF0_PLEN_32bitZero << RADIO_PCNF0_PLEN_Pos) |
-                        (RADIO_PCNF0_CRCINC_Include << RADIO_PCNF0_CRCINC_Pos));
-    NRF_RADIO->PCNF1 = IEEE802154_FRAME_LEN_MAX;
-    /* set start frame delimiter */
-    NRF_RADIO->SFD = IEEE802154_SFD;
-    /* set MHR filters */
-    NRF_RADIO->MHRMATCHCONF = 0;              /* Search Pattern Configuration */
-    NRF_RADIO->MHRMATCHMAS = 0xff0007ff;      /* Pattern mask */
-    /* configure CRC conform to IEEE802154 */
-    NRF_RADIO->CRCCNF = ((RADIO_CRCCNF_LEN_Two << RADIO_CRCCNF_LEN_Pos) |
-                         (RADIO_CRCCNF_SKIPADDR_Ieee802154 << RADIO_CRCCNF_SKIPADDR_Pos));
-    NRF_RADIO->CRCPOLY = 0x011021;
-    NRF_RADIO->CRCINIT = 0;
-
-    /* Disable the hardware IFS handling  */
-    NRF_RADIO->MODECNF0 |= RADIO_MODECNF0_RU_Msk;
-
-    NRF_RADIO->SHORTS = DEFAULT_SHORTS;
-
-    _set_cca_thresh(CONFIG_NRF802154_CCA_THRESH_DEFAULT);
-
-    /* enable interrupts */
-    NVIC_EnableIRQ(RADIO_IRQn);
-    NRF_RADIO->INTENSET = RADIO_INTENSET_END_Msk |
-                          RADIO_INTENSET_CCAIDLE_Msk |
-                          RADIO_INTENSET_CCABUSY_Msk;
-
-}
-
 static void _timer_cb(void *arg, int chan)
 {
     (void)arg;
@@ -473,7 +435,6 @@ int nrf802154_init(void)
     (void)result;
     timer_stop(NRF802154_TIMER);
 
-    _state = STATE_IDLE;
     /* power off peripheral */
     NRF_RADIO->POWER = 0;
 
@@ -582,7 +543,41 @@ static int _confirm_on(ieee802154_dev_t *dev)
 static int _request_on(ieee802154_dev_t *dev)
 {
     (void) dev;
-    nrf802154_on();
+    _state = STATE_IDLE;
+    NRF_RADIO->POWER = 1;
+    /* make sure the radio is disabled/stopped */
+    _disable();
+    /* we configure it to run in IEEE802.15.4 mode */
+    NRF_RADIO->MODE = RADIO_MODE_MODE_Ieee802154_250Kbit;
+    /* and set some fitting configuration */
+    NRF_RADIO->PCNF0 = ((8 << RADIO_PCNF0_LFLEN_Pos) |
+                        (RADIO_PCNF0_PLEN_32bitZero << RADIO_PCNF0_PLEN_Pos) |
+                        (RADIO_PCNF0_CRCINC_Include << RADIO_PCNF0_CRCINC_Pos));
+    NRF_RADIO->PCNF1 = IEEE802154_FRAME_LEN_MAX;
+    /* set start frame delimiter */
+    NRF_RADIO->SFD = IEEE802154_SFD;
+    /* set MHR filters */
+    NRF_RADIO->MHRMATCHCONF = 0;              /* Search Pattern Configuration */
+    NRF_RADIO->MHRMATCHMAS = 0xff0007ff;      /* Pattern mask */
+    /* configure CRC conform to IEEE802154 */
+    NRF_RADIO->CRCCNF = ((RADIO_CRCCNF_LEN_Two << RADIO_CRCCNF_LEN_Pos) |
+                         (RADIO_CRCCNF_SKIPADDR_Ieee802154 << RADIO_CRCCNF_SKIPADDR_Pos));
+    NRF_RADIO->CRCPOLY = 0x011021;
+    NRF_RADIO->CRCINIT = 0;
+
+    /* Disable the hardware IFS handling  */
+    NRF_RADIO->MODECNF0 |= RADIO_MODECNF0_RU_Msk;
+
+    NRF_RADIO->SHORTS = DEFAULT_SHORTS;
+
+    _set_cca_thresh(CONFIG_NRF802154_CCA_THRESH_DEFAULT);
+
+    /* enable interrupts */
+    NVIC_EnableIRQ(RADIO_IRQn);
+    NRF_RADIO->INTENSET = RADIO_INTENSET_END_Msk |
+                          RADIO_INTENSET_CCAIDLE_Msk |
+                          RADIO_INTENSET_CCABUSY_Msk;
+
     return 0;
 }
 
@@ -603,8 +598,7 @@ static int _config_phy(ieee802154_dev_t *dev, ieee802154_phy_conf_t *conf)
 
 static int _off(ieee802154_dev_t *dev)
 {
-    /* TODO: implement */
-    (void) dev;
+    NRF_RADIO->POWER = 1;
     return 0;
 }
 
