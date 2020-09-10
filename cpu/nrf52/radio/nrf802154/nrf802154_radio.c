@@ -570,8 +570,6 @@ static int _request_on(ieee802154_dev_t *dev)
 
     NRF_RADIO->SHORTS = DEFAULT_SHORTS;
 
-    _set_cca_thresh(CONFIG_NRF802154_CCA_THRESH_DEFAULT);
-
     /* enable interrupts */
     NVIC_EnableIRQ(RADIO_IRQn);
     NRF_RADIO->INTENSET = RADIO_INTENSET_END_Msk |
