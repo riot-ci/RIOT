@@ -594,6 +594,7 @@ static int _config_phy(ieee802154_dev_t *dev, ieee802154_phy_conf_t *conf)
 
 static int _off(ieee802154_dev_t *dev)
 {
+    (void) dev;
     NRF_RADIO->POWER = 1;
     return 0;
 }
