@@ -577,7 +577,7 @@ static int _request_on(ieee802154_dev_t *dev)
     return 0;
 }
 
-static int _config_phy(ieee802154_dev_t *dev, ieee802154_phy_conf_t *conf)
+static int _config_phy(ieee802154_dev_t *dev, const ieee802154_phy_conf_t *conf)
 {
     (void) dev;
     _disable();
@@ -701,7 +701,8 @@ static int _set_rx_mode(ieee802154_dev_t *dev, ieee802154_rx_mode_t mode)
     return 0;
 }
 
-static int _set_csma_params(ieee802154_dev_t *dev, ieee802154_csma_be_t *bd, int8_t retries)
+static int _set_csma_params(ieee802154_dev_t *dev, const ieee802154_csma_be_t *bd,
+                            int8_t retries)
 {
     (void) dev;
     (void) bd;
