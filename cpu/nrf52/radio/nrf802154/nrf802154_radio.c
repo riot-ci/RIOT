@@ -161,7 +161,8 @@ static int _confirm_transmit(ieee802154_dev_t *dev, ieee802154_tx_info_t *info)
 {
     (void) dev;
 
-    if (_state != STATE_IDLE && _state != STATE_CCA_BUSY && NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled) {
+    if (_state != STATE_IDLE
+        && _state != STATE_CCA_BUSY && NRF_RADIO->STATE != RADIO_STATE_STATE_Disabled) {
         return -EAGAIN;
     }
 
@@ -203,7 +204,8 @@ static inline int8_t _hwval_to_ieee802154_dbm(uint8_t hwval)
     return (ED_RSSISCALE * hwval) + ED_RSSIOFFS;
 }
 
-static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t max_size, ieee802154_rx_info_t *info)
+static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t max_size,
+                          ieee802154_rx_info_t *info)
 {
     (void) dev;
     size_t pktlen = (size_t)rxbuf[0] - IEEE802154_FCS_LEN;
