@@ -37,9 +37,9 @@ typedef struct {
     timer_cb_t cb;          /**< timeout callback */
     void *arg;              /**< argument to the callback */
     unsigned int divisor;   /**< software clock divisor */
-} timer_conf_t;
+} timer_params_t;
 
-static timer_conf_t config[TIMER_NUMOF];
+static timer_params_t params[TIMER_NUMOF];
 /**@}*/
 
 #include "hw_timer.h"
@@ -50,19 +50,21 @@ static inline void _irq_enable(tim_t dev);
 /* Missing from driverlib */
 static inline unsigned long
 PRIV_TimerPrescaleSnapshotGet(unsigned long ulbase, unsigned long ultimer) {
-    return((ultimer == TIMER_A) ? HWREG(ulbase + TIMER_O_TAPS) :
-           HWREG(ulbase + TIMER_O_TBPS));
+    return ((ultimer == TIMER_A) ? HWREG(ulbase + TIMER_O_TAPS) :
+            HWREG(ulbase + TIMER_O_TBPS));
 }
 
-static inline unsigned long long _scaled_to_ll_value(unsigned int uncorrected, unsigned int divisor)
+static inline uint64_t _scaled_to_ll_value(uint32_t uncorrected,
+                                           uint32_t divisor)
 {
-    const unsigned long long scaledv = (unsigned long long) uncorrected * divisor;
+    const uint64_t scaledv = (uint64_t) uncorrected * divisor;
     return scaledv;
 }
 
-static inline unsigned int _llvalue_to_scaled_value(unsigned long long corrected, unsigned int divisor)
+static inline uint32_t _llvalue_to_scaled_value(uint64_t corrected,
+                                                uint32_t divisor)
 {
-    const unsigned long long scaledv = corrected / divisor;
+    const uint64_t scaledv = corrected / divisor;
     return scaledv;
 }
 
@@ -71,50 +73,29 @@ int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
     if (dev >= TIMER_NUMOF){
         return -1;
     }
+    const timer_conf_t *cfg = &timer_config[dev];
 
-    config[dev].cb = cb;
-    config[dev].arg = arg;
-    config[dev].divisor = ROM_SysCtlClockGet() / freq;
+    params[dev].cb = cb;
+    params[dev].arg = arg;
+    params[dev].divisor = ROM_SysCtlClockGet() / freq;
 
-    unsigned int sysctl_timer;
-    unsigned int timer_base;
     unsigned int timer_side = TIMER_A;
-    unsigned int timer_cfg = TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PERIODIC_UP | TIMER_TAMR_TAMIE;
-    unsigned int timer_max_val = 0;
+    unsigned int timer_cfg = TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_PERIODIC_UP |
+                             TIMER_TAMR_TAMIE;
     unsigned int timer_intbit = TIMER_TIMA_TIMEOUT | TIMER_TIMA_MATCH;
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        sysctl_timer = SYSCTL_PERIPH_WTIMER0;
-        timer_base = WTIMER0_BASE;
-        timer_max_val = TIMER_0_MAX_VALUE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        sysctl_timer = SYSCTL_PERIPH_WTIMER1;
-        timer_base = WTIMER1_BASE;
-        timer_max_val = TIMER_1_MAX_VALUE;
-        break;
-#endif
-    default:
-        return -1; /* unreachable */
-    }
+    ROM_SysCtlPeripheralEnable(cfg->sysctl);
 
+    ROM_TimerDisable(cfg->dev, timer_side);
+    ROM_TimerConfigure(cfg->dev, timer_cfg);
 
-    ROM_SysCtlPeripheralEnable(sysctl_timer);
+    uint64_t val_max = _scaled_to_ll_value(cfg->max, params[dev].divisor);
 
-    ROM_TimerDisable(timer_base, timer_side);
-    ROM_TimerConfigure(timer_base, timer_cfg);
+    ROM_TimerPrescaleSet(cfg->dev, timer_side, val_max >> 32);
+    ROM_TimerLoadSet(cfg->dev, timer_side, val_max & 0xFFFFFFFF);
+    ROM_TimerIntClear(cfg->dev, timer_intbit);
 
-    unsigned long long lltimer_val_max = _scaled_to_ll_value(timer_max_val, config[dev].divisor);
-
-    ROM_TimerPrescaleSet(timer_base, timer_side, lltimer_val_max >> 32);
-    ROM_TimerLoadSet(timer_base, timer_side, lltimer_val_max & 0xFFFFFFFF);
-    ROM_TimerIntClear(timer_base, timer_intbit);
-
-    ROM_TimerIntEnable(timer_base, timer_intbit);
+    ROM_TimerIntEnable(cfg->dev, timer_intbit);
 
     _irq_enable(dev);
     timer_start(dev);
@@ -124,82 +105,42 @@ int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 
 int timer_set_absolute(tim_t dev, int channel, unsigned int value)
 {
-    (void) channel;
+    if (dev >= TIMER_NUMOF || channel >= timer_config[dev].channels) {
+        return -1;
+    }
+    const timer_conf_t *cfg = &timer_config[dev];
 
-    unsigned int timer_base;
     unsigned int timer_side = TIMER_A;
     unsigned long long scaledv;
 
-    if (dev >= TIMER_NUMOF){
-        return -1;
-    }
+    ROM_TimerDisable(cfg->dev, timer_side);
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_base = WTIMER0_BASE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_base = WTIMER1_BASE;
-        break;
-#endif
-    default:
-        return -1; /* unreachable */
-        break;
-    }
-    ROM_TimerDisable(timer_base, timer_side);
-
-    scaledv = _scaled_to_ll_value(value, config[dev].divisor);
+    scaledv = _scaled_to_ll_value(value, params[dev].divisor);
 
     if (scaledv>>32){
-        ROM_TimerPrescaleMatchSet(timer_base, timer_side, scaledv >> 32);
+        ROM_TimerPrescaleMatchSet(cfg->dev, timer_side, scaledv >> 32);
     }
     else {
-        ROM_TimerPrescaleMatchSet(timer_base, timer_side, 0);
+        ROM_TimerPrescaleMatchSet(cfg->dev, timer_side, 0);
     }
 
-    ROM_TimerMatchSet(timer_base, timer_side, (unsigned long) (scaledv & 0xFFFFFFFF));
-    ROM_TimerEnable(timer_base, timer_side);
+    ROM_TimerMatchSet(cfg->dev, timer_side, (uint32_t) (scaledv & 0xFFFFFFFF));
+    ROM_TimerEnable(cfg->dev, timer_side);
 
     return 0;
 }
 
 int timer_clear(tim_t dev, int channel)
 {
-    (void) channel;
-
-    unsigned int timer_intbit = TIMER_TIMA_TIMEOUT;
-    unsigned int timer_base;
-
-    if (dev >= TIMER_NUMOF){
+    if (dev >= TIMER_NUMOF || channel >= timer_config[dev].channels) {
         return -1;
     }
-
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_base = WTIMER0_BASE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_base = WTIMER1_BASE;
-        break;
-#endif
-    default:
-        return -1; /* unreachable */
-        break;
-    }
-
-    ROM_TimerIntClear(timer_base, timer_intbit);
+    ROM_TimerIntClear(timer_config[dev].dev, TIMER_TIMA_TIMEOUT);
     return 0;
 }
 
 unsigned int timer_read(tim_t dev)
 {
-    unsigned int timer_base;
     unsigned int timer_side = TIMER_A;
     unsigned long long high_bits, high_bits_dup;
     unsigned long long low_bits;
@@ -210,135 +151,74 @@ unsigned int timer_read(tim_t dev)
         return -1;
     }
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_base = WTIMER0_BASE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_base = WTIMER1_BASE;
-        break;
-#endif
-    default:
-        return -1; /* unreachable */
-        break;
-    }
+    const timer_conf_t *cfg = &timer_config[dev];
 
     /* handle overflow happening between the 2 register reads */
     do {
-      high_bits = ((unsigned long long)PRIV_TimerPrescaleSnapshotGet(timer_base, timer_side)) << 32;
-      low_bits = (unsigned long long)ROM_TimerValueGet(timer_base, timer_side);
-      high_bits_dup = ((unsigned long long)PRIV_TimerPrescaleSnapshotGet(timer_base, timer_side)) << 32;
+      high_bits = ((uint64_t)PRIV_TimerPrescaleSnapshotGet(cfg->dev,
+                   timer_side)) << 32;
+      low_bits = (uint64_t)ROM_TimerValueGet(cfg->dev, timer_side);
+      high_bits_dup = ((uint64_t)PRIV_TimerPrescaleSnapshotGet(cfg->dev,
+                       timer_side)) << 32;
     } while (high_bits != high_bits_dup);
 
     total = high_bits + low_bits;
-    DEBUG("Combined %lx:%lx\n", (unsigned long) (total>>32), (unsigned long) (total & 0xFFFFFFFF));
+    DEBUG("Combined %lx:%lx\n", (uint32_t)(total>>32),
+                                (uint32_t)(total & 0xFFFFFFFF));
 
-    scaled_value = _llvalue_to_scaled_value(total, config[dev].divisor);
+    scaled_value = _llvalue_to_scaled_value(total, params[dev].divisor);
 
     return scaled_value;
 }
 
 void timer_start(tim_t dev)
 {
-    unsigned int timer_base;
-    unsigned int timer_side = TIMER_A;
-
     if (dev >= TIMER_NUMOF){
-        return ;
+        return;
     }
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_base = WTIMER0_BASE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_base = WTIMER1_BASE;
-        break;
-#endif
-    default:
-        return; /* unreachable */
-    }
-
-    ROM_TimerEnable(timer_base, timer_side);
+    ROM_TimerEnable(timer_config[dev].dev, TIMER_A);
 }
 
 void timer_stop(tim_t dev)
 {
-    unsigned int timer_base;
-    unsigned int timer_side = TIMER_A;
-
     if (dev >= TIMER_NUMOF){
         return;
     }
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_base = WTIMER0_BASE;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_base = WTIMER1_BASE;
-        break;
-#endif
-    default:
-        return; /* unreachable */
-    }
-
-    ROM_TimerDisable(timer_base, timer_side);
+    ROM_TimerDisable(timer_config[dev].dev, TIMER_A);
 }
 
 static inline void _irq_enable(tim_t dev)
 {
-    unsigned int timer_intbase;
-
     if (dev >= TIMER_NUMOF){
         return;
     }
 
-    switch(dev){
-#if TIMER_0_EN
-    case TIMER_0:
-        timer_intbase = INT_WTIMER0A;
-        break;
-#endif
-#if TIMER_1_EN
-    case TIMER_1:
-        timer_intbase = INT_WTIMER1A;
-        break;
-#endif
-    default:
-        return; /* unreachable */
-    }
-
-    ROM_IntPrioritySet(timer_intbase, 32);
-    ROM_IntEnable(timer_intbase);
+    ROM_IntPrioritySet(timer_config[dev].intbase, 32);
+    ROM_IntEnable(timer_config[dev].intbase);
 }
 
-#if TIMER_0_EN
-void isr_wtimer0a(void)
+void _isr_timer(tim_t dev)
 {
     /* Clears both IT */
-    ROM_TimerIntClear(WTIMER0_BASE, TIMER_TIMA_TIMEOUT | TIMER_TIMA_MATCH);
-    config[TIMER_0].cb(config[TIMER_0].arg, 0);
+    ROM_TimerIntClear(timer_config[dev].dev,
+                      TIMER_TIMA_TIMEOUT | TIMER_TIMA_MATCH);
+    params[dev].cb(params[dev].arg, 0);
     cortexm_isr_end();
 }
-#endif /* TIMER_0_EN */
 
-#if TIMER_1_EN
+#if TIMER_0_ISR
+void isr_wtimer0a(void)
+{
+    _isr_timer(0);
+}
+#endif /* TIMER_0_ISR */
+
+#if TIMER_1_ISR
 void isr_wtimer1a(void)
 {
-    ROM_TimerIntClear(WTIMER1_BASE, TIMER_TIMA_TIMEOUT | TIMER_TIMA_MATCH);
-
-    config[TIMER_1].cb(config[TIMER_0].arg, 0);
-    cortexm_isr_end();
+    _isr_timer(1);
 }
-#endif /* TIMER_1_EN */
+#endif /* TIMER_1_ISR */
 /** @} */
