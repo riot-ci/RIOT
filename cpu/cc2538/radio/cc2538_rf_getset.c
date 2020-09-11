@@ -64,20 +64,20 @@ static const uint8_t power_lut[NUM_POWER_LEVELS] = {
 
 void cc2538_get_addr_long(uint8_t *addr)
 {
-    addr[0] = RFCORE_FFSM_EXT_ADDR0;
-    addr[1] = RFCORE_FFSM_EXT_ADDR1;
-    addr[2] = RFCORE_FFSM_EXT_ADDR2;
-    addr[3] = RFCORE_FFSM_EXT_ADDR3;
-    addr[4] = RFCORE_FFSM_EXT_ADDR4;
-    addr[5] = RFCORE_FFSM_EXT_ADDR5;
-    addr[6] = RFCORE_FFSM_EXT_ADDR6;
-    addr[7] = RFCORE_FFSM_EXT_ADDR7;
+    addr[7] = RFCORE_FFSM_EXT_ADDR0;
+    addr[6] = RFCORE_FFSM_EXT_ADDR1;
+    addr[5] = RFCORE_FFSM_EXT_ADDR2;
+    addr[4] = RFCORE_FFSM_EXT_ADDR3;
+    addr[3] = RFCORE_FFSM_EXT_ADDR4;
+    addr[2] = RFCORE_FFSM_EXT_ADDR5;
+    addr[1] = RFCORE_FFSM_EXT_ADDR6;
+    addr[0] = RFCORE_FFSM_EXT_ADDR7;
 }
 
 void cc2538_get_addr_short(uint8_t *addr)
 {
-    addr[0] = RFCORE_FFSM_SHORT_ADDR0;
-    addr[1] = RFCORE_FFSM_SHORT_ADDR1;
+    addr[1] = RFCORE_FFSM_SHORT_ADDR0;
+    addr[0] = RFCORE_FFSM_SHORT_ADDR1;
 }
 
 unsigned int cc2538_get_chan(void)
@@ -130,8 +130,8 @@ void cc2538_set_addr_long(const uint8_t *addr)
 
 void cc2538_set_addr_short(const uint8_t *addr)
 {
-    RFCORE_FFSM_SHORT_ADDR1 = addr[0];
     RFCORE_FFSM_SHORT_ADDR0 = addr[1];
+    RFCORE_FFSM_SHORT_ADDR1 = addr[0];
 }
 
 void cc2538_set_chan(unsigned int chan)
