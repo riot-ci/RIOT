@@ -366,6 +366,9 @@ INCLUDES += -I$(RIOTBASE)/core/include -I$(RIOTBASE)/drivers/include -I$(RIOTBAS
 # process provided features
 include $(RIOTBASE)/Makefile.features
 
+# check if required features are provided and update $(FEATURES_USED)
+include $(RIOTMAKE)/features_check.inc.mk
+
 # mandatory includes!
 include $(RIOTMAKE)/pseudomodules.inc.mk
 include $(RIOTMAKE)/defaultmodules.inc.mk
