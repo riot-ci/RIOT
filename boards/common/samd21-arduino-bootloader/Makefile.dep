@@ -5,5 +5,4 @@ include $(RIOTBOARD)/common/makefiles/stdio_cdc_acm.dep.mk
 ifneq (,$(filter stdio_cdc_acm,$(USEMODULE)))
   USEMODULE += boards_common_samd21-arduino-bootloader
   USEMODULE += usb_board_reset
-  FEATURES_REQUIRED += bootloader_arduino
 endif

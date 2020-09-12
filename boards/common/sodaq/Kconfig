@@ -15,4 +15,3 @@ config BOARD_COMMON_SODAQ
     select HAS_PERIPH_UART
     select HAS_PERIPH_USBDEV
     select HAS_ARDUINO
-    select HAS_BOOTLOADER_ARDUINO
