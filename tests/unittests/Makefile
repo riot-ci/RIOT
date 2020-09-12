@@ -13,12 +13,9 @@ endif
 
 DISABLE_MODULE += auto_init auto_init_%
 
-# boards using a preflashed bootloader require auto_init to
-# automatically initialize stdio over USB. Without this, the bootloader
-# management feature cannot be used (auto reset and auto reboot in bootloader
-# mode)
-FEATURES_BLACKLIST += bootloader_arduino
-FEATURES_BLACKLIST += bootloader_nrfutil
+# boards using a USB CDC ACM stdio require auto_init to
+# automatically initialize stdio over USB.
+FEATURES_BLACKLIST += stdio_cdc_acm
 
 # Pull in `Makefile.include`s from the test suites:
 -include $(UNIT_TESTS:%=$(RIOTBASE)/tests/unittests/%/Makefile.include)
