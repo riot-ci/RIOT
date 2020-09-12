@@ -2,10 +2,9 @@ include ../Makefile.tests_common
 
 USEMODULE += ssp
 
-# This test intentionally crashes the firmware and when using a board with a
-# preflashed bootloader, it cannot be reflashed automatically afterwards.
-FEATURES_BLACKLIST += bootloader_arduino
-FEATURES_BLACKLIST += bootloader_nrfutil
+# This test intentionally crashes the firmware and when using a board with
+# stdio over CDC ACM the USB thread is no longer serviced
+FEATURES_BLACKLIST += stdio_cdc_acm
 
 include $(RIOTBASE)/Makefile.include
 

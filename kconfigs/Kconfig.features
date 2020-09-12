@@ -303,6 +303,12 @@ config HAS_SDCARD_SPI
     help
         Indicates that an SD-Card SPI configuration is provided.
 
+config HAS_STDIO_CDC_ACM
+    bool
+    default y if HAS_PERIPH_USBDEV
+    help
+        Indicates that the board can use stdio over CDC ACM (USB).
+
 config HAS_SSP
     bool
     help
