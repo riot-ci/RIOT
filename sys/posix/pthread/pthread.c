@@ -142,7 +142,7 @@ int pthread_create(pthread_t *newthread, const pthread_attr_t *attr, void *(*sta
     }
     *newthread = pthread_pid;
 
-    pt->status = attr && attr->detached ? PTS_DETACHED : PTS_RUNNING;
+    pt->status = attr && attr->detached ? PTS_DETACHED : PTS_JOINABLE;
     pt->start_routine = start_routine;
     pt->arg = arg;
 
@@ -263,7 +263,7 @@ int pthread_join(pthread_t th, void **thread_return)
     }
 
     switch (other->status) {
-        case (PTS_RUNNING):
+        case (PTS_JOINABLE):
             other->joining_thread = thread_getpid();
             /* go blocked, I'm waking up if other thread exits */
             thread_sleep();
