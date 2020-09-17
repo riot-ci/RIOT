@@ -120,7 +120,7 @@ def make_sequence(cid, choices, seq, params, cmds, pcid_key=None, param_drctv='d
 
         if len(dep_params):
             TECseq.v.append(mkCommand(pcid, param_drctv, dep_params))
-        
+
         for cmd in TECseq_cmds:
             TECseq.v.append(cmd)
 
@@ -386,7 +386,7 @@ def compile_manifest(options, m):
         'components': [id.to_json() for id in ids.keys()],
         'common-sequence': CommonSeq.to_json(),
     })
-    if len(Dependencies.items): 
+    if len(Dependencies.items):
         common.dependencies = Dependencies
 
     # print('manifest')
@@ -395,7 +395,7 @@ def compile_manifest(options, m):
         'manifest-sequence-number' : m['manifest-sequence-number'],
         'common' : common.to_json()
     }
-    
+
     # for k,v in {'deres':DepSeq, 'fetch': FetchSeq, 'install':InstSeq, 'validate':ValidateSeq, 'run':RunSeq, 'load':LoadSeq}.items():
     #     # print('sequence:{}'.format(k))
     #     v.to_json()
@@ -442,7 +442,7 @@ def compile_manifest(options, m):
         suit_text = cbor.dumps(text.to_suit(), canonical=True)
         digest = hashes.Hash(SUITEnvelope.digest_algorithms.get(digest_alg)(), backend=default_backend())
         digest.update(suit_text)
-        
+
         jenvelope['manifest'].update({'text' : {
             'algorithm-id' : digest_alg,
             'digest-bytes' : digest.finalize()

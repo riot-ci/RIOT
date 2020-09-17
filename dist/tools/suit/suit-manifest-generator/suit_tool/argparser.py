@@ -18,7 +18,7 @@
 # ----------------------------------------------------------------------------
 import sys, argparse, os
 from suit_tool import __version__
-from suit_tool import keygen 
+from suit_tool import keygen
 from suit_tool import get_pubkey
 import json
 import re

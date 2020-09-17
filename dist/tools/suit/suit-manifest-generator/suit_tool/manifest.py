@@ -575,7 +575,7 @@ class SUITSequence(SUITManifestArray):
                 suitCommonInfo.current_index = dependencyIndex(i.arg.v)
             else:
                 # Option 1: current & command index same class, same number,
-                    # Do nothing 
+                    # Do nothing
                 # Option 2: current & command not equal, command is component
                     # set component index
                 # Option 3: current & command not equal, command is dependency
@@ -700,7 +700,7 @@ class SUITText(SUITManifestDict):
                 self.components[SUITComponentId().from_suit(k)] = SUITComponentText().from_suit(v)
         # Treat everything else as a normal manifestDict
         return super(SUITText, self).from_json(data)
-    
+
     def to_debug(self, indent):
         s = '{'
         newindent = indent + one_indent
@@ -724,7 +724,7 @@ class SUITManifest(SUITManifestDict):
         'version' : ('manifest-version', 1, SUITPosInt),
         'sequence' : ('manifest-sequence-number', 2, SUITPosInt),
         'common' : ('common', 3, SUITBWrapField(SUITCommon)),
-        'refuri' : ('reference-uri', 4, SUITTStr), 
+        'refuri' : ('reference-uri', 4, SUITTStr),
         'deres' : ('dependency-resolution', 7, SUITMakeSeverableField(SUITSequenceComponentReset)),
         'fetch' : ('payload-fetch', 8, SUITMakeSeverableField(SUITSequenceComponentReset)),
         'install' : ('install', 9, SUITMakeSeverableField(SUITSequenceComponentReset)),
