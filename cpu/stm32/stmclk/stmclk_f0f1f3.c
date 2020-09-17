@@ -95,6 +95,39 @@
 #endif
 #endif
 
+/* Check whether PLL is required */
+/* Check whether PLL must be enabled:
+  - When PLLCLK is used as SYSCLK
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_PLL)
+#define CLOCK_ENABLE_PLL            1
+#else
+#define CLOCK_ENABLE_PLL            0
+#endif
+
+/* Check whether HSE is required:
+  - When HSE is used as SYSCLK
+  - When PLL is used as SYSCLK and the board provides HSE (since HSE will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
+    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSE            1
+#else
+#define CLOCK_ENABLE_HSE            0
+#endif
+
+/* Check whether HSI is required:
+  - When HSI is used as SYSCLK
+  - When PLL is used as SYSCLK and the board doesn't provide HSE (since HSI will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
+    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSI            1
+#else
+#define CLOCK_ENABLE_HSI            0
+#endif
 
 /* Deduct the needed flash wait states from the core clock frequency */
 #define FLASH_WAITSTATES        ((CLOCK_CORECLOCK - 1) / MHZ(24))
@@ -128,20 +161,14 @@ void stmclk_init_sysclk(void)
     /* disable all active clocks except HSI -> resets the clk configuration */
     RCC->CR = (RCC_CR_HSION | RCC_CR_HSITRIM_4);
 
-    /* HSE is only used if provided by board and core clock input is using HSE
-       or PLL */
-    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && !IS_ACTIVE(CONFIG_USE_CLOCK_HSI)) {
+    /* Enable HSE if it's used */
+    if (IS_ACTIVE(CLOCK_ENABLE_HSE)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
     }
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
-        RCC->CFGR |= RCC_CFGR_SW_HSE;
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
-    }
-    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
-        /* now the PLL can safely be configured and started */
-        /* reset PLL configuration bits */
+    /* Enable PLL if it's used */
+    if (IS_ACTIVE(CLOCK_ENABLE_PLL)) {
         RCC->CFGR &= ~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMUL);
         /* set PLL configuration */
         RCC->CFGR |= (PLL_SRC | PLL_MUL);
@@ -155,14 +182,19 @@ void stmclk_init_sysclk(void)
 #endif
         RCC->CR |= (RCC_CR_PLLON);
         while (!(RCC->CR & RCC_CR_PLLRDY)) {}
+    }
 
-        /* now that the PLL is running, use it as system clock */
+    /* Configure SYSCLK */
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
+        RCC->CFGR |= RCC_CFGR_SW_HSE;
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
+    }
+    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
         RCC->CFGR |= RCC_CFGR_SW_PLL;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
-    if (!IS_ACTIVE(CONFIG_USE_CLOCK_HSI) ||
-        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && IS_ACTIVE(CONFIG_BOARD_HAS_HSE))) {
+    if (!IS_ACTIVE(CLOCK_ENABLE_HSI)) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
     }
