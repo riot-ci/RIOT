@@ -430,7 +430,7 @@
     used as PLL input clock)
 */
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
-    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL))
 #define CLOCK_ENABLE_HSE                1
 #else
 #define CLOCK_ENABLE_HSE                0
@@ -442,7 +442,7 @@
     used as PLL input clock)
 */
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
-    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL))
 #define CLOCK_ENABLE_HSI                1
 #else
 #define CLOCK_ENABLE_HSI                0
@@ -539,7 +539,7 @@ void stmclk_init_sysclk(void)
 #endif
 
 #if defined(RCC_DCKCFGR2_CK48MSEL)
-    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S) || IS_ACTIVE(CLOCK_ENABLE_PLLSAI)) {
+    if (IS_ACTIVE(CLOCK_ENABLE_PLLI2S) || IS_ACTIVE(CLOCK_ENABLE_PLLSAI)) {
         /* Use PLLSAI_P or PLLI2S_Q clock source */
         RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
     }
