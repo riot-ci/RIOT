@@ -218,7 +218,10 @@
 #define CLOCK_ENABLE_48MHZ          0
 #endif
 
-/* Check if PLL is required */
+/* Check if PLL is required
+  - When used as system clock
+  - When PLLQ is used as 48MHz clock source
+*/
 #if IS_ACTIVE(CONFIG_USE_CLOCK_PLL) || \
     (IS_ACTIVE(CLOCK_ENABLE_48MHZ) && IS_ACTIVE(CLOCK48MHZ_USE_PLLQ))
 #define CLOCK_ENABLE_PLL            1
@@ -226,7 +229,33 @@
 #define CLOCK_ENABLE_PLL            0
 #endif
 
-/* Check if MSI is required */
+/* Check if HSE is required:
+  - When used as system clock
+  - When used as PLL input clock
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
+    (IS_ACTIVE(CLOCK_ENABLE_PLL) && IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE))
+#define CLOCK_ENABLE_HSE            1
+#else
+#define CLOCK_ENABLE_HSE            0
+#endif
+
+/* Check if HSI is required:
+  - When used as system clock
+  - When used as PLL input clock
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
+    (IS_ACTIVE(CLOCK_ENABLE_PLL) && IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE))
+#define CLOCK_ENABLE_HSI            1
+#else
+#define CLOCK_ENABLE_HSI            0
+#endif
+
+/* Check if MSI is required
+  - When used as system clock
+  - When used as PLL input clock
+  - When used as 48MHz clock source
+*/
 #if IS_ACTIVE(CONFIG_USE_CLOCK_MSI) || \
     (IS_ACTIVE(CLOCK_ENABLE_PLL) && IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_MSI)) || \
     (IS_ACTIVE(CLOCK_ENABLE_48MHZ) && IS_ACTIVE(CLOCK48MHZ_USE_MSI))
@@ -292,8 +321,7 @@ void stmclk_init_sysclk(void)
         - Use HSE as system clock
         - Use HSE as PLL input clock
     */
-    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) &&
-        (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE))) {
+    if (IS_ACTIVE(CLOCK_ENABLE_HSE)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
     }
@@ -308,14 +336,12 @@ void stmclk_init_sysclk(void)
     }
 
     if (IS_ACTIVE(CLOCK_ENABLE_PLL)) {
-        if (IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_MSI)) {
-            if (IS_ACTIVE(CONFIG_BOARD_HAS_LSE)) {
-                /* configure the low speed clock domain */
-                stmclk_enable_lfclk();
-                /* now we can enable the MSI PLL mode to enhance accuracy of the MSI */
-                RCC->CR |= RCC_CR_MSIPLLEN;
-                while (!(RCC->CR & RCC_CR_MSIRDY)) {}
-            }
+        if (IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_MSI) && IS_ACTIVE(CONFIG_BOARD_HAS_LSE)) {
+            /* configure the low speed clock domain */
+            stmclk_enable_lfclk();
+            /* now we can enable the MSI PLL mode to enhance accuracy of the MSI */
+            RCC->CR |= RCC_CR_MSIPLLEN;
+            while (!(RCC->CR & RCC_CR_MSIRDY)) {}
         }
 
         /* now we can safely configure and start the PLL */
@@ -357,8 +383,7 @@ void stmclk_init_sysclk(void)
         RCC->CCIPR = CLOCK48MHZ_SELECT;
     }
 
-    if (!IS_ACTIVE(CONFIG_USE_CLOCK_HSI) ||
-        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && !IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI))) {
+    if (!IS_ACTIVE(CLOCK_ENABLE_HSI)) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
     }
