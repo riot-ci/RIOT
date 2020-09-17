@@ -231,22 +231,22 @@ static int _dtv_set_param(suit_manifest_t *manifest, int key,
         }
         suit_param_ref_t *ref;
         switch (param_key) {
-            case 1: /* SUIT VENDOR ID */
+            case SUIT_PARAMETER_VENDOR_IDENTIFIER:
                 ref = &comp->param_vendor_id;
                 break;
-            case 2: /* SUIT URI LIST */
+            case SUIT_PARAMETER_CLASS_IDENTIFIER:
                 ref = &comp->param_class_id;
                 break;
-            case 3: /* SUIT DIGEST */
+            case SUIT_PARAMETER_IMAGE_DIGEST:
                 ref = &comp->param_digest;
                 break;
-            case 5: /* SUIT COMPONENT OFFSET */
+            case SUIT_PARAMETER_COMPONENT_OFFSET:
                 ref = &comp->param_component_offset;
                 break;
-            case 14: /* SUIT IMAGE SIZE */
+            case SUIT_PARAMETER_IMAGE_SIZE:
                 ref = &comp->param_size;
                 break;
-            case 21: /* SUIT URI */
+            case SUIT_PARAMETER_URI:
                 ref = &comp->param_uri;
                 break;
             default:
@@ -369,10 +369,6 @@ static int _dtv_verify_image_match(suit_manifest_t *manifest, int key,
         return SUIT_ERR_INVALID_MANIFEST;
     }
 
-    /* "digest" points to a 36 byte string that includes the digest type.
-     * riotboot_flashwrite_verify_sha256() is only interested in the 32b digest,
-     * so shift the pointer accordingly.
-     */
     res = riotboot_flashwrite_verify_sha256(digest,
                                             img_size,
                                             target_slot);
