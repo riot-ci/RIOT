@@ -131,6 +131,40 @@
 #endif
 #endif /* CPU_FAM_STM32G4 */
 
+/* Check whether PLL must be enabled:
+  - When PLLCLK is used as SYSCLK
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_PLL)
+#define CLOCK_ENABLE_PLL            1
+#else
+#define CLOCK_ENABLE_PLL            0
+#endif
+
+/* Check whether HSE is required:
+  - When HSE is used as SYSCLK
+  - When PLL is used as SYSCLK and the board provides HSE (since HSE will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
+    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSE            1
+#else
+#define CLOCK_ENABLE_HSE            0
+#endif
+
+/* Check whether HSI is required:
+  - When HSI is used as SYSCLK
+  - When PLL is used as SYSCLK and the board doesn't provide HSE (since HSI will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
+    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSI            1
+#else
+#define CLOCK_ENABLE_HSI            0
+#endif
+
+
 /** Determine the required flash wait states from the core clock frequency */
 #if defined(CPU_FAM_STM32G0)
 #if CLOCK_CORECLOCK >= 48000000
@@ -194,27 +228,14 @@ void stmclk_init_sysclk(void)
     }
 #endif
 
-    /* Only enable the HSE clock if it's available and used by the clock
-       configuration:
-        - as direct system clock source
-        - as PLL input clock
-    */
-    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) &&
-        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) || IS_ACTIVE(CONFIG_USE_CLOCK_HSE))) {
+    /* Enable HSE if required */
+    if (IS_ACTIVE(CLOCK_ENABLE_HSE)) {
         RCC->CR |= RCC_CR_HSEON;
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
     }
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
-#if defined(CPU_FAM_STM32G0)
-        RCC->CFGR = (RCC_CFGR_SW_HSE | CLOCK_AHB_DIV | CLOCK_APB1_DIV);
-#elif defined(CPU_FAM_STM32G4)
-        RCC->CFGR = (RCC_CFGR_SW_HSE | CLOCK_AHB_DIV | CLOCK_APB1_DIV | CLOCK_APB2_DIV);
-#endif
-        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
-    }
-    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
-        /* now we can safely configure and start the PLL */
+    /* Enable PLL if required */
+    if (IS_ACTIVE(CLOCK_ENABLE_PLL)) {
         RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_R | RCC_PLLCFGR_PLLREN);
         RCC->CR |= RCC_CR_PLLON;
         while (!(RCC->CR & RCC_CR_PLLRDY)) {}
@@ -225,7 +246,19 @@ void stmclk_init_sysclk(void)
             RCC->CFGR |= RCC_CFGR_HPRE_DIV2;
         }
 #endif
+    }
 
+    /* Configure SYSCLK */
+    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
+#if defined(CPU_FAM_STM32G0)
+        RCC->CFGR = (RCC_CFGR_SW_HSE | CLOCK_AHB_DIV | CLOCK_APB1_DIV);
+#elif defined(CPU_FAM_STM32G4)
+        RCC->CFGR = (RCC_CFGR_SW_HSE | CLOCK_AHB_DIV | CLOCK_APB1_DIV | CLOCK_APB2_DIV);
+#endif
+        RCC->CFGR |= RCC_CFGR_SW_HSE;
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
+    }
+    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
         /* now that the PLL is running, we use it as system clock */
         RCC->CFGR |= RCC_CFGR_SW_PLL;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
@@ -241,8 +274,7 @@ void stmclk_init_sysclk(void)
 #endif
     }
 
-    if (!IS_ACTIVE(CONFIG_USE_CLOCK_HSI) ||
-        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && IS_ACTIVE(CONFIG_BOARD_HAS_HSE))) {
+    if (!IS_ACTIVE(CLOCK_ENABLE_HSI)) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
     }
