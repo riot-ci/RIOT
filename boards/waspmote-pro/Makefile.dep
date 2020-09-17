@@ -1,3 +1,12 @@
 #ifneq (,$(filter saul_default,$(USEMODULE)))
 #  USEMODULE += saul_gpio
 #endif
+
+ifneq (,$(filter xtimer,$(USEMODULE)))
+  ifeq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
+    # The timer periph cannot generate a clock frequency suitable for xtimer
+    # with the available clock dividers. Instead, we use ztimer to perform the
+    # required frequency conversion.
+    USEMODULE += xtimer_on_ztimer
+  endif
+endif
