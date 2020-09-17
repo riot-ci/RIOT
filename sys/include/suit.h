@@ -157,22 +157,30 @@ typedef enum {
 
 /**
  * @brief SUIT parameter reference
+ *
+ * A 16-bit offset is enough to reference content inside the manifest itself.
  */
 typedef struct {
-    uint16_t offset;
+    uint16_t offset;    /**< offset to the start of the content */
 } suit_param_ref_t;
 
 /**
- * @brief SUIT component struct
+ * @brief SUIT component struct as decoded from the manifest
+ *
+ * The parameters are references to CBOR-encoded information in the manifest.
  */
 typedef struct {
-    uint32_t size;                      /**< Size */
-    suit_param_ref_t identifier;
-    suit_param_ref_t param_vendor_id;
-    suit_param_ref_t param_class_id;
-    suit_param_ref_t param_digest;
-    suit_param_ref_t param_uri;
-    suit_param_ref_t param_size;
+    uint32_t size;                              /**< Size */
+    suit_param_ref_t identifier;                /**< Component identifier */
+    suit_param_ref_t param_vendor_id;           /**< Vendor ID */
+    suit_param_ref_t param_class_id;            /**< Class ID */
+    suit_param_ref_t param_digest;              /**< Payload verification digest */
+    suit_param_ref_t param_uri;                 /**< Payload fetch URI */
+    suit_param_ref_t param_size;                /**< Payload size */
+
+    /**
+     * @brief Component offset inside the device memory.
+     */
     suit_param_ref_t param_component_offset;
 } suit_component_t;
 
