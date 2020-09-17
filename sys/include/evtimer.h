@@ -77,7 +77,7 @@ typedef void(*evtimer_callback_t)(evtimer_event_t* event);
 typedef struct {
 #if IS_USED(MODULE_EVTIMER_ON_ZTIMER)
     ztimer_t timer;                 /**< Timer */
-    uint32_t base;                  /**< Aboslut time the first event is built on */
+    uint32_t base;                  /**< Absolute time the first event is built on */
 #else
     xtimer_t timer;                 /**< Timer */
 #endif
