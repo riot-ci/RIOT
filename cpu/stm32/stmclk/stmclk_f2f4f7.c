@@ -56,9 +56,9 @@
    This is the case when USB is used in application and PLLQ is configured to
    output 48MHz */
 #if IS_USED(MODULE_PERIPH_USBDEV) && (CLOCK_PLLQ == MHZ(48))
-#define CONFIG_CLOCK_REQUIRE_PLLQ    1
+#define CLOCK_REQUIRE_PLLQ          1
 #else
-#define CONFIG_CLOCK_REQUIRE_PLLQ    0
+#define CLOCK_REQUIRE_PLLQ          0
 #endif
 
 /* PLLI2S can only be used for USB with F412/F413/F423 lines
@@ -66,28 +66,28 @@
 #if (defined(CPU_LINE_STM32F412Cx) || defined(CPU_LINE_STM32F412Rx) || \
      defined(CPU_LINE_STM32F412Vx) || defined(CPU_LINE_STM32F412Zx) || \
      defined(CPU_LINE_STM32F413xx) || defined(CPU_LINE_STM32F423xx)) && \
-    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ)
-#define CONFIG_CLOCK_REQUIRE_PLLI2SR 1
+    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CLOCK_REQUIRE_PLLQ)
+#define CLOCK_REQUIRE_PLLI2SR       1
 #else
 /* Disable PLLI2S if USB is not required or is required but PLLQ cannot generate 48MHz clock */
-#define CONFIG_CLOCK_REQUIRE_PLLI2SR 0
+#define CLOCK_REQUIRE_PLLI2SR       0
 #endif
 
 /* PLLSAI can only be used for USB with F446/469/479 lines and F7
    PLLSAI is only enabled if no suitable 48MHz clock source can be generated with PLLQ */
 #if (defined(CPU_LINE_STM32F446xx) || defined(CPU_LINE_STM32F469xx) || \
      defined(CPU_LINE_STM32F479xx) || defined(CPU_FAM_STM32F7)) && \
-    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ)
-#define CONFIG_CLOCK_REQUIRE_PLLSAIP  1
+    IS_USED(MODULE_PERIPH_USBDEV) && !IS_ACTIVE(CLOCK_REQUIRE_PLLQ)
+#define CLOCK_REQUIRE_PLLSAIP       1
 #else
 /* Disable PLLSAI if USB is not required or is required but PLLQ cannot generate 48MHz clock */
-#define CONFIG_CLOCK_REQUIRE_PLLSAIP  0
+#define CLOCK_REQUIRE_PLLSAIP       0
 #endif
 
 #if IS_USED(MODULE_PERIPH_USBDEV) && \
-    !(IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLQ) || \
-      IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLI2SR) || \
-      IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLSAIP))
+    !(IS_ACTIVE(CLOCK_REQUIRE_PLLQ) || \
+      IS_ACTIVE(CLOCK_REQUIRE_PLLI2SR) || \
+      IS_ACTIVE(CLOCK_REQUIRE_PLLSAIP))
 #error No suitable 48MHz found, USB will not work
 #endif
 
@@ -246,7 +246,7 @@
 
 /* Default is not configure MCO1 */
 #ifndef CONFIG_CLOCK_ENABLE_MCO1
-#define CONFIG_CLOCK_ENABLE_MCO1        0
+#define CONFIG_CLOCK_ENABLE_MCO1    0
 #endif
 
 #if !defined(RCC_CFGR_MCO1) && IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO1)
@@ -313,19 +313,19 @@
 
 /* Configure the MCO1 prescaler: options are 1 to 5 */
 #ifndef CONFIG_CLOCK_MCO1_PRE
-#define CONFIG_CLOCK_MCO1_PRE                   (1)
+#define CONFIG_CLOCK_MCO1_PRE           (1)
 #endif
 
 #if CONFIG_CLOCK_MCO1_PRE == 1
-#define CLOCK_MCO1_PRE                          (0)
+#define CLOCK_MCO1_PRE                  (0)
 #elif CONFIG_CLOCK_MCO1_PRE == 2
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO1PRE_2)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO1PRE_2)
 #elif CONFIG_CLOCK_MCO1_PRE == 3
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_0)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_0)
 #elif CONFIG_CLOCK_MCO1_PRE == 4
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_1)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_1)
 #elif CONFIG_CLOCK_MCO1_PRE == 5
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_1 | RCC_CFGR_MCO1PRE_0)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO1PRE_2 | RCC_CFGR_MCO1PRE_1 | RCC_CFGR_MCO1PRE_0)
 #else
 #error "Invalid MCO1 prescaler"
 #endif
@@ -343,22 +343,22 @@
 #ifndef CONFIG_CLOCK_MCO2_USE_PLL
 #if IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S) || \
     IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_SYSCLK)
-#define CONFIG_CLOCK_MCO2_USE_PLL               0
+#define CONFIG_CLOCK_MCO2_USE_PLL       0
 #else
-#define CONFIG_CLOCK_MCO2_USE_PLL               1     /* Use PLL by default */
+#define CONFIG_CLOCK_MCO2_USE_PLL       1       /* Use PLL by default */
 #endif
 #endif /* CONFIG_CLOCK_MCO2_USE_PLL */
 
 #ifndef CONFIG_CLOCK_MCO2_USE_HSE
-#define CONFIG_CLOCK_MCO2_USE_HSE               0
+#define CONFIG_CLOCK_MCO2_USE_HSE       0
 #endif /* CONFIG_CLOCK_MCO2_USE_HSE */
 
 #ifndef CONFIG_CLOCK_MCO2_USE_PLLI2S
-#define CONFIG_CLOCK_MCO2_USE_PLLI2S            0
+#define CONFIG_CLOCK_MCO2_USE_PLLI2S    0
 #endif /* CONFIG_CLOCK_MCO2_USE_PLLI2S */
 
 #ifndef CONFIG_CLOCK_MCO2_USE_SYSCLK
-#define CONFIG_CLOCK_MCO2_USE_SYSCLK            0
+#define CONFIG_CLOCK_MCO2_USE_SYSCLK    0
 #endif /* CONFIG_CLOCK_MCO2_USE_SYSCLK */
 
 #if IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLL) && \
@@ -399,50 +399,68 @@
 
 /* Configure the MCO2 prescaler: options are 1 to 5 */
 #ifndef CONFIG_CLOCK_MCO2_PRE
-#define CONFIG_CLOCK_MCO2_PRE                   (1)
+#define CONFIG_CLOCK_MCO2_PRE           (1)
 #endif
 
 #if CONFIG_CLOCK_MCO2_PRE == 1
-#define CLOCK_MCO2_PRE                          (0)
+#define CLOCK_MCO2_PRE                  (0)
 #elif CONFIG_CLOCK_MCO2_PRE == 2
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO2PRE_2)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2)
 #elif CONFIG_CLOCK_MCO2_PRE == 3
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_0)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_0)
 #elif CONFIG_CLOCK_MCO2_PRE == 4
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1)
 #elif CONFIG_CLOCK_MCO2_PRE == 5
-#define CLOCK_MCO1_PRE                          (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1 | RCC_CFGR_MCO2PRE_0)
+#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1 | RCC_CFGR_MCO2PRE_0)
 #else
 #error "Invalid MCO1 prescaler"
 #endif
 
 /* Check whether PLL must be enabled */
-#ifndef CONFIG_CLOCK_ENABLE_PLL
 #if IS_ACTIVE(CONFIG_USE_CLOCK_PLL) || IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLQ) || \
     IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLL)
-#define CONFIG_CLOCK_ENABLE_PLL     1
+#define CLOCK_ENABLE_PLL                1
 #else
-#define CONFIG_CLOCK_ENABLE_PLL     0
+#define CLOCK_ENABLE_PLL                0
 #endif
-#endif /* CONFIG_CLOCK_ENABLE_PLL */
+
+/* Check whether HSE must be enabled:
+  - When HSE is used as SYSCLK
+  - When PLL is used as SYSCLK and the board provides HSE (since HSE will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
+    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSE                1
+#else
+#define CLOCK_ENABLE_HSE                0
+#endif
+
+/* Check whether HSI must be enabled:
+  - When HSI is used as SYSCLK
+  - When PLL is used as SYSCLK and the board doesn't provide HSE (since HSI will be
+    used as PLL input clock)
+*/
+#if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
+    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CONFIG_USE_CLOCK_PLL))
+#define CLOCK_ENABLE_HSI                1
+#else
+#define CLOCK_ENABLE_HSI                0
+#endif
 
 /* Check whether PLLI2S must be enabled */
-#ifndef CONFIG_CLOCK_ENABLE_PLLI2S
-#if IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLI2SR) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S)
-#define CONFIG_CLOCK_ENABLE_PLLI2S     1
+#if IS_ACTIVE(CLOCK_REQUIRE_PLLI2SR) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S)
+#define CLOCK_ENABLE_PLLI2S             1
 #else
-#define CONFIG_CLOCK_ENABLE_PLLI2S     0
+#define CLOCK_ENABLE_PLLI2S             0
 #endif
-#endif /* CONFIG_CLOCK_ENABLE_PLLI2S */
 
 /* Check whether PLLSAI must be enabled */
-#ifndef CONFIG_CLOCK_ENABLE_PLLSAI
-#if IS_ACTIVE(CONFIG_CLOCK_REQUIRE_PLLSAIP)
-#define CONFIG_CLOCK_ENABLE_PLLSAI     1
+#if IS_ACTIVE(CLOCK_REQUIRE_PLLSAIP)
+#define CLOCK_ENABLE_PLLSAI             1
 #else
-#define CONFIG_CLOCK_ENABLE_PLLSAI     0
+#define CLOCK_ENABLE_PLLSAI             0
 #endif
-#endif /* CONFIG_CLOCK_ENABLE_PLLSAI */
 
 void stmclk_init_sysclk(void)
 {
@@ -473,40 +491,39 @@ void stmclk_init_sysclk(void)
         RCC->CFGR |= CLOCK_MCO2_SRC | CLOCK_MCO2_PRE;
     }
 
-    /* HSE is only used if provided by board and core clock input is using HSE
-       or PLL */
-    if (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && !IS_ACTIVE(CONFIG_USE_CLOCK_HSI)) {
+    /* Enable HSE if required */
+    if (IS_ACTIVE(CLOCK_ENABLE_HSE)) {
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
     }
 
+    /* Enable PLL if required */
+    if (IS_ACTIVE(CLOCK_ENABLE_PLL)) {
+         /* now we can safely configure and start the PLL */
+        RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q | PLL_R);
+        RCC->CR |= (RCC_CR_PLLON);
+        while (!(RCC->CR & RCC_CR_PLLRDY)) {}
+    }
+
+    /* Configure SYSCLK */
     if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
         /* Enable HSE as system clock */
         RCC->CFGR |= (RCC_CFGR_SW_HSE);
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
-
-    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLL)) {
-        /* now we can safely configure and start the PLL */
-        RCC->PLLCFGR = (PLL_SRC | PLL_M | PLL_N | PLL_P | PLL_Q | PLL_R);
-        RCC->CR |= (RCC_CR_PLLON);
-        while (!(RCC->CR & RCC_CR_PLLRDY)) {}
-
-        if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
-            /* now that the PLL is running, we use it as system clock */
-            RCC->CFGR |= (RCC_CFGR_SW_PLL);
-            while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
-        }
+    else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
+        /* Enable PLLP as system clock */
+        RCC->CFGR |= (RCC_CFGR_SW_PLL);
+        while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
-    if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE) ||
-        (IS_ACTIVE(CONFIG_USE_CLOCK_PLL) && IS_ACTIVE(CONFIG_BOARD_HAS_HSE))) {
+    if (!IS_ACTIVE(CLOCK_ENABLE_HSI)) {
         /* Disable HSI only if not used */
         stmclk_disable_hsi();
     }
 
 #if defined(RCC_CR_PLLI2SON)
-    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S)) {
+    if (IS_ACTIVE(CLOCK_ENABLE_PLLI2S)) {
         RCC->PLLI2SCFGR = (CONFIG_PLLI2S_SRC | PLLI2S_M | PLLI2S_N | PLLI2S_P | PLLI2S_Q | PLLI2S_R);
         RCC->CR |= (RCC_CR_PLLI2SON);
         while (!(RCC->CR & RCC_CR_PLLI2SRDY)) {}
@@ -514,7 +531,7 @@ void stmclk_init_sysclk(void)
 #endif
 
 #if defined(RCC_CR_PLLSAION)
-    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLL_SAI)) {
+    if (IS_ACTIVE(CLOCK_ENABLE_PLLSAI)) {
         RCC->PLLSAICFGR = (PLLSAI_M | PLLSAI_N | PLLSAI_P | PLLSAI_Q | PLLSAI_R);
         RCC->CR |= (RCC_CR_PLLSAION);
         while (!(RCC->CR & RCC_CR_PLLSAIRDY)) {}
@@ -522,7 +539,7 @@ void stmclk_init_sysclk(void)
 #endif
 
 #if defined(RCC_DCKCFGR2_CK48MSEL)
-    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S) || IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLSAI)) {
+    if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLI2S) || IS_ACTIVE(CLOCK_ENABLE_PLLSAI)) {
         /* Use PLLSAI_P or PLLI2S_Q clock source */
         RCC->DCKCFGR2 |= RCC_DCKCFGR2_CK48MSEL;
     }
