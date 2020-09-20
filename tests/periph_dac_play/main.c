@@ -80,14 +80,14 @@ static void _unlock(void *arg)
     mutex_unlock(arg);
 }
 
-static void _play_sin_sample(const dac_cfg_t *cfg, uint8_t b, uint8_t pitch)
+static void _play_sin_sample(uint8_t b, uint8_t pitch, mutex_t *lock)
 {
     for (uint16_t i = 0; i < DAC_BUF_SIZE; ++i) {
         buf[b][i] = (isin(i << pitch) + 4096) >> 5;
     }
 
-    dac_play(buf[b], DAC_BUF_SIZE, cfg);
-    mutex_lock(cfg->cb_arg);
+    dac_play(DAC_CHAN, buf[b], DAC_BUF_SIZE);
+    mutex_lock(lock);
 }
 
 static void play_blip(uint8_t start, uint8_t end)
@@ -95,16 +95,10 @@ static void play_blip(uint8_t start, uint8_t end)
     mutex_t lock = MUTEX_INIT_LOCKED;
     uint8_t cur_buf = 0;
 
-    const dac_cfg_t cfg = {
-        .line        = DAC_CHAN,
-        .flags       = DAC_FLAG_8BIT,
-        .sample_rate = 8000,
-        .cb          = _unlock,
-        .cb_arg      = &lock,
-    };
+    dac_play_set_cb(DAC_CHAN, _unlock, &lock);
 
     for (unsigned i = start; i <= end; ++i) {
-        _play_sin_sample(&cfg, cur_buf, i);
+        _play_sin_sample(cur_buf, i, &lock);
         cur_buf = !cur_buf;
     }
 }
@@ -126,19 +120,14 @@ static void btn_cb(void *ctx)
 int main(void)
 {
     dac_init(DAC_CHAN);
+    dac_play_init(DAC_CHAN, 8000, DAC_FLAG_8BIT, NULL, NULL);
 
     kernel_pid_t main_pid = thread_getpid();
     gpio_init_int(BTN0_PIN, BTN0_MODE, BTN0_INT_FLANK, btn_cb, &main_pid);
 
 #if ENABLE_GREETING
-    const dac_cfg_t cfg = {
-        .line        = DAC_CHAN,
-        .flags       = DAC_FLAG_8BIT,
-        .sample_rate = 8000,
-    };
-
     puts("Play Greeting…");
-    dac_play(hello_raw, hello_raw_len, &cfg);
+    dac_play(DAC_CHAN, hello_raw, hello_raw_len);
 #else
     puts("Greeting disabled.");
 #endif
