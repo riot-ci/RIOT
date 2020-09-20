@@ -50,6 +50,7 @@
 #ifndef PERIPH_DAC_H
 #define PERIPH_DAC_H
 
+#include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
 
@@ -103,6 +104,30 @@ enum {
 int8_t dac_init(dac_t line);
 
 /**
+ * @brief   The callback that will be called when the end of the current sample buffer
+ *          has been reached.
+ *          Should be used to start filling the next sample buffer.
+ *
+ * @note    Will be called in interrupt context. Only use the callback to signal a
+ *          thread. Don't directly fill the sample buffer in the callback.
+ */
+typedef void (*dac_cb_t)(void *arg);
+
+/**
+ * @brief   A sample has a resolution of 8 bit
+ */
+#ifndef DAC_FLAG_8BIT
+#define DAC_FLAG_8BIT   (0x0)
+#endif
+
+/**
+ * @brief   A sample has a resolution of 16 bit
+ */
+#ifndef DAC_FLAG_16BIT
+#define DAC_FLAG_16BIT  (0x1)
+#endif
+
+/**
  * @brief   Write a value onto DAC Device on a given Channel
  *
  * The value is always given as 16-bit value and is internally scaled to the
@@ -129,6 +154,40 @@ void dac_poweron(dac_t line);
  */
 void dac_poweroff(dac_t line);
 
+/**
+ * @brief   Initialize a DAC for playing audio samples
+ *          A user defined callback can be provided that will be called when
+ *          the next buffer can be queued.
+ *
+ * @param[in] dac           The DAC to initialize
+ * @param[in] sample_rate   The sample rate in Hz
+ * @param[in] flags         Optional flags (@ref DAC_FLAG_16BIT)
+ * @param[in] cb            Will be called when the next buffer can be queued
+ * @param[in] cb_arg        Callback argument
+ */
+void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
+                   dac_cb_t cb, void *cb_arg);
+
+/**
+ * @brief   Change the 'buffer done' callback.
+ *          A user defined callback can be provided that will be called when
+ *          the next buffer can be queued.
+ *          This function can be used to change the callback on the fly.
+ *
+ * @param[in] dac           The DAC to configure
+ * @param[in] cb            Called when the played buffer is done
+ * @param[in] cb_arg        Callback argument
+ */
+void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg);
+
+/**
+ * @brief   Play a buffer of (audio) samples on a DAC.
+ *
+ * @param[in] dac           The DAC to play the sample on
+ * @param[in] buf           A buffer with (audio) samples
+ * @param[in] params        Playback parameters
+ */
+void dac_play(dac_t dac, const void *buf, size_t len);
 
 #ifdef __cplusplus
 }
