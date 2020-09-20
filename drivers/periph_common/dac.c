@@ -20,6 +20,7 @@
 
 #include "board.h"
 #include "kernel_defines.h"
+#include "macros/units.h"
 #include "periph/dac.h"
 #include "periph/timer.h"
 
@@ -32,6 +33,10 @@
 #define DAC1_TIMER   (TIMER_NUMOF - 2)
 #endif
 
+#ifndef DAC_TIMER_FREQ
+#define DAC_TIMER_FREQ  MHZ(1)
+#endif
+
 static const tim_t _dac_timer[DAC_NUMOF] = {
 #if DAC_NUMOF > 0
     DAC0_TIMER,
@@ -42,24 +47,27 @@ static const tim_t _dac_timer[DAC_NUMOF] = {
 };
 
 static struct dac_ctx {
-    const uint8_t *buffers[2];
-    size_t buffer_len[2];
-    size_t idx;
-    uint8_t cur;
-    uint8_t playing;
+    const uint8_t *buffers[2];  /* The two sample buffers                   */
+    size_t buffer_len[2];       /* Size of the sample buffers               */
+    size_t idx;                 /* Current position in the current buffer   */
+    dac_cb_t cb;                /* Called when the current buffer is done   */
+    void *cb_arg;               /* Callback argument                        */
+    tim_t timer;                /* Timer used for DAC                       */
+    uint16_t sample_ticks;      /* Timer ticks per sample                   */
+    uint8_t cur;                /* Active sample buffer                     */
+    uint8_t playing;            /* DAC is playing                           */
+    uint8_t is_16bit;           /* Sample size is 16 instead of 8 bit       */
 } _ctx[DAC_NUMOF];
 
 static void _timer_cb(void *arg, int chan)
 {
-    const dac_cfg_t *cfg = arg;
-    const dac_t dac      = cfg->line;
-    struct dac_ctx *ctx  = &_ctx[dac];
+    struct dac_ctx *ctx = arg;
 
     const uint8_t cur  = ctx->cur;
     const uint8_t *buf = ctx->buffers[cur];
     const size_t len   = ctx->buffer_len[cur];
 
-    if (cfg->flags & DAC_FLAG_16BIT) {
+    if (ctx->is_16bit) {
         size_t idx_real = 2 * ctx->idx;
         dac_set(0, (buf[idx_real + 1] << 8) | buf[idx_real]);
     } else {
@@ -76,19 +84,38 @@ static void _timer_cb(void *arg, int chan)
 
         if (ctx->buffer_len[!cur] == 0) {
             ctx->playing = 0;
-            timer_clear(_dac_timer[dac], chan);
-        } else if (cfg->cb) {
-            cfg->cb(cfg->cb_arg);
+            timer_clear(ctx->timer, chan);
+        } else if (ctx->cb) {
+            ctx->cb(ctx->cb_arg);
         }
     }
 }
 
-void dac_play(const void *buf, size_t len, const dac_cfg_t *cfg)
+void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
+                   dac_cb_t cb, void *cb_arg)
 {
-    const unsigned timer_freq  = 1000000;
-    const unsigned sample_rate = cfg->sample_rate * 6; /* XXX why the fudge factor? */
-    const dac_t dac = cfg->line;
+    sample_rate *= 8;
 
+    _ctx[dac].cb           = cb;
+    _ctx[dac].cb_arg       = cb_arg;
+    _ctx[dac].timer        = _dac_timer[dac];
+    _ctx[dac].sample_ticks = DAC_TIMER_FREQ / sample_rate;
+    _ctx[dac].is_16bit     = flags & DAC_FLAG_16BIT;
+
+    timer_init(_dac_timer[dac], DAC_TIMER_FREQ, _timer_cb, &_ctx[dac]);
+}
+
+void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg)
+{
+    /* allow to update cb_arg independent of cb */
+    if (cb || cb_arg == NULL) {
+        _ctx[dac].cb     = cb;
+    }
+    _ctx[dac].cb_arg = cb_arg;
+}
+
+void dac_play(dac_t dac, const void *buf, size_t len)
+{
     uint8_t next = !_ctx[dac].cur;
 
     _ctx[dac].buffers[next]    = buf;
@@ -100,8 +127,7 @@ void dac_play(const void *buf, size_t len, const dac_cfg_t *cfg)
 
     _ctx[dac].playing = 1;
 
-    timer_init(_dac_timer[dac], timer_freq, _timer_cb, (void*) cfg);
-    timer_set_periodic(_dac_timer[dac], 0, timer_freq/sample_rate,
+    timer_set_periodic(_dac_timer[dac], 0, _ctx[dac].sample_ticks,
                        TIM_FLAG_RESET_ON_MATCH | TIM_FLAG_RESET_ON_SET);
 }
 

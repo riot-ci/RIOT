@@ -128,18 +128,6 @@ typedef void (*dac_cb_t)(void *arg);
 #endif
 
 /**
- * @brief   Configuration for @ref dac_play
- */
-typedef struct {
-    dac_t line;             /**< The DAC line */
-    uint8_t flags;          /**< Flags, e.g. resolution of the sample */
-    uint16_t sample_rate;   /**< Rate in Hz at which the Audio buffer
-                                 should be played */
-    dac_cb_t cb;            /**< Will be called when the next buffer can be queued */
-    void *cb_arg;           /**< Callback argument */
-} dac_cfg_t;
-
-/**
  * @brief   Write a value onto DAC Device on a given Channel
  *
  * The value is always given as 16-bit value and is internally scaled to the
@@ -167,15 +155,39 @@ void dac_poweron(dac_t line);
 void dac_poweroff(dac_t line);
 
 /**
- * @brief   Play a buffer of (audio) samples on a DAC.
+ * @brief   Initialize a DAC for playing audio samples
  *          A user defined callback can be provided that will be called when
  *          the next buffer can be queued.
  *
+ * @param[in] dac           The DAC to initialize
+ * @param[in] sample_rate   The sample rate in Hz
+ * @param[in] flags         Optional flags (@ref DAC_FLAG_16BIT)
+ * @param[in] cb            Will be called when the next buffer can be queued
+ * @param[in] cb_arg        Callback argument
+ */
+void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
+                   dac_cb_t cb, void *cb_arg);
+
+/**
+ * @brief   Change the 'buffer done' callback.
+ *          A user defined callback can be provided that will be called when
+ *          the next buffer can be queued.
+ *          This function can be used to change the callback on the fly.
+ *
+ * @param[in] dac           The DAC to configure
+ * @param[in] cb            Called when the played buffer is done
+ * @param[in] cb_arg        Callback argument
+ */
+void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg);
+
+/**
+ * @brief   Play a buffer of (audio) samples on a DAC.
+ *
+ * @param[in] dac           The DAC to play the sample on
  * @param[in] buf           A buffer with (audio) samples
- * @param[in] len           Number of samples in the buffer
  * @param[in] params        Playback parameters
  */
-void dac_play(const void *buf, size_t len, const dac_cfg_t *params);
+void dac_play(dac_t dac, const void *buf, size_t len);
 
 #ifdef __cplusplus
 }
