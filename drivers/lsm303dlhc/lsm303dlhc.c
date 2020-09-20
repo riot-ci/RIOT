@@ -45,12 +45,12 @@ int lsm303dlhc_init(lsm303dlhc_t *dev, const lsm303dlhc_params_t *params)
     /* Acquire exclusive access to the bus. */
     i2c_acquire(DEV_I2C);
 
-    DEBUG("lsm303dlhc reboot...");
+    DEBUG("lsm303dlhc init...");
+    /* reboot sensor */
     res = i2c_write_reg(DEV_I2C, DEV_ACC_ADDR,
                         LSM303DLHC_REG_CTRL5_A, LSM303DLHC_REG_CTRL5_A_BOOT, 0);
     /* Release the bus for other threads. */
     i2c_release(DEV_I2C);
-    DEBUG("[OK]\n");
 
     /* configure accelerometer */
     /* enable all three axis and set sample rate */
@@ -85,6 +85,12 @@ int lsm303dlhc_init(lsm303dlhc_t *dev, const lsm303dlhc_params_t *params)
     i2c_release(DEV_I2C);
     /* configure mag data ready pin */
     gpio_init(DEV_MAG_PIN, GPIO_IN);
+    if (ENABLE_DEBUG && res == 0) {
+        DEBUG("[OK]\n");
+    }
+    else {
+        DEBUG("[Failed]\n");
+    }
 
     return (res < 0) ? -1 : 0;
 }
