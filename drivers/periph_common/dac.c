@@ -18,6 +18,7 @@
  * @}
  */
 
+#include <assert.h>
 #include "board.h"
 #include "kernel_defines.h"
 #include "macros/units.h"
