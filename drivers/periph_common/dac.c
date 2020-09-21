@@ -37,15 +37,6 @@
 #define DAC_TIMER_FREQ  MHZ(1)
 #endif
 
-static const tim_t _dac_timer[DAC_NUMOF] = {
-#if DAC_NUMOF > 0
-    DAC0_TIMER,
-#endif
-#if DAC_NUMOF > 1
-    DAC1_TIMER,
-#endif
-};
-
 static struct dac_ctx {
     const uint8_t *buffers[2];  /* The two sample buffers                   */
     size_t buffer_len[2];       /* Size of the sample buffers               */
@@ -94,13 +85,20 @@ static void _timer_cb(void *arg, int chan)
 void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
                    dac_cb_t cb, void *cb_arg)
 {
+    assert(dac < DAC_NUMOF);
+
+    if (dac == 0) {
+        _ctx[dac].timer = DAC0_TIMER;
+    } else if (dac == 1) {
+        _ctx[dac].timer = DAC1_TIMER;
+    }
+
     _ctx[dac].cb           = cb;
     _ctx[dac].cb_arg       = cb_arg;
-    _ctx[dac].timer        = _dac_timer[dac];
     _ctx[dac].sample_ticks = DAC_TIMER_FREQ / sample_rate;
     _ctx[dac].is_16bit     = flags & DAC_FLAG_16BIT;
 
-    timer_init(_dac_timer[dac], DAC_TIMER_FREQ, _timer_cb, &_ctx[dac]);
+    timer_init(_ctx[dac].timer, DAC_TIMER_FREQ, _timer_cb, &_ctx[dac]);
 }
 
 void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg)
@@ -125,7 +123,7 @@ void dac_play(dac_t dac, const void *buf, size_t len)
 
     _ctx[dac].playing = 1;
 
-    timer_set_periodic(_dac_timer[dac], 0, _ctx[dac].sample_ticks,
+    timer_set_periodic(_ctx[dac].timer, 0, _ctx[dac].sample_ticks,
                        TIM_FLAG_RESET_ON_MATCH | TIM_FLAG_RESET_ON_SET);
 }
 
