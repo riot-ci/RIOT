@@ -94,8 +94,6 @@ static void _timer_cb(void *arg, int chan)
 void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
                    dac_cb_t cb, void *cb_arg)
 {
-    sample_rate *= 8;
-
     _ctx[dac].cb           = cb;
     _ctx[dac].cb_arg       = cb_arg;
     _ctx[dac].timer        = _dac_timer[dac];
