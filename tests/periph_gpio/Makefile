@@ -7,6 +7,7 @@ FEATURES_OPTIONAL += periph_gpio_fast_read
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += benchmark
+USEMODULE += xtimer_mutex_lock_timeout
 
 # disable native GPIOs for automatic test
 ifeq (native,$(BOARD))
