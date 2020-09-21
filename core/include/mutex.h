@@ -155,7 +155,7 @@ void mutex_unlock_and_sleep(mutex_t *mutex);
  *          interrupt.
  *
  * @details If @p thread is currently running (or pending), a subsequent call
- *          from @p thread to `mutex_lock()` will also be canceled if @p mutex
+ *          from @p thread to @ref mutex_lock will also be canceled if @p mutex
  *          is passed as parameter. This avoids race conditions when @ref
  *          mutex_cancel get called just before @mutex_lock is called.
  */
