@@ -27,7 +27,7 @@
  * }
  *
  *
- * int main()
+ * int main(void)
  * {   // allocate timer
  *     static ztimer_periodic_t timer;
  *     // initialize timer
