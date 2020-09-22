@@ -23,6 +23,8 @@
 
 #include "board.h"
 #include "macros/units.h"
+
+#include "fmt.h"
 #include "mutex.h"
 #include "periph/timer.h"
 #include "test_utils/expect.h"
@@ -61,7 +63,9 @@ static void cb(void *arg, int chan)
 {
     unsigned c = count[chan]++;
 
-    printf("[%d] tick\n", chan);
+    print("[", 1);
+    print_u32_dec(chan);
+    puts("] tick");
 
     if (c > CYCLES_MAX) {
         timer_stop(TIMER_CYCL);
