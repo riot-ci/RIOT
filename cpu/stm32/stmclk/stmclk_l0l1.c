@@ -74,6 +74,8 @@
 #define CLOCK_PLL_DIV               (RCC_CFGR_PLLDIV3)
 #elif CONFIG_CLOCK_PLL_DIV == 4
 #define CLOCK_PLL_DIV               (RCC_CFGR_PLLDIV4)
+#else
+#error "Invalid PLL DIV value, only 2, 3, and 4 values are allowed."
 #endif
 
 #if CONFIG_CLOCK_PLL_MUL == 3
@@ -94,6 +96,8 @@
 #define CLOCK_PLL_MUL               (RCC_CFGR_PLLMUL32)
 #elif CONFIG_CLOCK_PLL_MUL == 48
 #define CLOCK_PLL_MUL               (RCC_CFGR_PLLMUL48)
+#else
+#error "Invalid PLL MUL value, only 3, 4, 6, 8, 12, 16, 24, 32 and 48 values are allowed."
 #endif
 
 #if CONFIG_CLOCK_MSI == 65536UL
