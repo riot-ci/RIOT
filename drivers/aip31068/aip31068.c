@@ -20,6 +20,7 @@
 
 #include "aip31068.h"
 #include "aip31068_regs.h"
+#include "aip31068_internal.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -229,8 +230,7 @@ int aip31068_clear(aip31068_t *dev)
 {
     int rc = _command(dev, CMD_CLEAR_DISPLAY);
 
-    /* max execution time 1.52 ms */
-    xtimer_usleep(1700);
+    xtimer_usleep(EXECUTION_TIME_MAX);
 
     return rc;
 }
@@ -239,8 +239,7 @@ int aip31068_return_home(aip31068_t *dev)
 {
     int rc = _command(dev, CMD_RETURN_HOME);
 
-    /* max execution time 1.52 ms */
-    xtimer_usleep(1700);
+    xtimer_usleep(EXECUTION_TIME_MAX);
 
     return rc;
 }
@@ -477,8 +476,7 @@ static inline int _data(aip31068_t *dev, uint8_t value)
 {
     int rc = _write(dev, value, false);
 
-    /* execution time for writing to RAM is given as 43 µs */
-    xtimer_usleep(50);
+    xtimer_usleep(EXECUTION_TIME_DEFAULT);
 
     return rc;
 }
@@ -487,8 +485,7 @@ static inline int _command(aip31068_t *dev, uint8_t value)
 {
     int rc = _write(dev, value, true);
 
-    /* execution time for most commands is given as 37 µs */
-    xtimer_usleep(50);
+    xtimer_usleep(EXECUTION_TIME_DEFAULT);
 
     return rc;
 }
