@@ -27,3 +27,4 @@ The following shell commands are available:
 * **progressbar:** Enable/ disable progressbar feature.
 * **progressbar_row:** Set row for progressbar.
 * **progress:** Set progress for progressbar.
+* **run_demo:** Demonstration of all functions.
