@@ -410,7 +410,7 @@ void aip31068_set_progress(aip31068_t *dev, uint8_t progress)
         progress = 100;
     }
 
-    int progress_bar_count = bar_count * (progress / 100.0);
+    int progress_bar_count = bar_count * progress / 100;
 
     int full_bar_count = progress_bar_count / 5;
     int remainder_bar_count = progress_bar_count % 5;
