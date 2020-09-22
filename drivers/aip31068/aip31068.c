@@ -400,7 +400,7 @@ void aip31068_set_progress_bar_row(aip31068_t *dev, uint8_t row)
 
 void aip31068_set_progress(aip31068_t *dev, uint8_t progress)
 {
-    if (! dev->_progress_bar_enabled) {
+    if (!dev->_progress_bar_enabled) {
         return;
     }
 
@@ -499,7 +499,7 @@ static inline int _write(aip31068_t *dev, uint8_t data_byte, bool is_cmd)
 
     uint8_t data[] = { control_byte, data_byte };
 
-    return _device_write(dev, data, 2);
+    return _device_write(dev, data, sizeof(data));
 }
 
 static int _device_write(aip31068_t* dev, uint8_t *data, uint8_t len)
