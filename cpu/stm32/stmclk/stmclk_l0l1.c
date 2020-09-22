@@ -219,24 +219,25 @@ void stmclk_init_sysclk(void)
         while (!(RCC->CR & RCC_CR_PLLRDY)) {}
     }
 
-    /* Configure SYSCLK */
+    /* Disable HSI if it's unused */
     if (!IS_ACTIVE(CLOCK_ENABLE_HSI)) {
         RCC->CFGR &= ~(RCC_CFGR_SW);
     }
 
+    /* Configure SYSCLK input source */
     if (IS_ACTIVE(CONFIG_USE_CLOCK_HSE)) {
-        /* Select HSE as system clock and configure the different prescalers */
+        /* Select HSE as system clock and wait till it's used as system clock */
         RCC->CFGR |= RCC_CFGR_SW_HSE;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSE) {}
     }
     else if (IS_ACTIVE(CONFIG_USE_CLOCK_MSI)) {
-        /* Select MSI as system clock and configure the different prescalers */
+        /* Select MSI as system clock and wait till it's used as system clock */
         RCC->CFGR |= RCC_CFGR_SW_MSI;
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI) {}
     }
     else if (IS_ACTIVE(CONFIG_USE_CLOCK_PLL)) {
         RCC->CFGR |= RCC_CFGR_SW_PLL;
-        /* Wait till PLL is used as system clock source */
+        /* Select PLL as system clock and wait till it's used as system clock */
         while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {}
     }
 
