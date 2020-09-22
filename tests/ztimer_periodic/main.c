@@ -80,7 +80,7 @@ int main(void)
     }
 
     if (!failed) {
-        print_str("test successful.\n");
+        print_str("Test successful.\n");
     }
     else {
         print_str("Test failed!\n");
