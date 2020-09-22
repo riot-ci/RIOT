@@ -55,15 +55,16 @@ static void _timer_cb(void *arg, int chan)
 {
     struct dac_ctx *ctx = arg;
 
+    const dac_t dac    = ctx - _ctx;
     const uint8_t cur  = ctx->cur;
     const uint8_t *buf = ctx->buffers[cur];
     const size_t len   = ctx->buffer_len[cur];
 
     if (ctx->is_16bit) {
         size_t idx_real = 2 * ctx->idx;
-        dac_set(0, (buf[idx_real + 1] << 8) | buf[idx_real]);
+        dac_set(dac, (buf[idx_real + 1] << 8) | buf[idx_real]);
     } else {
-        dac_set(0, buf[ctx->idx] << 8);
+        dac_set(dac, buf[ctx->idx] << 8);
     }
 
     if (++ctx->idx >= len) {
