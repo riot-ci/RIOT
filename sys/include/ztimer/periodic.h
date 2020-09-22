@@ -27,8 +27,10 @@
  * }
  *
  *
- * int main()
- * {   // allocate timer
+ * int main(void)
+ * {
+ *     // allocate timer in .bss with static, so that timer can keep
+ *     // running when leaving function scope
  *     static ztimer_periodic_t timer;
  *     // initialize timer
  *     ztimer_periodic_init(ZTIMER_SEC, &timer, callback, "test", 1);
