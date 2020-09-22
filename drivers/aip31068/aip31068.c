@@ -105,27 +105,32 @@ static void _init_progress_bar(aip31068_t* dev, uint8_t row);
 /**
  * Custom character 1 x 8 bar for progress bar.
  */
-uint8_t custom_char_progress_bar_1[8] = { 16, 16, 16, 16, 16, 16, 16, 16 };
+static const uint8_t custom_char_progress_bar_1[8] =
+        { 16, 16, 16, 16, 16, 16, 16, 16 };
 
 /**
  * Custom character 2 x 8 bar for progress bar.
  */
-uint8_t custom_char_progress_bar_2[8] = { 24, 24, 24, 24, 24, 24, 24, 24 };
+static const uint8_t custom_char_progress_bar_2[8] =
+        { 24, 24, 24, 24, 24, 24, 24, 24 };
 
 /**
  * Custom character 3 x 8 bar for progress bar.
  */
-uint8_t custom_char_progress_bar_3[8] = { 28, 28, 28, 28, 28, 28, 28, 28 };
+static const uint8_t custom_char_progress_bar_3[8] =
+        { 28, 28, 28, 28, 28, 28, 28, 28 };
 
 /**
  * Custom character 4 x 8 bar for progress bar.
  */
-uint8_t custom_char_progress_bar_4[8] = { 30, 30, 30, 30, 30, 30, 30, 30 };
+static const uint8_t custom_char_progress_bar_4[8] =
+        { 30, 30, 30, 30, 30, 30, 30, 30 };
 
 /**
  * Custom character 5 x 8 bar for progress bar.
  */
-uint8_t custom_char_progress_bar_5[8] = { 31, 31, 31, 31, 31, 31, 31, 31 };
+static const uint8_t custom_char_progress_bar_5[8] =
+        { 31, 31, 31, 31, 31, 31, 31, 31 };
 
 int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 {
@@ -333,7 +338,7 @@ int aip31068_scroll_display_right(aip31068_t *dev)
 
 int aip31068_set_custom_symbol(aip31068_t *dev,
                                aip31068_custom_symbol_t custom_symbol,
-                               uint8_t charmap[])
+                               const uint8_t charmap[])
 {
     uint8_t location = custom_symbol;
     int rc = _command(dev, CMD_SET_CGRAM_ADDR | (location << 3));

@@ -371,7 +371,7 @@ int aip31068_scroll_display_right(aip31068_t *dev);
  */
 int aip31068_set_custom_symbol(aip31068_t *dev,
                                aip31068_custom_symbol_t customSymbol,
-                               uint8_t charmap[]);
+                               const uint8_t charmap[]);
 
 /**
  * @brief Print a custom symbol by key reference.

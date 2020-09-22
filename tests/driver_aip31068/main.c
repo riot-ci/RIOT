@@ -27,9 +27,10 @@
 #define ROW_COUNT   2
 #define COL_COUNT   16
 
-aip31068_t aip31068_dev;
+static aip31068_t aip31068_dev;
 
-uint8_t custom_char_heart[] = { 0x0, 0x0, 0xA, 0x1F, 0x1F, 0xE, 0x4, 0x0 };
+static const uint8_t custom_char_heart[]=
+        { 0x0, 0x0, 0xA, 0x1F, 0x1F, 0xE, 0x4, 0x0 };
 
 int turn_on(int argc, char **argv)
 {
