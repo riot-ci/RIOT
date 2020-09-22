@@ -285,7 +285,7 @@ int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col)
     col = ((row == 0) ? (col | 0x80) : (col | 0xc0));
     uint8_t data[] = { 0x80, col };
 
-    return _device_write(dev, data, 2);
+    return _device_write(dev, data, sizeof(data));
 }
 
 int aip31068_set_text_insertion_mode(aip31068_t *dev,
