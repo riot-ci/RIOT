@@ -11,7 +11,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect_exact(r"Test successful.\r\n")
+    child.expect_exact("Test successful.")
 
 
 if __name__ == "__main__":
