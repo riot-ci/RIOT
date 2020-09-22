@@ -339,8 +339,10 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
                                aip31068_custom_symbol_t custom_symbol,
                                const uint8_t charmap[])
 {
-    uint8_t location = custom_symbol;
-    int rc = _command(dev, CMD_SET_CGRAM_ADDR | (location << 3));
+    /* Bits 0-2 define the row address of a custom character in CGRAM.
+     * Bits 3-5 define the base address of a custom character in CGRAM. */
+    uint8_t location = custom_symbol << 3;
+    int rc = _command(dev, CMD_SET_CGRAM_ADDR | location);
 
     if (rc < 0) {
         return rc;
