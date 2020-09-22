@@ -27,7 +27,7 @@ extern "C"
 /**
  * @brief Clears entire display and sets cursor to position (0, 0).
  *
- * ATTENTION: Also changes BIT_ENTRY_MODE_INCREMENT to 1
+ * @note: Also changes BIT_ENTRY_MODE_INCREMENT to 1
  */
 #define CMD_CLEAR_DISPLAY   0x01
 

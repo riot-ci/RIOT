@@ -154,7 +154,7 @@ int aip31068_turn_off(aip31068_t *dev);
 /**
  * @brief Clear the display and set the cursor to position (0, 0).
  *
- * ATTENTION: Also changes to setTextInsertionMode(LEFT_TO_RIGHT)
+ * @note: Also changes to setTextInsertionMode(LEFT_TO_RIGHT)
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
@@ -297,8 +297,8 @@ int aip31068_move_cursor_left(aip31068_t *dev);
  * When the cursor passes the 40th character of the first line and a second line
  * is available, the cursor will move to the second line.
  *
- * NOTE: The cursor respects the setting for the insertion mode and is set
- *       to (1, 0) for LEFT_TO_RIGHT and to (1, COL_MAX) for RIGHT_TO_LEFT.
+ * @note: The cursor respects the setting for the insertion mode and is set
+ *        to (1, 0) for LEFT_TO_RIGHT and to (1, COL_MAX) for RIGHT_TO_LEFT.
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
@@ -316,8 +316,8 @@ int aip31068_move_cursor_right(aip31068_t *dev);
 /**
  * @brief Scroll the entire display content (all lines) one unit to the left.
  *
- * NOTE: The cursor respects the setting for the insertion mode and is set
- *       to (1, 0) for LEFT_TO_RIGHT and to (1, COL_MAX) for RIGHT_TO_LEFT.
+ * @note: The cursor respects the setting for the insertion mode and is set
+ *        to (1, 0) for LEFT_TO_RIGHT and to (1, COL_MAX) for RIGHT_TO_LEFT.
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
@@ -357,8 +357,8 @@ int aip31068_scroll_display_right(aip31068_t *dev);
  * @param[in] customSymbol  Key to which a custom symbol should be assigned
  * @param[in] charmap       Bitmap definition of the custom symbol
  *
- * NOTE: The size of charmap depends on how the AIP31068 was initialized.
- *       8 bytes for FONT_SIZE_5x8 and 10 bytes for FONT_SIZE_5x10.
+ * @note: The size of charmap depends on how the AIP31068 was initialized.
+ *        8 bytes for FONT_SIZE_5x8 and 10 bytes for FONT_SIZE_5x10.
  *
  * @return  AIP31068_OK on success
  * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
@@ -434,11 +434,11 @@ int aip31068_print_char(aip31068_t *dev, char c);
  * line will be reserved completely for the progress bar. Any text written to
  * that line will be overwritten by the progress bar on an update.
  *
- * NOTE: Auto scroll will be disabled and the display will be scrolled to
- * its original position. Don't use scrolling when using the
- * progressbar, otherwise it won't display correctly.
+ * @note: Auto scroll will be disabled and the display will be scrolled to
+ *        its original position. Don't use scrolling when using the
+ *        progressbar, otherwise it won't display correctly.
  *
- * NOTE: Text insertion mode will be set to LEFT_TO_RIGHT.
+ * @note: Text insertion mode will be set to LEFT_TO_RIGHT.
  *
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] enabled   Enable or disable
@@ -458,8 +458,8 @@ void aip31068_set_progress_bar_row(aip31068_t *dev, uint8_t row);
 /**
  * @brief Set the progress of the progress bar and draw the update.
  *
- * NOTE: This function changes the cursor position. You will have to use
- * setCursorPosition in order to return to your required cursor position.
+ * @note: This function changes the cursor position. You will have to use
+ *        setCursorPosition in order to return to your required cursor position.
  *
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] progress  Progress in percentage (0 to 100)
