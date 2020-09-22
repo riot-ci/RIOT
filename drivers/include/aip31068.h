@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    drivers_aip31068 AIP31068 I2C LCD controller
- * @ingroup     drivers_actuators
+ * @ingroup     drivers_display
  * @brief       Device driver for AIP31068
  *
  * @{

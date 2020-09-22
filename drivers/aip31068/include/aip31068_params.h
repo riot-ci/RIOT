@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     drivers_actuators
+ * @ingroup     drivers_aip31068
  * @brief       Default configuration for the AIP31068 I2C LCD controller
  *
  * @{
