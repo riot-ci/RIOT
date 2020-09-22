@@ -28,51 +28,56 @@
 #include "msg.h"
 #include "mutex.h"
 #include "periph/dac.h"
-#include "periph/gpio.h"
-#include "periph/timer.h"
-#include "xtimer.h"
+#include "shell.h"
 
 #include "blob/hello.raw.h"
-
-#ifndef BTN0_INT_FLANK
-#define BTN0_INT_FLANK  GPIO_RISING
-#endif
 
 #ifndef DAC_CHAN
 #define DAC_CHAN DAC_LINE(0)
 #endif
 
 #ifndef ENABLE_GREETING
-#define ENABLE_GREETING (1)
+#define ENABLE_GREETING (0)
 #endif
 
-#define DAC_BUF_SIZE (2048)
+#ifndef min
+#define min(a, b) ((a) > (b) ? (b) : (a))
+#endif
 
-static uint8_t buf[2][DAC_BUF_SIZE];
+#define DAC_BUF_SIZE    (2048)
 
+#define ISIN_PERIOD     (0x7FFF)
+#define ISIN_MAX        (0x1000)
+
+static unsigned sample_rate = 8000;
+
+/**
+ * @brief A sine approximation via a fourth-order cosine approx.
+ *        source: https://www.coranac.com/2009/07/sines/
+ *
+ * @param x     angle (with 2^15 units/circle)
+ * @return      sine value (Q12)
+ */
 static int32_t isin(int32_t x)
 {
-    // S(x) = x * ( (3<<p) - (x*x>>r) ) >> s
-    // n : Q-pos for quarter circle             13
-    // A : Q-pos for output                     12
-    // p : Q-pos for parentheses intermediate   15
-    // r = 2n-p                                 11
-    // s = A-1-p-n                              17
-    static const int qN = 13,
-                     qA = 12,
-                     qP = 15,
-                     qR = 2 * qN - qP,
-                     qS = qN + qP + 1 - qA;
+    int32_t c, y;
+    static const int32_t qN = 13,
+                         qA = 12,
+                          B = 19900,
+                          C = 3516;
 
-    x <<= (30 - qN);            // shift to full s32 range (Q13->Q30)
+    c = x << (30 - qN);         /* Semi-circle info into carry. */
+    x -= 1 << qN;               /* sine -> cosine calc          */
 
-    if ((x ^ (x << 1)) < 0) {   // test for quadrant 1 or 2
-        x = (1U << 31) - x;
-    }
+    x = x << (31 - qN);         /* Mask with PI                 */
+    x = x >> (31 - qN);         /* Note: SIGNED shift! (to qN)  */
+    x = x * x >> (2 * qN - 14); /* x=x^2 To Q14                 */
 
-    x >>= (30 - qN);
+    y = B - (x * C >> 14);      /* B - x^2*C                    */
+    y = (1 << qA)               /* A - x^2*(B-x^2*C)            */
+      - (x * y >> 16);
 
-    return x * ((3 << qP) - (x * x >> qR)) >> qS;
+    return c >= 0 ? y : -y;
 }
 
 static void _unlock(void *arg)
@@ -80,62 +85,85 @@ static void _unlock(void *arg)
     mutex_unlock(arg);
 }
 
-static void _play_sin_sample(uint8_t b, uint8_t pitch, mutex_t *lock)
+static size_t _fill_sine_samples(uint8_t *buf, uint16_t period,
+                               uint16_t *x, size_t len)
 {
-    for (uint16_t i = 0; i < DAC_BUF_SIZE; ++i) {
-        buf[b][i] = (isin(i << pitch) + 4096) >> 5;
+    len = min(len, DAC_BUF_SIZE);
+
+    for (uint16_t i = 0; i < len; ++i) {
+        *x += ISIN_PERIOD / period;
+        buf[i] = isin(*x & ISIN_PERIOD) >> 5;
     }
 
-    dac_play(DAC_CHAN, buf[b], DAC_BUF_SIZE);
-    mutex_lock(lock);
+    return len;
 }
 
-static void play_blip(uint8_t start, uint8_t end)
+static void play_sine(uint16_t period, uint32_t samples)
 {
+    static uint8_t buf[2][DAC_BUF_SIZE];
+
     mutex_t lock = MUTEX_INIT_LOCKED;
     uint8_t cur_buf = 0;
+    uint16_t x = 0;
 
     dac_play_set_cb(DAC_CHAN, _unlock, &lock);
 
-    for (unsigned i = start; i <= end; ++i) {
-        _play_sin_sample(cur_buf, i, &lock);
+    while (samples) {
+        samples -= _fill_sine_samples(buf[cur_buf], period, &x, samples);
+
+        dac_play(DAC_CHAN, buf[cur_buf], DAC_BUF_SIZE);
+
+        mutex_lock(&lock);
         cur_buf = !cur_buf;
     }
 }
 
-enum {
-    MSG_BTN0
-};
-
-static void btn_cb(void *ctx)
+#if ENABLE_GREETING
+static int cmd_greeting(int argc, char **argv)
 {
-    kernel_pid_t pid = *(kernel_pid_t*) ctx;
-    msg_t m = {
-        .type = MSG_BTN0
-    };
+    (void) argc;
+    (void) argv;
 
-    msg_send_int(&m, pid);
+    puts("Play Greeting…");
+    dac_play(DAC_CHAN, hello_raw, hello_raw_len);
+
+    return 0;
 }
+#endif
+
+static int cmd_sine(int argc, char **argv)
+{
+    if (argc < 2) {
+        printf("usage: %s <freq> <secs>\n", argv[0]);
+        return 1;
+    }
+
+    unsigned freq = atoi(argv[1]);
+    unsigned secs = atoi(argv[2]);
+
+    play_sine((sample_rate + freq/2) / freq, secs * sample_rate);
+
+    return 0;
+}
+
+static const shell_command_t shell_commands[] = {
+#if ENABLE_GREETING
+    { "hello", "Play Greeting", cmd_greeting },
+#endif
+    { "sine", "Play Sine wave", cmd_sine },
+    { NULL, NULL, NULL }
+};
 
 int main(void)
 {
+    printf("init DAC with 8 bit, %u samples / s\n", sample_rate);
+
     dac_init(DAC_CHAN);
-    dac_play_init(DAC_CHAN, 8000, DAC_FLAG_8BIT, NULL, NULL);
+    dac_play_init(DAC_CHAN, sample_rate, DAC_FLAG_8BIT, NULL, NULL);
 
-    kernel_pid_t main_pid = thread_getpid();
-    gpio_init_int(BTN0_PIN, BTN0_MODE, BTN0_INT_FLANK, btn_cb, &main_pid);
-
-#if ENABLE_GREETING
-    puts("Play Greeting…");
-    dac_play(DAC_CHAN, hello_raw, hello_raw_len);
-#else
-    puts("Greeting disabled.");
-#endif
-
-    msg_t m;
-    while (msg_receive(&m)) {
-        play_blip(8, 16);
-    }
+    /* start the shell */
+    char line_buf[SHELL_DEFAULT_BUFSIZE];
+    shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
 
     return 0;
 }

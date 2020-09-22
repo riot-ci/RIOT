@@ -6,6 +6,6 @@ FEATURES_REQUIRED += periph_timer_periodic
 
 BLOBS += hello.raw
 
-USEMODULE += xtimer
+USEMODULE += shell
 
 include $(RIOTBASE)/Makefile.include
