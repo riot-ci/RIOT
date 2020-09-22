@@ -138,6 +138,10 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
     assert(dev);
     assert(params);
 
+    /* displays with more than 4 lines are not supported
+     * (see aip31068_set_cursor_position) */
+    assert(params->row_count <= 4);
+
     dev->params = *params;
     dev->_curr_display_control = 0;
     dev->_curr_entry_mode_set = 0;
