@@ -135,8 +135,8 @@ extern "C" {
  * compute by: CORECLOCK = ((PLL_IN / PLL_PREDIV) * PLL_MUL)
  * with:
  * PLL_IN:          input clock is HSE if available or HSI otherwise
- * PLL_DIV :        divider, allowed values: 2, 3, 4
- * PLL_MUL:         multiplier, allowed values: 3, 4, 6, 8, 12, 16, 24, 32, 48
+ * PLL_DIV :        divider, allowed values: 2, 3, 4. Default is 2.
+ * PLL_MUL:         multiplier, allowed values: 3, 4, 6, 8, 12, 16, 24, 32, 48. Default is 4.
  * CORECLOCK        -> 32MHz MAX!
  */
 #define CLOCK_CORECLOCK                 ((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_DIV) * CONFIG_CLOCK_PLL_MUL)
