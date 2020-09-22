@@ -101,7 +101,7 @@ extern "C" {
 #define CONFIG_CLOCK_MSI                KHZ(4194)
 #endif
 
-/* The following parameters configure a 64MHz system clock with HSI as input clock */
+/* The following parameters configure a 32MHz system clock with HSI as input clock */
 #ifndef CONFIG_CLOCK_PLL_DIV
 #define CONFIG_CLOCK_PLL_DIV            (2)
 #endif
@@ -137,7 +137,7 @@ extern "C" {
  * PLL_IN:          input clock is HSE if available or HSI otherwise
  * PLL_DIV :        divider, allowed values: 2, 3, 4
  * PLL_MUL:         multiplier, allowed values: 3, 4, 6, 8, 12, 16, 24, 32, 48
- * CORECLOCK        -> 48MHz MAX!
+ * CORECLOCK        -> 32MHz MAX!
  */
 #define CLOCK_CORECLOCK                 ((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_DIV) * CONFIG_CLOCK_PLL_MUL)
 #if CLOCK_CORECLOCK > MHZ(32)
