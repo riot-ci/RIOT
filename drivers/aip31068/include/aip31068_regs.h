@@ -29,24 +29,24 @@ extern "C"
  *
  * @note: Also changes BIT_ENTRY_MODE_INCREMENT to 1
  */
-#define CMD_CLEAR_DISPLAY   0x01
+#define CMD_CLEAR_DISPLAY           0x01
 
 /**
  * @brief Sets cursor to position (0, 0) and resets display to original position
  *        before any shift operations.
  */
-#define CMD_RETURN_HOME 0x02
+#define CMD_RETURN_HOME             0x02
 
 /**
  * @brief Sets cursor move direction and specifies display shift.
  */
-#define CMD_ENTRY_MODE_SET  0x04
+#define CMD_ENTRY_MODE_SET          0x04
 
 /**
  * @brief Sets entire display on/off, cursor on/off, and blinking of cursor
  *        position character on/off.
  */
-#define CMD_DISPLAY_CONTROL 0x08
+#define CMD_DISPLAY_CONTROL         0x08
 
 /**
  * @brief Moves cursor and shifts display.
@@ -57,17 +57,17 @@ extern "C"
  * @brief Sets interface data length, number of display lines and character
  *        font size.
  */
-#define CMD_FUNCTION_SET    0x20
+#define CMD_FUNCTION_SET            0x20
 
 /**
  * @brief Sets CGRAM address.
  */
-#define CMD_SET_CGRAM_ADDR  0x40
+#define CMD_SET_CGRAM_ADDR          0x40
 
 /**
  * @brief Sets DDRAM address.
  */
-#define CMD_SET_DDRAM_ADDR  0x80
+#define CMD_SET_DDRAM_ADDR          0x80
 
 
 
@@ -77,7 +77,7 @@ extern "C"
  * @brief 0 = Decrement cursor after insertion
  *        1 = Increment cursor after insertion
  */
-#define BIT_ENTRY_MODE_INCREMENT    1
+#define BIT_ENTRY_MODE_INCREMENT        1
 
 /**
  * @brief 0 = No automated display scroll
@@ -93,13 +93,13 @@ extern "C"
  * @brief 0 = Display off
  *        1 = Display on
  */
-#define BIT_DISPLAY_CONTROL_DISPLAY 2
+#define BIT_DISPLAY_CONTROL_DISPLAY         2
 
 /**
  * @brief 0 = Cursor off
  *        1 = Cursor on
  */
-#define BIT_DISPLAY_CONTROL_CURSOR  1
+#define BIT_DISPLAY_CONTROL_CURSOR          1
 
 /**
  * @brief 0 = Cursor blinking off
