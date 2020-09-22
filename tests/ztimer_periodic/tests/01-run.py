@@ -11,7 +11,7 @@ from testrunner import run
 
 
 def testfunc(child):
-    child.expect(r"min=-?\d+ max=-?\d+ avg_diff=\d+\r\n")
+    child.expect_exact(r"Test successful.\r\n")
 
 
 if __name__ == "__main__":
