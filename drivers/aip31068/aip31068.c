@@ -282,10 +282,17 @@ int aip31068_set_cursor_visible(aip31068_t *dev, bool visible)
 
 int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col)
 {
-    col = ((row == 0) ? (col | 0x80) : (col | 0xc0));
-    uint8_t data[] = { 0x80, col };
+    uint8_t row_offsets[4];
+    row_offsets[0] = 0x00;
+    row_offsets[1] = 0x40;
+    row_offsets[2] = 0x00 + dev->params.col_count;
+    row_offsets[3] = 0x40 + dev->params.col_count;;
 
-    return _device_write(dev, data, sizeof(data));
+    if (row >= dev->params.row_count) {
+        row = dev->params.row_count - 1;
+    }
+
+    return _command(dev, CMD_SET_DDRAM_ADDR | (col | row_offsets[row]));
 }
 
 int aip31068_set_text_insertion_mode(aip31068_t *dev,
