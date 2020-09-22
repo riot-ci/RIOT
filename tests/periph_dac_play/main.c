@@ -89,6 +89,33 @@ static void _unlock(void *arg)
 typedef uint16_t (*sample_gen_t)(uint8_t *dst, size_t len,
                                  uint16_t period, uint16_t x);
 
+static uint16_t _fill_saw_samples_8(uint8_t *buf, size_t len,
+                                    uint16_t period, uint16_t x)
+{
+    unsigned step = 0xFF / period;
+
+    for (uint16_t i = 0; i < len; ++i) {
+        x += step;
+        buf[i] = x;
+    }
+
+    return x;
+}
+
+static uint16_t _fill_saw_samples_16(uint8_t *buf, size_t len,
+                                     uint16_t period, uint16_t x)
+{
+    unsigned step = 0xFFFF / period;
+
+    for (uint16_t i = 0; i < len; ++i) {
+        x += step;
+        buf[i]   = x;
+        buf[++i] = x >> 8;
+    }
+
+    return x;
+}
+
 static uint16_t _fill_sine_samples_8(uint8_t *buf, size_t len,
                                      uint16_t period, uint16_t x)
 {
@@ -109,6 +136,29 @@ static uint16_t _fill_sine_samples_16(uint8_t *buf, size_t len,
         uint16_t y = isin(x & ISIN_PERIOD);
         buf[i]   = y;
         buf[++i] = y >> 8;
+    }
+
+    return x;
+}
+
+static uint16_t _fill_square_samples(uint8_t *buf, size_t len,
+                                       uint16_t period, uint16_t x)
+{
+    for (uint16_t i = 0; i < len; ++i) {
+        if (x < period / 2) {
+            buf[i] = 0xFF;
+        } else {
+            buf[i] = 0x0;
+        }
+
+        if (res_16b) {
+            uint8_t tmp = buf[i];
+            buf[++i] = tmp;
+        }
+
+        if (++x >= period) {
+            x = 0;
+        }
     }
 
     return x;
@@ -187,6 +237,22 @@ static int cmd_init(int argc, char **argv)
     return 0;
 }
 
+static int cmd_saw(int argc, char **argv)
+{
+    if (argc < 3) {
+        printf("usage: %s <freq> <secs>\n", argv[0]);
+        return 1;
+    }
+
+    unsigned freq = atoi(argv[1]);
+    unsigned secs = atoi(argv[2]);
+
+    play_function((sample_rate + freq/2) / freq, secs * sample_rate,
+                  res_16b ? _fill_saw_samples_16 : _fill_saw_samples_8);
+
+    return 0;
+}
+
 static int cmd_sine(int argc, char **argv)
 {
     if (argc < 3) {
@@ -203,12 +269,30 @@ static int cmd_sine(int argc, char **argv)
     return 0;
 }
 
+static int cmd_square(int argc, char **argv)
+{
+    if (argc < 3) {
+        printf("usage: %s <freq> <secs>\n", argv[0]);
+        return 1;
+    }
+
+    unsigned freq = atoi(argv[1]);
+    unsigned secs = atoi(argv[2]);
+
+    play_function((sample_rate + freq/2) / freq, secs * sample_rate,
+                 _fill_square_samples);
+
+    return 0;
+}
+
 static const shell_command_t shell_commands[] = {
 #if ENABLE_GREETING
     { "hello", "Play Greeting", cmd_greeting },
 #endif
-    { "init", "Initialize DAC", cmd_init },
-    { "sine", "Play Sine wave", cmd_sine },
+    { "init",   "Initialize DAC", cmd_init },
+    { "saw",    "Play sawtooth wave", cmd_saw },
+    { "sine",   "Play Sine wave", cmd_sine },
+    { "square", "Play Square wave", cmd_square },
     { NULL, NULL, NULL }
 };
 
