@@ -346,6 +346,7 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
         return rc;
     }
 
+    /* How many rows are necessary for a complete character for given font? */
     int row_count = dev->params.font_size == FONT_SIZE_5x8 ? 8 : 10;
 
     for (int i = 0; i < row_count; i++) {
@@ -404,15 +405,20 @@ void aip31068_set_progress(aip31068_t *dev, uint8_t progress)
         return;
     }
 
+    /* calculate the number of pixel-columns on a single line */
     int bar_count = dev->params.col_count * 5;
 
     if (progress > 100) {
         progress = 100;
     }
 
+    /* How many bars to display for given progress? */
     int progress_bar_count = bar_count * progress / 100;
 
+    /* number of completely filled sections / characters */
     int full_bar_count = progress_bar_count / 5;
+
+    /* number of bars in the last section / character remaining */
     int remainder_bar_count = progress_bar_count % 5;
 
     aip31068_set_cursor_position(dev, dev->_progress_bar_row, 0);
