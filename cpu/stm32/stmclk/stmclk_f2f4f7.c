@@ -254,10 +254,9 @@
 #error "stmclk: no MCO1 on this device"
 #endif
 
-/* Configure the MCO1 clock source: options are PLL (default), HSE, HSI or LSE */
+/* Configure the MCO1 clock source: options are PLL (default), HSE or HSI */
 #ifndef CONFIG_CLOCK_MCO1_USE_PLL
-#if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI) || \
-    IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE)
+#if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI)
 #define CONFIG_CLOCK_MCO1_USE_PLL   0
 #else
 #define CONFIG_CLOCK_MCO1_USE_PLL   1     /* Use PLL by default */
@@ -272,32 +271,19 @@
 #define CONFIG_CLOCK_MCO1_USE_HSI   0
 #endif /* CONFIG_CLOCK_MCO1_USE_HSI */
 
-#ifndef CONFIG_CLOCK_MCO1_USE_LSE
-#define CONFIG_CLOCK_MCO1_USE_LSE   0
-#endif /* CONFIG_CLOCK_MCO2_USE_LSE */
-
 #if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) && \
-    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI) || \
-     IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE))
+    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI))
 #error "Cannot use PLL as MCO1 clock source with other clock"
 #endif
 
 #if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) && \
-    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI) || \
-     IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE))
+    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI))
 #error "Cannot use HSE as MCO1 clock source with other clock"
 #endif
 
 #if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI) && \
-    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || \
-     IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE))
+    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL))
 #error "Cannot use HSI as MCO1 clock source with other clock"
-#endif
-
-#if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE) && \
-    (IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE) || IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI) || \
-     IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL))
-#error "Cannot use LSE as MCO1 clock source with other clock"
 #endif
 
 #if IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL)
@@ -306,8 +292,6 @@
 #define CLOCK_MCO1_SRC                          (RCC_CFGR_MCO1_1)
 #elif IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSI)
 #define CLOCK_MCO1_SRC                          (0)
-#elif IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_LSE)
-#define CLOCK_MCO1_SRC                          (RCC_CFGR_MCO1_0)
 #else
 #error "Invalid MCO1 clock source selection"
 #endif
