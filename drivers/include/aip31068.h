@@ -358,6 +358,9 @@ int aip31068_scroll_display_right(aip31068_t *dev);
  * @note: The size of charmap depends on how the AIP31068 was initialized.
  *        8 bytes for FONT_SIZE_5x8 and 10 bytes for FONT_SIZE_5x10.
  *
+ *        This function resets the cursor position. Therefore this function
+ *        should be called before printing any characters to the display.
+ *
  * @return  AIP31068_OK on success
  * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
  * @return  -EIO When slave device doesn't ACK the byte

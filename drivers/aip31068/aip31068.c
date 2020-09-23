@@ -332,7 +332,6 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
         }
     }
 
-    // todo: return to old cursor position
     return _command(dev, AIP31068_CMD_SET_DDRAM_ADDR);
 }
 
