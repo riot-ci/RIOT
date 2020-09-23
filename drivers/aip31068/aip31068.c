@@ -152,17 +152,17 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 
     /* configure bit mode */
     if (params->bit_mode == BITMODE_8_BIT) {
-        _function_set |= (1 << BIT_FUNCTION_SET_BITMODE);
+        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_BITMODE);
     }
 
     /* configure line count */
     if (params->row_count >= 2) {
-        _function_set |= (1 << BIT_FUNCTION_SET_LINECOUNT);
+        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_LINECOUNT);
     }
 
     /* configure character size */
     if (params->font_size == FONT_SIZE_5x10) {
-        _function_set |= (1 << BIT_FUNCTION_SET_FONTSIZE);
+        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_FONTSIZE);
     }
 
     /* begin of initialization sequence (page 20 in the datasheet) */
@@ -173,7 +173,7 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 
     /* send function set command sequence */
     do {
-        rc = _command(dev, CMD_FUNCTION_SET | _function_set);
+        rc = _command(dev, AIP31068_CMD_FUNCTION_SET | _function_set);
         xtimer_usleep(5 * US_PER_MS);
 
         printf("A rc = %d\n", rc);
@@ -185,7 +185,7 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
     } while (rc != 0); // TODO: get rid of the loop if possible
 
     /* second try */
-    rc = _command(dev, CMD_FUNCTION_SET | _function_set);
+    rc = _command(dev, AIP31068_CMD_FUNCTION_SET | _function_set);
     if (rc < 0) {
         return rc;
     }
@@ -193,7 +193,7 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
     xtimer_usleep(500);
 
     /* third go */
-    rc = _command(dev, CMD_FUNCTION_SET | _function_set);
+    rc = _command(dev, AIP31068_CMD_FUNCTION_SET | _function_set);
     if (rc < 0) {
         return rc;
     }
@@ -218,32 +218,32 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 
 int aip31068_turn_on(aip31068_t *dev)
 {
-    dev->_curr_display_control |= (1 << BIT_DISPLAY_CONTROL_DISPLAY);
+    dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
 
-    return _command(dev, CMD_DISPLAY_CONTROL | dev->_curr_display_control);
+    return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
 
 int aip31068_turn_off(aip31068_t *dev)
 {
-    dev->_curr_display_control &= ~(1 << BIT_DISPLAY_CONTROL_DISPLAY);
+    dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
 
-    return _command(dev, CMD_DISPLAY_CONTROL | dev->_curr_display_control);
+    return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
 
 int aip31068_clear(aip31068_t *dev)
 {
-    int rc = _command(dev, CMD_CLEAR_DISPLAY);
+    int rc = _command(dev, AIP31068_CMD_CLEAR_DISPLAY);
 
-    xtimer_usleep(EXECUTION_TIME_MAX);
+    xtimer_usleep(AIP31068_EXECUTION_TIME_MAX);
 
     return rc;
 }
 
 int aip31068_return_home(aip31068_t *dev)
 {
-    int rc = _command(dev, CMD_RETURN_HOME);
+    int rc = _command(dev, AIP31068_CMD_RETURN_HOME);
 
-    xtimer_usleep(EXECUTION_TIME_MAX);
+    xtimer_usleep(AIP31068_EXECUTION_TIME_MAX);
 
     return rc;
 }
@@ -251,37 +251,37 @@ int aip31068_return_home(aip31068_t *dev)
 int aip31068_set_auto_scroll_enabled(aip31068_t *dev, bool enabled)
 {
     if (enabled) {
-        dev->_curr_entry_mode_set |= (1 << BIT_ENTRY_MODE_AUTOINCREMENT);
+        dev->_curr_entry_mode_set |= (1 << AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
     }
     else {
-        dev->_curr_entry_mode_set &= ~(1 << BIT_ENTRY_MODE_AUTOINCREMENT);
+        dev->_curr_entry_mode_set &= ~(1 << AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
     }
 
-    return _command(dev, CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
+    return _command(dev, AIP31068_CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
 }
 
 int aip31068_set_cursor_blinking_enabled(aip31068_t *dev, bool enabled)
 {
     if (enabled) {
-        dev->_curr_display_control |= (1 << BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
+        dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
     }
     else {
-        dev->_curr_display_control &= ~(1 << BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
+        dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
     }
 
-    return _command(dev, CMD_DISPLAY_CONTROL | dev->_curr_display_control);
+    return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
 
 int aip31068_set_cursor_visible(aip31068_t *dev, bool visible)
 {
     if (visible) {
-        dev->_curr_display_control |= (1 << BIT_DISPLAY_CONTROL_CURSOR);
+        dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
     }
     else {
-        dev->_curr_display_control &= ~(1 << BIT_DISPLAY_CONTROL_CURSOR);
+        dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
     }
 
-    return _command(dev, CMD_DISPLAY_CONTROL | dev->_curr_display_control);
+    return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
 
 int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col)
@@ -296,52 +296,52 @@ int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col)
         row = dev->params.row_count - 1;
     }
 
-    return _command(dev, CMD_SET_DDRAM_ADDR | (col | row_offsets[row]));
+    return _command(dev, AIP31068_CMD_SET_DDRAM_ADDR | (col | row_offsets[row]));
 }
 
 int aip31068_set_text_insertion_mode(aip31068_t *dev,
                                      aip31068_text_insertion_mode_t mode)
 {
     if (mode == RIGHT_TO_LEFT) {
-        dev->_curr_entry_mode_set &= ~(1 << BIT_ENTRY_MODE_INCREMENT);
+        dev->_curr_entry_mode_set &= ~(1 << AIP31068_BIT_ENTRY_MODE_INCREMENT);
     }
     else {
-        dev->_curr_entry_mode_set |= (1 << BIT_ENTRY_MODE_INCREMENT);
+        dev->_curr_entry_mode_set |= (1 << AIP31068_BIT_ENTRY_MODE_INCREMENT);
     }
 
-    return _command(dev, CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
+    return _command(dev, AIP31068_CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
 }
 
 int aip31068_move_cursor_left(aip31068_t *dev)
 {
-    uint8_t cmd = CMD_CURSOR_DISPLAY_SHIFT;
-    cmd &= ~(1 << BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
+    cmd &= ~(1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
 
 int aip31068_move_cursor_right(aip31068_t *dev)
 {
-    uint8_t cmd = CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
+    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
 
 int aip31068_scroll_display_left(aip31068_t *dev)
 {
-    uint8_t cmd = CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
-    cmd &= ~(1 << BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
+    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
+    cmd &= ~(1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
 
 int aip31068_scroll_display_right(aip31068_t *dev)
 {
-    uint8_t cmd = CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
-    cmd |= (1 << BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
+    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
+    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
@@ -353,7 +353,7 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
     /* Bits 0-2 define the row address of a custom character in CGRAM.
      * Bits 3-5 define the base address of a custom character in CGRAM. */
     uint8_t location = custom_symbol << 3;
-    int rc = _command(dev, CMD_SET_CGRAM_ADDR | location);
+    int rc = _command(dev, AIP31068_CMD_SET_CGRAM_ADDR | location);
 
     if (rc < 0) {
         return rc;
@@ -371,7 +371,7 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
     }
 
     // todo: return to old cursor position
-    return _command(dev, CMD_SET_DDRAM_ADDR);
+    return _command(dev, AIP31068_CMD_SET_DDRAM_ADDR);
 }
 
 int aip31068_print_custom_symbol(aip31068_t *dev,
@@ -495,7 +495,7 @@ static inline int _data(aip31068_t *dev, uint8_t value)
 {
     int rc = _write(dev, value, false);
 
-    xtimer_usleep(EXECUTION_TIME_DEFAULT);
+    xtimer_usleep(AIP31068_EXECUTION_TIME_DEFAULT);
 
     return rc;
 }
@@ -504,7 +504,7 @@ static inline int _command(aip31068_t *dev, uint8_t value)
 {
     int rc = _write(dev, value, true);
 
-    xtimer_usleep(EXECUTION_TIME_DEFAULT);
+    xtimer_usleep(AIP31068_EXECUTION_TIME_DEFAULT);
 
     return rc;
 }
@@ -513,7 +513,7 @@ static inline int _write(aip31068_t *dev, uint8_t data_byte, bool is_cmd)
 {
     uint8_t control_byte = 0;
     if (!is_cmd) {
-        control_byte |= (1 << BIT_CONTROL_BYTE_RS);
+        control_byte |= (1 << AIP31068_BIT_CONTROL_BYTE_RS);
     }
 
     uint8_t data[] = { control_byte, data_byte };

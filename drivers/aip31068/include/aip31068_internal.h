@@ -25,13 +25,13 @@ extern "C"
 /**
  * @brief Longest execution time is 1.52 ms for 'clear' and 'home' command
  */
-#define EXECUTION_TIME_MAX      (1600U)
+#define AIP31068_EXECUTION_TIME_MAX      (1600U)
 
 /**
  * @brief Execution time for writing to RAM is given as 43 µs
  *        Execution time for most commands is given as 37 µs
  */
-#define EXECUTION_TIME_DEFAULT  (50U)
+#define AIP31068_EXECUTION_TIME_DEFAULT  (50U)
 
 #ifdef __cplusplus
 }
