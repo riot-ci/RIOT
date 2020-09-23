@@ -193,12 +193,36 @@ int suit_handle_manifest_structure_bstr(suit_manifest_t *manifest,
                                         const suit_manifest_handler_t *handlers,
                                         size_t handlers_len);
 
+/**
+ * @brief Create an internal @ref suit_param_ref_t from a NanoCBOR value
+ *        reference.
+ *
+ * The resulting @p ref only contains a 16 bit offset to the location of the
+ * NanoCBOR value, saving some RAM for each stored reference.
+ *
+ * @param   manifest    SUIT manifest context
+ * @param   ref         reference to store
+ * @param   val         NanoCBOR value to convert to a reference
+ *
+ * @returns             The offset of the nanocbor value inside the manifest
+ *                      bytestring
+ */
 uint16_t suit_param_ref_to_cbor(suit_manifest_t *manifest,
                                 suit_param_ref_t *ref,
                                 nanocbor_value_t *val);
+
+/**
+ * @brief Create a NanoCBOR value reference from an internal
+ *        @ref suit_param_ref_t.
+ *
+ * @param   manifest    SUIT manifest context
+ * @param   ref         reference to parse
+ * @param   val         NanoCBOR value to restore
+ */
 void suit_param_cbor_to_ref(suit_manifest_t *manifest,
                            suit_param_ref_t *ref,
                            nanocbor_value_t *val);
+
 #ifdef __cplusplus
 }
 #endif
