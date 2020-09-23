@@ -24,7 +24,4 @@ The following shell commands are available:
 * **create_custom_symbol:** Create a custom symbol.
 * **print_custom_symbol:** Print a custom symbol.
 * **print:** Print a string.
-* **progressbar:** Enable/ disable progressbar feature.
-* **progressbar_row:** Set row for progressbar.
-* **progress:** Set progress for progressbar.
 * **run_demo:** Demonstration of all functions.

@@ -259,48 +259,6 @@ int print(int argc, char **argv)
     return 0;
 }
 
-int progressbar(int argc, char **argv)
-{
-    if (argc != 2) {
-        puts("usage: progressbar <0 or 1>");
-        return 1;
-    }
-    else {
-        uint8_t enabled = atoi(argv[1]);
-        aip31068_set_progress_bar_enabled(&aip31068_dev, enabled);
-    }
-
-    return 0;
-}
-
-int progressbar_row(int argc, char **argv)
-{
-    if (argc != 2) {
-        puts("usage: progressbar_row <row (e.g. 0 for first row)>");
-        return 1;
-    }
-    else {
-        uint8_t row = atoi(argv[1]);
-        aip31068_set_progress_bar_row(&aip31068_dev, row);
-    }
-
-    return 0;
-}
-
-int progress(int argc, char **argv)
-{
-    if (argc != 2) {
-        puts("usage: progress <progress (0-100)>");
-        return 1;
-    }
-    else {
-        uint8_t progress = atoi(argv[1]);
-        aip31068_set_progress(&aip31068_dev, progress);
-    }
-
-    return 0;
-}
-
 int run_demo(int argc, char **argv)
 {
     (void) argc;
@@ -452,26 +410,6 @@ int run_demo(int argc, char **argv)
 
     aip31068_clear(&aip31068_dev);
 
-    /* 9. progress bar */
-    aip31068_set_progress_bar_enabled(&aip31068_dev, true);
-    aip31068_set_cursor_position(&aip31068_dev, 0, 0);
-    aip31068_print(&aip31068_dev, "Progress: ");
-
-    for (int j = 0; j <= 100; j++) {
-
-        aip31068_set_cursor_position(&aip31068_dev, 0, 10);
-
-        char string_rep[6];
-        sprintf(string_rep, "%d %%", j);
-
-        aip31068_print(&aip31068_dev, string_rep);
-
-        aip31068_set_progress(&aip31068_dev, j);
-        xtimer_usleep(100 * US_PER_MS);
-    }
-    aip31068_set_progress_bar_enabled(&aip31068_dev, false);
-    aip31068_clear(&aip31068_dev);
-
     puts("[DEMO END]");
 
     return 0;
@@ -494,9 +432,6 @@ static const shell_command_t shell_commands[] = {
     { "create_custom_symbol", "Create a custom symbol.", create_custom_symbol },
     { "print_custom_symbol", "Print a custom symbol.", print_custom_symbol },
     { "print", "Print a string.", print },
-    { "progressbar", "Enable/ disable progressbar feature.", progressbar },
-    { "progressbar_row", "Set row for progressbar.", progressbar_row },
-    { "progress", "Set progress for progressbar.", progress },
     { "run_demo", "Demonstration of all functions.", run_demo },
     { NULL, NULL, NULL }
 };

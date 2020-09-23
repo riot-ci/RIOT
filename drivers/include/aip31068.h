@@ -90,8 +90,6 @@ typedef struct {
     aip31068_params_t params;        /**< Device initialization parameters */
     uint8_t _curr_display_control;   /**< Current value of DISPLAY_CONTROL */
     uint8_t _curr_entry_mode_set;    /**< Current value of ENTRY_MODE_SET */
-    uint8_t _progress_bar_row;       /**< The line where the progress bar should be displayed on. */
-    bool _progress_bar_enabled;      /**< Whether progress bar feature is enabled or not. */
 } aip31068_t;
 
 /**
@@ -424,47 +422,6 @@ int aip31068_print(aip31068_t *dev, const char *data);
  * @return  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_print_char(aip31068_t *dev, char c);
-
-/**
- * @brief Enable or disable the progress bar.
- *
- * When enabled, the last five custom symbols are reserved to display the
- * progress bar (CUSTOM_SYMBOL_4 to CUSTOM_SYMBOL_8) and can't be used.
- * Assignments via setCustomSymbol() to these keys will be ignored. The given
- * line will be reserved completely for the progress bar. Any text written to
- * that line will be overwritten by the progress bar on an update.
- *
- * @note: Auto scroll will be disabled and the display will be scrolled to
- *        its original position. Don't use scrolling when using the
- *        progressbar, otherwise it won't display correctly.
- *
- * @note: Text insertion mode will be set to LEFT_TO_RIGHT.
- *
- * @param[in] dev       Device descriptor of the AIP31068
- * @param[in] enabled   Enable or disable
- */
-void aip31068_set_progress_bar_enabled(aip31068_t *dev, bool enabled);
-
-/**
- * @brief Set the row for displaying the progress bar.
- *
- * Defaults to the last row, according to the given row count in the constructor.
- *
- * @param[in] dev   Device descriptor of the AIP31068
- * @param[in] row   Row where the progress bar is displayed
- */
-void aip31068_set_progress_bar_row(aip31068_t *dev, uint8_t row);
-
-/**
- * @brief Set the progress of the progress bar and draw the update.
- *
- * @note: This function changes the cursor position. You will have to use
- *        setCursorPosition in order to return to your required cursor position.
- *
- * @param[in] dev       Device descriptor of the AIP31068
- * @param[in] progress  Progress in percentage (0 to 100)
- */
-void aip31068_set_progress(aip31068_t *dev, uint8_t progress);
 
 #ifdef __cplusplus
 }
