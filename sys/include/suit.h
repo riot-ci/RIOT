@@ -52,8 +52,8 @@ extern "C" {
 /**
  * @brief   Maximum number of components supported in a SUIT manifest
  */
-#ifndef SUIT_COMPONENT_MAX
-#define SUIT_COMPONENT_MAX                  (1U)
+#ifndef CONFIG_SUIT_COMPONENT_MAX
+#define CONFIG_SUIT_COMPONENT_MAX                  (1U)
 #endif
 
 /**
@@ -195,7 +195,7 @@ typedef struct {
     uint32_t validated;             /**< bitfield of validated policies */
     uint32_t state;                 /**< bitfield holding state information */
     /** List of components in the manifest */
-    suit_component_t components[SUIT_COMPONENT_MAX];
+    suit_component_t components[CONFIG_SUIT_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */
     uint8_t component_current;      /**< Current component index */
     riotboot_flashwrite_t *writer;  /**< Pointer to the riotboot flash writer */

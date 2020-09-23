@@ -44,7 +44,7 @@ static suit_component_t *_get_component(suit_manifest_t *manifest)
 {
     /* Out-of-bounds check has been done in the _dtv_set_comp_idx, True/False
      * not handled here intentionally */
-    assert(manifest->component_current < SUIT_COMPONENT_MAX);
+    assert(manifest->component_current < CONFIG_SUIT_COMPONENT_MAX);
     return &manifest->components[manifest->component_current];
 }
 
@@ -152,7 +152,7 @@ static int _dtv_set_comp_idx(suit_manifest_t *manifest,
         return SUIT_ERR_INVALID_MANIFEST;
     }
     /* And if it is an integer it must be within the allowed bounds */
-    else if (new_index >= SUIT_COMPONENT_MAX) {
+    else if (new_index >= CONFIG_SUIT_COMPONENT_MAX) {
         return SUIT_ERR_INVALID_MANIFEST;
     }
 

@@ -49,9 +49,9 @@ static int _component_handler(suit_manifest_t *manifest, int key,
     }
     unsigned n = 0;
     while (!nanocbor_at_end(&arr)) {
-        if (n  >= SUIT_COMPONENT_MAX) {
+        if (n  >= CONFIG_SUIT_COMPONENT_MAX) {
             LOG_INFO("Too many components found: %u, Supported: %u\n",
-                     n, SUIT_COMPONENT_MAX);
+                     n, CONFIG_SUIT_COMPONENT_MAX);
             return SUIT_ERR_UNSUPPORTED;
         }
         suit_component_t *component = &manifest->components[n];
