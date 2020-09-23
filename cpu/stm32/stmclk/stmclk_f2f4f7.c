@@ -22,6 +22,7 @@
 #include "cpu.h"
 #include "stmclk.h"
 #include "periph_conf.h"
+#include "periph/gpio.h"
 
 /* PLL configuration */
 #if IS_ACTIVE(CONFIG_BOARD_HAS_HSE)
@@ -405,20 +406,25 @@
 #if CONFIG_CLOCK_MCO2_PRE == 1
 #define CLOCK_MCO2_PRE                  (0)
 #elif CONFIG_CLOCK_MCO2_PRE == 2
-#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2)
+#define CLOCK_MCO2_PRE                  (RCC_CFGR_MCO2PRE_2)
 #elif CONFIG_CLOCK_MCO2_PRE == 3
-#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_0)
+#define CLOCK_MCO2_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_0)
 #elif CONFIG_CLOCK_MCO2_PRE == 4
-#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1)
+#define CLOCK_MCO2_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1)
 #elif CONFIG_CLOCK_MCO2_PRE == 5
-#define CLOCK_MCO1_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1 | RCC_CFGR_MCO2PRE_0)
+#define CLOCK_MCO2_PRE                  (RCC_CFGR_MCO2PRE_2 | RCC_CFGR_MCO2PRE_1 | RCC_CFGR_MCO2PRE_0)
 #else
 #error "Invalid MCO1 prescaler"
 #endif
 
-/* Check whether PLL must be enabled */
+/* Check whether PLL must be enabled:
+  - When PLL is used system clock
+  - When PLLQ is required
+  - When PLL is used as input source for MCO1 or MCO2
+*/
 #if IS_ACTIVE(CONFIG_USE_CLOCK_PLL) || IS_ACTIVE(CONFIG_CLOCK_ENABLE_PLLQ) || \
-    IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLL)
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO1) && IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_PLL)) || \
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO2) && IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLL))
 #define CLOCK_ENABLE_PLL                1
 #else
 #define CLOCK_ENABLE_PLL                0
@@ -428,9 +434,12 @@
   - When HSE is used as SYSCLK
   - When PLL is used as SYSCLK and the board provides HSE (since HSE will be
     used as PLL input clock)
+  - When HSE is used input source for MCO1 or MCO2
 */
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSE) || \
-    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL))
+    (IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL)) || \
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO1) && IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE)) || \
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO2) && IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_HSE))
 #define CLOCK_ENABLE_HSE                1
 #else
 #define CLOCK_ENABLE_HSE                0
@@ -440,16 +449,22 @@
   - When HSI is used as SYSCLK
   - When PLL is used as SYSCLK and the board doesn't provide HSE (since HSI will be
     used as PLL input clock)
+  - When HSI is used input source for MCO1
 */
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSI) || \
-    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL))
+    (!IS_ACTIVE(CONFIG_BOARD_HAS_HSE) && IS_ACTIVE(CLOCK_ENABLE_PLL)) || \
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO1) && IS_ACTIVE(CONFIG_CLOCK_MCO1_USE_HSE))
 #define CLOCK_ENABLE_HSI                1
 #else
 #define CLOCK_ENABLE_HSI                0
 #endif
 
-/* Check whether PLLI2S must be enabled */
-#if IS_ACTIVE(CLOCK_REQUIRE_PLLI2SR) || IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S)
+/* Check whether PLLI2S must be enabled:
+  - When PLLI2SR is required
+  - When PLLI2S is used as input clock for MCO2
+*/
+#if IS_ACTIVE(CLOCK_REQUIRE_PLLI2SR) || \
+    (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO2) && IS_ACTIVE(CONFIG_CLOCK_MCO2_USE_PLLI2S))
 #define CLOCK_ENABLE_PLLI2S             1
 #else
 #define CLOCK_ENABLE_PLLI2S             0
@@ -485,10 +500,18 @@ void stmclk_init_sysclk(void)
 
     if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO1)) {
         RCC->CFGR |= CLOCK_MCO1_SRC | CLOCK_MCO1_PRE;
+
+        /* Configure GPIO pin (PA8/AF0) */
+        gpio_init(GPIO_PIN(PORT_A, 8), GPIO_OUT);
+        gpio_init_af(GPIO_PIN(PORT_A, 8), GPIO_AF0);
     }
 
     if (IS_ACTIVE(CONFIG_CLOCK_ENABLE_MCO2)) {
         RCC->CFGR |= CLOCK_MCO2_SRC | CLOCK_MCO2_PRE;
+
+        /* Configure GPIO pin (PC9/AF0) */
+        gpio_init(GPIO_PIN(PORT_C, 9), GPIO_OUT);
+        gpio_init_af(GPIO_PIN(PORT_C, 9), GPIO_AF0);
     }
 
     /* Enable HSE if required */
