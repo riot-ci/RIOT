@@ -152,17 +152,17 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 
     /* configure bit mode */
     if (params->bit_mode == BITMODE_8_BIT) {
-        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_BITMODE);
+        SETBIT(_function_set, AIP31068_BIT_FUNCTION_SET_BITMODE);
     }
 
     /* configure line count */
     if (params->row_count >= 2) {
-        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_LINECOUNT);
+        SETBIT(_function_set, AIP31068_BIT_FUNCTION_SET_LINECOUNT);
     }
 
     /* configure character size */
     if (params->font_size == FONT_SIZE_5x10) {
-        _function_set |= (1 << AIP31068_BIT_FUNCTION_SET_FONTSIZE);
+        SETBIT(_function_set, AIP31068_BIT_FUNCTION_SET_FONTSIZE);
     }
 
     /* begin of initialization sequence (page 20 in the datasheet) */
@@ -218,14 +218,14 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
 
 int aip31068_turn_on(aip31068_t *dev)
 {
-    dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
+    SETBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
 
     return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
 
 int aip31068_turn_off(aip31068_t *dev)
 {
-    dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
+    CLRBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_DISPLAY);
 
     return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
 }
@@ -251,10 +251,10 @@ int aip31068_return_home(aip31068_t *dev)
 int aip31068_set_auto_scroll_enabled(aip31068_t *dev, bool enabled)
 {
     if (enabled) {
-        dev->_curr_entry_mode_set |= (1 << AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
+        SETBIT(dev->_curr_entry_mode_set, AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
     }
     else {
-        dev->_curr_entry_mode_set &= ~(1 << AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
+        CLRBIT(dev->_curr_entry_mode_set, AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT);
     }
 
     return _command(dev, AIP31068_CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
@@ -263,10 +263,10 @@ int aip31068_set_auto_scroll_enabled(aip31068_t *dev, bool enabled)
 int aip31068_set_cursor_blinking_enabled(aip31068_t *dev, bool enabled)
 {
     if (enabled) {
-        dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
+        SETBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
     }
     else {
-        dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
+        CLRBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING);
     }
 
     return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
@@ -275,10 +275,10 @@ int aip31068_set_cursor_blinking_enabled(aip31068_t *dev, bool enabled)
 int aip31068_set_cursor_visible(aip31068_t *dev, bool visible)
 {
     if (visible) {
-        dev->_curr_display_control |= (1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
+        SETBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
     }
     else {
-        dev->_curr_display_control &= ~(1 << AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
+        CLRBIT(dev->_curr_display_control, AIP31068_BIT_DISPLAY_CONTROL_CURSOR);
     }
 
     return _command(dev, AIP31068_CMD_DISPLAY_CONTROL | dev->_curr_display_control);
@@ -302,11 +302,11 @@ int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col)
 int aip31068_set_text_insertion_mode(aip31068_t *dev,
                                      aip31068_text_insertion_mode_t mode)
 {
-    if (mode == RIGHT_TO_LEFT) {
-        dev->_curr_entry_mode_set &= ~(1 << AIP31068_BIT_ENTRY_MODE_INCREMENT);
+    if (mode == LEFT_TO_RIGHT) {
+        SETBIT(dev->_curr_entry_mode_set, AIP31068_BIT_ENTRY_MODE_INCREMENT);
     }
     else {
-        dev->_curr_entry_mode_set |= (1 << AIP31068_BIT_ENTRY_MODE_INCREMENT);
+        CLRBIT(dev->_curr_entry_mode_set, AIP31068_BIT_ENTRY_MODE_INCREMENT);
     }
 
     return _command(dev, AIP31068_CMD_ENTRY_MODE_SET | dev->_curr_entry_mode_set);
@@ -315,7 +315,7 @@ int aip31068_set_text_insertion_mode(aip31068_t *dev,
 int aip31068_move_cursor_left(aip31068_t *dev)
 {
     uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
-    cmd &= ~(1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    CLRBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
@@ -323,7 +323,7 @@ int aip31068_move_cursor_left(aip31068_t *dev)
 int aip31068_move_cursor_right(aip31068_t *dev)
 {
     uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    SETBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
@@ -331,8 +331,8 @@ int aip31068_move_cursor_right(aip31068_t *dev)
 int aip31068_scroll_display_left(aip31068_t *dev)
 {
     uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
-    cmd &= ~(1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    SETBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
+    CLRBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
@@ -340,8 +340,8 @@ int aip31068_scroll_display_left(aip31068_t *dev)
 int aip31068_scroll_display_right(aip31068_t *dev)
 {
     uint8_t cmd = AIP31068_CMD_CURSOR_DISPLAY_SHIFT;
-    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
-    cmd |= (1 << AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
+    SETBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION);
+    SETBIT(cmd, AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION);
 
     return _command(dev, cmd);
 }
@@ -513,7 +513,7 @@ static inline int _write(aip31068_t *dev, uint8_t data_byte, bool is_cmd)
 {
     uint8_t control_byte = 0;
     if (!is_cmd) {
-        control_byte |= (1 << AIP31068_BIT_CONTROL_BYTE_RS);
+        SETBIT(control_byte, AIP31068_BIT_CONTROL_BYTE_RS);
     }
 
     uint8_t data[] = { control_byte, data_byte };

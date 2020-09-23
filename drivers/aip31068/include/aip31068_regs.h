@@ -17,6 +17,8 @@
 #ifndef AIP31068_REGS_H
 #define AIP31068_REGS_H
 
+#include "bitarithm.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -77,13 +79,13 @@ extern "C"
  * @brief 0 = Decrement cursor after insertion
  *        1 = Increment cursor after insertion
  */
-#define AIP31068_BIT_ENTRY_MODE_INCREMENT       1
+#define AIP31068_BIT_ENTRY_MODE_INCREMENT       BIT1
 
 /**
  * @brief 0 = No automated display scroll
  *        1 = Automated display scroll
  */
-#define AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT   0
+#define AIP31068_BIT_ENTRY_MODE_AUTOINCREMENT   BIT0
 
 
 
@@ -93,19 +95,19 @@ extern "C"
  * @brief 0 = Display off
  *        1 = Display on
  */
-#define AIP31068_BIT_DISPLAY_CONTROL_DISPLAY            2
+#define AIP31068_BIT_DISPLAY_CONTROL_DISPLAY            BIT2
 
 /**
  * @brief 0 = Cursor off
  *        1 = Cursor on
  */
-#define AIP31068_BIT_DISPLAY_CONTROL_CURSOR             1
+#define AIP31068_BIT_DISPLAY_CONTROL_CURSOR             BIT1
 
 /**
  * @brief 0 = Cursor blinking off
  *        1 = Cursor blinking on
  */
-#define AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING    0
+#define AIP31068_BIT_DISPLAY_CONTROL_CURSOR_BLINKING    BIT0
 
 
 
@@ -115,13 +117,13 @@ extern "C"
  * @brief 0 = Shift the cursor position
  *        1 = Scroll the display content
  */
-#define AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION     3
+#define AIP31068_BIT_CURSOR_DISPLAY_SHIFT_SELECTION     BIT3
 
 /**
  * @brief 0 = Shift to the left
  *        1 = Shift to the right
  */
-#define AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION     2
+#define AIP31068_BIT_CURSOR_DISPLAY_SHIFT_DIRECTION     BIT2
 
 
 
@@ -131,19 +133,19 @@ extern "C"
  * @brief 0 = 4 bit interface data length
  *        1 = 8 bit interface data length
  */
-#define AIP31068_BIT_FUNCTION_SET_BITMODE   4
+#define AIP31068_BIT_FUNCTION_SET_BITMODE   BIT4
 
 /**
  * @brief 0 = Single line
  *        1 = Two lines
  */
-#define AIP31068_BIT_FUNCTION_SET_LINECOUNT 3
+#define AIP31068_BIT_FUNCTION_SET_LINECOUNT BIT3
 
 /**
  * @brief 0 = 5x8 dots per character
  *        1 = 5x10 dots per character
  */
-#define AIP31068_BIT_FUNCTION_SET_FONTSIZE  2
+#define AIP31068_BIT_FUNCTION_SET_FONTSIZE  BIT2
 
 
 
@@ -153,13 +155,13 @@ extern "C"
  * @brief 0 = Last control byte
  *        1 = Another control byte follows data byte
  */
-#define AIP31068_BIT_CONTROL_BYTE_CO    7
+#define AIP31068_BIT_CONTROL_BYTE_CO    BIT7
 
 /**
  * @brief 0 = data byte interpreted as command
  *        1 = data byte interpreted as data
  */
-#define AIP31068_BIT_CONTROL_BYTE_RS    6
+#define AIP31068_BIT_CONTROL_BYTE_RS    BIT6
 
 #ifdef __cplusplus
 }
