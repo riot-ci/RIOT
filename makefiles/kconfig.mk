@@ -50,11 +50,17 @@ KCONFIG_OUT_DEP = $(KCONFIG_OUT_CONFIG).d
 
 # Add configurations to merge, in ascendent priority (i.e. a file overrides the
 # previous ones).
+
+# KCONFIG_ADD_CONFIG holds a list of .config files that are merged for the
+# initial configuration. This allows to split configurations in common files
+# and share them among boards or cpus.
+MERGE_SOURCES += $(KCONFIG_ADD_CONFIG)
+
+# app.config.test are configuration files that enable modules via Kconfig.
+# as this is only possible during migration when TEST_KCONFIG is set, only
+# merge it in that condition.
 ifeq (1, $(TEST_KCONFIG))
-  # KCONFIG_ADD_CONFIG holds a list of .config files that are merged for the
-  # initial configuration. This allows to split configurations in common files
-  # and share them among boards or cpus.
-  MERGE_SOURCES += $(KCONFIG_ADD_CONFIG)
+  MERGE_SOURCES += $(wildcard $(APPDIR)/app.config.test)
 endif
 
 MERGE_SOURCES += $(wildcard $(KCONFIG_APP_CONFIG))
@@ -147,6 +153,7 @@ $(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(GENCONFIG) $(MERGE_SOURCE
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
 	  --file-list $(KCONFIG_OUT_DEP) \
 	  --kconfig-filename $(KCONFIG) \
+	  $(if $(filter 1,$(TEST_KCONFIG)),--check-app-sym) \
 	  --config-sources $(MERGE_SOURCES) && \
 	  touch $(KCONFIG_OUT_CONFIG)
 
@@ -162,6 +169,7 @@ $(KCONFIG_GENERATED_AUTOCONF_HEADER_C): $(KCONFIG_OUT_CONFIG) $(GENERATED_DIR_DE
 	  --header-path $(KCONFIG_GENERATED_AUTOCONF_HEADER_C) \
 	  --sync-deps $(KCONFIG_SYNC_DIR) \
 	  --kconfig-filename $(KCONFIG) \
+	  $(if $(filter 1,$(TEST_KCONFIG)),--check-app-sym) \
 	  --config-sources $(KCONFIG_OUT_CONFIG) && \
 	  touch $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
 
