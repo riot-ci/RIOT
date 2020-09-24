@@ -75,7 +75,14 @@
  * @brief   WiFi SoftAP maximum connections (max. 4).
  */
 #ifndef ESP_WIFI_MAX_CONN
-#define ESP_WIFI_MAX_CONN   (4)
+#define ESP_WIFI_MAX_CONN    (4)
+#endif
+
+/**
+ * @brief   WiFi SoftAP beacon interval, in milliseconds.
+ */
+#ifndef ESP_WIFI_BEACON_INTERVAL
+#define ESP_WIFI_BEACON_INTERVAL (100)
 #endif
 
 #endif /* defined(ESP_WIFI_AP) || defined(DOXYGEN) */
