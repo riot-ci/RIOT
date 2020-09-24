@@ -31,6 +31,7 @@ appropriate.
 import argparse
 import logging
 import os
+import sys
 
 import kconfiglib
 
@@ -45,6 +46,18 @@ class NoConfigurationFile(Exception):
     """
     pass
 
+
+def is_module(symbol):
+    """
+    Checks if a given symbol represents a module, depending on its prefix.
+    """
+    return symbol.name.startswith("MODULE_")
+
+def is_error(symbol):
+    """
+    Checks if a given symbol represents an error, depending on its prefix.
+    """
+    return symbol.name.startswith("ERROR_")
 
 def merge_configs(kconf, configs=[]):
     # Enable warnings for assignments to undefined symbols
@@ -63,6 +76,54 @@ def merge_configs(kconf, configs=[]):
     # Create a merged configuration by loading the fragments with replace=False.
     for config in configs:
         logging.debug(kconf.load_config(config, replace=False))
+
+
+def check_configs(kconf, check_app_sym=False):
+    """
+    Verifies that the generated configuration is valid.
+
+    A configuration is not valid when:
+        - An error symbol has been set because of an invalid condition.
+        - A module could not be set to the value defined by the user.
+        - A configuration parameter could not be set to value defined by the
+          user.
+    """
+    for sym in kconf.unique_defined_syms:
+        if is_error(sym) and sym.str_value:
+            logging.error("{}".format(sym.str_value))
+            return False
+
+        elif check_app_sym and sym.name == "APPLICATION" and sym.str_value == "n":
+            logging.error("The dependencies for the application are not"
+                          " met:\n{}".format(sym))
+            return False
+
+        # Was the symbol assigned to?
+        elif sym.user_value is not None:
+            # Tristate values are represented as 0, 1, 2. Having them as
+            # "n", "m", "y" is more convenient here, so convert.
+            if sym.type in (kconfiglib.BOOL, kconfiglib.TRISTATE):
+                user_value = kconfiglib.TRI_TO_STR[sym.user_value]
+            else:
+                user_value = sym.user_value
+
+            if user_value != sym.str_value:
+                logging.debug("{} was assigned the value '{}' but got the value"
+                              " '{}'. Check the dependencies".format(sym.name,
+                              user_value, sym.str_value))
+                if is_module(sym):
+                    logging.error("The module {} could not be set to {}."
+                                  " Check the dependencies.\n{}".format(
+                                        sym.name,
+                                        kconfiglib.TRI_TO_STR[sym.user_value],
+                                        sym
+                                    ))
+                    return False
+                else:
+                    logging.error("The parameter {} could not be set to {}."
+                                  "\n{}".format(sym.name, sym.user_value, sym))
+                    return False
+    return True
 
 
 def main():
@@ -125,6 +186,12 @@ only supported for backwards compatibility).
 """)
 
     parser.add_argument(
+        "--check-app-sym",
+        action='store_true',
+        help="Check that, when defined, the 'APPLICATION' symbol is set."
+    )
+
+    parser.add_argument(
         "-d", "--debug",
         action="store_true",
         help="Enable debug messages")
@@ -142,6 +209,9 @@ only supported for backwards compatibility).
 
     kconf = kconfiglib.Kconfig(args.kconfig_filename)
     merge_configs(kconf, args.config_sources)
+
+    if not check_configs(kconf, check_app_sym=args.check_app_sym):
+        sys.exit(1)
 
     if args.config_out is not None:
         logging.debug(kconf.write_config(args.config_out, save_old=False))
