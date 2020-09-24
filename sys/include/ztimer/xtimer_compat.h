@@ -71,7 +71,20 @@ static inline uint64_t xtimer_now_usec64(void)
 static inline void xtimer_sleep(uint32_t seconds)
 {
     /* TODO: use ZTIMER_SEC */
-    ztimer_sleep(ZTIMER_USEC, seconds * 1000000LU);
+    if (IS_ACTIVE(MODULE_ZTIMER_MSEC)) {
+        ztimer_sleep(ZTIMER_MSEC, seconds * 1000LU);
+    } else {
+        ztimer_sleep(ZTIMER_USEC, seconds * 1000000LU);
+    }
+}
+
+static inline void xtimer_msleep(uint32_t milliseconds)
+{
+    if (IS_ACTIVE(MODULE_ZTIMER_MSEC)) {
+        ztimer_sleep(ZTIMER_MSEC, milliseconds);
+    } else {
+        ztimer_sleep(ZTIMER_USEC, milliseconds * 1000LU);
+    }
 }
 
 static inline void xtimer_usleep(uint32_t microseconds)
