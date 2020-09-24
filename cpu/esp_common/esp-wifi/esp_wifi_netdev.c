@@ -841,7 +841,7 @@ static wifi_config_t wifi_config_ap = {
 #ifdef MODULE_ESP_WIFI_AP
         .ssid_hidden = ESP_WIFI_SSID_HIDDEN, /* don't make the AP visible */
         .max_connection = ESP_WIFI_MAX_CONN, /* maximum number of connections */
-        .beacon_interval = 100,              /* send beacon every 100 ms */
+        .beacon_interval = ESP_WIFI_BEACON_INTERVAL,
 #else
         .ssid_hidden = 1,
         .max_connection = 0,                 /* don't allow connections */
