@@ -165,7 +165,7 @@ def compile_manifest(options, m):
                 digest, imgsize = hash_file(c['file'], hashes.SHA256())
                 c['install-digest'] = {
                     'algorithm-id' : 'sha256',
-                    'digest-bytes' : binascii.b2a_hex(digest.finalize())
+                    'digest-bytes' : digest.finalize()
                 }
                 c['install-size'] = imgsize
 
