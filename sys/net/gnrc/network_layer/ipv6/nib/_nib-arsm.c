@@ -231,9 +231,22 @@ void _handle_snd_ns(_nib_onl_entry_t *nbr)
                 _set_nud_state(netif, nbr,
                                GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE);
             }
-            /* intentionally falls through */
-        case GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE:
             _probe_nbr(nbr, false);
+            break;
+        case GNRC_IPV6_NIB_NC_INFO_NUD_STATE_UNREACHABLE:
+            if (!IS_ACTIVE(CONFIG_GNRC_IPV6_NIB_6LR) ||
+                /* if neighbor is a 6LoWPAN node (i.e. address registartion
+                 * state is non-garbage-collectible), only probe if it is a
+                 * router (where the solicited-nodes multicast address MUST
+                 * be set; only MAY otherwise).
+                 * See:
+                 * - https://tools.ietf.org/html/rfc6775#section-5.2
+                 * - https://tools.ietf.org/html/rfc6775#section-6.5.5
+                 */
+                (_get_ar_state(nbr) == GNRC_IPV6_NIB_NC_INFO_AR_STATE_GC) ||
+                (nbr->info & GNRC_IPV6_NIB_NC_INFO_IS_ROUTER)) {
+                _probe_nbr(nbr, false);
+            }
             break;
         default:
             break;
