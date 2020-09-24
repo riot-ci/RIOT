@@ -72,7 +72,7 @@
 #endif
 
 /**
- * @brief   WiFi SoftAp maximum connections (max. 4).
+ * @brief   WiFi SoftAP maximum connections (max. 4).
  */
 #ifndef ESP_WIFI_MAX_CONN
 #define ESP_WIFI_MAX_CONN   (4)
