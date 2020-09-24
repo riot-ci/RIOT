@@ -35,6 +35,10 @@ config HAS_ESP_WIFI
     help
         Indicates that an ESP WiFi radio is present.
 
+config HAS_ESP_WIFI_AP
+    bool
+        Indicates that ESP WiFi SoftAP support is present.
+
 config HAS_ESP_NOW
     bool
     help
