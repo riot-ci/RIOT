@@ -170,7 +170,6 @@ typedef struct {
  * The parameters are references to CBOR-encoded information in the manifest.
  */
 typedef struct {
-    uint32_t size;                              /**< Size */
     suit_param_ref_t identifier;                /**< Component identifier */
     suit_param_ref_t param_vendor_id;           /**< Vendor ID */
     suit_param_ref_t param_class_id;            /**< Class ID */
