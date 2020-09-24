@@ -664,7 +664,7 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     int rc = 0;
-    if ((rc = aip31068_init(&aip31068_dev, &aip31068_params[0])) != AIP31068_OK) {
+    if ((rc = aip31068_init(&aip31068_dev, &aip31068_params[0])) != 0) {
         printf("Initialization failed! rc = %d", rc);
         return 1;
     }

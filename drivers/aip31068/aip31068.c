@@ -31,8 +31,8 @@
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] value     Data byte to write
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
+ * @return  0 on success
+ * @return  -1 if acquiring of I2C bus fails
  * @return  -EIO When slave device doesn't ACK the byte
  * @return  -ENXIO When no devices respond on the address sent on the bus
  * @return  -ETIMEDOUT When timeout occurs before device's response
@@ -48,8 +48,8 @@ static inline int _data(aip31068_t *dev, uint8_t value);
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] value     Command byte to write
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
+ * @return  0 on success
+ * @return  -1 if acquiring of I2C bus fails
  * @return  -EIO When slave device doesn't ACK the byte
  * @return  -ENXIO When no devices respond on the address sent on the bus
  * @return  -ETIMEDOUT When timeout occurs before device's response
@@ -66,8 +66,8 @@ static inline int _command(aip31068_t *dev, uint8_t value);
  * @param[in] data_byte Byte to write
  * @param[in] is_cmd    Whether byte should be interpreted as data or command
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
+ * @return  0 on success
+ * @return  -1 if acquiring of I2C bus fails
  * @return  -EIO When slave device doesn't ACK the byte
  * @return  -ENXIO When no devices respond on the address sent on the bus
  * @return  -ETIMEDOUT When timeout occurs before device's response
@@ -84,8 +84,8 @@ static inline int _write(aip31068_t *dev, uint8_t data_byte, bool is_cmd);
  * @param[in] data  Data to write
  * @param[in] len   Length of the data
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
+ * @return  0 on success
+ * @return  -1 if acquiring of I2C bus fails
  * @return  -EIO When slave device doesn't ACK the byte
  * @return  -ENXIO When no devices respond on the address sent on the bus
  * @return  -ETIMEDOUT When timeout occurs before device's response
@@ -142,7 +142,7 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
         c++;
 
         if (c > 10) {
-            return AIP31068_ERROR_I2C;
+            return -1;
         }
     } while (rc != 0); // TODO: get rid of the loop if possible
 
@@ -175,7 +175,7 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params)
         return rc;
     }
 
-    return AIP31068_OK;
+    return 0;
 }
 
 int aip31068_turn_on(aip31068_t *dev)
@@ -351,7 +351,7 @@ int aip31068_print(aip31068_t *dev, const char *data)
         data++;
     }
 
-    return AIP31068_OK;
+    return 0;
 }
 
 int aip31068_print_char(aip31068_t *dev, char c)
@@ -394,7 +394,7 @@ static int _device_write(aip31068_t* dev, uint8_t *data, uint8_t len)
     i2c_t i2c_dev = dev->params.i2c_dev;
 
     if (i2c_acquire(i2c_dev) != 0) {
-        return -AIP31068_ERROR_I2C;
+        return -1;
     }
 
     int rc = i2c_write_bytes(i2c_dev, dev->params.i2c_addr, data, len, 0);

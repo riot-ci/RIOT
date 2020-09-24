@@ -93,27 +93,19 @@ typedef struct {
 } aip31068_t;
 
 /**
- * @brief   AIP31068 driver error codes
- */
-typedef enum {
-    AIP31068_OK              = 0,    /**< Success */
-    AIP31068_ERROR_I2C       = 1,    /**< I2C communication error */
-} aip31068_error_t;
-
-/**
  * @brief Initialization.
  *
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] params    Parameters for device initialization
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_init(aip31068_t *dev, const aip31068_params_t *params);
 
@@ -122,14 +114,14 @@ int aip31068_init(aip31068_t *dev, const aip31068_params_t *params);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_turn_on(aip31068_t *dev);
 
@@ -138,14 +130,14 @@ int aip31068_turn_on(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_turn_off(aip31068_t *dev);
 
@@ -156,14 +148,14 @@ int aip31068_turn_off(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_clear(aip31068_t *dev);
 
@@ -172,14 +164,14 @@ int aip31068_clear(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_return_home(aip31068_t *dev);
 
@@ -189,14 +181,14 @@ int aip31068_return_home(aip31068_t *dev);
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] enabled   Enable or disable
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_auto_scroll_enabled(aip31068_t *dev, bool enabled);
 
@@ -206,14 +198,14 @@ int aip31068_set_auto_scroll_enabled(aip31068_t *dev, bool enabled);
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] enabled   Enable or disable
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_cursor_blinking_enabled(aip31068_t *dev, bool enabled);
 
@@ -223,14 +215,14 @@ int aip31068_set_cursor_blinking_enabled(aip31068_t *dev, bool enabled);
  * @param[in] dev       Device descriptor of the AIP31068
  * @param[in] visible   Show or hide
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_cursor_visible(aip31068_t *dev, bool visible);
 
@@ -241,14 +233,14 @@ int aip31068_set_cursor_visible(aip31068_t *dev, bool visible);
  * @param[in] row   Row of the new cursor position (starting at 0)
  * @param[in] col   Column of the new cursor position (starting at 0)
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col);
 
@@ -258,14 +250,14 @@ int aip31068_set_cursor_position(aip31068_t *dev, uint8_t row, uint8_t col);
  * @param[in] dev   Device descriptor of the AIP31068
  * @param[in] mode  Insertion mode
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_text_insertion_mode(aip31068_t *dev,
                                      aip31068_text_insertion_mode_t mode);
@@ -278,14 +270,14 @@ int aip31068_set_text_insertion_mode(aip31068_t *dev,
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_move_cursor_left(aip31068_t *dev);
 
@@ -300,14 +292,14 @@ int aip31068_move_cursor_left(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_move_cursor_right(aip31068_t *dev);
 
@@ -319,14 +311,14 @@ int aip31068_move_cursor_right(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_scroll_display_left(aip31068_t *dev);
 
@@ -335,14 +327,14 @@ int aip31068_scroll_display_left(aip31068_t *dev);
  *
  * @param[in] dev   Device descriptor of the AIP31068
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_scroll_display_right(aip31068_t *dev);
 
@@ -361,14 +353,14 @@ int aip31068_scroll_display_right(aip31068_t *dev);
  *        This function resets the cursor position. Therefore this function
  *        should be called before printing any characters to the display.
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_set_custom_symbol(aip31068_t *dev,
                                aip31068_custom_symbol_t customSymbol,
@@ -380,14 +372,14 @@ int aip31068_set_custom_symbol(aip31068_t *dev,
  * @param[in] dev           Device descriptor of the AIP31068
  * @param[in] customSymbol  Key of the custom symbol to be printed
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_print_custom_symbol(aip31068_t *dev,
                                  aip31068_custom_symbol_t customSymbol);
@@ -398,14 +390,14 @@ int aip31068_print_custom_symbol(aip31068_t *dev,
  * @param[in] dev   Device descriptor of the AIP31068
  * @param[in] data  String to be printed (null-terminated)
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_print(aip31068_t *dev, const char *data);
 
@@ -415,14 +407,14 @@ int aip31068_print(aip31068_t *dev, const char *data);
  * @param[in] dev   Device descriptor of the AIP31068
  * @param[in] c     Character to be printed
  *
- * @return  AIP31068_OK on success
- * @return  -AIP31068_ERROR_I2C if acquiring of I2C bus fails
- * @return  -EIO When slave device doesn't ACK the byte
- * @return  -ENXIO When no devices respond on the address sent on the bus
- * @return  -ETIMEDOUT When timeout occurs before device's response
- * @return  -EINVAL When an invalid argument is given
- * @return  -EOPNOTSUPP When MCU driver doesn't support the flag operation
- * @return  -EAGAIN When a lost bus arbitration occurs
+ * @retval  0 on success
+ * @retval  -1 if acquiring of I2C bus fails
+ * @retval  -EIO When slave device doesn't ACK the byte
+ * @retval  -ENXIO When no devices respond on the address sent on the bus
+ * @retval  -ETIMEDOUT When timeout occurs before device's response
+ * @retval  -EINVAL When an invalid argument is given
+ * @retval  -EOPNOTSUPP When MCU driver doesn't support the flag operation
+ * @retval  -EAGAIN When a lost bus arbitration occurs
  */
 int aip31068_print_char(aip31068_t *dev, char c);
 
