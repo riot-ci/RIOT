@@ -37,6 +37,7 @@ config HAS_ESP_WIFI
 
 config HAS_ESP_WIFI_AP
     bool
+    help
         Indicates that ESP WiFi SoftAP support is present.
 
 config HAS_ESP_NOW
