@@ -29,8 +29,75 @@
 
 static aip31068_t aip31068_dev;
 
-static const uint8_t custom_char_heart[]=
-        { 0x0, 0x0, 0xA, 0x1F, 0x1F, 0xE, 0x4, 0x0 };
+static const uint8_t custom_char_heart[] =
+        { 0, 0, 10, 31, 31, 14, 4, 0 };
+
+static const uint8_t custom_char_progress_bar_1[] =
+        { 16, 16, 16, 16, 16, 16, 16, 16 };
+
+static const uint8_t custom_char_progress_bar_2[] =
+        { 24, 24, 24, 24, 24, 24, 24, 24 };
+
+static const uint8_t custom_char_progress_bar_3[] =
+        { 28, 28, 28, 28, 28, 28, 28, 28 };
+
+static const uint8_t custom_char_progress_bar_4[] =
+        { 30, 30, 30, 30, 30, 30, 30, 30 };
+
+static const uint8_t custom_char_progress_bar_5[] =
+        { 31, 31, 31, 31, 31, 31, 31, 31 };
+
+static bool _progress_bar_enabled;
+static uint8_t _progress_bar_row;
+
+/**
+ * @brief Initialize controller for progress bar feature.
+ *
+ * @param[in] dev   Device descriptor of the AIP31068
+ * @param[in] row   Row where the progress bar is displayed
+ */
+static void _init_progress_bar(aip31068_t* dev, uint8_t row);
+
+/**
+ * @brief Enable or disable the progress bar.
+ *
+ * When enabled, the last five custom symbols are reserved to display the
+ * progress bar (CUSTOM_SYMBOL_4 to CUSTOM_SYMBOL_8) and can't be used.
+ * Assignments via setCustomSymbol() to these keys will be ignored. The given
+ * line will be reserved completely for the progress bar. Any text written to
+ * that line will be overwritten by the progress bar on an update.
+ *
+ * @note: Auto scroll will be disabled and the display will be scrolled to
+ *        its original position. Don't use scrolling when using the
+ *        progressbar, otherwise it won't display correctly.
+ *
+ * @note: Text insertion mode will be set to LEFT_TO_RIGHT.
+ *
+ * @param[in] dev       Device descriptor of the AIP31068
+ * @param[in] enabled   Enable or disable
+ */
+void _set_progress_bar_enabled(aip31068_t *dev, bool enabled);
+
+/**
+ * @brief Set the row for displaying the progress bar.
+ *
+ * Defaults to the last row, according to the given row count in the constructor.
+ *
+ * @param[in] dev   Device descriptor of the AIP31068
+ * @param[in] row   Row where the progress bar is displayed
+ */
+void _set_progress_bar_row(aip31068_t *dev, uint8_t row);
+
+/**
+ * @brief Set the progress of the progress bar and draw the update.
+ *
+ * @note: This function changes the cursor position. You will have to use
+ *        setCursorPosition in order to return to your required cursor position.
+ *
+ * @param[in] dev       Device descriptor of the AIP31068
+ * @param[in] progress  Progress in percentage (0 to 100)
+ */
+void _set_progress(aip31068_t *dev, uint8_t progress);
 
 int turn_on(int argc, char **argv)
 {
@@ -259,6 +326,48 @@ int print(int argc, char **argv)
     return 0;
 }
 
+int progressbar(int argc, char **argv)
+{
+    if (argc != 2) {
+        puts("usage: progressbar <0 or 1>");
+        return 1;
+    }
+    else {
+        uint8_t enabled = atoi(argv[1]);
+        _set_progress_bar_enabled(&aip31068_dev, enabled);
+    }
+
+    return 0;
+}
+
+int progressbar_row(int argc, char **argv)
+{
+    if (argc != 2) {
+        puts("usage: progressbar_row <row (e.g. 0 for first row)>");
+        return 1;
+    }
+    else {
+        uint8_t row = atoi(argv[1]);
+        _set_progress_bar_row(&aip31068_dev, row);
+    }
+
+    return 0;
+}
+
+int progress(int argc, char **argv)
+{
+    if (argc != 2) {
+        puts("usage: progress <progress (0-100)>");
+        return 1;
+    }
+    else {
+        uint8_t progress = atoi(argv[1]);
+        _set_progress(&aip31068_dev, progress);
+    }
+
+    return 0;
+}
+
 int run_demo(int argc, char **argv)
 {
     (void) argc;
@@ -410,9 +519,122 @@ int run_demo(int argc, char **argv)
 
     aip31068_clear(&aip31068_dev);
 
+    /* 9. progress bar */
+    _set_progress_bar_enabled(&aip31068_dev, true);
+    aip31068_set_cursor_position(&aip31068_dev, 0, 0);
+    aip31068_print(&aip31068_dev, "Progress: ");
+
+    for (int j = 0; j <= 100; j++) {
+
+        aip31068_set_cursor_position(&aip31068_dev, 0, 10);
+
+        char string_rep[6];
+        sprintf(string_rep, "%d %%", j);
+
+        aip31068_print(&aip31068_dev, string_rep);
+
+        _set_progress(&aip31068_dev, j);
+        xtimer_usleep(100 * US_PER_MS);
+    }
+    _set_progress_bar_enabled(&aip31068_dev, false);
+    aip31068_clear(&aip31068_dev);
+
     puts("[DEMO END]");
 
     return 0;
+}
+
+void _set_progress_bar_enabled(aip31068_t *dev, bool enabled)
+{
+    _progress_bar_enabled = enabled;
+
+    if (enabled) {
+        _init_progress_bar(dev, dev->params.row_count - 1);
+    }
+}
+
+void _set_progress_bar_row(aip31068_t *dev, uint8_t row)
+{
+    _progress_bar_row = row;
+}
+
+void _set_progress(aip31068_t *dev, uint8_t progress)
+{
+    if (!_progress_bar_enabled) {
+        return;
+    }
+
+    /* calculate the number of pixel-columns on a single line */
+    int bar_count = dev->params.col_count * 5;
+
+    if (progress > 100) {
+        progress = 100;
+    }
+
+    /* How many bars to display for given progress? */
+    int progress_bar_count = bar_count * progress / 100;
+
+    /* number of completely filled sections / characters */
+    int full_bar_count = progress_bar_count / 5;
+
+    /* number of bars in the last section / character remaining */
+    int remainder_bar_count = progress_bar_count % 5;
+
+    aip31068_set_cursor_position(dev, _progress_bar_row, 0);
+
+    for (int i = 0; i < full_bar_count; i++) {
+        aip31068_print_custom_symbol(dev, CUSTOM_SYMBOL_8);
+    }
+
+    uint8_t blank_count = dev->params.col_count - full_bar_count;
+
+    switch (remainder_bar_count) {
+
+        case 1:
+            aip31068_print_custom_symbol(dev, CUSTOM_SYMBOL_4);
+            blank_count--;
+            break;
+
+        case 2:
+            aip31068_print_custom_symbol(dev, CUSTOM_SYMBOL_5);
+            blank_count--;
+            break;
+
+        case 3:
+            aip31068_print_custom_symbol(dev, CUSTOM_SYMBOL_6);
+            blank_count--;
+            break;
+
+        case 4:
+            aip31068_print_custom_symbol(dev, CUSTOM_SYMBOL_7);
+            blank_count--;
+            break;
+    }
+
+    /* clear the rest of the line, so it appears as empty part of the progressbar */
+    for (int i = 0; i < blank_count; i++) {
+        aip31068_print(dev, " ");
+    }
+}
+
+static void _init_progress_bar(aip31068_t* dev, uint8_t row)
+{
+    _progress_bar_row = row;
+
+    /* if autoscroll was used, the progress bar would be displayed incorrectly */
+    aip31068_set_auto_scroll_enabled(dev, false);
+
+    /* undo any scrolling */
+    aip31068_return_home(dev);
+
+    /* progress bar should increase from left to right */
+    aip31068_set_text_insertion_mode(dev, LEFT_TO_RIGHT);
+
+    aip31068_set_custom_symbol(dev, CUSTOM_SYMBOL_4, custom_char_progress_bar_1);
+    aip31068_set_custom_symbol(dev, CUSTOM_SYMBOL_5, custom_char_progress_bar_2);
+    aip31068_set_custom_symbol(dev, CUSTOM_SYMBOL_6, custom_char_progress_bar_3);
+    aip31068_set_custom_symbol(dev, CUSTOM_SYMBOL_7, custom_char_progress_bar_4);
+    aip31068_set_custom_symbol(dev, CUSTOM_SYMBOL_8, custom_char_progress_bar_5);
 }
 
 static const shell_command_t shell_commands[] = {
@@ -432,6 +654,9 @@ static const shell_command_t shell_commands[] = {
     { "create_custom_symbol", "Create a custom symbol.", create_custom_symbol },
     { "print_custom_symbol", "Print a custom symbol.", print_custom_symbol },
     { "print", "Print a string.", print },
+    { "progressbar", "Enable/ disable progressbar feature.", progressbar },
+    { "progressbar_row", "Set row for progressbar.", progressbar_row },
+    { "progress", "Set progress for progressbar.", progress },
     { "run_demo", "Demonstration of all functions.", run_demo },
     { NULL, NULL, NULL }
 };
