@@ -282,6 +282,7 @@ typedef enum {
     NETDEV_AT86RF2XX,
     NETDEV_CC2538,
     NETDEV_DOSE,
+    NETDEV_ENC28J60,
     NETDEV_NRF802154,
     /* add more if needed */
 } netdev_type_t;
