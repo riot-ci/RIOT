@@ -38,6 +38,13 @@ ifneq (,$(filter libfixmath-unittests,$(USEMODULE)))
   USEMODULE += libfixmath
 endif
 
+ifneq (,$(filter random,$(USEMODULE)))
+  # select default prng if no prng is selected
+  ifeq (,$(filter prng_%,$(USEMODULE)))
+    USEMODULE += prng_tinymt32
+  endif
+endif
+
 ifneq (,$(filter spiffs,$(USEMODULE)))
   USEPKG += spiffs
   USEMODULE += vfs
