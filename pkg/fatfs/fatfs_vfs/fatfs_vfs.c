@@ -38,9 +38,9 @@
 
 #ifndef CONFIG_FATFS_TYPE
 #if FF_FS_EXFAT
-#define CONFIG_FATFS_TYPE   FM_FAT32
-#else
 #define CONFIG_FATFS_TYPE   FM_EXFAT
+#else
+#define CONFIG_FATFS_TYPE   FM_FAT32
 #endif
 #endif
 
@@ -61,7 +61,7 @@ static void _build_abs_path(fatfs_desc_t *fs_desc, const char *name)
 #ifdef MODULE_FATFS_VFS_FORMAT
 static int _format(vfs_mount_t *mountp)
 {
-    fatfs_desc_t *fs_desc = (fatfs_desc_t *)mountp->private_data;
+    fatfs_desc_t *fs_desc = mountp->private_data;
     char volume_str[TEST_FATFS_MAX_VOL_STR_LEN];
 
     BYTE *work = malloc(FF_MAX_SS);
