@@ -297,6 +297,7 @@ void thread_yield_higher(void)
     /* trigger the PENDSV interrupt to run scheduler and schedule new thread if
      * applicable */
     SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
+    __DSB();
 }
 
 void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
@@ -372,6 +373,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     "mrs    r0, psp                   \n" /* get stack pointer from user mode */
     "mov    sp, r0                    \n" /* set user mode SP as active SP */
+    "ibs                              \n" /* flush pipeline */
 
     /* Calculate the expected stack offset beforehand so that we don't have to
      * store the old SP from here on, saves a register we don't have */
@@ -395,6 +397,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "ldr    r0, [r0]                  \n" /* dereference TCB */
     "ldr    r0, [r0]                  \n" /* load tcb-sp to R0 */
     "mov    sp, r0                    \n" /* make user mode SP active SP */
+    "ibs                              \n" /* flush pipeline */
     "pop    {r0-r7}                   \n" /* get R11-R8 and R7-R4 from stack */
     "mov    r8, r0                    \n" /* move R11-R8 to correct registers */
     "mov    r9, r1                    \n"
@@ -405,6 +408,7 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
     "mov    r1, sp                    \n" /* restore the user mode SP */
     "msr    psp, r1                   \n" /* for this write it to the PSP reg */
     "mov    sp, r12                    \n" /* and get the parked MSR SP back */
+    "ibs                              \n" /* flush pipeline */
     "bx     r0                        \n" /* load exception return value to PC,
                                            * causes end of exception*/
 #endif
