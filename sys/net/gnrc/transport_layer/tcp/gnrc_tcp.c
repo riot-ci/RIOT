@@ -69,7 +69,7 @@ static void _sched_mbox(evtimer_mbox_event_t *event, uint32_t offset,
 
 static void _sched_connection_timeout(evtimer_mbox_event_t *event, mbox_t *mbox)
 {
-    _sched_mbox(event, CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION,
+    _sched_mbox(event, CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION_MS,
                 MSG_TYPE_CONNECTION_TIMEOUT, mbox);
 }
 
@@ -512,11 +512,11 @@ ssize_t gnrc_tcp_send(gnrc_tcp_tcb_t *tcb, const void *data, const size_t len,
                 probe_timeout_duration_ms += probe_timeout_duration_ms;
 
                 /* Boundary check for time interval between probes */
-                if (probe_timeout_duration_ms < CONFIG_GNRC_TCP_PROBE_LOWER_BOUND) {
-                    probe_timeout_duration_ms = CONFIG_GNRC_TCP_PROBE_LOWER_BOUND;
+                if (probe_timeout_duration_ms < CONFIG_GNRC_TCP_PROBE_LOWER_BOUND_MS) {
+                    probe_timeout_duration_ms = CONFIG_GNRC_TCP_PROBE_LOWER_BOUND_MS;
                 }
-                else if (probe_timeout_duration_ms > CONFIG_GNRC_TCP_PROBE_UPPER_BOUND) {
-                    probe_timeout_duration_ms = CONFIG_GNRC_TCP_PROBE_UPPER_BOUND;
+                else if (probe_timeout_duration_ms > CONFIG_GNRC_TCP_PROBE_UPPER_BOUND_MS) {
+                    probe_timeout_duration_ms = CONFIG_GNRC_TCP_PROBE_UPPER_BOUND_MS;
                 }
                 break;
 

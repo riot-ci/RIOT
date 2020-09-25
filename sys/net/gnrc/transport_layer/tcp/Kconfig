@@ -12,14 +12,14 @@ menuconfig KCONFIG_USEMODULE_GNRC_TCP
 
 if KCONFIG_USEMODULE_GNRC_TCP
 
-config GNRC_TCP_CONNECTION_TIMEOUT_DURATION
+config GNRC_TCP_CONNECTION_TIMEOUT_DURATION_MS
     int "Timeout duration for user calls in milliseconds"
     default 120000
     help
         Timeout duration for user calls. Default value is 120000 milliseconds
         (2 minutes).
 
-config GNRC_TCP_MSL
+config GNRC_TCP_MSL_MS
     int "Maximum segment lifetime (MSL) in milliseconds"
     default 30000
     help
@@ -59,7 +59,7 @@ config GNRC_TCP_RCV_BUFFERS
     int "Number of preallocated receive buffers"
     default 1
 
-config GNRC_TCP_RTO_LOWER_BOUND
+config GNRC_TCP_RTO_LOWER_BOUND_MS
     int "Lower bound for RTO in milliseconds"
     default 1000
     help
@@ -68,7 +68,7 @@ config GNRC_TCP_RTO_LOWER_BOUND
         timeout determines how long TCP waits for acknowledgment (ACK) of
         transmitted segment. Refer to RFC 6298 for more information.
 
-config GNRC_TCP_RTO_UPPER_BOUND
+config GNRC_TCP_RTO_UPPER_BOUND_MS
     int "Upper bound for RTO in milliseconds"
     default 60000
     help
@@ -76,7 +76,7 @@ config GNRC_TCP_RTO_UPPER_BOUND
         Default value is 60000 milliseconds (60 seconds). Refer to RFC 6298
         for more information.
 
-config GNRC_TCP_RTO_GRANULARITY
+config GNRC_TCP_RTO_GRANULARITY_MS
     int "Clock granularity for RTO in milliseconds"
     default 10
     help
@@ -104,7 +104,7 @@ config GNRC_TCP_RTO_K
     int "K value for RTO calculation"
     default 4
 
-config GNRC_TCP_PROBE_LOWER_BOUND
+config GNRC_TCP_PROBE_LOWER_BOUND_MS
     int "Lower bound for the duration between probes in milliseconds"
     default 1000
     help
@@ -112,7 +112,7 @@ config GNRC_TCP_PROBE_LOWER_BOUND
         Default value is 1000 milliseconds (1 second).
         Refer to RFC 6298 for more information.
 
-config GNRC_TCP_PROBE_UPPER_BOUND
+config GNRC_TCP_PROBE_UPPER_BOUND_MS
     int "Lower bound for the duration between probes in milliseconds"
     default 60000
     help

@@ -389,10 +389,10 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
     if (!retransmit) {
         /* If this is the first transmission: rto is 1 sec (Lower Bound) */
         if (tcb->srtt == RTO_UNINITIALIZED || tcb->rtt_var == RTO_UNINITIALIZED) {
-            tcb->rto = CONFIG_GNRC_TCP_RTO_LOWER_BOUND;
+            tcb->rto = CONFIG_GNRC_TCP_RTO_LOWER_BOUND_MS;
         }
         else {
-            tcb->rto = tcb->srtt + _max(CONFIG_GNRC_TCP_RTO_GRANULARITY,
+            tcb->rto = tcb->srtt + _max(CONFIG_GNRC_TCP_RTO_GRANULARITY_MS,
                                         CONFIG_GNRC_TCP_RTO_K * tcb->rtt_var);
         }
     }
@@ -409,11 +409,11 @@ int _pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt, const bool r
     }
 
     /* Perform boundary checks on current RTO before usage */
-    if (tcb->rto < (int32_t) CONFIG_GNRC_TCP_RTO_LOWER_BOUND) {
-        tcb->rto = CONFIG_GNRC_TCP_RTO_LOWER_BOUND;
+    if (tcb->rto < (int32_t) CONFIG_GNRC_TCP_RTO_LOWER_BOUND_MS) {
+        tcb->rto = CONFIG_GNRC_TCP_RTO_LOWER_BOUND_MS;
     }
-    else if (tcb->rto > (int32_t) CONFIG_GNRC_TCP_RTO_UPPER_BOUND) {
-        tcb->rto = CONFIG_GNRC_TCP_RTO_UPPER_BOUND;
+    else if (tcb->rto > (int32_t) CONFIG_GNRC_TCP_RTO_UPPER_BOUND_MS) {
+        tcb->rto = CONFIG_GNRC_TCP_RTO_UPPER_BOUND_MS;
     }
 
     /* Setup retransmission timer, msg to TCP thread with ptr to TCB */

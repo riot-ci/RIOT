@@ -104,7 +104,7 @@ static int _clear_retransmit(gnrc_tcp_tcb_t *tcb)
 static int _restart_timewait_timer(gnrc_tcp_tcb_t *tcb)
 {
     _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
-    _gnrc_tcp_event_loop_sched(&tcb->event_retransmit, 2 * CONFIG_GNRC_TCP_MSL,
+    _gnrc_tcp_event_loop_sched(&tcb->event_retransmit, 2 * CONFIG_GNRC_TCP_MSL_MS,
                                MSG_TYPE_TIMEWAIT, tcb);
     return 0;
 }
