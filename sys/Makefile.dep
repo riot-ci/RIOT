@@ -702,10 +702,6 @@ endif
 ifneq (,$(filter random,$(USEMODULE)))
   DEFAULT_MODULE += auto_init_random
   USEMODULE += prng
-  # select default prng
-  ifeq (,$(filter prng_%,$(USEMODULE)))
-    USEMODULE += prng_tinymt32
-  endif
 
   ifneq (,$(filter prng_fortuna,$(USEMODULE)))
     USEMODULE += fortuna
