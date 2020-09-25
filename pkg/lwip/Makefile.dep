@@ -86,4 +86,3 @@ endif
 ifneq (,$(filter lwip_dhcp_auto,$(USEMODULE)))
   USEMODULE += lwip_dhcp
 endif
-
