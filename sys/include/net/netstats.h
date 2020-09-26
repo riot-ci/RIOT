@@ -28,6 +28,27 @@ extern "C" {
 #endif
 
 /**
+ * @brief Max length of a L2 address
+ */
+#ifndef CONFIG_L2ADDR_MAX_LEN
+#define CONFIG_L2ADDR_MAX_LEN   (8)
+#endif
+
+/**
+ * @brief   The max number of entries in the peer stats table
+ */
+#ifndef NETSTATS_NB_SIZE
+#define NETSTATS_NB_SIZE        (8)
+#endif
+
+/**
+ * @brief   The CIB size for tx correlation
+ */
+#ifndef NETSTATS_NB_QUEUE_SIZE
+#define NETSTATS_NB_QUEUE_SIZE  (4)
+#endif
+
+/**
  * @name @ref net_netstats module names
  * @{
  */
@@ -52,6 +73,24 @@ typedef struct {
     uint32_t rx_count;          /**< received (data) packets */
     uint32_t rx_bytes;          /**< received bytes */
 } netstats_t;
+
+/**
+ * @brief       Stats per peer struct
+ */
+typedef struct netstats_nb {
+    uint8_t l2_addr[CONFIG_L2ADDR_MAX_LEN]; /**< Link layer address of the neighbor */
+    uint8_t l2_addr_len;    /**< Length of netstats_nb::l2_addr */
+    uint8_t  freshness;     /**< Freshness counter */
+    uint16_t etx;           /**< ETX of this peer */
+#ifdef MODULE_NETSTATS_NEIGHBOR_EXT
+    uint8_t rssi;           /**< Average RSSI of received frames in abs([dBm]) */
+    uint8_t lqi;            /**< Average LQI of received frames */
+    uint16_t tx_count;      /**< Number of sent frames to this peer */
+    uint16_t rx_count;      /**< Number of received frames */
+#endif
+    uint16_t last_updated;  /**< seconds timestamp of last update */
+    uint16_t last_halved;   /**< seconds timestamp of last halving */
+} netstats_nb_t;
 
 #ifdef __cplusplus
 }
