@@ -1034,6 +1034,9 @@ ifneq (,$(filter suit,$(USEMODULE)))
   USEMODULE += libcose_crypt_c25519
   USEMODULE += uuid
 
+  # we need suit-tool to generate the manifest
+  BUILDDEPS += $(RIOTTOOLS)/suit/suit-manifest-generator/bin/suit-tool
+
   # tests/suit_manifest has some mock implementations,
   # only add the non-mock dependencies if not building that test.
   ifeq (,$(filter suit_transport_mock,$(USEMODULE)))
