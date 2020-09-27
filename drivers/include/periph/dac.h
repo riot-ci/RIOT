@@ -158,6 +158,7 @@ void dac_poweroff(dac_t line);
  * @brief   Initialize a DAC for playing audio samples
  *          A user defined callback can be provided that will be called when
  *          the next buffer can be queued.
+ * @experimental
  *
  * @param[in] dac           The DAC to initialize
  * @param[in] sample_rate   The sample rate in Hz
@@ -173,6 +174,7 @@ void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
  *          A user defined callback can be provided that will be called when
  *          the next buffer can be queued.
  *          This function can be used to change the callback on the fly.
+ * @experimental
  *
  * @param[in] dac           The DAC to configure
  * @param[in] cb            Called when the played buffer is done
@@ -182,6 +184,7 @@ void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg);
 
 /**
  * @brief   Play a buffer of (audio) samples on a DAC.
+ * @experimental
  *
  * @param[in] dac           The DAC to play the sample on
  * @param[in] buf           A buffer with (audio) samples
