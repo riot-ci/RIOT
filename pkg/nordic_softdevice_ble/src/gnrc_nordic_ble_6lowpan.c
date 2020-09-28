@@ -243,7 +243,6 @@ static gnrc_pktsnip_t *_netif_recv(gnrc_netif_t *netif)
 
 static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
 {
-    netdev_t *dev = netif->dev;
     switch (msg->type) {
         case BLE_EVENT_RX_DONE:
             {
