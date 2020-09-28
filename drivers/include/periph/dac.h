@@ -106,7 +106,7 @@ int8_t dac_init(dac_t line);
 /**
  * @brief   The callback that will be called when the end of the current sample buffer
  *          has been reached.
- *          Should be used to start filling the next sample buffer.
+ *          Should be used to start filling the next sample buffer with @ref dac_play.
  *
  * @note    Will be called in interrupt context. Only use the callback to signal a
  *          thread. Don't directly fill the sample buffer in the callback.
@@ -183,7 +183,18 @@ void dac_play_init(dac_t dac, uint16_t sample_rate, uint8_t flags,
 void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg);
 
 /**
- * @brief   Play a buffer of (audio) samples on a DAC.
+ * @brief   Play a buffer of (audio) samples on a DAC
+ *
+ *          If this function is called while another buffer is already
+ *          being played, the new `buf` will be played when the current
+ *          buffer has finished playing.
+ *
+ *          The DAC implementations allows one buffer to be queued
+ *          (double buffering).
+ *
+ *          Whenever a new buffer can be queued, the @ref dac_cb_t
+ *          callback function will be executed.
+ *
  * @experimental
  *
  * @param[in] dac           The DAC to play the sample on
@@ -191,6 +202,13 @@ void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg);
  * @param[in] len           Number of bytes to be played
  */
 void dac_play(dac_t dac, const void *buf, size_t len);
+
+/**
+ * @brief   Stop playback of the current sample buffer
+ *
+ * @param[in] dac           The DAC to stop
+ */
+void dac_play_stop(dac_t dac);
 
 #ifdef __cplusplus
 }

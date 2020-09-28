@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include "board.h"
+#include "irq.h"
 #include "kernel_defines.h"
 #include "macros/units.h"
 #include "periph/dac.h"
@@ -53,6 +54,8 @@ static struct dac_ctx {
 
 static void _timer_cb(void *arg, int chan)
 {
+    (void)chan;
+
     struct dac_ctx *ctx = arg;
 
     const dac_t dac    = ctx - _ctx;
@@ -79,7 +82,7 @@ static void _timer_cb(void *arg, int chan)
 
         if (ctx->buffer_len[!cur] == 0) {
             ctx->playing = 0;
-            timer_clear(ctx->timer, chan);
+            timer_stop(ctx->timer);
         } else if (ctx->cb) {
             ctx->cb(ctx->cb_arg);
         }
@@ -116,19 +119,36 @@ void dac_play_set_cb(dac_t dac, dac_cb_t cb, void *cb_arg)
 
 void dac_play(dac_t dac, const void *buf, size_t len)
 {
-    uint8_t next = !_ctx[dac].cur;
+    struct dac_ctx *ctx = &_ctx[dac];
 
-    _ctx[dac].buffers[next]    = buf;
-    _ctx[dac].buffer_len[next] = len;
+    unsigned state = irq_disable();
 
-    if (_ctx[dac].playing) {
+    uint8_t next          = !ctx->cur;
+    ctx->buffers[next]    = buf;
+    ctx->buffer_len[next] = len;
+
+    irq_restore(state);
+
+    if (ctx->playing) {
         return;
     }
 
-    _ctx[dac].playing = 1;
+    ctx->playing = 1;
+    ctx->cur = next;
 
-    timer_set_periodic(_ctx[dac].timer, 0, _ctx[dac].sample_ticks,
+    timer_set_periodic(ctx->timer, 0, ctx->sample_ticks,
                        TIM_FLAG_RESET_ON_MATCH | TIM_FLAG_RESET_ON_SET);
+
+    /* We can already queue the next buffer */
+    if (ctx->cb) {
+        ctx->cb(ctx->cb_arg);
+    }
+}
+
+void dac_play_stop(dac_t dac)
+{
+    timer_stop(_ctx[dac].timer);
+    _ctx[dac].playing = 0;
 }
 
 #endif
