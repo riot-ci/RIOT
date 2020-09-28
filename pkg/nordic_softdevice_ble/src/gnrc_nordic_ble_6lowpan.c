@@ -243,6 +243,7 @@ static gnrc_pktsnip_t *_netif_recv(gnrc_netif_t *netif)
 
 static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
 {
+    netdev_t *dev = netif->dev;
     switch (msg->type) {
         case BLE_EVENT_RX_DONE:
             {
@@ -251,6 +252,9 @@ static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
                 ble_mac_busy_rx = 0;
                 break;
             }
+        default:
+            gnrc_netif_msg_handler_netdev(netif, msg);
+            break;
     }
 }
 
