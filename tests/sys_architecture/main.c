@@ -52,7 +52,8 @@ int main(void)
         (ARCHITECTURE_WORD_BITS == CORRECT_WORD_BITS) &&
         (ARCHITECTURE_WORD_BYTES == CORRECT_WORD_BITS / 8) &&
         (sizeof(uword_t) == ARCHITECTURE_WORD_BYTES) &&
-        (sizeof(sword_t) == ARCHITECTURE_WORD_BYTES)
+        (sizeof(sword_t) == ARCHITECTURE_WORD_BYTES),
+        "word size details are incorrect"
     );
 
     printf("One word is %u bits or %u bytes in size\n",
