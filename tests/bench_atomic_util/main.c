@@ -308,243 +308,243 @@ int main(void)
     puts(LINE);
 
     bench_atomic_store_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "store", 8, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_store_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "store", 16, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_store_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "store", 32, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_store_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "store", 64, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
 
     bench_atomic_load_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "load", 8, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_load_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "load", 16, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_load_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "load", 32, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
     bench_atomic_load_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "load", 64, results[IMPL_VOLATILE],
            results[IMPL_ATOMIC_UTIL], results[IMPL_C11_ATOMIC]);
 
     /* atomic read-modify-write operations */
     bench_atomic_fetch_add_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "add", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_add_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "add", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_add_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "add", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_add_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "add", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_atomic_fetch_sub_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "sub", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_sub_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "sub", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_sub_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "sub", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_sub_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "sub", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_atomic_fetch_or_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "or", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_or_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "or", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_or_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "or", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_or_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "or", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_atomic_fetch_xor_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "xor", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_xor_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "xor", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_xor_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "xor", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_xor_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "xor", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_atomic_fetch_and_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "and", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_and_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "and", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_and_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "and", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_fetch_and_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "and", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     /* atomic bit setting and clearing */
     bench_atomic_set_bit_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "set", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_set_bit_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "set", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_set_bit_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "set", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_set_bit_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "set", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_atomic_clear_bit_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "clear", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_clear_bit_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "clear", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_clear_bit_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "clear", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_atomic_clear_bit_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "atom", "clear", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     /* semi-atomic read-modify-write operations */
     bench_semi_atomic_fetch_add_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "add", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_add_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "add", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_add_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "add", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_add_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "add", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_semi_atomic_fetch_sub_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "sub", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_sub_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "sub", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_sub_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "sub", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_sub_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "sub", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_semi_atomic_fetch_or_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "or", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_or_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "or", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_or_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "or", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_or_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "or", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_semi_atomic_fetch_xor_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "xor", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_xor_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "xor", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_xor_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "xor", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_xor_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "xor", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
 
     bench_semi_atomic_fetch_and_u8(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "and", 8, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_and_u16(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "and", 16, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_and_u32(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "and", 32, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     bench_semi_atomic_fetch_and_u64(results);
-    printf("| %4s | %8s | %4u | %13lu µs | %13lu µs | %13lu µs |\n",
+    printf("| %4s | %8s | %4u | %13" PRIu32 " µs | %13" PRIu32 " µs | %13" PRIu32 " µs |\n",
            "semi", "and", 64, results[IMPL_VOLATILE], results[IMPL_ATOMIC_UTIL],
            results[IMPL_C11_ATOMIC]);
     puts(LINE);
