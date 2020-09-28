@@ -308,7 +308,7 @@ void gnrc_netif_init_devs(void);
 /**
  * @brief   Default msg handler for netdev.
  *
- *          This function process the NETDEV_MSG_TYPE_EVENT calling
+ *          This function processes the NETDEV_MSG_TYPE_EVENT calling
  *          `netdev_t::driver::isr`.
  *
  * @param[in] netif The network interface.
