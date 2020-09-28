@@ -251,6 +251,9 @@ static void _netif_msg_handler(gnrc_netif_t *netif, msg_t *msg)
                 ble_mac_busy_rx = 0;
                 break;
             }
+        default:
+            gnrc_netif_msg_handler_netdev(netif, msg);
+            break;
     }
 }
 
