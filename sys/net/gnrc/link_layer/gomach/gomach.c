@@ -1973,7 +1973,6 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
 
 static void _gomach_msg_handler(gnrc_netif_t *netif, msg_t *msg)
 {
-    netdev_t *dev = netif->dev;
     switch (msg->type) {
         case NETDEV_MSG_TYPE_EVENT:
             gnrc_netif_msg_handler_netdev(netif, msg);
