@@ -1,3 +1,4 @@
+PSEUDOMODULES += architecture
 PSEUDOMODULES += at_urc
 PSEUDOMODULES += at_urc_isr
 PSEUDOMODULES += at_urc_isr_low
