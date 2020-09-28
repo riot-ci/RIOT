@@ -89,6 +89,7 @@ PSEUDOMODULES += openthread
 PSEUDOMODULES += picolibc
 PSEUDOMODULES += picolibc_stdout_buffered
 PSEUDOMODULES += pktqueue
+PSEUDOMODULES += platform
 PSEUDOMODULES += posix_headers
 PSEUDOMODULES += printf_float
 PSEUDOMODULES += prng
