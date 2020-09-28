@@ -366,7 +366,7 @@ static int _dtv_fetch(suit_manifest_t *manifest, int key,
 #endif
 #ifdef MODULE_SUIT_TRANSPORT_MOCK
     else if (strncmp(manifest->urlbuf, "test://", 7) == 0) {
-        res = SUIT_OK;
+        res = suit_transport_mock_fetch(manifest);
     }
 #endif
     else {
