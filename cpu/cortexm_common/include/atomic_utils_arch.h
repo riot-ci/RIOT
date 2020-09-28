@@ -62,7 +62,7 @@ static inline void atomic_store_u32(uint32_t *dest, uint32_t val)
     __atomic_store_4(dest, val, __ATOMIC_SEQ_CST);
 }
 
-#if IS_ACTIVE(CPU_HAS_BITBAND)
+#if CPU_HAS_BITBAND
 #define ATOMIC_BITMASK __attribute__((section(".srambb")))
 
 #define HAS_ATOMIC_SET_BIT_U8
