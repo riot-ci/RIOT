@@ -36,7 +36,6 @@
 #include "cose/sign.h"
 #include "nanocbor/nanocbor.h"
 #include "uuid.h"
-#include "riotboot/flashwrite.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -243,7 +242,6 @@ typedef struct {
     suit_component_t components[CONFIG_SUIT_COMPONENT_MAX];
     unsigned components_len;        /**< Current number of components */
     uint8_t component_current;      /**< Current component index */
-    riotboot_flashwrite_t *writer;  /**< Pointer to the riotboot flash writer */
     /** Manifest validation buffer */
     uint8_t validation_buf[SUIT_COSE_BUF_SIZE];
     char *urlbuf;                   /**< Buffer containing the manifest url */
@@ -321,7 +319,7 @@ static inline bool suit_component_check_flag(suit_component_t *component,
  *
  * Each component part is prefixed with @p separator
  *
- * @return          SUIT_OK if succesful
+ * @return          SUIT_OK if successful
  * @return          negative error code on error
  */
 int suit_component_name_to_string(const suit_manifest_t *manifest,
@@ -340,8 +338,8 @@ int suit_component_name_to_string(const suit_manifest_t *manifest,
  * @return              0 on success
  * @return              <0 on error
  */
-int suit_flashwrite_helper(void *arg, size_t offset, uint8_t *buf, size_t len,
-                           int more);
+int suit_storage_helper(void *arg, size_t offset, uint8_t *buf, size_t len,
+                        int more);
 
 #ifdef __cplusplus
 }

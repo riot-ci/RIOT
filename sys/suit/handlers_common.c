@@ -26,6 +26,7 @@
 
 #include "kernel_defines.h"
 #include "suit/handlers.h"
+#include "suit/storage.h"
 #include "suit.h"
 
 #include "log.h"
@@ -61,7 +62,9 @@ static int _component_handler(suit_manifest_t *manifest, int key,
                       nanocbor_get_type(it));
             return SUIT_ERR_INVALID_MANIFEST;
         }
-        suit_param_cbor_to_ref(manifest, &component->identifier, &comp);
+        /* The array is stored so that the number of bytestrings in the array
+         * can be retrieved later */
+        suit_param_cbor_to_ref(manifest, &component->identifier, &arr);
         /* Ensure that all parts of the identifier are a bstr */
         while (!nanocbor_at_end(&comp)) {
             const uint8_t *identifier;
@@ -72,6 +75,16 @@ static int _component_handler(suit_manifest_t *manifest, int key,
             }
         }
         nanocbor_leave_container(&arr, &comp);
+
+        /* find storage handler for component */
+        suit_storage_t *storage = suit_storage_find_by_component(manifest,
+                                                                 component);
+        if (!storage) {
+            LOG_ERROR("No storage handler found for component\n");
+            return SUIT_ERR_UNSUPPORTED;
+        }
+        component->storage_backend = storage;
+
         n++;
     }
     manifest->components_len = n;
