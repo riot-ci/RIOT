@@ -214,10 +214,9 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *payload)
 
 static void _msg_handler(gnrc_netif_t *netif, msg_t *msg)
 {
-    netdev_t *dev = netif->dev;
     switch (msg->type) {
         case NETDEV_MSG_TYPE_EVENT:
-            dev->driver->isr(dev);
+            gnrc_netif_msg_handler_netdev(netif, msg);
             break;
         case MSG_TYPE_TIMEOUT:
             gnrc_lorawan_open_rx_window(&netif->lorawan.mac);
