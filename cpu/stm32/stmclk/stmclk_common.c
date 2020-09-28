@@ -25,7 +25,7 @@
 
 #if defined(CPU_FAM_STM32L4) || defined(CPU_FAM_STM32F7) || \
     defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32G4) || \
-    defined(CPU_FAM_STM32G0)
+    defined(CPU_FAM_STM32G0) || defined(CPU_FAM_STM32L5)
 #define REG_PWR_CR          CR1
 #define BIT_CR_DBP          PWR_CR1_DBP
 #else
@@ -47,6 +47,10 @@
 #define RCC_CFGR_SWS_HSI        RCC_CFGR_SWS_0
 #define RCC_CSR_LSION           RCC_CSR_LSI1ON
 #define RCC_CSR_LSIRDY          RCC_CSR_LSI1RDY
+#endif
+
+#if defined(CPU_FAM_STM32L5)
+#define RCC_CFGR_SWS_HSI        RCC_CFGR_SWS_0
 #endif
 
 #ifndef CLOCK_HSE
