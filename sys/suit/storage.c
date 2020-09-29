@@ -89,6 +89,7 @@ int suit_storage_get_highest_seq_no(uint32_t *seq_no)
 {
     uint32_t max_seq = 0;
     int res = SUIT_ERR_STORAGE;
+
     for (size_t i = 0; i < reg_size; i++) {
         uint32_t seq_no = 0;
         if (suit_storage_get_seq_no(reg[i], &seq_no) == SUIT_OK) {
