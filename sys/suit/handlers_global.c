@@ -73,24 +73,7 @@ static int _seq_no_handler(suit_manifest_t *manifest, int key,
     if (seq_nr <= stored_seq_no) {
         return SUIT_ERR_SEQUENCE_NUMBER;
     }
-#if 0
-    const riotboot_hdr_t *hdr = riotboot_slot_get_hdr(riotboot_slot_current());
 
-    if (seq_nr <= (int32_t)hdr->version) {
-        LOG_INFO("%" PRId32 " <= %" PRId32 "\n", seq_nr, hdr->version);
-        LOG_INFO("seq_nr <= running image\n)");
-        return SUIT_ERR_SEQUENCE_NUMBER;
-    }
-
-    hdr = riotboot_slot_get_hdr(riotboot_slot_other());
-    if (riotboot_hdr_validate(hdr) == 0) {
-        if (seq_nr <= (int32_t)hdr->version) {
-            LOG_INFO("%" PRIu32 " <= %" PRIu32 "\n", seq_nr, hdr->version);
-            LOG_INFO("seq_nr <= other image\n)");
-            return SUIT_ERR_SEQUENCE_NUMBER;
-        }
-    }
-#endif
     LOG_INFO("suit: validated sequence number\n)");
     manifest->validated |= SUIT_VALIDATED_SEQ_NR;
     return SUIT_OK;
