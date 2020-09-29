@@ -31,6 +31,7 @@
 #include "periph_conf.h"
 #endif
 
+#include "assert.h"
 #include "xtimer.h"
 #include "irq.h"
 
@@ -65,7 +66,8 @@ void xtimer_init(void)
 {
 #ifndef MODULE_XTIMER_ON_ZTIMER
     /* initialize low-level timer */
-    timer_init(XTIMER_DEV, XTIMER_HZ, _periph_timer_callback, NULL);
+    int ret = timer_init(XTIMER_DEV, XTIMER_HZ, _periph_timer_callback, NULL);
+    assert(ret == 0);
 #endif
 
     /* register initial overflow tick */
