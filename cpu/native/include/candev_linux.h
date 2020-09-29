@@ -86,16 +86,6 @@ typedef struct candev_linux {
 #define HAVE_CAN_T
 
 /**
- * @brief Device specific initialization function
- *
- * @param[inout] dev   the device to initialize
- * @param[in] conf     the device configuration
- *
- * @return 0 on success
- */
-int can_init(can_t *dev, const can_conf_t *conf);
-
-/**
  * @brief Array containing socketCAN device names
  */
 extern can_conf_t candev_conf[CAN_DLL_NUMOF];
