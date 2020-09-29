@@ -65,6 +65,12 @@ extern "C" {
 #define SUIT_VERSION                        (1)
 
 /**
+ * @name SUIT manifest status flags
+ *
+ * These flags apply to the full manifest.
+ * @{
+ */
+/**
  * @brief COSE signature OK
  */
 #define SUIT_STATE_COSE_AUTHENTICATED       (1 << 1)
@@ -73,6 +79,7 @@ extern "C" {
  * @brief COSE payload matches SUIT manifest digest
  */
 #define SUIT_STATE_FULLY_AUTHENTICATED      (1 << 2)
+/** @} */
 
 /**
  * @brief SUIT error codes
@@ -166,13 +173,15 @@ typedef struct {
 } suit_param_ref_t;
 
 /**
- * @name SUIT component flags
+ * @name SUIT component flags.
+ *
+ * These state flags apply to individual components inside a manifest.
  * @{
  */
-#define SUIT_COMPONENT_FLAG_FETCHED       0x01 /**< Component is fetched */
-#define SUIT_COMPONENT_FLAG_FETCH_FAILED  0x02 /**< Component fetched but failed */
-#define SUIT_COMPONENT_FLAG_VERIFIED      0x04 /**< Component is verified */
-#define SUIT_COMPONENT_FLAG_FINALIZED     0x08 /**< Component successfully installed */
+#define SUIT_COMPONENT_STATE_FETCHED       0x01 /**< Component is fetched */
+#define SUIT_COMPONENT_STATE_FETCH_FAILED  0x02 /**< Component fetched but failed */
+#define SUIT_COMPONENT_STATE_VERIFIED      0x04 /**< Component is verified */
+#define SUIT_COMPONENT_STATE_FINALIZED     0x08 /**< Component successfully installed */
 /** @} */
 
 /**
@@ -181,7 +190,7 @@ typedef struct {
  * The parameters are references to CBOR-encoded information in the manifest.
  */
 typedef struct {
-    uint16_t flags;                             /**< Component status flags */
+    uint16_t state;                             /**< Component status flags */
     suit_param_ref_t identifier;                /**< Component identifier */
     suit_param_ref_t param_vendor_id;           /**< Vendor ID */
     suit_param_ref_t param_class_id;            /**< Class ID */
@@ -269,7 +278,7 @@ int suit_policy_check(suit_manifest_t *manifest);
 static inline void suit_component_set_flag(suit_component_t *component,
                                            uint16_t flag)
 {
-    component->flags |= flag;
+    component->state |= flag;
 }
 
 /**
@@ -283,7 +292,7 @@ static inline void suit_component_set_flag(suit_component_t *component,
 static inline bool suit_component_check_flag(suit_component_t *component,
                                              uint16_t flag)
 {
-    return (component->flags & flag);
+    return (component->state & flag);
 }
 
 /**

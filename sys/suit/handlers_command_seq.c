@@ -280,7 +280,7 @@ static int _dtv_fetch(suit_manifest_t *manifest, int key,
     suit_component_t *comp = _get_component(manifest);
 
     /* Deny the fetch if the component was already fetched before */
-    if (suit_component_check_flag(comp, SUIT_COMPONENT_FLAG_FETCHED)) {
+    if (suit_component_check_flag(comp, SUIT_COMPONENT_STATE_FETCHED)) {
         LOG_ERROR("Component already fetched before\n");
         return SUIT_ERR_INVALID_MANIFEST;
     }
@@ -323,10 +323,10 @@ static int _dtv_fetch(suit_manifest_t *manifest, int key,
     }
 
     LOG_INFO("Updating flag\n");
-    suit_component_set_flag(comp, SUIT_COMPONENT_FLAG_FETCHED);
+    suit_component_set_flag(comp, SUIT_COMPONENT_STATE_FETCHED);
 
     if (res) {
-        suit_component_set_flag(comp, SUIT_COMPONENT_FLAG_FETCH_FAILED);
+        suit_component_set_flag(comp, SUIT_COMPONENT_STATE_FETCH_FAILED);
         /* TODO: purge component? */
         LOG_INFO("image download failed\n)");
         return res;
@@ -373,8 +373,8 @@ static int _dtv_verify_image_match(suit_manifest_t *manifest, int key,
     }
 
     /* Only check the component if it is fetched, but not failed */
-    if (!suit_component_check_flag(comp, SUIT_COMPONENT_FLAG_FETCHED) ||
-            suit_component_check_flag(comp, SUIT_COMPONENT_FLAG_FETCH_FAILED)) {
+    if (!suit_component_check_flag(comp, SUIT_COMPONENT_STATE_FETCHED) ||
+            suit_component_check_flag(comp, SUIT_COMPONENT_STATE_FETCH_FAILED)) {
         LOG_ERROR("Fetch failed, or nothing fetched, nothing to check: %u\n",
                   comp->flags);
         return SUIT_ERR_INVALID_MANIFEST;
