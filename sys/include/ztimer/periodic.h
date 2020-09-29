@@ -11,10 +11,14 @@
  * @ingroup     sys_ztimer
  * @brief       Periodic ztimer API
  *
- *
  * Once started, the periodic timer will call the configured callback function
  * once each interval until the timer is either stopped using ztimer_periodic_stop
  * or the callback function returns a non-zero value.
+ *
+ * Should the timer underflow ((time_at_interrupt + interval) % 2**32 > interval),
+ * the next timer will be scheduled with an offset of zero, thus fire right away.
+ * This leads to a callback for each missed tick, until the original period can
+ * be honored again.
  *
  * Example:
  *
