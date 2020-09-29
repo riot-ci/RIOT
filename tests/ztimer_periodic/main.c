@@ -47,6 +47,13 @@ static int callback(void *arg)
 
     count += 1;
 
+    /* enable this to test underflow behavior */
+#if 0
+    if (count == 2) {
+        ztimer_spin(ZTIMER_MSEC, INTERVAL*2);
+    }
+#endif
+
     if (count == N) {
         mutex_unlock(&_mutex);
     }
@@ -74,7 +81,6 @@ int main(void)
                i, _times[i], offset);
         if (offset > MAX_OFFSET) {
             failed = 1;
-            print_str("Test failed!\n");
         }
         last = _times[i];
     }
