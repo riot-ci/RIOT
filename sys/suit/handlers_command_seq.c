@@ -447,7 +447,6 @@ static int _validate_payload(suit_component_t *component, const uint8_t *digest,
         SUIT_OK : SUIT_ERR_DIGEST_MISMATCH;
 }
 
-
 static int _dtv_verify_image_match(suit_manifest_t *manifest, int key,
                                    nanocbor_value_t *_it)
 {
