@@ -206,7 +206,6 @@ typedef struct {
  */
 typedef struct suit_storage suit_storage_t;
 
-
 /**
  * @brief SUIT component struct as decoded from the manifest
  *
@@ -247,7 +246,6 @@ typedef struct {
     char *urlbuf;                   /**< Buffer containing the manifest url */
     size_t urlbuf_len;              /**< Length of the manifest url */
 } suit_manifest_t;
-
 
 /**
  * @brief Component index representing all components
