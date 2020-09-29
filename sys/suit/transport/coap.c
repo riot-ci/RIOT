@@ -53,8 +53,8 @@
 #include "debug.h"
 
 #ifndef SUIT_COAP_STACKSIZE
-/* allocate stack needed to keep a page buffer and do manifest validation */
-#define SUIT_COAP_STACKSIZE (3 * THREAD_STACKSIZE_LARGE + FLASHPAGE_SIZE)
+/* allocate stack needed to do manifest validation */
+#define SUIT_COAP_STACKSIZE (3 * THREAD_STACKSIZE_LARGE)
 #endif
 
 #ifndef SUIT_COAP_PRIO
