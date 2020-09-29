@@ -185,45 +185,50 @@ static void test_fetch_ops_u64(void)
     test_fetch_op_u64(semi_atomic_fetch_and_u64, fetch_and_u64);
 }
 
+static ATOMIC_BITMASK uint8_t atm_bm_u8 = 0;
+static ATOMIC_BITMASK uint16_t atm_bm_u16 = 0;
+static ATOMIC_BITMASK uint32_t atm_bm_u32 = 0;
+static ATOMIC_BITMASK uint64_t atm_bm_u64 = 0;
+
 static void test_atomic_set_bit(void)
 {
     {
-        ATOMIC_BITMASK uint8_t val1 = 0;
+        atm_bm_u8 = 0;
         uint8_t val2 = 0;
         for (uint8_t i = 0; i < 8; i++) {
-            atomic_set_bit_u8(&val1, i);
+            atomic_set_bit_u8(&atm_bm_u8, i);
             val2 |= 1 << i;
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u8);
         }
     }
 
     {
-        ATOMIC_BITMASK uint16_t val1 = 0;
+        atm_bm_u16 = 0;
         uint16_t val2 = 0;
         for (uint8_t i = 0; i < 16; i++) {
-            atomic_set_bit_u16(&val1, i);
+            atomic_set_bit_u16(&atm_bm_u16, i);
             val2 |= 1 << i;
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u16);
         }
     }
 
     {
-        ATOMIC_BITMASK uint32_t val1 = 0;
+        atm_bm_u32 = 0;
         uint32_t val2 = 0;
         for (uint8_t i = 0; i < 32; i++) {
-            atomic_set_bit_u32(&val1, i);
+            atomic_set_bit_u32(&atm_bm_u32, i);
             val2 |= 1 << i;
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u32);
         }
     }
 
     {
-        ATOMIC_BITMASK uint64_t val1 = 0;
+        atm_bm_u64 = 0;
         uint64_t val2 = 0;
         for (uint8_t i = 0; i < 64; i++) {
-            atomic_set_bit_u64(&val1, i);
+            atomic_set_bit_u64(&atm_bm_u64, i);
             val2 |= 1 << i;
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u64);
         }
     }
 }
@@ -231,46 +236,42 @@ static void test_atomic_set_bit(void)
 static void test_atomic_clear_bit(void)
 {
     {
-        ATOMIC_BITMASK uint8_t val1;
         uint8_t val2;
-        val1 = val2 = 0xff;
+        atm_bm_u8 = val2 = 0xff;
         for (uint8_t i = 0; i < 8; i++) {
-            atomic_clear_bit_u8(&val1, i);
+            atomic_clear_bit_u8(&atm_bm_u8, i);
             val2 &= ~(1 << i);
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u8);
         }
     }
 
     {
-        ATOMIC_BITMASK uint16_t val1;
         uint16_t val2;
-        val1 = val2 = 0xffff;
+        atm_bm_u16 = val2 = 0xffff;
         for (uint8_t i = 0; i < 16; i++) {
-            atomic_clear_bit_u16(&val1, i);
+            atomic_clear_bit_u16(&atm_bm_u16, i);
             val2 &= ~(1 << i);
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u16);
         }
     }
 
     {
-        ATOMIC_BITMASK uint32_t val1;
         uint32_t val2;
-        val1 = val2 = 0xffffffff;
+        atm_bm_u32 = val2 = 0xffffffff;
         for (uint8_t i = 0; i < 32; i++) {
-            atomic_clear_bit_u32(&val1, i);
+            atomic_clear_bit_u32(&atm_bm_u32, i);
             val2 &= ~(1 << i);
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u32);
         }
     }
 
     {
-        ATOMIC_BITMASK uint64_t val1;
         uint64_t val2;
-        val1 = val2 = 0xffffffffffffffff;
+        atm_bm_u64 = val2 = 0xffffffffffffffff;
         for (uint8_t i = 0; i < 64; i++) {
-            atomic_clear_bit_u64(&val1, i);
+            atomic_clear_bit_u64(&atm_bm_u64, i);
             val2 &= ~(1 << i);
-            TEST_ASSERT_EQUAL_INT(val2, val1);
+            TEST_ASSERT_EQUAL_INT(val2, atm_bm_u64);
         }
     }
 }
