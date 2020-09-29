@@ -26,6 +26,9 @@
 extern "C" {
 #endif
 
+/* clang provides no built-in atomic access to regular variables */
+#ifndef __clang__
+
 #define HAS_ATOMIC_LOAD_U8
 static inline uint8_t atomic_load_u8(const uint8_t *var)
 {
@@ -61,6 +64,8 @@ static inline void atomic_store_u32(uint32_t *dest, uint32_t val)
 {
     __atomic_store_4(dest, val, __ATOMIC_SEQ_CST);
 }
+
+#endif /* __clang__ */
 
 #if CPU_HAS_BITBAND
 #define ATOMIC_BITMASK __attribute__((section(".srambb")))
