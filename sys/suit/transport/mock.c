@@ -31,10 +31,12 @@ int suit_transport_mock_fetch(const suit_manifest_t *manifest)
 {
     size_t file = manifest->component_current;
     const suit_component_t *comp = _get_component(manifest);
+
     assert(file < num_payloads);
 
     LOG_INFO("Mock writing payload %d\n", (unsigned)file);
 
-    suit_storage_write(comp->storage_backend, manifest, payloads[file].buf, 0, payloads[file].len);
+    suit_storage_write(comp->storage_backend, manifest, payloads[file].buf, 0,
+                       payloads[file].len);
     return 0;
 }

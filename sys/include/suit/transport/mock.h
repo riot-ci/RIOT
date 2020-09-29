@@ -38,7 +38,7 @@ extern "C" {
 typedef struct {
     const uint8_t *buf; /**< Ptr to the memory space containing the payload */
     size_t len;         /**< Length of the payload in bytes */
-}suit_transport_mock_payload_t;
+} suit_transport_mock_payload_t;
 
 /**
  * @brief 'fetch' a payload
