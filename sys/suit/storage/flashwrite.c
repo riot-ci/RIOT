@@ -40,17 +40,21 @@ static int _flashwrite_init(suit_storage_t *storage)
     return 0;
 }
 
-static int _flashwrite_start(suit_storage_t *storage, const suit_manifest_t *manifest,
+static int _flashwrite_start(suit_storage_t *storage,
+                             const suit_manifest_t *manifest,
                              size_t len)
 {
     (void)manifest;
     (void)len;
     suit_storage_flashwrite_t *fw = _get_fw(storage);
     int target_slot = riotboot_slot_other();
+
     return riotboot_flashwrite_init(&fw->writer, target_slot);
 }
 
-static int _flashwrite_write(suit_storage_t *storage, const suit_manifest_t *manifest, const uint8_t *buf, size_t offset, size_t len)
+static int _flashwrite_write(suit_storage_t *storage,
+                             const suit_manifest_t *manifest,
+                             const uint8_t *buf, size_t offset, size_t len)
 {
     (void)manifest;
     suit_storage_flashwrite_t *fw = _get_fw(storage);
@@ -66,28 +70,35 @@ static int _flashwrite_write(suit_storage_t *storage, const suit_manifest_t *man
     }
 
     if (offset != fw->writer.offset) {
-        LOG_ERROR("Unexpected offset: %u - expected: %u\n", (unsigned)offset, (unsigned)fw->writer.offset);
+        LOG_ERROR("Unexpected offset: %u - expected: %u\n", (unsigned)offset,
+                  (unsigned)fw->writer.offset);
         return SUIT_ERR_STORAGE;
     }
 
     return riotboot_flashwrite_putbytes(&fw->writer, buf, len, 1);
 }
 
-static int _flashwrite_finish(suit_storage_t *storage, const suit_manifest_t *manifest)
+static int _flashwrite_finish(suit_storage_t *storage,
+                              const suit_manifest_t *manifest)
 {
     (void)manifest;
     suit_storage_flashwrite_t *fw = _get_fw(storage);
-    return riotboot_flashwrite_flush(&fw->writer) < 0 ? SUIT_ERR_STORAGE : SUIT_OK;
+
+    return riotboot_flashwrite_flush(&fw->writer) <
+           0 ? SUIT_ERR_STORAGE : SUIT_OK;
 }
 
-static int _flashwrite_install(suit_storage_t *storage, const suit_manifest_t *manifest)
+static int _flashwrite_install(suit_storage_t *storage,
+                               const suit_manifest_t *manifest)
 {
     (void)manifest;
     suit_storage_flashwrite_t *fw = _get_fw(storage);
+
     return riotboot_flashwrite_finish(&fw->writer);
 }
 
-static int _flashwrite_read(suit_storage_t *storage, uint8_t *buf, size_t offset, size_t len)
+static int _flashwrite_read(suit_storage_t *storage, uint8_t *buf,
+                            size_t offset, size_t len)
 {
     (void)storage;
 
@@ -109,13 +120,14 @@ static int _flashwrite_read(suit_storage_t *storage, uint8_t *buf, size_t offset
         return -1;
     }
 
-    uint8_t *slot = (uint8_t*)riotboot_slot_get_hdr(target_slot);
+    uint8_t *slot = (uint8_t *)riotboot_slot_get_hdr(target_slot);
 
     memcpy(buf, slot + offset, len);
     return 0;
 }
 
-static bool _flashwrite_has_location(const suit_storage_t *storage, const char *location)
+static bool _flashwrite_has_location(const suit_storage_t *storage,
+                                     const char *location)
 {
     (void)storage;
 
@@ -123,14 +135,16 @@ static bool _flashwrite_has_location(const suit_storage_t *storage, const char *
     return (location[0] == '\0');
 }
 
-static int _flashwrite_set_active_location(suit_storage_t *storage, const char *location)
+static int _flashwrite_set_active_location(suit_storage_t *storage,
+                                           const char *location)
 {
     (void)storage;
     (void)location;
     return 0;
 }
 
-static bool _flashwrite_match_offset(const suit_storage_t *storage, size_t offset)
+static bool _flashwrite_match_offset(const suit_storage_t *storage,
+                                     size_t offset)
 {
     (void)storage;
 
