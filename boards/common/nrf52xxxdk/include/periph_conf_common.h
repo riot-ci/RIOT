@@ -27,6 +27,8 @@
 #include "cfg_rtt_default.h"
 #include "cfg_timer_default.h"
 
+#include "board.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,7 +38,20 @@ extern "C" {
  * @{
  */
 static const pwm_conf_t pwm_config[] = {
-    { NRF_PWM0, { 28, 29, 30, 31 } }
+    { NRF_PWM0, {
+#ifdef LED0_PIN
+        LED0_PIN,
+#endif
+#ifdef LED1_PIN
+        LED1_PIN,
+#endif
+#ifdef LED2_PIN
+        LED2_PIN,
+#endif
+#ifdef LED3_PIN
+        LED3_PIN,
+#endif
+    } },
 };
 #define PWM_NUMOF           ARRAY_SIZE(pwm_config)
 /** @} */
