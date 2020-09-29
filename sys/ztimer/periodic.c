@@ -31,7 +31,12 @@ static void _ztimer_periodic_reset(ztimer_periodic_t *timer, ztimer_now_t now)
     ztimer_now_t target = timer->last + timer->interval;
     ztimer_now_t offset = target - now;
 
+    if (offset > timer->interval) {
+        offset = 0;
+    }
+
     timer->last = target;
+
     ztimer_set(timer->clock, &timer->timer, offset);
 }
 
@@ -55,13 +60,13 @@ void ztimer_periodic_init(ztimer_clock_t *clock, ztimer_periodic_t *timer,
                              .timer = {
                                  .callback = _ztimer_periodic_callback,
                                  .arg = timer
-                             }
-        };
+                             } };
 }
 
 void ztimer_periodic_start(ztimer_periodic_t *timer)
 {
     uint32_t now = ztimer_now(timer->clock);
+
     timer->last = now;
     _ztimer_periodic_reset(timer, now);
 }
