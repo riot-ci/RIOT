@@ -47,6 +47,9 @@ typedef struct candev_conf {
     char interface_name[CAN_MAX_SIZE_INTERFACE_NAME + 1];
 } can_conf_t;
 
+/** CAN device configuration type can_conf_t is redefined by native CAN */
+#define HAVE_CAN_CONF_T
+
 #ifndef CANDEV_LINUX_MAX_FILTERS_RX
 /**
  * Max number of rx filters which can be set
@@ -78,6 +81,9 @@ typedef struct candev_linux {
     /** filter list */
     struct can_filter filters[CANDEV_LINUX_MAX_FILTERS_RX];
 } can_t;
+
+/** CAN device type can_t is redefined by native CAN */
+#define HAVE_CAN_T
 
 /**
  * @brief Device specific initialization function
