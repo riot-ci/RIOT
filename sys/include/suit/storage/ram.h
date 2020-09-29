@@ -68,7 +68,6 @@ typedef struct {
     uint8_t mem[CONFIG_SUIT_STORAGE_RAM_SIZE]; /**< RAM area */
 } suit_storage_ram_region_t;
 
-
 /**
  * @brief memory storage state
  */
