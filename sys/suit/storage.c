@@ -69,7 +69,7 @@ void suit_storage_init_all(void)
 }
 
 suit_storage_t *suit_storage_find_by_component(const suit_manifest_t *manifest,
-                                               const suit_component_t *component)
+        const suit_component_t *component)
 {
     for (size_t i = 0; i < reg_size; i++) {
         char name[CONFIG_SUIT_COMPONENT_MAX_NAME_LEN];
