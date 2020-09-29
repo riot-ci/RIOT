@@ -36,7 +36,7 @@ static mutex_t _mutex = MUTEX_INIT_LOCKED;
 #define N 5
 #define INTERVAL 100LU
 
-static volatile uint32_t _times[N];
+static uint32_t _times[N];
 
 static int callback(void *arg)
 {
@@ -70,7 +70,7 @@ int main(void)
 
     ztimer_periodic_start(&t);
 
-    // wait for periodic to trigger N times
+    /* wait for periodic to trigger N times */
     mutex_lock(&_mutex);
 
     int failed = 0;
