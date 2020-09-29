@@ -46,7 +46,7 @@ static const adc_conf_t adc_config[] = {
     { .pin = GPIO_PIN(PORT_C,  3), .dev = 1, .chan =  9 }, /* ADC12_IN9, slow */
     { .pin = GPIO_PIN(PORT_D, 11), .dev = 2, .chan =  8 }, /* ADC34_IN8, slow */
     { .pin = GPIO_PIN(PORT_D, 12), .dev = 3, .chan =  9 }, /* ADC34_IN9, slow */
-    { .pin = GPIO_PIN(PORT_D, 13), .dev = 3, .chan = 10 }, /* ADC34_IN10, slo */
+    { .pin = GPIO_PIN(PORT_D, 13), .dev = 3, .chan = 10 }, /* ADC34_IN10, slow */
 };
 
 #define ADC_NUMOF           ARRAY_SIZE(adc_config)
