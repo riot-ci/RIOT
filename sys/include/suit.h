@@ -71,6 +71,11 @@ extern "C" {
  * @{
  */
 /**
+ * @brief Bit flags used to determine if SUIT manifest contains components
+ */
+#define SUIT_STATE_HAVE_COMPONENTS          (1 << 0)
+
+/**
  * @brief COSE signature OK
  */
 #define SUIT_STATE_COSE_AUTHENTICATED       (1 << 1)
@@ -225,10 +230,6 @@ typedef struct {
     size_t urlbuf_len;              /**< Length of the manifest url */
 } suit_manifest_t;
 
-/**
- * @brief Bit flags used to determine if SUIT manifest contains components
- */
-#define SUIT_MANIFEST_HAVE_COMPONENTS   (0x1)
 
 /**
  * @brief Component index representing all components
