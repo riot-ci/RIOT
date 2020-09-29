@@ -26,15 +26,15 @@
  *
  * A SUIT component ID is formatted as an array of bytestrings. To make it easy
  * to match and use a string, the location is supplied as string, each component
- * separated by a separator provided in the driver. If no separator (`\0`) is set,
- * the components are concatenated without separator. The @ref
+ * separated by a separator provided in the driver. If no separator (`\0`) is
+ * set, the components are concatenated without separator. The @ref
  * suit_storage_driver_t::set_active_location must be called before starting
  * operations on the backend.
  *
  * A write sequence by the caller must start with @ref
  * suit_storage_driver_t::start. The total length of the image is supplied to
- * allow the backend to check if the payload fits in the available space.
- * The payload data can be supplied piecewise with multiple calls to @ref
+ * allow the backend to check if the payload fits in the available space.  The
+ * payload data can be supplied piecewise with multiple calls to @ref
  * suit_storage_driver_t::write. The caller is free to specify the offset, but
  * the backend may enforce strict monotonicity on the offset and may enforce the
  * gapless writes. After all bytes are supplied, the @ref
@@ -131,7 +131,8 @@ typedef struct suit_storage_driver {
      * @returns     @ref SUIT_OK on successfully starting the write
      * @returns     @ref suit_error_t on error
      */
-    int (*start)(suit_storage_t *storage, const suit_manifest_t *manifest, size_t len);
+    int (*start)(suit_storage_t *storage, const suit_manifest_t *manifest,
+                 size_t len);
 
     /**
      * @brief   Write a new chunk of the payload to the storage backend
@@ -145,7 +146,8 @@ typedef struct suit_storage_driver {
      * @returns     @ref SUIT_OK on successfully writing the chunk
      * @returns     @ref suit_error_t on error
      */
-    int (*write)(suit_storage_t *storage, const suit_manifest_t *manifest, const uint8_t *buf, size_t offset, size_t len);
+    int (*write)(suit_storage_t *storage, const suit_manifest_t *manifest, const
+                 uint8_t *buf, size_t offset, size_t len);
 
     /**
      * @brief Signal that the payload write stage done to the storage backend
@@ -169,7 +171,8 @@ typedef struct suit_storage_driver {
      * @returns     @ref SUIT_OK on successfully reading the chunk
      * @returns     @ref suit_error_t on error
      */
-    int (*read)(suit_storage_t *storage, uint8_t *buf, size_t offset, size_t len);
+    int (*read)(suit_storage_t *storage, uint8_t *buf, size_t offset,
+                size_t len);
 
     /**
      * @brief retrieve a direct read pointer for this storage backend
@@ -237,7 +240,7 @@ typedef struct suit_storage_driver {
      * @brief Set the active location of the storage handler
      *
      * A storage backend can handle multiple locations, e.g. a VFS backend
-     * targetting multiple files on a filesystem, setting the location selects
+     * targeting multiple files on a filesystem, setting the location selects
      * the target location for writes or reads.
      *
      * @note Must be idempotent
@@ -407,7 +410,9 @@ static inline int suit_storage_init(suit_storage_t *storage)
  * @returns     @ref SUIT_OK on successfully starting the write
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_start(suit_storage_t *storage, const suit_manifest_t *manifest, size_t len)
+static inline int suit_storage_start(suit_storage_t *storage,
+                                     const suit_manifest_t *manifest,
+                                     size_t len)
 {
     return storage->driver->start(storage, manifest, len);
 }
@@ -424,7 +429,10 @@ static inline int suit_storage_start(suit_storage_t *storage, const suit_manifes
  * @returns     @ref SUIT_OK on successfully writing the chunk
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_write(suit_storage_t *storage, const suit_manifest_t *manifest, const uint8_t *buf, size_t offset, size_t len)
+static inline int suit_storage_write(suit_storage_t *storage,
+                                     const suit_manifest_t *manifest,
+                                     const uint8_t *buf, size_t offset,
+                                     size_t len)
 {
     return storage->driver->write(storage, manifest, buf, offset, len);
 }
@@ -438,7 +446,8 @@ static inline int suit_storage_write(suit_storage_t *storage, const suit_manifes
  * @returns     @ref SUIT_OK on successfully finalizing the write
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_finish(suit_storage_t *storage, const suit_manifest_t *manifest)
+static inline int suit_storage_finish(suit_storage_t *storage,
+                                      const suit_manifest_t *manifest)
 {
     return storage->driver->finish(storage, manifest);
 }
@@ -454,7 +463,8 @@ static inline int suit_storage_finish(suit_storage_t *storage, const suit_manife
  * @returns     @ref SUIT_OK on successfully reading the chunk
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_read(suit_storage_t *storage, uint8_t *buf, size_t offset, size_t len)
+static inline int suit_storage_read(suit_storage_t *storage, uint8_t *buf,
+                                    size_t offset, size_t len)
 {
     return storage->driver->read(storage, buf, offset, len);
 }
@@ -471,7 +481,8 @@ static inline int suit_storage_read(suit_storage_t *storage, uint8_t *buf, size_
  * @returns     @ref SUIT_OK on successfully providing the region
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_read_ptr(suit_storage_t *storage, const uint8_t **buf, size_t *len)
+static inline int suit_storage_read_ptr(suit_storage_t *storage, const uint8_t
+                                        **buf, size_t *len)
 {
     return storage->driver->read_ptr(storage, buf, len);
 }
@@ -485,7 +496,8 @@ static inline int suit_storage_read_ptr(suit_storage_t *storage, const uint8_t *
  * @returns     @ref SUIT_OK on successfully installing the payload
  * @returns     @ref suit_error_t on error
  */
-static inline int suit_storage_install(suit_storage_t *storage, const suit_manifest_t *manifest)
+static inline int suit_storage_install(suit_storage_t *storage,
+                                       const suit_manifest_t *manifest)
 {
     return storage->driver->install(storage, manifest);
 }
@@ -541,7 +553,7 @@ static inline int suit_storage_match_offset(const suit_storage_t *storage,
  * @brief Set the active location of the storage handler
  *
  * A storage backend can handle multiple locations, e.g. a VFS backend
- * targetting multiple files on a filesystem, setting the location selects
+ * targeting multiple files on a filesystem, setting the location selects
  * the target location for writes or reads.
  *
  * @note Must be idempotent
