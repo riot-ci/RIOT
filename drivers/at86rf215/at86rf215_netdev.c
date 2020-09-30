@@ -30,6 +30,8 @@
 #include "net/netdev/ieee802154.h"
 #include "net/gnrc/netif/internal.h"
 
+#include "sys/bus.h"
+
 #include "at86rf215.h"
 #include "at86rf215_netdev.h"
 #include "at86rf215_internal.h"
@@ -922,6 +924,14 @@ static void _isr(netdev_t *netdev)
             _clear_sibling_irq(dev);
         }
     }
+
+    /* Handle Low Battery IRQ */
+#if MODULE_AT86RF215_BATMON
+    if ((rf_irq_mask & RF_IRQ_BATLOW)) {
+        msg_bus_t *bus = sys_bus_get(SYS_BUS_POWER);
+        msg_bus_post(bus, SYS_BUS_POWER_EVENT_LOW_VOLTAGE, NULL);
+    }
+#endif
 
     /* exit early if the interrupt was not for this interface */
     if (!((bb_irq_mask & bb_irqs_enabled) ||
