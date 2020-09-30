@@ -7,27 +7,36 @@
  */
 
 /**
- * @defgroup    sys_tsrb Thread safe ringbuffer
+ * @defgroup    sys_oorb    Thread-safe ringbuffer for one writer and one reader
  * @ingroup     sys
- * @brief       Thread-safe ringbuffer implementation
+ * @brief       Thread-safe ringbuffer for one writer and one reader
+ *              implementation
  * @{
+ *
+ * @note        Use @ref sys_tsrb instead, if you have more than one thread
+ *              writing to or more than one thread reading from the ring buffer
  *
  * @attention   Buffer size must be a power of two!
  *
+ * @warning     This is only safe to use when (in addition to only one reader
+ *              and one writer being present) the target platforms implements
+ *              writes to `unsigned int` atomically (e.g. not on AVR) *and*
+ *              the compiler does not reorder code across memory accesses to
+ *              `volatile`. Improving this situation is planned.
+ *
  * @file
- * @brief       Thread-safe ringbuffer interface definition
+ * @brief       Thread-safe ringbuffer for one writer and one reader interface
+ *              definition
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  */
 
-#ifndef TSRB_H
-#define TSRB_H
+#ifndef OORB_H
+#define OORB_H
 
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "irq.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,25 +45,25 @@ extern "C" {
 /**
  * @brief     thread-safe ringbuffer struct
  */
-typedef struct tsrb {
+typedef struct oorb {
     uint8_t *buf;               /**< Buffer to operate on. */
     unsigned int size;          /**< Size of buffer, must be power of 2. */
-    unsigned reads;             /**< total number of reads */
-    unsigned writes;            /**< total number of writes */
-} tsrb_t;
+    volatile unsigned reads;    /**< total number of reads */
+    volatile unsigned writes;   /**< total number of writes */
+} oorb_t;
 
 /**
  * @brief Static initializer
  */
-#define TSRB_INIT(BUF) { (BUF), sizeof (BUF), 0, 0 }
+#define OORB_INIT(BUF) { (BUF), sizeof (BUF), 0, 0 }
 
 /**
- * @brief        Initialize a tsrb.
+ * @brief        Initialize a oorb.
  * @param[out]   rb        Datum to initialize.
- * @param[in]    buffer    Buffer to use by tsrb.
+ * @param[in]    buffer    Buffer to use by oorb.
  * @param[in]    bufsize   `sizeof (buffer)`, must be power of 2.
  */
-static inline void tsrb_init(tsrb_t *rb, uint8_t *buffer, unsigned bufsize)
+static inline void oorb_init(oorb_t *rb, uint8_t *buffer, unsigned bufsize)
 {
     /* make sure bufsize is a power of two.
      * http://www.exploringbinary.com/ten-ways-to-check-if-an-integer-is-a-power-of-two-in-c/
@@ -68,17 +77,14 @@ static inline void tsrb_init(tsrb_t *rb, uint8_t *buffer, unsigned bufsize)
 }
 
 /**
- * @brief       Test if the tsrb is empty.
+ * @brief       Test if the oorb is empty.
  * @param[in]   rb  Ringbuffer to operate on
  * @return      0   if not empty
  * @return      1   otherwise
  */
-static inline int tsrb_empty(const tsrb_t *rb)
+static inline int oorb_empty(const oorb_t *rb)
 {
-    unsigned irq_state = irq_disable();
-    int retval = (rb->reads == rb->writes);
-    irq_restore(irq_state);
-    return retval;
+    return (rb->reads == rb->writes);
 }
 
 
@@ -87,26 +93,20 @@ static inline int tsrb_empty(const tsrb_t *rb)
  * @param[in]   rb  Ringbuffer to operate on
  * @return      nr of available bytes
  */
-static inline unsigned int tsrb_avail(const tsrb_t *rb)
+static inline unsigned int oorb_avail(const oorb_t *rb)
 {
-    unsigned irq_state = irq_disable();
-    int retval = (rb->writes - rb->reads);
-    irq_restore(irq_state);
-    return retval;
+    return (rb->writes - rb->reads);
 }
 
 /**
- * @brief       Test if the tsrb is full
+ * @brief       Test if the oorb is full
  * @param[in]   rb  Ringbuffer to operate on
  * @return      0   if not full
  * @return      1   otherwise
  */
-static inline int tsrb_full(const tsrb_t *rb)
+static inline int oorb_full(const oorb_t *rb)
 {
-    unsigned irq_state = irq_disable();
-    int retval = (rb->writes - rb->reads) == rb->size;
-    irq_restore(irq_state);
-    return retval;
+    return (rb->writes - rb->reads) == rb->size;
 }
 
 /**
@@ -114,12 +114,9 @@ static inline int tsrb_full(const tsrb_t *rb)
  * @param[in]   rb  Ringbuffer to operate on
  * @return      nr of available bytes
  */
-static inline unsigned int tsrb_free(const tsrb_t *rb)
+static inline unsigned int oorb_free(const oorb_t *rb)
 {
-    unsigned irq_state = irq_disable();
-    int retval = (rb->size - rb->writes + rb->reads);
-    irq_restore(irq_state);
-    return retval;
+    return (rb->size - rb->writes + rb->reads);
 }
 
 /**
@@ -128,7 +125,7 @@ static inline unsigned int tsrb_free(const tsrb_t *rb)
  * @return      >=0 byte that has been read
  * @return      -1  if no byte available
  */
-int tsrb_get_one(tsrb_t *rb);
+int oorb_get_one(oorb_t *rb);
 
 /**
  * @brief       Get bytes from ringbuffer
@@ -137,7 +134,7 @@ int tsrb_get_one(tsrb_t *rb);
  * @param[in]   n   max number of bytes to write to @p dst
  * @return      nr of bytes written to @p dst
  */
-int tsrb_get(tsrb_t *rb, uint8_t *dst, size_t n);
+int oorb_get(oorb_t *rb, uint8_t *dst, size_t n);
 
 /**
  * @brief       Drop bytes from ringbuffer
@@ -145,7 +142,7 @@ int tsrb_get(tsrb_t *rb, uint8_t *dst, size_t n);
  * @param[in]   n   max number of bytes to drop
  * @return      nr of bytes dropped
  */
-int tsrb_drop(tsrb_t *rb, size_t n);
+int oorb_drop(oorb_t *rb, size_t n);
 
 /**
  * @brief       Add a byte to ringbuffer
@@ -154,7 +151,7 @@ int tsrb_drop(tsrb_t *rb, size_t n);
  * @return      0   on success
  * @return      -1  if no space available
  */
-int tsrb_add_one(tsrb_t *rb, uint8_t c);
+int oorb_add_one(oorb_t *rb, uint8_t c);
 
 /**
  * @brief       Add bytes to ringbuffer
@@ -163,11 +160,11 @@ int tsrb_add_one(tsrb_t *rb, uint8_t c);
  * @param[in]   n   max number of bytes to read from @p src
  * @return      nr of bytes read from @p src
  */
-int tsrb_add(tsrb_t *rb, const uint8_t *src, size_t n);
+int oorb_add(oorb_t *rb, const uint8_t *src, size_t n);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TSRB_H */
+#endif /* OORB_H */
 /** @} */

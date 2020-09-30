@@ -1,0 +1,82 @@
+/*
+ * Copyright (C) 2015 Kaspar Schleiser <kaspar@schleiser.de>
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup sys
+ * @{
+ * @file
+ * @brief       thread-safe ringbuffer for one writer and one reader
+ *              implementation
+ *
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ *
+ * @}
+ */
+
+#include "oorb.h"
+
+static void _push(oorb_t *rb, uint8_t c)
+{
+    rb->buf[rb->writes++ & (rb->size - 1)] = c;
+}
+
+static uint8_t _pop(oorb_t *rb)
+{
+    return rb->buf[rb->reads++ & (rb->size - 1)];
+}
+
+int oorb_get_one(oorb_t *rb)
+{
+    if (!oorb_empty(rb)) {
+        return _pop(rb);
+    }
+    else {
+        return -1;
+    }
+}
+
+int oorb_get(oorb_t *rb, uint8_t *dst, size_t n)
+{
+    size_t tmp = n;
+    while (tmp && !oorb_empty(rb)) {
+        *dst++ = _pop(rb);
+        tmp--;
+    }
+    return (n - tmp);
+}
+
+int oorb_drop(oorb_t *rb, size_t n)
+{
+    size_t tmp = n;
+    while (tmp && !oorb_empty(rb)) {
+        _pop(rb);
+        tmp--;
+    }
+    return (n - tmp);
+}
+
+int oorb_add_one(oorb_t *rb, uint8_t c)
+{
+    if (!oorb_full(rb)) {
+        _push(rb, c);
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
+
+int oorb_add(oorb_t *rb, const uint8_t *src, size_t n)
+{
+    size_t tmp = n;
+    while (tmp && !oorb_full(rb)) {
+        _push(rb, *src++);
+        tmp--;
+    }
+    return (n - tmp);
+}
