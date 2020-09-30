@@ -169,6 +169,7 @@ static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t size, ieee802
     pkt_len -= IEEE802154_FCS_LEN;
 
     if (pkt_len > size) {
+        RFCORE_SFR_RFST = ISRXON;
         RFCORE_SFR_RFST = ISFLUSHRX;
         return -ENOBUFS;
     }
@@ -204,6 +205,7 @@ static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t size, ieee802
         res = 0;
     }
 
+    RFCORE_SFR_RFST = ISRXON;
     RFCORE_SFR_RFST = ISFLUSHRX;
 
     return res;
@@ -337,6 +339,7 @@ void cc2538_irq_handler(void)
         uint8_t pkt_len = rfcore_peek_rx_fifo(0);
         if (rfcore_peek_rx_fifo(pkt_len) & CC2538_CRC_BIT_MASK) {
             /* Disable RX while the frame has not been processed */
+            RFCORE_XREG_RXMASKCLR = 0xFF;
             cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_RX_DONE);
         }
         else {
