@@ -21,9 +21,18 @@
  *
  *  void irq_handler(void)
  *  {
- *      // No need to use atomic access in IRQ handlers: RIOT does not
- *      // enable nested interrupts, so IRQ handlers will not be interrupted
- *      // anyway
+ *      // No need to use atomic access in IRQ handlers, if other IRQ handlers
+ *      // never touch global_counter: At the beginning and at the end of every
+ *      // ISR a memory barrier is in place, so that at the end of the ISR the
+ *      // memory will be in a state as if all memory accesses within the ISR
+ *      // took place in sequential order.
+ *      //
+ *      // Extra detail only RIOT kernel hackers need to know: If all ISRs
+ *      // accessing the same variable cannot interrupt each other, atomic
+ *      // access is still not needed. (Currently only PendSV on ARM can be
+ *      // interrupted by other IRQs with RIOTs default IRQ priorities. If
+ *      // application developers modifies those, they can be assumed to know
+ *      // what they are doing - or to happily face the consequences otherwise.)
  *      global_counter++;
  *  }
  *
