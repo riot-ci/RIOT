@@ -5,16 +5,6 @@
 # directory for more details.
 #
 
-config CPU_FAM_G4
-    bool
-    select CPU_STM32
-    select CPU_CORE_CORTEX_M4
-    select HAS_CPU_STM32G4
-    select HAS_CORTEXM_MPU
-    select HAS_PERIPH_FLASHPAGE
-    select HAS_PERIPH_FLASHPAGE_RAW
-    select HAS_PERIPH_HWRNG
-
 # CPU lines
 config CPU_LINE_STM32G431XX
     bool
@@ -47,12 +37,3 @@ config CPU_LINE_STM32G484XX
 config CPU_LINE_STM32GBK1CB
     bool
     select CPU_FAM_G4
-
-# CPU models
-config CPU_MODEL_STM32G431RB
-    bool
-    select CPU_LINE_STM32G431XX
-
-config CPU_MODEL_STM32G474RE
-    bool
-    select CPU_LINE_STM32G474XX

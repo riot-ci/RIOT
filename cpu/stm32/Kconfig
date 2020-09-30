@@ -122,17 +122,18 @@ config CPU_MODEL
 config CPU
     default "stm32" if CPU_STM32
 
-source "$(RIOTCPU)/stm32/Kconfig.f0"
-source "$(RIOTCPU)/stm32/Kconfig.f1"
-source "$(RIOTCPU)/stm32/Kconfig.f2"
-source "$(RIOTCPU)/stm32/Kconfig.f3"
-source "$(RIOTCPU)/stm32/Kconfig.f4"
-source "$(RIOTCPU)/stm32/Kconfig.f7"
-source "$(RIOTCPU)/stm32/Kconfig.g0"
-source "$(RIOTCPU)/stm32/Kconfig.g4"
-source "$(RIOTCPU)/stm32/Kconfig.l0"
-source "$(RIOTCPU)/stm32/Kconfig.l1"
-source "$(RIOTCPU)/stm32/Kconfig.l4"
-source "$(RIOTCPU)/stm32/Kconfig.wb"
-source "$(RIOTCPU)/stm32/Kconfig.features"
+# Definition of specific features
+config HAS_CPU_STM32
+    bool
+    help
+        Indicates that a 'stm32' cpu is being used.
+
+config HAS_BOOTLOADER_STM32
+    bool
+    help
+        Indicates that the stm32 bootloader is being used.
+
+orsource "kconfig/*/Kconfig"
+orsource "kconfig/*/Kconfig.lines"
+orsource "kconfig/*/Kconfig.models"
 source "$(RIOTCPU)/cortexm_common/Kconfig"

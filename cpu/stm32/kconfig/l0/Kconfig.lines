@@ -5,15 +5,6 @@
 # directory for more details.
 #
 
-config CPU_FAM_L0
-    bool
-    select CPU_STM32
-    select CPU_CORE_CORTEX_M0PLUS
-    select HAS_CPU_STM32L0
-    select HAS_PERIPH_FLASHPAGE
-    select HAS_PERIPH_FLASHPAGE_RAW
-    select HAS_PERIPH_EEPROM
-
 # CPU lines
 config CPU_LINE_STM32L010X4
     bool
@@ -98,28 +89,3 @@ config CPU_LINE_STM32L082XX
 config CPU_LINE_STM32L083XX
     bool
     select CPU_FAM_L0
-
-# CPU models
-config CPU_MODEL_STM32L031K6
-    bool
-    select CPU_LINE_STM32L031XX
-
-config CPU_MODEL_STM32L052T8
-    bool
-    select CPU_LINE_STM32L052XX
-
-config CPU_MODEL_STM32L053R8
-    bool
-    select CPU_LINE_STM32L053XX
-
-config CPU_MODEL_STM32L053C8
-    bool
-    select CPU_LINE_STM32L053XX
-
-config CPU_MODEL_STM32L072CZ
-    bool
-    select CPU_LINE_STM32L072XX
-
-config CPU_MODEL_STM32L073RZ
-    bool
-    select CPU_LINE_STM32L073XX

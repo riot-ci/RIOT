@@ -5,13 +5,6 @@
 # directory for more details.
 #
 
-config CPU_FAM_F4
-    bool
-    select CPU_STM32
-    select CPU_CORE_CORTEX_M4F
-    select HAS_CPU_STM32F4
-    select HAS_CORTEXM_MPU
-
 # CPU lines
 config CPU_LINE_STM32F401XC
     bool
@@ -112,56 +105,3 @@ config CPU_LINE_STM32F469XX
 config CPU_LINE_STM32F479XX
     bool
     select CPU_FAM_F4
-
-# CPU models
-config CPU_MODEL_STM32F401RE
-    bool
-    select CPU_LINE_STM32F401XE
-
-config CPU_MODEL_STM32F405RG
-    bool
-    select CPU_LINE_STM32F405XX
-
-config CPU_MODEL_STM32F407VG
-    bool
-    select CPU_LINE_STM32F407XX
-
-config CPU_MODEL_STM32F410RB
-    bool
-    select CPU_LINE_STM32F410RX
-
-config CPU_MODEL_STM32F411RE
-    bool
-    select CPU_LINE_STM32F411XE
-
-config CPU_MODEL_STM32F411CEU6
-    bool
-    select CPU_LINE_STM32F411XE
-
-config CPU_MODEL_STM32F412ZG
-    bool
-    select CPU_LINE_STM32F412ZX
-
-config CPU_MODEL_STM32F413ZH
-    bool
-    select CPU_LINE_STM32F413XX
-
-config CPU_MODEL_STM32F415RG
-    bool
-    select CPU_LINE_STM32F415XX
-
-config CPU_MODEL_STM32F429ZI
-    bool
-    select CPU_LINE_STM32F429XX
-
-config CPU_MODEL_STM32F437VG
-    bool
-    select CPU_LINE_STM32F437XX
-
-config CPU_MODEL_STM32F446RE
-    bool
-    select CPU_LINE_STM32F446XX
-
-config CPU_MODEL_STM32F446ZE
-    bool
-    select CPU_LINE_STM32F446XX

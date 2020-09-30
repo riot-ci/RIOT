@@ -5,15 +5,6 @@
 # directory for more details.
 #
 
-config CPU_FAM_WB
-    bool
-    select CPU_STM32
-    select CPU_CORE_CORTEX_M4
-    select HAS_CPU_STM32WB
-    select HAS_PERIPH_FLASHPAGE
-    select HAS_PERIPH_FLASHPAGE_RAW
-    select HAS_PERIPH_HWRNG
-
 # CPU lines
 config CPU_LINE_STM32WB5MXX
     bool
@@ -34,8 +25,3 @@ config CPU_LINE_STM32WB50XX
 config CPU_LINE_STM32WB55XX
     bool
     select CPU_FAM_WB
-
-# CPU models
-config CPU_MODEL_STM32WB55RG
-    bool
-    select CPU_LINE_STM32WB55XX
