@@ -40,7 +40,6 @@
 /* dummy defines to not litter the code with ifdefs if no TCC is available */
 #ifndef REV_TCC
 typedef TcCount8 Tcc;
-#define TCC_SYNCBUSY_CC0 TC_SYNCBUSY_CC0
 #define TCC_CTRLA_ENABLE TC_CTRLA_ENABLE
 #endif
 
@@ -369,7 +368,9 @@ static void _tcc_set(Tcc *tcc, uint8_t chan, uint16_t value)
     /* TODO: use OTMX for pin remapping */
     chan %= _tcc_get_cc_numof(tcc);
     tcc->CC[chan].reg = value;
+#ifdef REV_TCC
     while (tcc->SYNCBUSY.reg & (TCC_SYNCBUSY_CC0 << chan)) {}
+#endif
 }
 
 void pwm_set(pwm_t dev, uint8_t channel, uint16_t value)
