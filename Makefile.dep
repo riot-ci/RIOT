@@ -1008,6 +1008,7 @@ endif
 ifneq (,$(filter riotboot_flashwrite, $(USEMODULE)))
   USEMODULE += riotboot_slot
   FEATURES_REQUIRED += periph_flashpage
+  FEATURES_OPTIONAL += periph_flashpage_raw
 endif
 
 ifneq (,$(filter riotboot_slot, $(USEMODULE)))
