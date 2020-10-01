@@ -354,7 +354,7 @@ symbol usually would select the correspondent `CPU_FAM_<family>` symbol,
 which would in turn select the `CPU_CORE_<core>`. This may change in some cases
 where `CPU_COMMON_` symbols are defined to avoid repetition. For convenience and
 if it makes sense within a CPU vendor family, it's also allowed to use
-intermediate grouping levels, like the `CPU_LINES_<xxx>` used for STM32.
+intermediate grouping levels, like `CPU_LINE_<xxx>` used for STM32.
 
 In addition to the symbols of the hierarchy described above, a default value
 to the `CPU` symbol should be assigned, which will match the value of the `CPU`
