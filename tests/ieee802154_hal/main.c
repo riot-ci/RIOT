@@ -33,6 +33,9 @@
 
 #include "xtimer.h"
 
+#define LOG_LEVEL LOG_NONE
+#include "log.h"
+
 #define SYMBOL_TIME (16U) /**< 16 us */
 
 #define ACK_TIMEOUT_TIME (40 * SYMBOL_TIME)
@@ -128,11 +131,22 @@ static void _hal_radio_cb(ieee802154_dev_t *dev, ieee802154_trx_ev_t status)
     (void) dev;
     switch(status) {
         case IEEE802154_RADIO_CONFIRM_TX_DONE:
+            LOG_DEBUG("EVT - TX_DONE\n");
+            mutex_unlock(&lock);
+            break;
         case IEEE802154_RADIO_CONFIRM_CCA:
+            LOG_DEBUG("EVT - CONFIRM_CCA\n");
             mutex_unlock(&lock);
             break;
         case IEEE802154_RADIO_INDICATION_RX_DONE:
+            LOG_DEBUG("EVT - RX_DONE\n");
             event_post(EVENT_PRIO_HIGHEST, &_rx_done_event);
+            break;
+        case IEEE802154_RADIO_INDICATION_RX_START:
+            LOG_DEBUG("EVT - RX_STARTED\n");
+            break;
+        case IEEE802154_RADIO_INDICATION_TX_START:
+            LOG_DEBUG("EVT - TX_STARTED\n");
             break;
         default:
            break;
@@ -576,6 +590,7 @@ static int _caps_cmd(int argc, char **argv)
     bool has_sub_ghz = false;
     bool has_irq_tx_done = false;
     bool has_irq_rx_start = false;
+    bool has_irq_tx_start = false;
     bool has_irq_ack_timeout = false;
     bool has_irq_cca_done = false;
     bool has_frame_retrans_info = false;
@@ -604,6 +619,10 @@ static int _caps_cmd(int argc, char **argv)
         has_irq_rx_start = true;
     }
 
+    if (ieee802154_radio_has_irq_tx_start(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID))) {
+        has_irq_tx_start = true;
+    }
+
     if (ieee802154_radio_has_irq_ack_timeout(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID))) {
         has_irq_ack_timeout = true;
     }
@@ -626,6 +645,7 @@ static int _caps_cmd(int argc, char **argv)
     printf("- TX DONE indication:           %s\n", has_irq_tx_done ? "y" : "n");
     printf("    * ACK Timeout indication:   %s\n", has_irq_ack_timeout ? "y" : "n");
     printf("- RX_START indication:          %s\n", has_irq_rx_start ? "y" : "n");
+    printf("- TX_START indication:          %s\n", has_irq_tx_start ? "y" : "n");
     printf("- CCA Done indication:          %s\n", has_irq_cca_done ? "y" : "n");
 
     return 0;
