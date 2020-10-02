@@ -1,0 +1,22 @@
+From ccee33aedd6d5afa629aa11e8948b25100d4abb5 Mon Sep 17 00:00:00 2001
+From: Koen Zandberg <koen@bergzand.net>
+Date: Wed, 15 Jul 2020 14:05:53 +0200
+Subject: [PATCH] Don't convert SUIT_digest bytes to hex representation
+
+---
+ suit_tool/sign.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/suit_tool/sign.py b/suit_tool/sign.py
+index a0a358e..bd756c9 100644
+--- a/suit_tool/sign.py
++++ b/suit_tool/sign.py
+@@ -96,7 +96,7 @@ def main(options):
+         'unprotected' : {},
+         'payload' : {
+             'algorithm-id' : 'sha256',
+-            'digest-bytes' : binascii.b2a_hex(digest.finalize())
++            'digest-bytes' : digest.finalize()
+         }
+     })
+ 
