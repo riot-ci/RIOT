@@ -43,6 +43,8 @@ static bool cc2538_cca_status;  /**< status of the last CCA request */
 static bool cc2538_cca;         /**< used to check whether the last CCA result
                                      corresponds to a CCA request or send with
                                      CSMA-CA */
+static bool cc2538_sfd_listen;  /**< used to check whether we should ignore
+                                     the SFD flag */
 
 static int _write(ieee802154_dev_t *dev, const iolist_t *iolist)
 {
@@ -169,8 +171,9 @@ static int _read(ieee802154_dev_t *dev, void *buf, size_t size, ieee802154_rx_in
     pkt_len -= IEEE802154_FCS_LEN;
 
     if (pkt_len > size) {
-        RFCORE_SFR_RFST = ISRXON;
         RFCORE_SFR_RFST = ISFLUSHRX;
+        /* re-enable receiver */
+        RFCORE_XREG_RXMASKSET = BIT(7);
         return -ENOBUFS;
     }
 
@@ -205,9 +208,9 @@ static int _read(ieee802154_dev_t *dev, void *buf, size_t size, ieee802154_rx_in
         res = 0;
     }
 
-    RFCORE_SFR_RFST = ISRXON;
     RFCORE_SFR_RFST = ISFLUSHRX;
-
+    /* re-enable receiver */
+    RFCORE_XREG_RXMASKSET = BIT(7);
     return res;
 }
 
@@ -319,7 +322,7 @@ void cc2538_irq_handler(void)
     RFCORE_SFR_RFIRQF1 = 0;
 
 
-    if (flags_f0 & SFD) {
+    if ((flags_f0 & SFD) && cc2538_sfd_listen) {
         if (RFCORE->XREG_FSMSTAT1bits.TX_ACTIVE) {
             cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_TX_START);
         }
@@ -329,7 +332,7 @@ void cc2538_irq_handler(void)
         cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
     }
 
-    if (flags_f0 & SFD) {
+    if ((flags_f0 & SFD) && cc2538_sfd_listen) {
         if (RFCORE->XREG_FSMSTAT1bits.RX_ACTIVE) {
             cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_RX_START);
         }
@@ -341,13 +344,21 @@ void cc2538_irq_handler(void)
         if (rfcore_peek_rx_fifo(pkt_len) & CC2538_CRC_BIT_MASK) {
             /* Disable RX while the frame has not been processed */
             RFCORE_XREG_RXMASKCLR = 0xFF;
+            if (RFCORE->XREG_FRMCTRL0bits.AUTOACK) {
+                /* The next SFD will be the ACK's, ignore it */
+                cc2538_sfd_listen = false;
+            }
             cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_RX_DONE);
         }
         else {
             /* CRC failed; discard packet */
             RFCORE_SFR_RFST = ISFLUSHRX;
         }
+    }
 
+    /* Re-Enable SFD ISR after ACK is received */
+    if (flags_f1 & TXACKDONE) {
+        cc2538_sfd_listen = true;
     }
 
     /* Check if the interrupt was triggered because the CSP finished its routine
@@ -433,6 +444,8 @@ static int _request_on(ieee802154_dev_t *dev)
 {
     (void) dev;
     /* TODO */
+    /* when turned on listen for SFD interrupts */
+    cc2538_sfd_listen = true;
     return 0;
 }
 
