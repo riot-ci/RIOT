@@ -138,11 +138,11 @@ static const spi_dev_t spi_config[] = {
  */
 static const timer_conf_t timer_config[] = {
     {
-        {
+        .prescaler = {
             .dev = TIMER0,
             .cmu = cmuClock_TIMER0
         },
-        {
+        .timer = {
             .dev = TIMER1,
             .cmu = cmuClock_TIMER1
         },
