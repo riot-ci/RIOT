@@ -169,6 +169,7 @@ static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t size, ieee802
     pkt_len -= IEEE802154_FCS_LEN;
 
     if (pkt_len > size) {
+        RFCORE_SFR_RFST = ISRXON;
         RFCORE_SFR_RFST = ISFLUSHRX;
         return -ENOBUFS;
     }
@@ -204,6 +205,7 @@ static int _indication_rx(ieee802154_dev_t *dev, void *buf, size_t size, ieee802
         res = 0;
     }
 
+    RFCORE_SFR_RFST = ISRXON;
     RFCORE_SFR_RFST = ISFLUSHRX;
 
     return res;
@@ -315,14 +317,29 @@ void cc2538_irq_handler(void)
     RFCORE_SFR_RFIRQF0 = 0;
     RFCORE_SFR_RFIRQF1 = 0;
 
+
+    if (flags_f0 & SFD) {
+        if (RFCORE->XREG_FSMSTAT1bits.TX_ACTIVE) {
+            cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_TX_START);
+        }
+    }
+
     if (flags_f1 & TXDONE) {
         cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_CONFIRM_TX_DONE);
+    }
+
+    if (flags_f0 & SFD) {
+        if (RFCORE->XREG_FSMSTAT1bits.RX_ACTIVE) {
+            cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_RX_START);
+        }
     }
 
     if (flags_f0 & RXPKTDONE) {
         /* CRC check */
         uint8_t pkt_len = rfcore_peek_rx_fifo(0);
         if (rfcore_peek_rx_fifo(pkt_len) & CC2538_CRC_BIT_MASK) {
+            /* Disable RX while the frame has not been processed */
+            RFCORE_XREG_RXMASKCLR = 0xFF;
             cc2538_rf_dev.cb(&cc2538_rf_dev, IEEE802154_RADIO_INDICATION_RX_DONE);
         }
         else {
@@ -367,6 +384,8 @@ static bool _get_cap(ieee802154_dev_t *dev, ieee802154_rf_caps_t cap)
         case IEEE802154_CAP_24_GHZ:
         case IEEE802154_CAP_IRQ_TX_DONE:
         case IEEE802154_CAP_IRQ_CCA_DONE:
+        case IEEE802154_CAP_IRQ_RX_START:
+        case IEEE802154_CAP_IRQ_TX_START:
         case IEEE802154_CAP_AUTO_CSMA:
             return true;
         default:
