@@ -7,8 +7,6 @@ of this document using the following links:
 * [Getting Started][getting-started]
 * [Contributing code][contributing-code]
 * [General Tips][general-tips]
-* [Feature Requests][feature-requests]
-* [Bug Reports][bug-reports]
 * [Pull Requests][pull-requests]
 * [Writing Documentation][writing-documentation]
 
@@ -79,63 +77,6 @@ and got no response.
 [open-an-issue]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:"Type:+bug"
 [labels]: https://github.com/RIOT-OS/RIOT/wiki/RIOT%27s-labeling-system
 [open-a-pull-request]: https://help.github.com/articles/using-pull-requests
-
-## Feature Requests
-[feature-requests]: #feature-requests
-
-Before opening a new feature request, check the
-[existing feature requests][existing-feature-request] if there's one already
-open on the same topic.
-
-To request new features or enhancements, just open a new
-[feature request issue][new-feature-request]. Describe your use case, why you
-need this feature and why this feature is important for RIOT.
-
-[existing-feature-request]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:"Type:+new+feature"
-[new-feature-request]: https://github.com/RIOT-OS/RIOT/issues/new?template=feature_request.md&title=Feature+Request:
-
-## Bug Reports
-[bug-reports]: #bug-reports
-
-While bugs are unfortunate, they're a reality in software. We can't fix what we
-don't know about, so please report liberally. If you're not sure if something
-is a bug or not, feel free to file a bug report anyway.
-
-**If you believe reporting your bug publicly represents a security risk to
-RIOT users, please send an email describing the bug to security@riot-os.org**.
-We would appreciate waiting for a 6 months grace period before reporting it on
-public channels, to allow us adequate time to release the fix.
-
-Before reporting a bug, have a look at [open bugs][existing-bugs-link]. Maybe
-someone has already reported your error.
-
-Once you have verified that the bug you have found hasn't been reported, opening an issue is as easy as
-clicking on [this link][bug-report-link] and filling out the fields.
-
-[existing-bugs-link]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:"Type:+bug"
-[bug-report-link]: https://github.com/RIOT-OS/RIOT/issues/new?template=bug_report.md&title=Bug:
-
-Each bug report issue uses a template with 5 sections that are there to help
-other contributors understand your issue and eventually reproduce it:
-
-    #### Description
-
-    #### Steps to reproduce the issue
-
-    #### Expected results
-
-    #### Actual results
-
-    #### Versions
-
-To fill the `Versions` section, you can use the script provided in the RIOT git
-repository:
-```
-make print-versions
-```
-
-In summary, try to include as much information as possible to help maintainers
-or other developers fix the bug quickly.
 
 ## Pull Requests
 [pull-requests]: #pull-requests
