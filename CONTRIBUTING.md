@@ -217,8 +217,12 @@ the modules, cpus, boards and packages documentation.
 General documentation pages are written in Markdown and located in
 `doc/doxygen/src`.
 
-To generate the documentation, simply run `make doc`
+To generate the documentation, simply run the following
 from the base directory of the RIOT source code.
+
+```
+$ make doc
+```
 
 The generated documentation is located in `doc/doxygen/html`
 
