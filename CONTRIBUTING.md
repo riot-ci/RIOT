@@ -5,6 +5,7 @@ contribute, and we appreciate all of them. You can jump to the major sections
 of this document using the following links:
 
 * [Getting Started][getting-started]
+* [Bug Reports and Feature Requests][issues]
 * [General Tips][general-tips]
 * [Contributing code][contributing-code]
 * [Writing Documentation][writing-documentation]
@@ -29,6 +30,31 @@ If you are just beginning to work with RIOT you might first want to read our
 - [Creating an application](https://doc.riot-os.org/creating-an-application.html)
 
 [documentation]: https://doc.riot-os.org
+
+## Bug reports and feature requests
+[issues]: #bug-reports-and-feature-requests
+Both bug reports and feature request, big or small, are welcome.
+
+Before submitting a feature request, please check if an [open issue][existing-feature-request]
+already exists. If this is not the case, [submit a feature request][feature-request].
+Describe your use case, why you need this feature and why this feature is important for RIOT.
+
+Before filing a bug report, please check if an [open issue][existing-bug]
+already exists. If this is not the case, [submit a new bug report][bug-report].
+If you're not sure if something is a bug or not, feel free to file a bug report anyway.
+
+**If you believe reporting your bug publicly represents a security risk to
+RIOT users, please send an email describing the bug to <security@riot-os.org>**.
+We would appreciate waiting for a 6 months grace period before reporting it on
+public channels, to allow us adequate time to release the fix.
+
+[bug reports]: https://github.com/RIOT-OS/RIOT/issues/new?template=bug_report.md
+[feature requests]: https://github.com/RIOT-OS/RIOT/issues/new?template=feature_request.md
+
+[existing-feature-request]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:"Type:+new+feature"
+[feature-request]: https://github.com/RIOT-OS/RIOT/issues/new?template=feature_request.md&title=Feature+Request:
+[existing-bug]: https://github.com/RIOT-OS/RIOT/issues?q=state:open+type:issue+label:"Type:+bug"
+[bug-report]: https://github.com/RIOT-OS/RIOT/issues/new?template=bug_report.md&title=Bug:
 
 ## General Tips
 [general-tips]: #general-tips
