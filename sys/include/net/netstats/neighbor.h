@@ -76,6 +76,17 @@ typedef enum {
 void netstats_nb_init(netif_t *dev);
 
 /**
+ * @brief Find a neighbor stat by the mac address.
+ *
+ * @param[in] dev       ptr to netdev device
+ * @param[in] l2_addr   ptr to the L2 address
+ * @param[in] len       length of the L2 address
+ *
+ * @return ptr to the statistics record, NULL if not found
+ */
+netstats_nb_t *netstats_nb_get(netif_t *dev, const uint8_t *l2_addr, uint8_t len);
+
+/**
  * @brief Iterator over the recorded neighbors, returns the next non-zero record. NULL if none remaining
  *
  * @param[in] first     ptr to the first record

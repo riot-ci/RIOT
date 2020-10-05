@@ -48,6 +48,21 @@ void netstats_nb_create(netstats_nb_t *entry, const uint8_t *l2_addr, uint8_t l2
     entry->etx = NETSTATS_NB_ETX_INIT * NETSTATS_NB_ETX_DIVISOR;
 }
 
+netstats_nb_t *netstats_nb_get(netif_t *dev, const uint8_t *l2_addr, uint8_t len)
+{
+    netstats_nb_t *stats = dev->pstats;
+
+    for (int i = 0; i < NETSTATS_NB_SIZE; i++) {
+
+        /* Check if this is the matching entry */
+        if (l2_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
+            return &stats[i];
+        }
+    }
+
+    return NULL;
+}
+
 /* find the oldest inactive entry to replace. Empty entries are infinity old */
 static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_addr, uint8_t len)
 {
@@ -181,7 +196,9 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *dev, const uint8_t *l2_addr,
                       / NETSTATS_NB_EWMA_SCALE;
     }
 
+    netstats_nb_incr_freshness(stats);
     stats->rx_count++;
+
     return stats;
 }
 #endif
