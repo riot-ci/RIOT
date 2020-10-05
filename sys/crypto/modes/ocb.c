@@ -25,7 +25,7 @@
 #define OCB_MODE_DECRYPT 2
 
 struct ocb_state {
-    cipher_t *cipher;
+    const cipher_t *cipher;
     uint8_t l_star[16];
     uint8_t l_zero[16];
     uint8_t l_dollar[16];
@@ -149,7 +149,7 @@ static void hash(ocb_state_t *state, uint8_t *data, size_t data_len,
     }
 }
 
-static void init_ocb(cipher_t *cipher, uint8_t tag_len, uint8_t *nonce,
+static void init_ocb(const cipher_t *cipher, uint8_t tag_len, uint8_t *nonce,
                      size_t nonce_len, ocb_state_t *state)
 {
 
@@ -203,7 +203,7 @@ static void init_ocb(cipher_t *cipher, uint8_t tag_len, uint8_t *nonce,
     memset(state->checksum, 0, 16);
 }
 
-static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data,
+static int32_t run_ocb(const cipher_t *cipher, uint8_t *auth_data,
                        uint32_t auth_data_len,
                        uint8_t tag[16], uint8_t tag_len, uint8_t *nonce,
                        size_t nonce_len,
@@ -288,7 +288,7 @@ static int32_t run_ocb(cipher_t *cipher, uint8_t *auth_data,
     return output_pos;
 }
 
-int32_t cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data,
+int32_t cipher_encrypt_ocb(const cipher_t *cipher, uint8_t *auth_data,
                            size_t auth_data_len,
                            uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
                            uint8_t *input, size_t input_len, uint8_t *output)
@@ -314,7 +314,7 @@ int32_t cipher_encrypt_ocb(cipher_t *cipher, uint8_t *auth_data,
     return (cipher_text_length + tag_len);
 }
 
-int32_t cipher_decrypt_ocb(cipher_t *cipher, uint8_t *auth_data,
+int32_t cipher_decrypt_ocb(const cipher_t *cipher, uint8_t *auth_data,
                            size_t auth_data_len,
                            uint8_t tag_len, uint8_t *nonce, size_t nonce_len,
                            uint8_t *input, size_t input_len, uint8_t *output)
