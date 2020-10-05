@@ -13,6 +13,7 @@
  * @brief       Neighbor level stats for netdev
  *
  * @author      Koen Zandberg <koen@bergzand.net>
+ * @author      Benjamin Valentin <benpicco@beuth-hochschule.de>
  * @}
  */
 
@@ -48,39 +49,45 @@ void netstats_nb_create(netstats_nb_t *entry, const uint8_t *l2_addr, uint8_t l2
 }
 
 /* find the oldest inactive entry to replace. Empty entries are infinity old */
-netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_addr, uint8_t len)
+static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_addr, uint8_t len)
 {
     netstats_nb_t *old_entry = NULL;
-    netstats_nb_t *matching_entry = NULL;
     netstats_nb_t *stats = dev->pstats;
 
     timex_t cur;
     xtimer_now_timex(&cur);
 
     for (int i = 0; i < NETSTATS_NB_SIZE; i++) {
+
         /* Check if this is the matching entry */
         if (l2_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
-            matching_entry = &stats[i];
-            break;
+            return &stats[i];
         }
-        /* Entry is oldest if it is empty */
-        else if (stats[i].l2_addr_len == 0) {
-            old_entry = &stats[i];
-        }
-        /* Check if the entry is expired */
-        else if (!(netstats_nb_isfresh(&stats[i]))) {
-            if (old_entry == NULL) {
-                old_entry = &stats[i];
-            }
-            /* Check if current entry is older than current oldest entry */
-            else {
-                old_entry = netstats_nb_comp(old_entry, &stats[i], cur.seconds);
-            }
-        }
-    }
 
-    if (matching_entry) {
-        return matching_entry;
+        /* Entry is oldest if it is empty */
+        if (stats[i].l2_addr_len == 0) {
+            old_entry = &stats[i];
+            continue;
+        }
+
+        /* Check if the entry is expired */
+        if ((netstats_nb_isfresh(&stats[i]))) {
+            continue;
+        }
+
+        /* Entry is oldest if it is expired */
+        if (old_entry == NULL) {
+            old_entry = &stats[i];
+            continue;
+        }
+
+        /* don't replace old entry if there are still empty ones */
+        if (old_entry->l2_addr_len == 0) {
+            continue;
+        }
+
+        /* Check if current entry is older than current oldest entry */
+        old_entry = netstats_nb_comp(old_entry, &stats[i], cur.seconds);
     }
 
     /* if there is no matching entry,
@@ -143,7 +150,9 @@ netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, 
     if (stats) {
         netstats_nb_update_etx(stats, result, retries);
         netstats_nb_incr_freshness(stats);
+        stats->tx_count++;
     }
+
     return stats;
 }
 
