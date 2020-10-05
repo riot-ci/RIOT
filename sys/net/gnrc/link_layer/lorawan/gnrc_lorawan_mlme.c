@@ -102,7 +102,7 @@ void gnrc_lorawan_mlme_process_join(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt)
 
     /* Subtract 1 from join accept max size, since the MHDR was already read */
     uint8_t out[GNRC_LORAWAN_JOIN_ACCEPT_MAX_SIZE - 1];
-    uint8_t has_cflist = (pkt->size - 1) >= CFLIST_SIZE;
+    uint8_t has_cflist = (pkt->size - 1) > CFLIST_SIZE;
     gnrc_lorawan_decrypt_join_accept(mac->appskey, ((uint8_t *) pkt->data) + 1,
                                      has_cflist, out);
     memcpy(((uint8_t *) pkt->data) + 1, out, pkt->size - 1);
@@ -132,8 +132,11 @@ void gnrc_lorawan_mlme_process_join(gnrc_lorawan_t *mac, gnrc_pktsnip_t *pkt)
 
     /* delay 0 maps to 1 second */
     mac->rx_delay = ja_hdr->rx_delay ? ja_hdr->rx_delay : 1;
+    
+    if (has_cflist) {
+        gnrc_lorawan_process_cflist(mac, out + sizeof(lorawan_join_accept_t) - 1);
+    }
 
-    gnrc_lorawan_process_cflist(mac, out + sizeof(lorawan_join_accept_t) - 1);
     mac->mlme.activation = MLME_ACTIVATION_OTAA;
     status = GNRC_LORAWAN_REQ_STATUS_SUCCESS;
 
