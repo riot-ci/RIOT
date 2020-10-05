@@ -1674,9 +1674,9 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 #if IS_USED(MODULE_NETSTATS_NEIGHBOR)
             case NETDEV_EVENT_TX_NOACK:
                 {
-                    uint8_t retries = 0;
-                    dev->driver->get(dev, NETOPT_TX_RETRIES_NEEDED, &retries, sizeof(uint8_t));
-                    netstats_nb_update_tx(&netif->netif, NETSTATS_NB_NOACK, retries);
+                    int8_t retries = -1;
+                    dev->driver->get(dev, NETOPT_TX_RETRIES_NEEDED, &retries, sizeof(retries));
+                    netstats_nb_update_tx(&netif->netif, NETSTATS_NB_NOACK, retries + 1);
                 }
                 break;
 #endif /* IS_USED(MODULE_NETSTATS_NEIGHBOR) */
@@ -1694,9 +1694,9 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 #endif  /* IS_USED(MODULE_NETSTATS_L2) */
 #if IS_USED(MODULE_NETSTATS_NEIGHBOR)
                 {
-                    uint8_t retries = 0;
-                    dev->driver->get(dev, NETOPT_TX_RETRIES_NEEDED, &retries, sizeof(uint8_t));
-                    netstats_nb_update_tx(&netif->netif, NETSTATS_NB_SUCCESS, retries);
+                    int8_t retries = -1;
+                    dev->driver->get(dev, NETOPT_TX_RETRIES_NEEDED, &retries, sizeof(retries));
+                    netstats_nb_update_tx(&netif->netif, NETSTATS_NB_SUCCESS, retries + 1);
                 }
 #endif /* IS_USED(MODULE_NETSTATS_NEIGHBOR) */
                 break;
