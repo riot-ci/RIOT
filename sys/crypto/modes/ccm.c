@@ -35,7 +35,7 @@ static inline int min(int a, int b)
 }
 
 static int ccm_compute_cbc_mac(const cipher_t *cipher, const uint8_t iv[16],
-                        const uint8_t *input, size_t length, uint8_t *mac)
+                               const uint8_t *input, size_t length, uint8_t *mac)
 {
     uint8_t block_size, mac_enc[16] = { 0 };
     uint32_t offset;
@@ -71,8 +71,8 @@ static int ccm_compute_cbc_mac(const cipher_t *cipher, const uint8_t iv[16],
 
 
 static int ccm_create_mac_iv(const cipher_t *cipher, uint8_t auth_data_len, uint8_t M,
-                      uint8_t L, const uint8_t *nonce, uint8_t nonce_len,
-                      size_t plaintext_len, uint8_t X1[16])
+                             uint8_t L, const uint8_t *nonce, uint8_t nonce_len,
+                             size_t plaintext_len, uint8_t X1[16])
 {
     uint8_t M_, L_;
 
@@ -107,7 +107,7 @@ static int ccm_create_mac_iv(const cipher_t *cipher, uint8_t auth_data_len, uint
 }
 
 static int ccm_compute_adata_mac(const cipher_t *cipher, const uint8_t *auth_data,
-                          uint32_t auth_data_len, uint8_t X1[16])
+                                 uint32_t auth_data_len, uint8_t X1[16])
 {
     if (auth_data_len > 0) {
         int len;
