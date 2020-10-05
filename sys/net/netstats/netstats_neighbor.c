@@ -34,6 +34,47 @@ static bool l2_addr_equal(const uint8_t *a, uint8_t a_len, const uint8_t *b, uin
     return memcmp(a, b, a_len) == 0;
 }
 
+static void netstats_nb_half_freshness(netstats_nb_t *stats, timex_t *cur)
+{
+    uint16_t now = cur->seconds;
+    uint8_t diff = (now - stats->last_halved) / NETSTATS_NB_FRESHNESS_HALF;
+    stats->freshness >>= diff;
+
+    if (diff) {
+        /* Set to the last time point where this should have been halved */
+        stats->last_halved = now - diff;
+    }
+}
+
+static void netstats_nb_incr_freshness(netstats_nb_t *stats)
+{
+    timex_t cur;
+    xtimer_now_timex(&cur);
+
+    /* First halve the freshness if applicable */
+    netstats_nb_half_freshness(stats, &cur);
+
+    /* Increment the freshness capped at FRESHNESS_MAX */
+    if (stats->freshness < NETSTATS_NB_FRESHNESS_MAX) {
+        stats->freshness++;
+    }
+
+    stats->last_updated = cur.seconds;
+}
+
+bool netstats_nb_isfresh(netstats_nb_t *stats)
+{
+    timex_t cur;
+    xtimer_now_timex(&cur);
+    uint16_t now = cur.seconds;
+
+    /* Half freshness if applicable to update to current freshness */
+    netstats_nb_half_freshness(stats, &cur);
+
+    return (stats->freshness >= NETSTATS_NB_FRESHNESS_TARGET) &&
+           (now - stats->last_updated < NETSTATS_NB_FRESHNESS_EXPIRATION);
+}
+
 void netstats_nb_init(netif_t *dev)
 {
     memset(dev->pstats, 0, sizeof(netstats_nb_t) * NETSTATS_NB_SIZE);
@@ -154,19 +195,46 @@ netstats_nb_t *netstats_nb_get_recorded(netif_t *dev)
     return dev->stats_queue[idx];
 }
 
-netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, uint8_t retries)
+static void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t success, uint8_t transmissions)
+{
+    uint16_t packet_etx = 0;
+    uint8_t ewma_alpha;
+
+    /* If the stats are not fresh, use a larger alpha to average aggressive */
+    if (netstats_nb_isfresh(stats)) {
+        ewma_alpha = NETSTATS_NB_EWMA_ALPHA;
+    } else {
+        ewma_alpha = NETSTATS_NB_EWMA_ALPHA_RAMP;
+    }
+
+    if (success == NETSTATS_NB_SUCCESS) {
+        /* Number of tries is retries + original atempt */
+        packet_etx = transmissions * NETSTATS_NB_ETX_DIVISOR;
+    } else {
+        packet_etx = NETSTATS_NB_ETX_NOACK_PENALTY * NETSTATS_NB_ETX_DIVISOR;
+    }
+
+    DEBUG("L2 neighbor: Calculated ETX of %u\n", packet_etx);
+    /* Exponential weighted moving average */
+    stats->etx = ((uint32_t)stats->etx *
+                  (NETSTATS_NB_EWMA_SCALE - ewma_alpha)
+                  + (uint32_t)packet_etx * ewma_alpha)
+                  / NETSTATS_NB_EWMA_SCALE;
+}
+
+netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, uint8_t transmissions)
 {
     netstats_nb_t *stats = netstats_nb_get_recorded(dev);
 
-    if (result == NETSTATS_NB_BUSY) {
+    if (result == NETSTATS_NB_BUSY || stats == NULL) {
         return stats;
     }
 
-    if (stats) {
-        netstats_nb_update_etx(stats, result, retries);
-        netstats_nb_incr_freshness(stats);
-        stats->tx_count++;
+    if (transmissions) {
+        netstats_nb_update_etx(stats, result, transmissions);
     }
+    netstats_nb_incr_freshness(stats);
+    stats->tx_count++;
 
     return stats;
 }
@@ -202,71 +270,3 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *dev, const uint8_t *l2_addr,
     return stats;
 }
 #endif
-
-void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t success, uint8_t retries)
-{
-    uint16_t packet_etx = 0;
-    uint8_t ewma_alpha;
-
-    /* If the stats are not fresh, use a larger alpha to average aggressive */
-    if (netstats_nb_isfresh(stats)) {
-        ewma_alpha = NETSTATS_NB_EWMA_ALPHA;
-    } else {
-        ewma_alpha = NETSTATS_NB_EWMA_ALPHA_RAMP;
-    }
-
-    if (success == NETSTATS_NB_SUCCESS) {
-        /* Number of tries is retries + original atempt */
-        packet_etx = (retries + 1) * NETSTATS_NB_ETX_DIVISOR;
-    } else {
-        packet_etx = NETSTATS_NB_ETX_NOACK_PENALTY * NETSTATS_NB_ETX_DIVISOR;
-    }
-
-    DEBUG("L2 neighbor: Calculated ETX of %u\n", packet_etx);
-    /* Exponential weighted moving average */
-    stats->etx = ((uint32_t)stats->etx *
-                  (NETSTATS_NB_EWMA_SCALE - ewma_alpha)
-                  + (uint32_t)packet_etx * ewma_alpha)
-                  / NETSTATS_NB_EWMA_SCALE;
-}
-
-void netstats_nb_incr_freshness(netstats_nb_t *stats)
-{
-    timex_t cur;
-    xtimer_now_timex(&cur);
-
-    /* First halve the freshness if applicable */
-    netstats_nb_half_freshness(stats, &cur);
-
-    /* Increment the freshness capped at FRESHNESS_MAX */
-    if (stats->freshness < NETSTATS_NB_FRESHNESS_MAX) {
-        stats->freshness++;
-    }
-
-    stats->last_updated = cur.seconds;
-}
-
-bool netstats_nb_isfresh(netstats_nb_t *stats)
-{
-    timex_t cur;
-    xtimer_now_timex(&cur);
-    uint16_t now = cur.seconds;
-
-    /* Half freshness if applicable to update to current freshness */
-    netstats_nb_half_freshness(stats, &cur);
-
-    return (stats->freshness >= NETSTATS_NB_FRESHNESS_TARGET) &&
-           (now - stats->last_updated < NETSTATS_NB_FRESHNESS_EXPIRATION);
-}
-
-void netstats_nb_half_freshness(netstats_nb_t *stats, timex_t *cur)
-{
-    uint16_t now = cur->seconds;
-    uint8_t diff = (now - stats->last_halved) / NETSTATS_NB_FRESHNESS_HALF;
-    stats->freshness >>= diff;
-
-    if (diff) {
-        /* Set to the last time point where this should have been halved */
-        stats->last_halved = now - diff;
-    }
-}

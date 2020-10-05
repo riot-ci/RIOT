@@ -130,20 +130,11 @@ netstats_nb_t *netstats_nb_get_recorded(netif_t *dev);
  *
  * @param[in] dev      ptr to netdev device
  * @param[in] result   Result of the transmission
- * @param[in] retries  Number of retries necessary for the transmission
+ * @param[in] transmissions  Number of times the packet was sent over the air
  *
  * @return ptr to the record
  */
-netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, uint8_t retries);
-
-/**
- * @brief Update the ETX value of the statistic.
- *
- * @param[in] stats    ptr to the statistic
- * @param[in] result   Result of the transmission
- * @param[in] retries  Number of retries necessary for the transmission
- */
-void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t result, uint8_t retries);
+netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, uint8_t transmissions);
 
 /**
  * @brief Record rx stats for the l2_addr
@@ -160,15 +151,6 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *dev, const uint8_t *l2_addr,
                                      uint8_t l2_addr_len, uint8_t rssi, uint8_t lqi);
 
 /**
- * @brief Increase the freshness of the record
- *
- * Freshness half time is checked before incrementing the freshness.
- *
- * @param[in] stats  ptr to the statistic
- */
-void netstats_nb_incr_freshness(netstats_nb_t *stats);
-
-/**
  * @brief Check if a record is fresh
  *
  * Freshness half time is checked and updated before verifying freshness.
@@ -176,15 +158,6 @@ void netstats_nb_incr_freshness(netstats_nb_t *stats);
  * @param[in] stats  ptr to the statistic
  */
 bool netstats_nb_isfresh(netstats_nb_t *stats);
-
-/**
- * @brief Reduce freshness by the amount of half time periods passed
- *
- * @param[in] stats  ptr to the statistic
- * @param[in] cur    ptr to the current time
- */
-void netstats_nb_half_freshness(netstats_nb_t *stats, timex_t *cur);
-
 
 /**
  * @brief Compare the freshness of two records
