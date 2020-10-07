@@ -5,7 +5,10 @@ PKG_LICENSE=Apache-2.0
 
 include $(RIOTBASE)/pkg/pkg.mk
 
+CFLAGS += -Wno-address-of-packed-member
 CFLAGS += -Wno-maybe-uninitialized
+CFLAGS += -Wno-microsoft-anon-tag
+CFLAGS += -Wno-missing-braces
 CFLAGS += -Wno-missing-declarations
 CFLAGS += -Wno-sign-compare
 CFLAGS += -Wno-return-type
@@ -14,6 +17,7 @@ CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-parameter
 CFLAGS += -Wno-unused-variable
 CFLAGS += -fms-extensions
+
 
 .PHONY: all
 

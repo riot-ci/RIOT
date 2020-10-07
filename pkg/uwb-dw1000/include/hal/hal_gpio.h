@@ -24,10 +24,10 @@
 extern "C" {
 #endif
 
-/*
- * The "pull" of the gpio. This is either an input or an output.
+/**
+ * @brief Map hal_gpio_pull_t enum types to gpio_mode_t enum types
  */
-enum hal_gpio_pull {
+enum {
     /** Pull-up/down not enabled */
     HAL_GPIO_PULL_NONE = GPIO_IN,
     /** Pull-up enabled */
@@ -35,12 +35,12 @@ enum hal_gpio_pull {
     /** Pull-down enabled */
     HAL_GPIO_PULL_DOWN = GPIO_IN_PD
 };
-typedef enum hal_gpio_pull hal_gpio_pull_t;
+typedef gpio_mode_t hal_gpio_pull_t;
 
-/*
- * IRQ trigger type.
+/**
+ * @brief Map hal_gpio_irq_trig_t enum types to gpio_flank_t enum types
  */
-enum hal_gpio_irq_trigger {
+enum {
 #ifdef GPIO_NONE
     HAL_GPIO_TRIG_NONE = GPIO_NONE,
 #endif
@@ -59,7 +59,7 @@ enum hal_gpio_irq_trigger {
     HAL_GPIO_TRIG_HIGH = GPIO_HIGH
 #endif
 };
-typedef enum hal_gpio_irq_trigger hal_gpio_irq_trig_t;
+typedef gpio_flank_t hal_gpio_irq_trig_t;
 
 /* Function proto for GPIO irq handler functions */
 typedef gpio_cb_t hal_gpio_irq_handler_t;

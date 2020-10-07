@@ -6,3 +6,6 @@ USEMODULE += xtimer
 
 FEATURES_REQUIRED += periph_gpio_irq
 FEATURES_REQUIRED += periph_spi
+
+# LLVM ARM shows issues with missing definitions for stdatomic
+TOOLCHAINS_BLACKLIST += llvm

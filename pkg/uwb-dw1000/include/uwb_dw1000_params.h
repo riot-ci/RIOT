@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     drivers_dw1000
+ * @ingroup     pkg_uwb_dw1000
  *
  * @{
  * @file
