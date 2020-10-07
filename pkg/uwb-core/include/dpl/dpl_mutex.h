@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_MUTEX_H
-#define DPL_MUTEX_H
+#ifndef DPL_DPL_MUTEX_H
+#define DPL_DPL_MUTEX_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -35,7 +35,7 @@ extern "C" {
  * @brief dpl mutex wrapper
  */
 struct dpl_mutex {
-    mutex_t mutex;
+    mutex_t mutex;  /**< the mutex */
 };
 
 /**
@@ -73,4 +73,4 @@ dpl_error_t dpl_mutex_release(struct dpl_mutex *mu);
 }
 #endif
 
-#endif  /* DPL_MUTEX_H */
+#endif  /* DPL_DPL_MUTEX_H */

@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       uwb-core uwbcfg module configurations
- *              taken from @decawave-uwb-core/sys/uwbcfg/syscfg.yml
+ *              taken from decawave-uwb-core/sys/uwbcfg/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_UWBCFG_H
-#define SYSCFG_UWBCFG_H
+#ifndef SYSCFG_SYSCFG_UWBCFG_H
+#define SYSCFG_SYSCFG_UWBCFG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -206,7 +206,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Default UWB Preamble Lenght
+ * @brief Default UWB Preamble Length
  */
 #ifndef MYNEWT_VAL_UWBCFG_DEF_TX_PREAM_LEN
 #define MYNEWT_VAL_UWBCFG_DEF_TX_PREAM_LEN ("128")
@@ -237,4 +237,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_UWBCFG_H */
+#endif /* SYSCFG_SYSCFG_UWBCFG_H */

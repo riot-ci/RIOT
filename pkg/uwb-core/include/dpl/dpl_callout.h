@@ -12,14 +12,14 @@
  *
  * @file
  * @brief       uwb-core DPL (Decawave Porting Layer) callout abstraction
- * 
+ *
  * Callout sets a timer that on expiration will post an event to an
  * event queue. This mimics the same as MyNewt callout api.
  *
  */
 
-#ifndef DPL_CALLOUT_H
-#define DPL_CALLOUT_H
+#ifndef DPL_DPL_CALLOUT_H
+#define DPL_DPL_CALLOUT_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -82,4 +82,4 @@ void dpl_callout_stop(struct dpl_callout *c);
 }
 #endif
 
-#endif  /* DPL_CALLOUT_H */
+#endif  /* DPL_DPL_CALLOUT_H */

@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_TASKS_H
-#define DPL_TASKS_H
+#ifndef DPL_DPL_TASKS_H
+#define DPL_DPL_TASKS_H
 
 #include <stddef.h>
 #include "dpl_types.h"
@@ -32,7 +32,7 @@ extern "C" {
  * @brief dpl task wrapper
  */
 struct dpl_task {
-    kernel_pid_t pid;
+    kernel_pid_t pid;   /**< the process id */
 };
 
 /**
@@ -86,4 +86,4 @@ void dpl_task_yield(void);
 }
 #endif
 
-#endif /* DPL_TASKS_H */
+#endif /* DPL_DPL_TASKS_H */

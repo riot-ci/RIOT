@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       uwb-dw100 double side two-way ranging module configurations
- *              taken from @decawave-uwb-core/lib/twr_ds/syscfg.yml
+ *              taken from decawave-uwb-core/lib/twr_ds/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_TWR_DS_H
-#define SYSCFG_TWR_DS_H
+#ifndef SYSCFG_SYSCFG_TWR_DS_H
+#define SYSCFG_SYSCFG_TWR_DS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,4 +49,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_TWR_DS_H */
+#endif /* SYSCFG_SYSCFG_TWR_DS_H */

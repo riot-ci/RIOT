@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       uwb-core uwb module configurations
- *              taken from @decawave-uwb-core/hw/drivers/uwb/syscfg.yml
+ *              taken from decawave-uwb-core/hw/drivers/uwb/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_UWB_H
-#define SYSCFG_UWB_H
+#ifndef SYSCFG_SYSCFG_UWB_H
+#define SYSCFG_SYSCFG_UWB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -140,4 +140,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_UWB_H */
+#endif /* SYSCFG_SYSCFG_UWB_H */

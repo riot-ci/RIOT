@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       uwb-core single-sided two-way ranging module configurations
- *              taken from @decawave-uwb-core/lib/twr_ss/syscfg.yml
+ *              taken from decawave-uwb-core/lib/twr_ss/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_TWR_SS_H
-#define SYSCFG_TWR_SS_H
+#ifndef SYSCFG_SYSCFG_TWR_SS_H
+#define SYSCFG_SYSCFG_TWR_SS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,4 +49,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_TWR_SS_H */
+#endif /* SYSCFG_SYSCFG_TWR_SS_H */

@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef SYSINIT_H
-#define SYSINIT_H
+#ifndef SYSINIT_SYSINIT_H
+#define SYSINIT_SYSINIT_H
 
 #include "assert.h"
 
@@ -30,4 +30,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSINIT_H */
+#endif /* SYSINIT_SYSINIT_H */

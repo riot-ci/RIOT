@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       Single sided ranging using a hw generated ack module configurations
- *              taken from @decawave-uwb-core/lib/twr_ss_ack/syscfg.yml
+ *              taken from decawave-uwb-core/lib/twr_ss_ack/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_TWR_SS_ACK_H
-#define SYSCFG_TWR_SS_ACK_H
+#ifndef SYSCFG_SYSCFG_TWR_SS_ACK_H
+#define SYSCFG_SYSCFG_TWR_SS_ACK_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,4 +49,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_TWR_SS_ACK_H */
+#endif /* SYSCFG_SYSCFG_TWR_SS_ACK_H */

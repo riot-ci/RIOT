@@ -13,12 +13,12 @@
  *
  * @file
  * @brief       uwb-core uwb_rng module configurations
- *              taken from @decawave-uwb-core/lib/uwb_rng/syscfg.yml
+ *              taken from decawave-uwb-core/lib/uwb_rng/syscfg.yml
  *
  */
 
-#ifndef SYSCFG_UWB_RNG_H
-#define SYSCFG_UWB_RNG_H
+#ifndef SYSCFG_SYSCFG_UWB_RNG_H
+#define SYSCFG_SYSCFG_UWB_RNG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,4 +63,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_UWB_RNG_H */
+#endif /* SYSCFG_SYSCFG_UWB_RNG_H */

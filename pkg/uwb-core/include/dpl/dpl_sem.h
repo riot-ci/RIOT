@@ -12,12 +12,12 @@
  * @{
  *
  * @file
- * @brief       uwb-core DPL (Decawave Porting Layer) sempahore wrappers
+ * @brief       uwb-core DPL (Decawave Porting Layer) semapahore wrappers
  *
  */
 
-#ifndef DPL_SEM_H
-#define DPL_SEM_H
+#ifndef DPL_DPL_SEM_H
+#define DPL_DPL_SEM_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -36,7 +36,7 @@ extern "C" {
  * @brief dpl semaphore wrapper
  */
 struct dpl_sem {
-    sema_t sema;
+    sema_t sema;    /**< the semaphore */
 };
 
 /**
@@ -54,7 +54,7 @@ dpl_error_t dpl_sem_init(struct dpl_sem *sem, uint16_t tokens);
 /**
  * @brief Pend (wait) for a semaphore.
  *
- * @param[in]   mu      pointer to semaphore.
+ * @param[in]   sem     pointer to semaphore.
  * @param[in]   timeout timeout, in os ticks.
  *                A timeout of 0 means do not wait if not available.
  *                A timeout of DPL_TIMEOUT_NEVER means wait forever.
@@ -87,4 +87,4 @@ uint16_t dpl_sem_get_count(struct dpl_sem *sem);
 }
 #endif
 
-#endif  /* DPL_SEM_H */
+#endif  /* DPL_DPL_SEM_H */

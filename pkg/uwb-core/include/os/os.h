@@ -14,8 +14,8 @@
  * @brief       Abstraction layer for RIOT adaption
  *
  */
-#ifndef OS_H
-#define OS_H
+#ifndef OS_OS_H
+#define OS_OS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,4 +25,4 @@ extern "C" {
 }
 #endif
 
-#endif /* OS_H */
+#endif /* OS_OS_H */

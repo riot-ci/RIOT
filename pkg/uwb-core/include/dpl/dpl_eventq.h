@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_EVENT_H
-#define DPL_EVENT_H
+#ifndef DPL_DPL_EVENT_H
+#define DPL_DPL_EVENT_H
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -36,8 +36,8 @@ extern "C" {
  */
 struct dpl_event
 {
-    event_callback_t e;
-    void *arg;
+    event_callback_t e; /**< the event callback */
+    void *arg;          /**< the event argument */
 };
 
 /**
@@ -45,7 +45,7 @@ struct dpl_event
  */
 struct dpl_eventq
 {
-    event_queue_t q;
+    event_queue_t q;    /**< the event queue */
 };
 
 /**
@@ -241,4 +241,4 @@ static inline struct dpl_eventq * dpl_eventq_dflt_get(void)
 }
 #endif
 
-#endif  /* DPL_EVENT_H */
+#endif  /* DPL_DPL_EVENT_H */

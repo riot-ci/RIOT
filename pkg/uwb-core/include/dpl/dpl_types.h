@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef DPL_TYPES_H
-#define DPL_TYPES_H
+#ifndef DPL_DPL_TYPES_H
+#define DPL_DPL_TYPES_H
 
 #include <stdint.h>
 #include <math.h>
@@ -90,4 +90,4 @@ typedef double dpl_float64_t;
 }
 #endif
 
-#endif /* DPL_TYPES_H */
+#endif /* DPL_DPL_TYPES_H */

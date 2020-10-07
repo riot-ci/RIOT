@@ -55,9 +55,6 @@ event_queue_t * uwb_core_get_eventq(void)
 
 void uwb_core_riot_init(void)
 {
-    int res;
-    (void)res;
-
     thread_create(_stack_uwb_core, sizeof(_stack_uwb_core),
                   UWB_CORE_PRIO,
                   THREAD_CREATE_STACKTEST,

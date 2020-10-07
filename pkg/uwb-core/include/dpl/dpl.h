@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_H
-#define DPL_H
+#ifndef DPL_DPL_H
+#define DPL_DPL_H
 
 #include "syscfg/syscfg.h"
 #include "dpl/dpl_types.h"
@@ -35,4 +35,4 @@
 extern "C" {
 #endif
 
-#endif  /* DPL_H */
+#endif  /* DPL_DPL_H */

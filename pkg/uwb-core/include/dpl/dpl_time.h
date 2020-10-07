@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef DPL_TIME_H
-#define DPL_TIME_H
+#ifndef DPL_DPL_TIME_H
+#define DPL_DPL_TIME_H
 
 #include "xtimer.h"
 
@@ -41,9 +41,9 @@ static inline dpl_time_t dpl_time_get(void)
 }
 
 /**
- * @brief Converts the given number of microseconds into cputime ticks.
+ * @brief Converts the given number of miliseconds into cputime ticks.
  *
- * @param usecs The number of microseconds to convert to ticks
+ * @param ms The number of miliseconds to convert to ticks
  *
  * @return uint32_t The number of ticks corresponding to 'usecs'
  */
@@ -54,11 +54,11 @@ static inline dpl_error_t dpl_time_ms_to_ticks(uint32_t ms, dpl_time_t *out_tick
 }
 
 /**
- * @brief Convert the given number of ticks into microseconds.
+ * @brief Convert the given number of ticks into miliseconds.
  *
- * @param ticks The number of ticks to convert to microseconds.
+ * @param ticks The number of ticks to convert to miliseconds.
  *
- * @return uint32_t The number of microseconds corresponding to 'ticks'
+ * @return uint32_t The number of miliseconds corresponding to 'ticks'
  */
 static inline dpl_time_t dpl_time_ticks_to_ms(dpl_time_t ticks, uint32_t *out_ms)
 {
@@ -68,11 +68,11 @@ static inline dpl_time_t dpl_time_ticks_to_ms(dpl_time_t ticks, uint32_t *out_ms
 }
 
 /**
- * @brief Converts the given number of microseconds into cputime ticks.
+ * @brief Converts the given number of miliseconds into cputime ticks.
  *
- * @param usecs The number of microseconds to convert to ticks
+ * @param ms The number of miliseconds to convert to ticks
  *
- * @return uint32_t The number of ticks corresponding to 'usecs'
+ * @return uint32_t The number of ticks corresponding to 'ms'
  */
 static inline dpl_time_t dpl_time_ms_to_ticks32(uint32_t ms)
 {
@@ -80,11 +80,11 @@ static inline dpl_time_t dpl_time_ms_to_ticks32(uint32_t ms)
 }
 
 /**
- * @brief Convert the given number of ticks into microseconds.
+ * @brief Convert the given number of ticks into miliseconds.
  *
- * @param ticks The number of ticks to convert to microseconds.
+ * @param ticks The number of ticks to convert to miliseconds.
  *
- * @return uint32_t The number of microseconds corresponding to 'ticks'
+ * @return uint32_t The number of miliseconds corresponding to 'ticks'
  */
 static inline dpl_time_t dpl_time_ticks_to_ms32(dpl_time_t ticks)
 {
@@ -107,4 +107,4 @@ static inline void dpl_time_delay(dpl_time_t ticks)
 }
 #endif
 
-#endif /* DPL_TIME_H */
+#endif /* DPL_DPL_TIME_H */

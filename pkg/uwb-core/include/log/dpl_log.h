@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_LOG_H
-#define DPL_LOG_H
+#ifndef LOG_DPL_LOG_H
+#define LOG_DPL_LOG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,4 +36,4 @@ struct log {
 }
 #endif
 
-#endif /* DPL_LOG_H */
+#endif /* LOG_DPL_LOG_H */

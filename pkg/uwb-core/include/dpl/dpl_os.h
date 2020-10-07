@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef DPL_OS_H
-#define DPL_OS_H
+#ifndef DPL_DPL_OS_H
+#define DPL_DPL_OS_H
 
 #include <assert.h>
 #include <stdint.h>
@@ -40,10 +40,14 @@ extern "C" {
 #define DPL_ASSERT_CRITICAL() assert(dpl_hw_is_in_critical())
 /** @} */
 
-/* variable to check if ISR are disabled */
+/**
+ * @brief   variable to check if ISR are disabled
+ */
 extern atomic_uint dpl_in_critical;
 
-/* CPU status register */
+/**
+ * @brief   CPU status register
+ */
 typedef uint32_t dpl_sr_t;
 
 /**
@@ -90,4 +94,4 @@ static inline bool dpl_hw_is_in_critical(void)
 }
 #endif
 
-#endif  /* DPL_OS_H */
+#endif  /* DPL_DPL_OS_H */

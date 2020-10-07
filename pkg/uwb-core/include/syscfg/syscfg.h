@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef SYSCFG_H
-#define SYSCFG_H
+#ifndef SYSCFG_SYSCFG_H
+#define SYSCFG_SYSCFG_H
 
 #include "kernel_defines.h"
 
@@ -66,4 +66,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_H */
+#endif /* SYSCFG_SYSCFG_H */

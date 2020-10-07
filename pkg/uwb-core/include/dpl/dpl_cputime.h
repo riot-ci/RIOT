@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef DPL_CPUTIME_H
-#define DPL_CPUTIME_H
+#ifndef DPL_DPL_CPUTIME_H
+#define DPL_DPL_CPUTIME_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -140,7 +140,7 @@ static inline int dpl_cputime_timer_relative(struct hal_timer *timer, uint32_t u
 
 /**
  *  @brief   Stops a cputimer from running.
- * 
+ *
  * The timer is removed from the timer queue and interrupts are disabled
  * if no timers are left on the queue. Can be called even if timer is
  * not running.
@@ -156,4 +156,4 @@ static inline void dpl_cputime_timer_stop(struct hal_timer *timer)
 }
 #endif
 
-#endif /* DPL_CPUTIME_H */
+#endif /* DPL_DPL_CPUTIME_H */

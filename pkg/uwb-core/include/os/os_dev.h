@@ -14,14 +14,13 @@
  * @brief       Abstraction layer for RIOT adaption
  *
  */
-#ifndef OS_DEV_H
-#define OS_DEV_H
+#ifndef OS_OS_DEV_H
+#define OS_OS_DEV_H
 
 #include <assert.h>
 #include <stdint.h>
 #include "dpl/dpl.h"
-
-#include "os/queue.h"
+#include "dpl/queue.h"
 
 #include "net/ieee802154.h"
 #include "net/netdev.h"
@@ -31,8 +30,8 @@
 extern "C" {
 #endif
 
-/*
- * Device structure.
+/**
+ * @brief Device structure.
  */
 struct os_dev {
     netdev_ieee802154_t netdev;        /**< Netdev parent struct */
@@ -47,4 +46,4 @@ struct os_dev {
 }
 #endif
 
-#endif /* OS_DEV_H */
+#endif /* OS_OS_DEV_H */

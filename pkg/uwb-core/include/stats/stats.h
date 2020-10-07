@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef STATS_H
-#define STATS_H
+#ifndef STATS_STATS_H
+#define STATS_STATS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,4 +28,4 @@ extern "C" {
 }
 #endif
 
-#endif /* STATS_H */
+#endif /* STATS_STATS_H */

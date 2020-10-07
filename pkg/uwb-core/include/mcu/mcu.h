@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef MCU_H
-#define MCU_H
+#ifndef MCU_MCU_H
+#define MCU_MCU_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,4 +28,4 @@ extern "C" {
 }
 #endif
 
-#endif /* MCU_H */
+#endif /* MCU_MCU_H */

@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef DPL_ERROR_H
-#define DPL_ERROR_H
+#ifndef DPL_DPL_ERROR_H
+#define DPL_DPL_ERROR_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -55,4 +55,4 @@ typedef enum dpl_error dpl_error_t;
 }
 #endif
 
-#endif  /* _DPL_ERROR_H */
+#endif  /* _DPL_DPL_ERROR_H */
