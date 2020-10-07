@@ -12,14 +12,14 @@ extern "C" {
 /**
  * @brief Anchor address
  */
-#ifndef ANCHOR_ADDRESS 
+#ifndef ANCHOR_ADDRESS
 #define ANCHOR_ADDRESS      0x1234
 #endif
 
 /**
  * @brief Range request period
  */
-#ifndef RANGE_REQUEST_T 
+#ifndef RANGE_REQUEST_T
 #define RANGE_REQUEST_T      (US_PER_SEC / 25)
 #endif
 

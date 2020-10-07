@@ -13,7 +13,7 @@ pkg. This example is based on the twr-aloha example in
 
 2. Flash the second node as an anchor
 
-    $ ROLE_DEFAULT=0x4 make -C examples/twr_aloha/ flash term
+    $ DW1000_ROLE=0x4 make -C examples/twr_aloha/ flash term
 
 3. On the tag node begin ranging, you will see ranging estimations where
 the "raz" field is "range" in meters.
