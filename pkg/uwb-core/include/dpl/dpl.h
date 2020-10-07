@@ -35,4 +35,4 @@
 extern "C" {
 #endif
 
-#endif  /* DPL_DPL_H */
+#endif /* DPL_DPL_H */

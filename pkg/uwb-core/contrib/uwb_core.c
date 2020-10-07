@@ -61,4 +61,3 @@ void uwb_core_riot_init(void)
                   _uwb_core_thread, NULL,
                   "uwb_core");
 }
-

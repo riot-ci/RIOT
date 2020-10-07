@@ -94,4 +94,4 @@ static inline bool dpl_hw_is_in_critical(void)
 }
 #endif
 
-#endif  /* DPL_DPL_OS_H */
+#endif /* DPL_DPL_OS_H */

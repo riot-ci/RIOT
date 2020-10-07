@@ -73,4 +73,4 @@ dpl_error_t dpl_mutex_release(struct dpl_mutex *mu);
 }
 #endif
 
-#endif  /* DPL_DPL_MUTEX_H */
+#endif /* DPL_DPL_MUTEX_H */

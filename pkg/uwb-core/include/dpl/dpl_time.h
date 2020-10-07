@@ -41,11 +41,12 @@ static inline dpl_time_t dpl_time_get(void)
 }
 
 /**
- * @brief Converts the given number of miliseconds into cputime ticks.
+ * @brief Converts the given number of milliseconds into cputime ticks.
  *
- * @param ms The number of miliseconds to convert to ticks
+ * @param[im]   ms          The number of milliseconds to convert to ticks
+ * @param[out]  out_ticks   The number of ticks corresponding to 'ms'
  *
- * @return uint32_t The number of ticks corresponding to 'usecs'
+ * @return dpl_error_t  DPL_OK - no error
  */
 static inline dpl_error_t dpl_time_ms_to_ticks(uint32_t ms, dpl_time_t *out_ticks)
 {
@@ -54,13 +55,14 @@ static inline dpl_error_t dpl_time_ms_to_ticks(uint32_t ms, dpl_time_t *out_tick
 }
 
 /**
- * @brief Convert the given number of ticks into miliseconds.
+ * @brief Convert the given number of ticks into milliseconds.
  *
- * @param ticks The number of ticks to convert to miliseconds.
+ * @param[im]   ticks   The number of ticks to convert to milliseconds.
+ * @param[out]  out_ms  The converted milliseconds from 'ticks'
  *
- * @return uint32_t The number of miliseconds corresponding to 'ticks'
+ * @return dpl_error_t  DPL_OK - no error
  */
-static inline dpl_time_t dpl_time_ticks_to_ms(dpl_time_t ticks, uint32_t *out_ms)
+static inline dpl_error_t  dpl_time_ticks_to_ms(dpl_time_t ticks, uint32_t *out_ms)
 {
     xtimer_ticks32_t val = {.ticks32 = ticks};
     *out_ms = xtimer_usec_from_ticks(val) * US_PER_MS;
@@ -68,11 +70,11 @@ static inline dpl_time_t dpl_time_ticks_to_ms(dpl_time_t ticks, uint32_t *out_ms
 }
 
 /**
- * @brief Converts the given number of miliseconds into cputime ticks.
+ * @brief   Converts the given number of milliseconds into cputime ticks.
  *
- * @param ms The number of miliseconds to convert to ticks
+ * @param[in]   ms  The number of milliseconds to convert to ticks
  *
- * @return uint32_t The number of ticks corresponding to 'ms'
+ * @return  uint32_t    The number of ticks corresponding to 'ms'
  */
 static inline dpl_time_t dpl_time_ms_to_ticks32(uint32_t ms)
 {
@@ -80,11 +82,11 @@ static inline dpl_time_t dpl_time_ms_to_ticks32(uint32_t ms)
 }
 
 /**
- * @brief Convert the given number of ticks into miliseconds.
+ * @brief   Convert the given number of ticks into milliseconds.
  *
- * @param ticks The number of ticks to convert to miliseconds.
+ * @param[in]   ticks   The number of ticks to convert to milliseconds.
  *
- * @return uint32_t The number of miliseconds corresponding to 'ticks'
+ * @return  uint32_t    The number of milliseconds corresponding to 'ticks'
  */
 static inline dpl_time_t dpl_time_ticks_to_ms32(dpl_time_t ticks)
 {
@@ -93,9 +95,9 @@ static inline dpl_time_t dpl_time_ticks_to_ms32(dpl_time_t ticks)
 }
 
 /**
- * @brief Wait until the number of ticks has elapsed. This is a blocking delay.
+ * @brief   Wait until the number of ticks has elapsed, BLOICKING.
  *
- * @param ticks The number of ticks to wait.
+ * @param[in]   ticks   The number of ticks to wait.
  */
 static inline void dpl_time_delay(dpl_time_t ticks)
 {

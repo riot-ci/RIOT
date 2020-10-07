@@ -82,4 +82,4 @@ void dpl_callout_stop(struct dpl_callout *c);
 }
 #endif
 
-#endif  /* DPL_DPL_CALLOUT_H */
+#endif /* DPL_DPL_CALLOUT_H */

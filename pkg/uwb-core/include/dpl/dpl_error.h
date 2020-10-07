@@ -55,4 +55,4 @@ typedef enum dpl_error dpl_error_t;
 }
 #endif
 
-#endif  /* _DPL_DPL_ERROR_H */
+#endif  /* DPL_DPL_ERROR_H */

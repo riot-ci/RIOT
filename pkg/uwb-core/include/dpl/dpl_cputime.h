@@ -130,7 +130,7 @@ static inline int dpl_cputime_timer_start(struct hal_timer *timer, uint32_t cput
 static inline int dpl_cputime_timer_relative(struct hal_timer *timer, uint32_t usecs)
 {
     uint32_t now = xtimer_now_usec();
-    if(now > usecs) {
+    if (now > usecs) {
         xtimer_set(&timer->timer, now);
     } else {
         xtimer_set(&timer->timer, 0);

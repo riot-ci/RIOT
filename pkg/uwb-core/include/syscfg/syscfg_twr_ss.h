@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 /**
- * @brieftx holdoff delay for SS TWR (usec)
+ * @brief tx holdoff delay for SS TWR (usec)
  */
 #ifndef MYNEWT_VAL_TWR_SS_TX_HOLDOFF
 #define MYNEWT_VAL_TWR_SS_TX_HOLDOFF (((uint32_t)0x0300))

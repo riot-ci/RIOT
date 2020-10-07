@@ -87,4 +87,4 @@ uint16_t dpl_sem_get_count(struct dpl_sem *sem);
 }
 #endif
 
-#endif  /* DPL_DPL_SEM_H */
+#endif /* DPL_DPL_SEM_H */
