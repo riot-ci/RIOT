@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_HAL_SPI
-#define DPL_HAL_SPI
+#ifndef HAL_HAL_SPI
+#define HAL_HAL_SPI
 
 #include "periph/spi.h"
 
@@ -37,7 +37,7 @@ extern "C" {
 typedef void (*hal_spi_txrx_cb)(void *arg, int len);
 
 /**
- * since one spi device can control multiple devices, some configuration
+ * @brief since one spi device can control multiple devices, some configuration
  * can be changed on the fly from the hal
  */
 struct hal_spi_settings {
@@ -48,7 +48,7 @@ struct hal_spi_settings {
 };
 
 /**
- * Configure the spi. Must be called after the spi is initialized (after
+ * @brief Configure the spi. Must be called after the spi is initialized (after
  * hal_spi_init is called) and when the spi is disabled (user must call
  * hal_spi_disable if the spi has been enabled through hal_spi_enable prior
  * to calling this function). Can also be used to reconfigure an initialized
@@ -62,7 +62,7 @@ struct hal_spi_settings {
 int hal_spi_config(int spi_num, struct hal_spi_settings *psettings);
 
 /**
- * Sets the txrx callback (executed at interrupt context) when the
+ * @brief Sets the txrx callback (executed at interrupt context) when the
  * buffer is transferred by the master or the slave using the non-blocking API.
  * Cannot be called when the spi is enabled. This callback will also be called
  * when chip select is de-asserted on the slave.
@@ -71,7 +71,7 @@ int hal_spi_config(int spi_num, struct hal_spi_settings *psettings);
  * be called prior to using the non-blocking API.
  *
  * @param spi_num   SPI interface on which to set callback
- * @param txrx      Callback function
+ * @param txrx_cb   Callback function
  * @param arg       Argument to be passed to callback function
  *
  * @return int 0 on success, non-zero error code on failure.
@@ -79,7 +79,7 @@ int hal_spi_config(int spi_num, struct hal_spi_settings *psettings);
 int hal_spi_set_txrx_cb(int spi_num, hal_spi_txrx_cb txrx_cb, void *arg);
 
 /**
- * Enables the SPI. This does not start a transmit or receive operation;
+ * @brief Enables the SPI. This does not start a transmit or receive operation;
  * it is used for power mgmt. Cannot be called when a SPI transfer is in
  * progress.
  *
@@ -90,7 +90,7 @@ int hal_spi_set_txrx_cb(int spi_num, hal_spi_txrx_cb txrx_cb, void *arg);
 int hal_spi_enable(int spi_num);
 
 /**
- * Disables the SPI. Used for power mgmt. It will halt any current SPI transfers
+ * @brief Disables the SPI. Used for power mgmt. It will halt any current SPI transfers
  * in progress.
  *
  * @param spi_num
@@ -100,7 +100,7 @@ int hal_spi_enable(int spi_num);
 int hal_spi_disable(int spi_num);
 
 /**
- * Blocking interface to send a buffer and store the received values from the
+ * @brief Blocking interface to send a buffer and store the received values from the
  * slave. The transmit and receive buffers are either arrays of 8-bit (uint8_t)
  * values or 16-bit values depending on whether the spi is configured for 8 bit
  * data or more than 8 bits per value. The 'cnt' parameter is the number of
@@ -125,7 +125,7 @@ int hal_spi_disable(int spi_num);
 int hal_spi_txrx(int spi_num, void *txbuf, void *rxbuf, int cnt);
 
 /**
- * Non-blocking interface to send a buffer and store received values. Can be
+ * @brief Non-blocking interface to send a buffer and store received values. Can be
  * used for both master and slave SPI types. The user must configure the
  * callback (using hal_spi_set_txrx_cb); the txrx callback is executed at
  * interrupt context when the buffer is sent.
@@ -162,4 +162,4 @@ int hal_spi_txrx_noblock(int spi_num, void *txbuf, void *rxbuf, int cnt);
 }
 #endif
 
-#endif /* H_HAL_SPI */
+#endif /* HAL_HAL_SPI */

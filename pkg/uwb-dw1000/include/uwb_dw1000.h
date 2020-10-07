@@ -15,8 +15,8 @@
  * @brief       Abstraction layer for RIOT adaption
  *
  */
-#ifndef HAL_DW1000_H
-#define HAL_DW1000_H
+#ifndef UWB_DW1000_H
+#define UWB_DW1000_H
 
 #include <assert.h>
 #include <stdint.h>
@@ -46,9 +46,9 @@ typedef struct {
 void uwb_dw1000_init(void);
 
 /**
- * @brief   Sets the tx and rx buffer for thw uwb_dev in the dw1000 instance
+ * @brief   Sets the tx and rx buffer for the uwb_dev in the dw1000 instance
  *
- * @note If this is not set before @uwb_dw1000_setup() is called then
+ * @note If this is not set before uwb_dw1000_setup() is called then
  *       the buffers will be dynamically allocated.
  *
  * @param[in]   dev     dw1000 device instance pointer
@@ -72,7 +72,7 @@ void uwb_dw1000_setup(dw1000_dev_instance_t* dev, dw1000_params_t* params);
  * @brief   Configure and start the dw1000
  *
  * This will wakeup and setup the dw1000 device, configure the mac and
- * phy. Setting up the mac will also call @dw1000_tasks_init() that will
+ * phy. Setting up the mac will also call dw1000_tasks_init() that will
  * handle the device interrupts.
  *
  * @param[out]  dev     dw1000 device descriptor
@@ -83,4 +83,4 @@ void uwb_dw1000_config_and_start(dw1000_dev_instance_t* dev);
 }
 #endif
 
-#endif /* HAL_DW1000_H */
+#endif /* UWB_DW1000_H */

@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_HAL_TIMER
-#define DPL_HAL_TIMER
+#ifndef HAL_HAL_TIMER
+#define HAL_HAL_TIMER
 
 #include "xtimer.h"
 
@@ -24,17 +24,21 @@
 extern "C" {
 #endif
 
-/* HAL timer callback */
+/**
+ * @brief   HAL timer callback
+ */
 typedef xtimer_callback_t hal_timer_cb;
 
-/* The HAL timer structure. */
+/**
+ * @brief   The HAL timer structure.
+ */
 struct hal_timer
 {
-    xtimer_t timer;
+    xtimer_t timer;     /**< the timer */
 };
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DPL_HAL_TIMER*/
+#endif /* HAL_HAL_TIMER*/

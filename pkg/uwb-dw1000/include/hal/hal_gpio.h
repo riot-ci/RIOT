@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef DPL_HAL_GPIO
-#define DPL_HAL_GPIO
+#ifndef HAL_HAL_GPIO
+#define HAL_HAL_GPIO
 
 #include "periph/gpio.h"
 
@@ -62,7 +62,7 @@ enum hal_gpio_irq_trigger {
 typedef enum hal_gpio_irq_trigger hal_gpio_irq_trig_t;
 
 /* Function proto for GPIO irq handler functions */
-typedef gpio_cb_t hal_gpio_irq_handler_t ;
+typedef gpio_cb_t hal_gpio_irq_handler_t;
 
 /**
  * Initializes the specified pin as an input
@@ -180,9 +180,8 @@ static inline void hal_gpio_irq_disable(gpio_t pin)
     gpio_irq_disable(pin);
 }
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DPL_HAL_GPIO */
+#endif /* HAL_HAL_GPIO */

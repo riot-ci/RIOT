@@ -58,22 +58,22 @@ static const dw1000_dev_instance_t dw1000_instance_config_default = {
             .nphr = 21             /**< Number of symbols in phy header */
         },
         .config = {
-            .channel = 5,                       /**< channel number {1, 2, 3, 4, 5, 7 } */
-            .prf = DWT_PRF_64M,                 /**< Pulse Repetition Frequency {DWT_PRF_16M or DWT_PRF_64M} */
-            .dataRate = DWT_BR_6M8,             /**< Data Rate {DWT_BR_110K, DWT_BR_850K or DWT_BR_6M8} */
+            .channel = 5,                        /**< channel number {1, 2, 3, 4, 5, 7 } */
+            .prf = DWT_PRF_64M,                  /**< Pulse Repetition Frequency {DWT_PRF_16M or DWT_PRF_64M} */
+            .dataRate = DWT_BR_6M8,              /**< Data Rate {DWT_BR_110K, DWT_BR_850K or DWT_BR_6M8} */
             .rx = {
-                .pacLength = DWT_PAC8,          /**< Acquisition Chunk Size DWT_PAC8..DWT_PAC64 (Relates to RX preamble length) */
-                .preambleCodeIndex = 9,         /**< RX preamble code */
-                .sfdType = 1,                   /**< Boolean should we use non-standard SFD for better performance */
-                .phrMode = DWT_PHRMODE_EXT,     /**< PHR mode {0x0 - standard DWT_PHRMODE_STD, 0x3 - extended frames DWT_PHRMODE_EXT} */
-                .sfdTimeout = (128 + 1 + 8 - 8),/**< SFD timeout value (in symbols) (preamble length + 1 + SFD length - PAC size). Used in RX only. */
-                .timeToRxStable = 6,            /**< Time until the Receiver i stable, (in us) */
-                .frameFilter = 0,               /**< No frame filtering by default */
-                .xtalTrim = 0x10,               /**< Centre trim value */
+                .pacLength = DWT_PAC8,           /**< Acquisition Chunk Size DWT_PAC8..DWT_PAC64 (Relates to RX preamble length) */
+                .preambleCodeIndex = 9,          /**< RX preamble code */
+                .sfdType = 1,                    /**< Boolean should we use non-standard SFD for better performance */
+                .phrMode = DWT_PHRMODE_EXT,      /**< PHR mode {0x0 - standard DWT_PHRMODE_STD, 0x3 - extended frames DWT_PHRMODE_EXT} */
+                .sfdTimeout = (128 + 1 + 8 - 8), /**< SFD timeout value (in symbols) (preamble length + 1 + SFD length - PAC size). Used in RX only. */
+                .timeToRxStable = 6,             /**< Time until the Receiver i stable, (in us) */
+                .frameFilter = 0,                /**< No frame filtering by default */
+                .xtalTrim = 0x10,                /**< Centre trim value */
             },
             .tx ={
-                .preambleCodeIndex = 9,         /**< TX preamble code */
-                .preambleLength = DWT_PLEN_128  /**< DWT_PLEN_64..DWT_PLEN_4096 */
+                .preambleCodeIndex = 9,          /**< TX preamble code */
+                .preambleLength = DWT_PLEN_128   /**< DWT_PLEN_64..DWT_PLEN_4096 */
             },
             .txrf={
                 .PGdly = TC_PGDELAY_CH5,
@@ -142,9 +142,9 @@ struct uwb_dev* uwb_dev_idx_lookup(int idx)
 {
     dw1000_dev_instance_t *current = dw1000_instance_head;
 
-    while(current != NULL)
+    while (current != NULL)
     {
-        if(current->uwb_dev.idx == idx) {
+        if (current->uwb_dev.idx == idx) {
             LOG_DEBUG("uwb_dev: found dev of idx %d\n", idx);
             break;
         }

@@ -13,7 +13,7 @@
  *
  * @file
  * @brief       uwb-dw1000 module configurations
- *              taken from @decawave-uwb-dw1000/hw/drivers/uwb/uwb_dw1000 
+ *              taken from decawave-uwb-dw1000/hw/drivers/uwb/uwb_dw1000
  *
  */
 
