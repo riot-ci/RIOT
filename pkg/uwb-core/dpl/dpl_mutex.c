@@ -16,14 +16,12 @@
  * @}
  */
 
-
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 
 #include "sema.h"
 #include "dpl/dpl_mutex.h"
-
 
 dpl_error_t dpl_mutex_init(struct dpl_mutex *mu)
 {

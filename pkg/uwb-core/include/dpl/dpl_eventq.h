@@ -135,7 +135,6 @@ static inline int dpl_eventq_inited(struct dpl_eventq *evq)
     return evq->q.waiter != NULL;
 }
 
-
 /**
  * @brief   Deinitialize an event queue
  *

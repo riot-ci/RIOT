@@ -61,9 +61,9 @@ dpl_error_t dpl_sem_init(struct dpl_sem *sem, uint16_t tokens);
  *
  *
  * @return dpl_error_t
- *      OS_INVALID_PARM     semaphore passed in was NULL.
- *      OS_TIMEOUT          semaphore was owned by another task and timeout=0
- *      DPL_OK              no error
+ *      DPL_INVALID_PARM     semaphore passed in was NULL.
+ *      DPL_TIMEOUT          semaphore was owned by another task and timeout=0
+ *      DPL_OK               no error
  */
 dpl_error_t dpl_sem_pend(struct dpl_sem *sem, dpl_time_t timeout);
 

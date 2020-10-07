@@ -43,7 +43,7 @@ static inline dpl_time_t dpl_time_get(void)
 /**
  * @brief Converts the given number of milliseconds into cputime ticks.
  *
- * @param[im]   ms          The number of milliseconds to convert to ticks
+ * @param[in]   ms          The number of milliseconds to convert to ticks
  * @param[out]  out_ticks   The number of ticks corresponding to 'ms'
  *
  * @return dpl_error_t  DPL_OK - no error
@@ -57,7 +57,7 @@ static inline dpl_error_t dpl_time_ms_to_ticks(uint32_t ms, dpl_time_t *out_tick
 /**
  * @brief Convert the given number of ticks into milliseconds.
  *
- * @param[im]   ticks   The number of ticks to convert to milliseconds.
+ * @param[in]   ticks   The number of ticks to convert to milliseconds.
  * @param[out]  out_ms  The converted milliseconds from 'ticks'
  *
  * @return dpl_error_t  DPL_OK - no error

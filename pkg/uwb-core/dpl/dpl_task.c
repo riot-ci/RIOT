@@ -16,7 +16,6 @@
  * @}
  */
 
-
 #include "dpl/dpl_error.h"
 #include "dpl/dpl_tasks.h"
 #include "thread.h"
