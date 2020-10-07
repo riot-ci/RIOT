@@ -41,4 +41,4 @@ struct hal_timer
 }
 #endif
 
-#endif /* HAL_HAL_TIMER_H*/
+#endif /* HAL_HAL_TIMER_H */
