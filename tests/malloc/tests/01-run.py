@@ -19,7 +19,7 @@ def testfunc(child):
     for _ in range(number_of_tests):
         child.expect(r"Allocated {} Bytes at 0x[a-z0-9]+, total [a-z0-9]+\r\n"
                      .format(chunk_size))
-        child.expect(r'Allocations count: (\d+)\r\n')
+        child.expect(r'Allocations count: (\d+)\r\n', timeout=20)
         allocations = int(child.match.group(1))
         assert allocations > 0
         if initial_allocations == 0:
