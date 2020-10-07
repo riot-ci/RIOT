@@ -120,7 +120,7 @@ static bool _complete_cb(struct uwb_dev *inst, struct uwb_mac_interface *cbs)
  * @param[in] inst  Pointer to struct uwb_dev.
  * @param[in] cbs   Pointer to struct uwb_mac_interface.
  *
- * @return true on sucess
+ * @return true on success
  */
 static bool _rx_timeout_cb(struct uwb_dev *inst, struct uwb_mac_interface *cbs)
 {
