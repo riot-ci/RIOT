@@ -9,8 +9,10 @@ CFLAGS += -Wno-implicit-int
 CFLAGS += -Wno-int-conversion
 CFLAGS += -Wno-strict-prototypes
 CFLAGS += -Wno-maybe-uninitialized
+CFLAGS += -Wno-microsoft-anon-tag
 CFLAGS += -Wno-missing-braces
 CFLAGS += -Wno-missing-declarations
+CFLAGS += -Wno-missing-field-initializers
 CFLAGS += -Wno-old-style-definition
 CFLAGS += -Wno-return-type
 CFLAGS += -Wno-sign-compare
@@ -18,6 +20,7 @@ CFLAGS += -Wno-unused-but-set-variable
 CFLAGS += -Wno-unused-parameter
 CFLAGS += -Wno-unused-variable
 CFLAGS += -fms-extensions
+
 
 IGNORE_MODULES := uwb-core_dpl \
                   uwb-core_contrib \

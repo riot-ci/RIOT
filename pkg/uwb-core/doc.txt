@@ -100,6 +100,9 @@ pkg must also set at application level:
 
   CFLAGS += -fms-extensions
 
+If building with llvm then also `CFLAGS += -Wno-microsoft-anon-tag` must
+be added, although it is currently blacklisted because of missing stdatomic
+definitions.
 
 ## Todos
 

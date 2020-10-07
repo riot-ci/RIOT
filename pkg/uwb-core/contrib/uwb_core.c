@@ -23,7 +23,9 @@
 #include "event/callback.h"
 #include "uwb_core.h"
 
-#define LOG_LEVEL   LOG_DEBUG
+#ifndef LOG_LEVEL
+#define LOG_LEVEL   LOG_NONE
+#endif
 #include "log.h"
 
 #ifndef UWB_CORE_STACKSIZE

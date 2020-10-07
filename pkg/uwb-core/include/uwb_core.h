@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     pkg_uwb-core
+ * @ingroup     pkg_uwb_core
  *
  * @{
  *
