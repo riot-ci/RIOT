@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef HAL_HAL_GPIO
-#define HAL_HAL_GPIO
+#ifndef HAL_HAL_GPIO_H
+#define HAL_HAL_GPIO_H
 
 #include "periph/gpio.h"
 
@@ -184,4 +184,4 @@ static inline void hal_gpio_irq_disable(gpio_t pin)
 }
 #endif
 
-#endif /* HAL_HAL_GPIO */
+#endif /* HAL_HAL_GPIO_H */

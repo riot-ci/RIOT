@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef HAL_HAL_SPI
-#define HAL_HAL_SPI
+#ifndef HAL_HAL_SPI_H
+#define HAL_HAL_SPI_H
 
 #include "periph/spi.h"
 
@@ -162,4 +162,4 @@ int hal_spi_txrx_noblock(int spi_num, void *txbuf, void *rxbuf, int cnt);
 }
 #endif
 
-#endif /* HAL_HAL_SPI */
+#endif /* HAL_HAL_SPI_H */

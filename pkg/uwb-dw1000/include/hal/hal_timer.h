@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef HAL_HAL_TIMER
-#define HAL_HAL_TIMER
+#ifndef HAL_HAL_TIMER_H
+#define HAL_HAL_TIMER_H
 
 #include "xtimer.h"
 
@@ -41,4 +41,4 @@ struct hal_timer
 }
 #endif
 
-#endif /* HAL_HAL_TIMER*/
+#endif /* HAL_HAL_TIMER_H*/
