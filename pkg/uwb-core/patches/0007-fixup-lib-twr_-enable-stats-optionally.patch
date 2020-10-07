@@ -1,0 +1,246 @@
+From cae0cc6ce4a20daf7f6f362e83d3f4a0a02b6f32 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Fri, 14 Aug 2020 15:24:41 +0200
+Subject: [PATCH 7/9] fixup! lib/twr_*: enable stats optionally
+
+---
+ lib/twr_ds/src/twr_ds.c                   | 10 +++++-----
+ lib/twr_ds_ext/src/twr_ds_ext.c           | 10 +++++-----
+ lib/twr_ds_ext_nrng/src/twr_ds_ext_nrng.c |  8 ++++----
+ lib/twr_ds_nrng/src/twr_ds_nrng.c         | 10 +++++-----
+ lib/twr_ss_ext/src/twr_ss_ext.c           |  8 ++++----
+ lib/twr_ss_ext_nrng/src/twr_ss_ext_nrng.c |  2 +-
+ 6 files changed, 24 insertions(+), 24 deletions(-)
+
+diff --git a/lib/twr_ds/src/twr_ds.c b/lib/twr_ds/src/twr_ds.c
+index c1a407d..cb5de6a 100644
+--- a/lib/twr_ds/src/twr_ds.c
++++ b/lib/twr_ds/src/twr_ds.c
+@@ -238,7 +238,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+ 
+                 /* Start tx now, the remaining settings can be done whilst sending anyway */
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    DS_STATS_INC(g_twr_ds_stat, start_tx_error);
++                    DS_STATS_INC(start_tx_error);
+                     dpl_sem_release(&rng->sem);
+                 }
+ 
+@@ -298,7 +298,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_rxauto_disable(inst, true);
+ 
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    DS_STATS_INC(g_twr_ds_stat, start_tx_error);
++                    DS_STATS_INC(start_tx_error);
+                     dpl_sem_release(&rng->sem);
+                 }
+                 /* Setup when to listen for response, relative the end of our transmitted frame */
+@@ -344,11 +344,11 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_delay_start(inst, txd.response_tx_delay);
+ 
+                 if (uwb_start_tx(inst).start_tx_error) {
+-                    DS_STATS_INC(g_twr_ds_stat, start_tx_error);
++                    DS_STATS_INC(start_tx_error);
+                     dpl_sem_release(&rng->sem);
+                     rng_issue_complete(inst);
+                 } else {
+-                    DS_STATS_INC(g_twr_ds_stat, complete);
++                    DS_STATS_INC(complete);
+                     rng->control.complete_after_tx = 1;
+                 }
+ 
+@@ -359,7 +359,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 // This code executes on the device that initialed the original request, and has now receive the final response timestamp.
+                 // This marks the completion of the double-single-two-way request.
+ 
+-                DS_STATS_INC(g_twr_ds_stat, complete);
++                DS_STATS_INC(complete);
+                 dpl_sem_release(&rng->sem);
+                 rng_issue_complete(inst);
+                 break;
+diff --git a/lib/twr_ds_ext/src/twr_ds_ext.c b/lib/twr_ds_ext/src/twr_ds_ext.c
+index 8e06527..07cc28c 100644
+--- a/lib/twr_ds_ext/src/twr_ds_ext.c
++++ b/lib/twr_ds_ext/src/twr_ds_ext.c
+@@ -231,7 +231,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_rxauto_disable(inst, true);
+ 
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
++                    DS_STATS_INC(tx_error);
+                     dpl_sem_release(&rng->sem);
+                 }
+ 
+@@ -300,7 +300,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_rxauto_disable(inst, true);
+ 
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
++                    DS_STATS_INC(tx_error);
+                     dpl_sem_release(&rng->sem);
+                 }
+                 /* Setup when to listen for response, relative the end of our transmitted frame */
+@@ -355,11 +355,11 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_rng_clear_twr_data(&frame->remote);
+ 
+                 if (uwb_start_tx(inst).start_tx_error) {
+-                    DS_STATS_INC(g_twr_ds_ext_stat, tx_error);
++                    DS_STATS_INC(tx_error);
+                     dpl_sem_release(&rng->sem);
+                     rng_issue_complete(inst);
+                 }else{
+-                    DS_STATS_INC(g_twr_ds_ext_stat, complete);
++                    DS_STATS_INC(complete);
+                     rng->control.complete_after_tx = 1;
+                 }
+                 break;
+@@ -369,7 +369,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 // This code executes on the device that initialed the original request, and has now receive the final response timestamp.
+                 // This marks the completion of the double-single-two-way request.
+ 
+-                DS_STATS_INC(g_twr_ds_ext_stat, complete);
++                DS_STATS_INC(complete);
+                 dpl_sem_release(&rng->sem);
+                 rng_issue_complete(inst);
+                 break;
+diff --git a/lib/twr_ds_ext_nrng/src/twr_ds_ext_nrng.c b/lib/twr_ds_ext_nrng/src/twr_ds_ext_nrng.c
+index 74e38b0..2b15ae1 100644
+--- a/lib/twr_ds_ext_nrng/src/twr_ds_ext_nrng.c
++++ b/lib/twr_ds_ext_nrng/src/twr_ds_ext_nrng.c
+@@ -153,7 +153,7 @@ rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
+     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
+         return false;
+     }
+-    DS_STATS_INC(g_stat, rx_timeout);
++    DS_STATS_INC(rx_timeout);
+     assert(inst->nrng);
+     switch(inst->nrng->code){
+         case UWB_DATA_CODE_DS_TWR_NRNG_EXT ... UWB_DATA_CODE_DS_TWR_NRNG_EXT_FINAL:
+@@ -199,7 +199,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
+     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
+         return false;
+     }
+-    DS_STATS_INC(g_stat, rx_error);
++    DS_STATS_INC(rx_error);
+     assert(inst->nrng);
+     struct nrng_instance * nrng = inst->nrng;
+     os_error_t err = os_sem_release(&nrng->sem);
+@@ -379,7 +379,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                     if (cbs!=NULL && cbs->start_tx_error_cb)
+                         cbs->start_tx_error_cb(inst, cbs);
+                 }else{
+-                    DS_STATS_INC(g_stat, complete);
++                    DS_STATS_INC(complete);
+                     os_sem_release(&nrng->sem);
+                     struct uwb_mac_interface * cbs = NULL;
+                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
+@@ -424,7 +424,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 if(idx == nnodes -1){
+                     os_sem_release(&nrng->sem);
+                     nrng->resp_count = 0;
+-                    DS_STATS_INC(g_stat, complete);
++                    DS_STATS_INC(complete);
+                     struct uwb_mac_interface * cbs = NULL;
+                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
+                         SLIST_FOREACH(cbs, &inst->interface_cbs, next){
+diff --git a/lib/twr_ds_nrng/src/twr_ds_nrng.c b/lib/twr_ds_nrng/src/twr_ds_nrng.c
+index 4b4c7a9..3aea94a 100644
+--- a/lib/twr_ds_nrng/src/twr_ds_nrng.c
++++ b/lib/twr_ds_nrng/src/twr_ds_nrng.c
+@@ -75,7 +75,7 @@ STATS_NAME_START(twr_ds_nrng_stat_section)
+ STATS_NAME_END(twr_ds_nrng_stat_section)
+ 
+ static STATS_SECT_DECL(twr_ds_nrng_stat_section) g_stat;
+-#define DS_STATS_INC(__X) STATS_INC(rng->stat, __X)
++#define DS_STATS_INC(__X) STATS_INC(g_stat, __X)
+ #else
+ #define DS_STATS_INC(__X) {}
+ #endif
+@@ -145,7 +145,7 @@ rx_timeout_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
+     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
+         return false;
+     }
+-    DS_STATS_INC(g_stat, rx_timeout);
++    DS_STATS_INC(rx_timeout);
+     switch(inst->nrng->code){
+         case UWB_DATA_CODE_DS_TWR_NRNG ... UWB_DATA_CODE_DS_TWR_NRNG_FINAL:
+         {
+@@ -189,7 +189,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
+     if(inst->fctrl != FCNTL_IEEE_N_RANGES_16){
+         return false;
+     }
+-    DS_STATS_INC(g_stat, rx_error);
++    DS_STATS_INC(rx_error);
+     assert(inst->nrng);
+     struct nrng_instance * nrng = inst->nrng;
+     if(os_sem_get_count(&nrng->sem) == 0){
+@@ -387,7 +387,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                     if (cbs!=NULL && cbs->start_tx_error_cb)
+                         cbs->start_tx_error_cb(inst, cbs);
+                 }else{
+-                    DS_STATS_INC(g_stat, complete);
++                    DS_STATS_INC(complete);
+                     os_sem_release(&nrng->sem);
+                     struct uwb_mac_interface * cbs = NULL;
+                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
+@@ -436,7 +436,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 frame->transmission_timestamp = dw1000_read_txtime_lo(inst);
+                 if(idx == nnodes -1)
+                 {
+-                    DS_STATS_INC(g_stat, complete);
++                    DS_STATS_INC(complete);
+                     os_sem_release(&nrng->sem);
+                     struct uwb_mac_interface * cbs = NULL;
+                     if(!(SLIST_EMPTY(&inst->interface_cbs))){
+diff --git a/lib/twr_ss_ext/src/twr_ss_ext.c b/lib/twr_ss_ext/src/twr_ss_ext.c
+index 362674a..2ea3384 100644
+--- a/lib/twr_ss_ext/src/twr_ss_ext.c
++++ b/lib/twr_ss_ext/src/twr_ss_ext.c
+@@ -248,7 +248,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_delay_start(inst, txd.response_tx_delay);
+ 
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    SS_STATS_INC(g_twr_ss_ext_stat, tx_error);
++                    SS_STATS_INC(tx_error);
+                     dpl_sem_release(&rng->sem);
+                 }
+                 /* Setup when to listen for response, relative the end of our transmitted frame */
+@@ -291,12 +291,12 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 uwb_set_delay_start(inst, txd.response_tx_delay);
+ 
+                 if (uwb_start_tx(inst).start_tx_error){
+-                    SS_STATS_INC(g_twr_ss_ext_stat, tx_error);
++                    SS_STATS_INC(tx_error);
+                     dpl_sem_release(&rng->sem);
+                     rng_issue_complete(inst);
+                 }
+                 else{
+-                    SS_STATS_INC(g_twr_ss_ext_stat, complete);
++                    SS_STATS_INC(complete);
+                     rng->control.complete_after_tx = 1;
+                 }
+                 break;
+@@ -308,7 +308,7 @@ rx_complete_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs)
+                 if (inst->frame_len != sizeof(twr_frame_final_t))
+                    break;
+ 
+-                SS_STATS_INC(g_twr_ss_ext_stat, complete);
++                SS_STATS_INC(complete);
+                 dpl_sem_release(&rng->sem);
+                 rng_issue_complete(inst);
+                 break;
+diff --git a/lib/twr_ss_ext_nrng/src/twr_ss_ext_nrng.c b/lib/twr_ss_ext_nrng/src/twr_ss_ext_nrng.c
+index f11d2f7..759f928 100644
+--- a/lib/twr_ss_ext_nrng/src/twr_ss_ext_nrng.c
++++ b/lib/twr_ss_ext_nrng/src/twr_ss_ext_nrng.c
+@@ -151,7 +151,7 @@ rx_error_cb(struct uwb_dev * inst, struct uwb_mac_interface * cbs){
+     }
+     struct uwb_rng_instance * rng = inst->rng;
+     if(os_sem_get_count(&rng->sem) == 0){
+-        SS_STATS_INC(g_stat, rx_error);
++        SS_STATS_INC(rx_error);
+         os_error_t err = os_sem_release(&rng->sem);
+         assert(err == OS_OK);
+         return true;
+-- 
+2.28.0
+
