@@ -1,0 +1,25 @@
+From 9618455f2f01d507790a59bd91349ee7fd803721 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Fri, 14 Aug 2020 15:24:19 +0200
+Subject: [PATCH 6/9] fixup! uwb/uwb.c: use RIOT specific uwb_dev_idx_lookup()
+
+---
+ hw/drivers/uwb/src/uwb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hw/drivers/uwb/src/uwb.c b/hw/drivers/uwb/src/uwb.c
+index 72e3e0e..69e6714 100644
+--- a/hw/drivers/uwb/src/uwb.c
++++ b/hw/drivers/uwb/src/uwb.c
+@@ -32,7 +32,7 @@
+ #include <stdlib.h>
+ #endif
+ 
+-#ifndef (RIOT)
++#if !defined(RIOT)
+ struct uwb_dev*
+ uwb_dev_idx_lookup(int idx)
+ {
+-- 
+2.28.0
+
