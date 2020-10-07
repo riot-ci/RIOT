@@ -35,6 +35,8 @@ CFLAGS += -DDW1000_ROLE_DEFAULT=$(DW1000_ROLE)
 
 # All uwb-core applications need to enable `-fms-extensions`
 CFLAGS += -fms-extensions
+CFLAGS += -Wno-microsoft-anon-tag
+
 # Enable verbose mode to get all logs
 CFLAGS += -DMYNEWT_VAL_RNG_VERBOSE=2
 # Enable RX diagnostics

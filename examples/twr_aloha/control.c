@@ -31,7 +31,9 @@
 #include "shell.h"
 #include "xtimer.h"
 
+#ifndef LOG_LEVEL
 #define LOG_LEVEL LOG_DEBUG
+#endif
 #include "log.h"
 
 static struct dpl_callout _rng_req_callout;
@@ -227,11 +229,11 @@ void *init_ranging(void *arg)
     LOG_DEBUG(",\"part_id\"=\"%" PRIx32 "\"",
               (uint32_t)(udev->euid & 0xffffffff));
     LOG_DEBUG(",\"lot_id\"=\"%" PRIx32 "\"}\n", (uint32_t)(udev->euid >> 32));
-    LOG_DEBUG("{\"utime\": %lu,\"msg\": \"frame_duration = %d usec\"}\n",
+    LOG_DEBUG("{\"utime\": %"PRIu32",\"msg\": \"frame_duration = %d usec\"}\n",
               utime, uwb_phy_frame_duration(udev, sizeof(twr_frame_final_t)));
-    LOG_DEBUG("{\"utime\": %lu,\"msg\": \"SHR_duration = %d usec\"}\n",
+    LOG_DEBUG("{\"utime\": %"PRIu32",\"msg\": \"SHR_duration = %d usec\"}\n",
               utime, uwb_phy_SHR_duration(udev));
-    LOG_DEBUG("{\"utime\": %lu,\"msg\": \"holdoff = %d usec\"}\n", utime,
+    LOG_DEBUG("{\"utime\": %"PRIu32",\"msg\": \"holdoff = %d usec\"}\n", utime,
               (uint16_t)ceilf(uwb_dwt_usecs_to_usecs(rng->config.
                                                      tx_holdoff_delay)));
 
