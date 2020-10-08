@@ -23,6 +23,9 @@
 #include "lwip/netif.h"
 #include "netif/lowpan6.h"
 
+#include "net/ieee802154/radio.h"
+#include "net/netdev/ieee802154_submac.h"
+
 #ifdef MODULE_NETDEV_TAP
 #include "netdev_tap.h"
 #include "netdev_tap_params.h"
@@ -158,7 +161,12 @@ extern void stm32_eth_netdev_setup(netdev_t *netdev);
 #endif
 
 #ifdef MODULE_NRF802154
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+extern ieee802154_dev_t nrf802154_hal_dev;
+static netdev_ieee802154_submac_t nrf802154_submac;
+#else
 extern netdev_ieee802154_t nrf802154_dev;
+#endif
 #endif
 
 /**
@@ -256,7 +264,17 @@ void lwip_bootstrap(void)
         return;
     }
 #elif defined(MODULE_NRF802154)
-    if (netif_add(&netif[0], &nrf802154_dev, lwip_netdev_init,
+    netdev_t *netdev_nrf52;
+
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+    netdev_ieee802154_submac_init(&nrf802154_submac, &nrf802154_hal_dev);
+    netdev_nrf52 = (netdev_t*) &nrf802154_submac;
+    nrf802154_init();
+#else
+    netdev_nrf52 = (netdev_t*) &nrf802154_dev;
+#endif
+
+    if (netif_add(&netif[0], netdev_nrf52, lwip_netdev_init,
                 tcpip_6lowpan_input) == NULL) {
         DEBUG("Could not add nrf802154 device\n");
         return;
