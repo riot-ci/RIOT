@@ -124,6 +124,42 @@ typedef struct gnrc_pktsnip {
 } gnrc_pktsnip_t;
 
 /**
+ * @brief   Returns the snip before a given snip in a packet
+ *
+ * @param[in] pkt   A packet.
+ * @param[in] snip  The snip for which the predecessor in @p pkt is searched for.
+ *
+ * @return  The snip before @p snip in @p pkt if @p snip is in @p pkt.
+ * @return  `NULL`, if @p snip is not in @p pkt.
+ */
+static inline gnrc_pktsnip_t *gnrc_pkt_prev_snip(gnrc_pktsnip_t *pkt,
+                                                 gnrc_pktsnip_t *snip)
+{
+    gnrc_pktsnip_t *prev;
+    LL_SEARCH_SCALAR(pkt, prev, next, snip);
+    return prev;
+}
+
+/**
+ * @brief Calculates length of a packet in byte.
+ *
+ * @param[in] pkt  list of packet snips.
+ *
+ * @return  length of the list of headers.
+ */
+static inline size_t gnrc_pkt_len(const gnrc_pktsnip_t *pkt)
+{
+    size_t len = 0;
+
+    while (pkt != NULL) {
+        len += pkt->size;
+        pkt = pkt->next;
+    }
+
+    return len;
+}
+
+/**
  * @brief   Appends a snip to a packet.
  *
  * @param[in] pkt   A packet.
@@ -168,41 +204,6 @@ static inline gnrc_pktsnip_t *gnrc_pkt_delete(gnrc_pktsnip_t *pkt,
     return pkt;
 }
 
-/**
- * @brief   Returns the snip before a given snip in a packet
- *
- * @param[in] pkt   A packet.
- * @param[in] snip  The snip for which the predecessor in @p pkt is searched for.
- *
- * @return  The snip before @p snip in @p pkt if @p snip is in @p pkt.
- * @return  `NULL`, if @p snip is not in @p pkt.
- */
-static inline gnrc_pktsnip_t *gnrc_pkt_prev_snip(gnrc_pktsnip_t *pkt,
-                                                 gnrc_pktsnip_t *snip)
-{
-    gnrc_pktsnip_t *prev;
-    LL_SEARCH_SCALAR(pkt, prev, next, snip);
-    return prev;
-}
-
-/**
- * @brief Calculates length of a packet in byte.
- *
- * @param[in] pkt  list of packet snips.
- *
- * @return  length of the list of headers.
- */
-static inline size_t gnrc_pkt_len(const gnrc_pktsnip_t *pkt)
-{
-    size_t len = 0;
-
-    while (pkt != NULL) {
-        len += pkt->size;
-        pkt = pkt->next;
-    }
-
-    return len;
-}
 
 /**
  * @brief Calculates length of a packet in byte up to (including) a snip with the given type.
