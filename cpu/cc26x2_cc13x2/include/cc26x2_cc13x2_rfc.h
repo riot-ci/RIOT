@@ -31,45 +31,65 @@ extern "C" {
 #endif
 
 /**
- * @brief   Initialize RF driver
+ * @brief   Request the RF Core to power on.
  *
- * @param[in] cpe_patch_fn CPE patch function, can be NULL.
- * @param[in] handler_cb   IRQ handler.
+ *  - Powers on the radio core power domain.
+ *  - Enables the RF Core clock gate.
+ *  - Boot RF Core.
+ *
+ * @param[in]   cpe_patch_fn    Function used to patch
  */
-void cc26x2_cc13x2_rfc_init(void (* cpe_patch_fn)(void),
-                            void ( *handler_cb)(void));
+void cc26x2_cc13x2_rfc_request_on(void);
 
 /**
- * @brief   Power on the radio.
+ * @brief   Confirm that the RF Core is on.
  *
- *  - Switches the high frequency clock to the xosc crystal on
- *  CC26X2/CC13X2.
- *  - Powers on the radio core power domain
- *  - Enables the radio core power domain
+ * @pre cc26x2_cc13x2_rfc_request_on MUST have been called before.
  *
- * @return 0 on success.
- * @return -1 on failure.
+ * @return -EAGAIN if the RF Core has not been started yet.
+ * @return 0 if started.
  */
-int cc26x2_cc13x2_rfc_power_on(void);
+int cc26x2_cc13x2_rfc_confirm_on(void);
 
 /**
- * @brief   Get last command sent to the RF Core.
+ * @brief   Finalize the power on of the RF Core.
  *
- * @return Pointer to last command.
+ * @pre cc26x2_cc13x2_rfc_confirm_on MUST have been previously
+ *      reported that the RF Core is on.
+ *
+ * - Switches the HF clock source to the XOSC crystal.
+ * - Patches the CPE if @p cpe_patch_fn is provided.
+ * - Turns on the clock line to the radio core, necessary
+ *   for @ref RFC_CMD_SYNC_START_RAT commands.
+ *
+ * @param[in]   cpe_patch_fn    Function used to patch the CPE, can
+ *                              be NULL if it doesn't needs to be
+ *                              patched.
  */
-rfc_op_t *cc26x2_cc13x2_rfc_last_cmd(void);
+void cc26x2_cc13x2_rfc_finish_on(void (* cpe_patch_fn)(void));
 
 /**
- * @brief   Send a command to the RF Core.
+ * @brief   Request the RF Core to execute a command.
  *
  * @param[in] op The command to send.
  *
  * @return CMDSTA register value.
  */
-uint32_t cc26x2_cc13x2_rfc_send_cmd(rfc_op_t *op);
+uint32_t cc26x2_cc13x2_rfc_request_execute(uintptr_t cmd);
 
 /**
- * @brief   Abort the running command.
+ * @brief   Confirm execution of the previously requested command
+ *          execution.
+ *
+ * @pre cc26x2_cc13x2_rfc_request_execture MUST have been called before.
+ *
+ * @return -EAGAIN if the command has not been finished.
+ * @return 0 if the command succesfully finished.
+ */
+int cc26x2_cc13x2_rfc_confirm_execute(void);
+
+/**
+ * @brief   Abort a running command.
  */
 void cc26x2_cc13x2_rfc_abort_cmd(void);
 

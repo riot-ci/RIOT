@@ -32,7 +32,7 @@ extern "C" {
  * @brief   RF PA table entry
  */
 typedef struct {
-    uint8_t dbm;  /**< PA entry value in dBm */
+    int16_t dbm;  /**< PA entry value in dBm */
     uint16_t val; /**< Coded value for the PA entry */
 } cc26x2_cc13x2_rf_pa_t;
 

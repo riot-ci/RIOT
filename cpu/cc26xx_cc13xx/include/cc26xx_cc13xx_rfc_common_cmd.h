@@ -48,7 +48,6 @@ typedef struct {
     uint8_t past_trig:1; /**< 0: A trigger in the past is never triggered, or for
                               start of commands, give an error */
 } rfc_trigger_t;
-
 /**
  * @brief   Condition for running next operation
  */
@@ -69,6 +68,24 @@ typedef struct {
                                          starts the operation */
     rfc_cond_t condition; /**< Condition for running next command */
 } rfc_op_t;
+
+
+/**
+ * @brief   CMD_READ_RFREG
+ * @{
+ */
+#define RFC_CMD_READ_RFREG (0x0601) /**< CMD_READ_RFREG command ID */
+#define RFC_RFREG_LQI (0x5268) /**< LQI of the last packet register */
+/**
+ * @brief   Read RF Core Hardware Register
+ */
+typedef struct {
+    uint16_t command_no; /**< The command ID number */
+    uint16_t address; /**< The offset from the start of the RF core HW register
+                           bank (0x40040000) */
+    uint32_t value; /**< Returned value of the register */
+} rfc_cmd_read_rfreg_t;
+/** @} */
 
 /**
  * @brief   CMD_FS

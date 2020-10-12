@@ -17,10 +17,10 @@
  * @author  Jean Pierre Dudey <jeandudey@hotmail.com>
  */
 
-#ifdef MODULE_CC26X2_CC13X2_RF
-
 #include "log.h"
 #include "net/gnrc/netif/ieee802154.h"
+#include "net/ieee802154/radio.h"
+#include "net/netdev/ieee802154_submac.h"
 
 #include "cc26x2_cc13x2_rf.h"
 
@@ -33,7 +33,12 @@
 #define CC26X2_CC13X2_RF_PRIO               (GNRC_NETIF_PRIO)
 #endif
 
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+extern ieee802154_dev_t cc26x2_cc13x2_rf_dev_t;
+static netdev_ieee802154_submac_t cc26x2_cc13x2_rf_submac;
+#else
 static cc26x2_cc13x2_rf_netdev_t cc26x2_cc13x2_rf_dev;
+#endif
 static char _stack[CC26X2_CC13X2_RF_STACKSIZE];
 static gnrc_netif_t _netif;
 
@@ -41,13 +46,16 @@ void auto_init_cc26x2_cc13x2_rf(void)
 {
     LOG_DEBUG("[auto_init_netif] initializing cc26x2_cc13x2 radio\n");
 
+    netdev_t *netdev;
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+    netdev_ieee802154_submac_init(&cc26x2_cc13x2_rf_submac, &cc26x2_cc13x2_rf_dev);
+    netdev = &cc26x2_cc13x2_rf_submac;
+#else
+    netdev = &cc26x2_cc13x2_rf_dev.netdev.netdev;
     cc26x2_cc13x2_rf_setup(&cc26x2_cc13x2_rf_dev);
+#endif
     gnrc_netif_ieee802154_create(&_netif, _stack, CC26X2_CC13X2_RF_STACKSIZE,
                                  CC26X2_CC13X2_RF_PRIO, "cc26x2_cc13x2_rf",
-                                 (netdev_t *)&cc26x2_cc13x2_rf_dev);
+                                 netdev);
 }
-
-#else
-typedef int dont_be_pedantic;
-#endif /* MODULE_CC26X2_CC13X2_RF */
 /** @} */

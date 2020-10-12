@@ -29,6 +29,9 @@ void board_init(void)
 {
     cpu_init();
 
-    gpio_init(LED0_PIN, GPIO_OUT);
-    gpio_init(LED1_PIN, GPIO_OUT);
+    //gpio_init(LED0_PIN, GPIO_OUT);
+    //gpio_init(LED1_PIN, GPIO_OUT);
+
+    //IOC->CFG[LED0_PIN] = IOCFG_PORTID_RFC_GPO0;
+    //IOC->CFG[LED1_PIN] = IOCFG_PORTID_RFC_GPO1;
 }
