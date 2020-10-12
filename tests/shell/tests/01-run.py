@@ -45,8 +45,9 @@ CONTROL_D = DLE+'\x04'
 PROMPT = '> '
 
 CMDS = (
-    # test start
     ('start_test', '[TEST_START]'),
+
+    # test empty line input
     ('\n', PROMPT),
 
     # test simple word separation
@@ -54,7 +55,7 @@ CMDS = (
     ('echo   multiple   spaces   between   argv', '"echo""multiple""spaces""between""argv"'),
     ('echo \t tabs\t\t processed \t\tlike\t \t\tspaces', '"echo""tabs""processed""like""spaces"'),
 
-    # test long line
+    # test unknown commands
     ('123456789012345678901234567890123456789012345678901234567890',
      'shell: command not found: '
      '123456789012345678901234567890123456789012345678901234567890'),
@@ -98,8 +99,9 @@ CMDS = (
     ('ps', EXPECTED_PS),
     ('help', EXPECTED_HELP),
 
-    # test end
+    # test reboot
     ('reboot', 'test_shell.'),
+
     ('end_test', '[TEST_END]'),
 )
 
@@ -182,6 +184,19 @@ def check_erase_long_line(child, longline):
         child.expect_exact('"echo"')
 
 
+def check_control_d(child):
+    # The current shell instance was initiated by shell_run_once(). The shell will exit.
+    child.sendline(CONTROL_D)
+    child.expect_exact('shell exited')
+
+    # The current shell instance was initiated by shell_run(). The shell will respawn
+    # automatically except on native. On native, RIOT is shut down completely,
+    # therefore exclude this part.
+    if BOARD != 'native':
+        child.sendline(CONTROL_D)
+        child.expect_exact(PROMPT)
+
+
 def testfunc(child):
     # avoid sending an extra empty line on native.
     if BOARD == 'native':
@@ -198,6 +213,8 @@ def testfunc(child):
         print("skipping check_line_canceling()")
 
     check_erase_long_line(child, longline)
+
+    check_control_d(child)
 
     # loop other defined commands and expected output
     for cmd, expected in CMDS:
