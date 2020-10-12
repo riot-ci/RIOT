@@ -147,22 +147,62 @@ extern "C" {
 
 /* Declarations and documentation: */
 
-#if !defined(ATOMIC_BITMASK) || defined(DOXYGEN)
+#if !defined(HAS_ATOMIC_BIT) || defined(DOXYGEN)
 /**
- * @brief   Type qualifier to use for bitmasks accessed atomically
+ * @name    Types used to specify atomic bit access operations
  *
- * Some platforms allow efficient access to a single bit with approaches like
- * bit banding. But for bit banding to work, the variable has to be allocated
- * within the bit banding region. This type qualifier ensures that a variable
- * can be used safely with the `atomic_set_bit_*()` and `atomic_clear_bit_*()`
- * family of functions.
+ * @warning These types are implementation dependent to allow exploiting
+ *          hardware specific features like bit-banding. Use the provided helper
+ *          functions to get or set the bit or destination they refer to.
  *
- * This macro is defined to an empty token on platforms not supporting bit
- * banding. Thus, it is safe to use this type qualifier for every platform and
- * it must be used for portable code.
+ * The motivation of a dedicated type is to allow ahead of time computation of
+ * e.g. bit-banding addresses, so that actually access can be done in a single
+ * CPU cycles even if the bit reference was initialized in a separate
+ * compilation unit and no link time optimization is used.
+ *
+ * @{
  */
-#define ATOMIC_BITMASK
-#endif
+/**
+ * @brief   Type specifying a bit in an `uint8_t`
+ *
+ * @warning This is an implementation specific type!
+ */
+typedef struct {
+    uint8_t *dest;  /**< Memory containing the bit to set/clear */
+    uint8_t mask;   /**< Bitmask used for setting the bit */
+} atomic_bit_u8_t;
+
+/**
+ * @brief   Type specifying a bit in an `uint16_t`
+ *
+ * @warning This is an implementation specific type!
+ */
+typedef struct {
+    uint16_t *dest; /**< Memory containing the bit to set/clear */
+    uint16_t mask;  /**< Bitmask used for setting the bit */
+} atomic_bit_u16_t;
+
+/**
+ * @brief   Type specifying a bit in an `uint32_t`
+ *
+ * @warning This is an implementation specific type!
+ */
+typedef struct {
+    uint32_t *dest; /**< Memory containing the bit to set/clear */
+    uint32_t mask;  /**< Bitmask used for setting the bit */
+} atomic_bit_u32_t;
+
+/**
+ * @brief   Type specifying a bit in an `uint64_t`
+ *
+ * @warning This is an implementation specific type!
+ */
+typedef struct {
+    uint64_t *dest; /**< Memory containing the bit to set/clear */
+    uint64_t mask;  /**< Bitmask used for setting the bit */
+} atomic_bit_u64_t;
+/** @} */
+#endif /* HAS_ATOMIC_BIT */
 
 /**
  * @name    Atomic Loads
@@ -395,37 +435,62 @@ static inline void atomic_fetch_and_u64(uint64_t *dest, uint64_t val);
 /** @} */
 
 /**
+ * @name    Helper Functions to Handle Atomic Bit References
+ * @{
+ */
+/**
+ * @brief   Create a reference to a bit in an `uint8_t`
+ * @param[in]       dest        Memory containing the bit
+ * @param[in]       bit         Bit number (`0` refers to the least significant)
+ */
+static inline atomic_bit_u8_t atomic_bit_u8(uint8_t *dest, uint8_t bit);
+
+/**
+ * @brief   Create a reference to a bit in an `uint16_t`
+ * @param[in]       dest        Memory containing the bit
+ * @param[in]       bit         Bit number (`0` refers to the least significant)
+ */
+static inline atomic_bit_u16_t atomic_bit_u16(uint16_t *dest, uint8_t bit);
+
+/**
+ * @brief   Create a reference to a bit in an `uint32_t`
+ * @param[in]       dest        Memory containing the bit
+ * @param[in]       bit         Bit number (`0` refers to the least significant)
+ */
+static inline atomic_bit_u32_t atomic_bit_u32(uint32_t *dest, uint8_t bit);
+
+/**
+ * @brief   Create a reference to a bit in an `uint64_t`
+ * @param[in]       dest        Memory containing the bit
+ * @param[in]       bit         Bit number (`0` refers to the least significant)
+ */
+static inline atomic_bit_u64_t atomic_bit_u64(uint64_t *dest, uint8_t bit);
+/** @} */
+
+/**
  * @name    Atomic Bit Setting
  * @{
  */
 /**
  * @brief   Atomic version of `*dest |= (1 << bit)`
- * @param[in,out]   mask        Mask to set bit in
- * @param[in]       bit         bit to set
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_set_bit_u8(uint8_t *mask, uint8_t bit);
+static inline void atomic_set_bit_u8(atomic_bit_u8_t bit);
 /**
  * @brief   Atomic version of `*dest |= (1 << bit)`
- * @param[in,out]   mask        Mask to set bit in
- * @param[in]       bit         bit to set
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_set_bit_u16(uint16_t *mask, uint8_t bit);
+static inline void atomic_set_bit_u16(atomic_bit_u16_t bit);
 /**
  * @brief   Atomic version of `*dest |= (1 << bit)`
- * @param[in,out]   mask        Mask to set bit in
- * @param[in]       bit         bit to set
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_set_bit_u32(uint32_t *mask, uint8_t bit);
+static inline void atomic_set_bit_u32(atomic_bit_u32_t bit);
 /**
  * @brief   Atomic version of `*dest |= (1 << bit)`
- * @param[in,out]   mask        Mask to set bit in
- * @param[in]       bit         bit to set
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_set_bit_u64(uint64_t *mask, uint8_t bit);
+static inline void atomic_set_bit_u64(atomic_bit_u64_t bit);
 /** @} */
 
 /**
@@ -434,32 +499,24 @@ static inline void atomic_set_bit_u64(uint64_t *mask, uint8_t bit);
  */
 /**
  * @brief   Atomic version of `*dest &= ~(1 << bit)`
- * @param[in,out]   mask        Mask to clear bit in
- * @param[in]       bit         bit to clear
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_clear_bit_u8(uint8_t *mask, uint8_t bit);
+static inline void atomic_clear_bit_u8(atomic_bit_u8_t bit);
 /**
  * @brief   Atomic version of `*dest &= ~(1 << bit)`
- * @param[in,out]   mask        Mask to clear bit in
- * @param[in]       bit         bit to clear
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_clear_bit_u16(uint16_t *mask, uint8_t bit);
+static inline void atomic_clear_bit_u16(atomic_bit_u16_t bit);
 /**
  * @brief   Atomic version of `*dest &= ~(1 << bit)`
- * @param[in,out]   mask        Mask to clear bit in
- * @param[in]       bit         bit to clear
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_clear_bit_u32(uint32_t *mask, uint8_t bit);
+static inline void atomic_clear_bit_u32(atomic_bit_u32_t bit);
 /**
  * @brief   Atomic version of `*dest &= ~(1 << bit)`
- * @param[in,out]   mask        Mask to clear bit in
- * @param[in]       bit         bit to clear
- * @pre     The @ref ATOMIC_BITMASK type qualifier was applied to @p mask
+ * @param[in,out]   bit         bit to set
  */
-static inline void atomic_clear_bit_u64(uint64_t *mask, uint8_t bit);
+static inline void atomic_clear_bit_u64(atomic_bit_u64_t bit);
 /** @} */
 
 /**
@@ -787,53 +844,58 @@ ATOMIC_FETCH_OP_IMPL(and, &, u32, uint32_t)
 ATOMIC_FETCH_OP_IMPL(and, &, u64, uint64_t)
 #endif
 
-#ifndef HAS_ATOMIC_SET_BIT_U8
-static inline void atomic_set_bit_u8(uint8_t *mask, uint8_t bit)
+#ifndef HAS_ATOMIC_BIT
+static inline atomic_bit_u8_t atomic_bit_u8(uint8_t *dest, uint8_t bit)
 {
-    atomic_fetch_or_u8(mask, 1 << bit);
+    atomic_bit_u8_t result = { .dest = dest, .mask = 1 << bit };
+    return result;
 }
-#endif
-#ifndef HAS_ATOMIC_SET_BIT_U16
-static inline void atomic_set_bit_u16(uint16_t *mask, uint8_t bit)
+static inline atomic_bit_u16_t atomic_bit_u16(uint16_t *dest, uint8_t bit)
 {
-    atomic_fetch_or_u16(mask, 1 << bit);
+    atomic_bit_u16_t result = { .dest = dest, .mask = 1 << bit };
+    return result;
 }
-#endif
-#ifndef HAS_ATOMIC_SET_BIT_U32
-static inline void atomic_set_bit_u32(uint32_t *mask, uint8_t bit)
+static inline atomic_bit_u32_t atomic_bit_u32(uint32_t *dest, uint8_t bit)
 {
-    atomic_fetch_or_u32(mask, 1 << bit);
+    atomic_bit_u32_t result = { .dest = dest, .mask = 1 << bit };
+    return result;
 }
-#endif
-#ifndef HAS_ATOMIC_SET_BIT_U64
-static inline void atomic_set_bit_u64(uint64_t *mask, uint8_t bit)
+static inline atomic_bit_u64_t atomic_bit_u64(uint64_t *dest, uint8_t bit)
 {
-    atomic_fetch_or_u64(mask, 1 << bit);
+    atomic_bit_u64_t result = { .dest = dest, .mask = 1 << bit };
+    return result;
 }
-#endif
-
-#ifndef HAS_ATOMIC_CLEAR_BIT_U8
-static inline void atomic_clear_bit_u8(uint8_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u8(atomic_bit_u8_t bit)
 {
-    atomic_fetch_and_u8(mask, ~(1 << bit));
+    atomic_fetch_or_u8(bit.dest, bit.mask);
 }
-#endif
-#ifndef HAS_ATOMIC_CLEAR_BIT_U16
-static inline void atomic_clear_bit_u16(uint16_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u16(atomic_bit_u16_t bit)
 {
-    atomic_fetch_and_u16(mask, ~(1 << bit));
+    atomic_fetch_or_u16(bit.dest, bit.mask);
 }
-#endif
-#ifndef HAS_ATOMIC_CLEAR_BIT_U32
-static inline void atomic_clear_bit_u32(uint32_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u32(atomic_bit_u32_t bit)
 {
-    atomic_fetch_and_u32(mask, ~(1 << bit));
+    atomic_fetch_or_u32(bit.dest, bit.mask);
 }
-#endif
-#ifndef HAS_ATOMIC_CLEAR_BIT_U64
-static inline void atomic_clear_bit_u64(uint64_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u64(atomic_bit_u64_t bit)
 {
-    atomic_fetch_and_u64(mask, ~(1 << bit));
+    atomic_fetch_or_u64(bit.dest, bit.mask);
+}
+static inline void atomic_clear_bit_u8(atomic_bit_u8_t bit)
+{
+    atomic_fetch_and_u8(bit.dest, ~bit.mask);
+}
+static inline void atomic_clear_bit_u16(atomic_bit_u16_t bit)
+{
+    atomic_fetch_and_u16(bit.dest, ~bit.mask);
+}
+static inline void atomic_clear_bit_u32(atomic_bit_u32_t bit)
+{
+    atomic_fetch_and_u32(bit.dest, ~bit.mask);
+}
+static inline void atomic_clear_bit_u64(atomic_bit_u64_t bit)
+{
+    atomic_fetch_and_u64(bit.dest, ~bit.mask);
 }
 #endif
 
