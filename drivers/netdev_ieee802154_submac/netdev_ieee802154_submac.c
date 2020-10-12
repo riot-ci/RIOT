@@ -61,6 +61,9 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
         case NETOPT_STATE:
             *((netopt_state_t*) value) = _get_submac_state(submac);
             return 0;
+        case NETOPT_TX_RETRIES_NEEDED:
+            *((int8_t*) value) = netdev_submac->retrans;
+            return 1;
         default:
             break;
     }
@@ -201,11 +204,14 @@ static void submac_tx_done(ieee802154_submac_t *submac, int status,
                            ieee802154_tx_info_t *info)
 {
     (void)status;
-    (void)info;
     netdev_ieee802154_submac_t *netdev_submac = container_of(submac,
                                                              netdev_ieee802154_submac_t,
                                                              submac);
     netdev_t *netdev = (netdev_t *)netdev_submac;
+
+    if (info) {
+        netdev_submac->retrans = info->retrans;
+    }
 
     switch (status) {
     case TX_STATUS_SUCCESS:
