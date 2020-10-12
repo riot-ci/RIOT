@@ -68,8 +68,7 @@ static gnrc_pktsnip_t *_build_ipv6_packet(const ipv6_addr_t *src,
         return NULL;
     }
     ((gnrc_netif_hdr_t *)netif_hdr->data)->if_pid = (kernel_pid_t)netif;
-    payload = gnrc_pkt_append(payload, netif_hdr);
-    return payload;
+    return gnrc_pkt_append(payload, netif_hdr);
 }
 
 

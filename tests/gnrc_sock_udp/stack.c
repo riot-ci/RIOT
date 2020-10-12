@@ -91,8 +91,7 @@ static gnrc_pktsnip_t *_build_udp_packet(const ipv6_addr_t *src,
         return NULL;
     }
     ((gnrc_netif_hdr_t *)netif_hdr->data)->if_pid = (kernel_pid_t)netif;
-    udp = gnrc_pkt_append(udp, netif_hdr);
-    return udp;
+    return gnrc_pkt_append(udp, netif_hdr);
 }
 
 
