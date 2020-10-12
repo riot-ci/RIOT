@@ -18,9 +18,6 @@
 
 #include "cc26xx_cc13xx_rfc_queue.h"
 
-#define ENABLE_DEBUG (0)
-#include "debug.h"
-
 uint8_t *cc26x2_cc13x2_rfc_queue_recv(rfc_data_queue_t *queue)
 {
     assert(queue);

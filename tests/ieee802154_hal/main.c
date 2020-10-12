@@ -149,6 +149,7 @@ static void _hal_radio_cb(ieee802154_dev_t *dev, ieee802154_trx_ev_t status)
     switch(status) {
         case IEEE802154_RADIO_CONFIRM_TX_DONE:
         case IEEE802154_RADIO_CONFIRM_CCA:
+            puts("HAL WORKS SHIT!");
             mutex_unlock(&lock);
             break;
         case IEEE802154_RADIO_INDICATION_RX_DONE:

@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup         boards_cc1312_launchpad
+ * @ingroup         boards_cc1352_launchpad
  * @{
  *
  * @file

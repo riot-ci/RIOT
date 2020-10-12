@@ -17,10 +17,10 @@
  * @author  Jean Pierre Dudey <jeandudey@hotmail.com>
  */
 
-#ifdef MODULE_CC26X2_CC13X2_RF
-
 #include "log.h"
 #include "net/gnrc/netif/ieee802154.h"
+#include "net/ieee802154/radio.h"
+#include "net/netdev/ieee802154_submac.h"
 
 #include "cc26x2_cc13x2_rf.h"
 
@@ -33,9 +33,10 @@
 #define CC26X2_CC13X2_RF_PRIO               (GNRC_NETIF_PRIO)
 #endif
 
-static cc26x2_cc13x2_rf_netdev_t cc26x2_cc13x2_rf_dev;
 static char _stack[CC26X2_CC13X2_RF_STACKSIZE];
 static gnrc_netif_t _netif;
+
+static cc26x2_cc13x2_rf_t cc26x2_cc13x2_rf_dev;
 
 void auto_init_cc26x2_cc13x2_rf(void)
 {
@@ -46,8 +47,4 @@ void auto_init_cc26x2_cc13x2_rf(void)
                                  CC26X2_CC13X2_RF_PRIO, "cc26x2_cc13x2_rf",
                                  (netdev_t *)&cc26x2_cc13x2_rf_dev);
 }
-
-#else
-typedef int dont_be_pedantic;
-#endif /* MODULE_CC26X2_CC13X2_RF */
 /** @} */

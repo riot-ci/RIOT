@@ -28,38 +28,47 @@
 extern "C" {
 #endif
 
-#define RFC_MOD_TYPE_FSK           (0) /**< FSK modulation type */
-#define RFC_MOD_TYPE_GFSK          (1) /**< GFSK modulation type */
-#define RFC_MOD_TYPE_OOK           (2) /**< OOK modulation type */
+#define RFC_MOD_TYPE_FSK            (0) /**< FSK modulation type */
+#define RFC_MOD_TYPE_GFSK           (1) /**< GFSK modulation type */
+#define RFC_MOD_TYPE_OOK            (2) /**< OOK modulation type */
 
-#define RFC_DEV_STEP_SZ_250_HZ     (0) /**< 250 Hz deviation step size */
-#define RFC_DEV_STEP_SZ_1000_HZ    (1) /**< 1000 Hz deviation step size */
-#define RFC_DEV_STEP_SZ_15_625_HZ  (2) /**< 15.625 Hz deviation step size */
-#define RFC_DEV_STEP_SZ_62_5_HZ    (3) /**< 62.5 Hz deviation step size */
+#define RFC_DEV_STEP_SZ_250_HZ      (0) /**< 250 Hz deviation step size */
+#define RFC_DEV_STEP_SZ_1000_HZ     (1) /**< 1000 Hz deviation step size */
+#define RFC_DEV_STEP_SZ_15_625_HZ   (2) /**< 15.625 Hz deviation step size */
+#define RFC_DEV_STEP_SZ_62_5_HZ     (3) /**< 62.5 Hz deviation step size */
 
-#define RFC_DECIM_MODE_AUTO        (0) /**< Automatic PDIF decimation */
-#define RFC_DECIM_MODE_FORCE_0     (1) /**< Force PDIF decimation to 0 */
-#define RFC_DECIM_MODE_FORCE_1     (2) /**< Force PDIF decimation to 1 */
-#define RFC_DECIM_MODE_FORCE_2     (5) /**< Force PDIF decimation to 2 */
+#define RFC_DECIM_MODE_AUTO         (0) /**< Automatic PDIF decimation */
+#define RFC_DECIM_MODE_FORCE_0      (1) /**< Force PDIF decimation to 0 */
+#define RFC_DECIM_MODE_FORCE_1      (2) /**< Force PDIF decimation to 1 */
+#define RFC_DECIM_MODE_FORCE_2      (5) /**< Force PDIF decimation to 2 */
 
 
-#define RFC_PREAM_MODE_0_FIRST     (0) /**< Send 0 as the first preamble bit */
-#define RFC_PREAM_MODE_1_FIRST     (1) /**< Send 1 as the first preamble bit */
-#define RFC_PREAM_MODE_SAME_BIT_SW (2) /**< Send same first bit in preamble and sync word */
-#define RFC_PREAM_MODE_DIFF_BIT_SW (3) /**< Send different first bit in preamble and sync word */
+#define RFC_PREAM_MODE_0_FIRST      (0) /**< Send 0 as the first preamble bit */
+#define RFC_PREAM_MODE_1_FIRST      (1) /**< Send 1 as the first preamble bit */
+#define RFC_PREAM_MODE_SAME_BIT_SW  (2) /**< Send same first bit in preamble and
+                                             sync word */
+#define RFC_PREAM_MODE_DIFF_BIT_SW  (3) /**< Send different first bit in
+                                             preamble and sync word */
 
 #define RFC_WHITEN_MODE_NONE                 (0) /**< No whitening */
-#define RFC_WHITEN_MODE_CC1101               (1) /**< CC1101/CC2500 compatible whitening */
-#define RFC_WHITEN_MODE_PN9                  (2) /**< PN9 whitening without byte reversal */
-#define RFC_WHITEN_MODE_IEEE802154G_NONE     (4) /**< No whitener, 32-bit IEEE 802.15.4g compatible CRC */
-#define RFC_WHITEN_MODE_IEEE802154G_CRC32    (5) /**< IEEE 802.15.4g compatible whitener and 32-bit CRC */
-#define RFC_WHITEN_MODE_IEEE802154G_ONLY_CRC (6) /**< No whitener, dynamically IEEE 802.15.4g compatible
+#define RFC_WHITEN_MODE_CC1101               (1) /**< CC1101/CC2500 compatible
+                                                      whitening */
+#define RFC_WHITEN_MODE_PN9                  (2) /**< PN9 whitening without byte
+                                                      reversal */
+#define RFC_WHITEN_MODE_IEEE802154G_NONE     (4) /**< No whitener, 32-bit IEEE
+                                                      802.15.4g compatible
+                                                      CRC */
+#define RFC_WHITEN_MODE_IEEE802154G_CRC32    (5) /**< IEEE 802.15.4g compatible
+                                                      whitener and 32-bit CRC */
+#define RFC_WHITEN_MODE_IEEE802154G_ONLY_CRC (6) /**< No whitener, dynamically
+                                                      IEEE 802.15.4g compatible
                                                       16-bit or 32-bit */
-#define RFC_WHITEN_MODE_IEEE802154G_CRC      (7) /**< Dynamically IEEE 802.15.4g compatible whitener and
+#define RFC_WHITEN_MODE_IEEE802154G_CRC      (7) /**< Dynamically IEEE 802.15.4g
+                                                      compatible whitener and
                                                       16-bit or 32-bit CRC */
 
-#define RFC_BIAS_MODE_INTERNAL     (0) /**< Internal bias */
-#define RFC_BIAS_MODE_EXTERNAL     (1) /**< External bias */
+#define RFC_BIAS_MODE_INTERNAL  (0) /**< Internal bias */
+#define RFC_BIAS_MODE_EXTERNAL  (1) /**< External bias */
 
 /**
  * @brief   CMD_PROP_RADIO_DIV_SETUP
@@ -111,7 +120,7 @@ typedef struct {
     void *next_op; /**< Pointer to the next operation to run */
     rfc_ratmr_t start_time; /**< Absolute or relative start time */
     rfc_trigger_t start_trigger; /**< Identification of the trigger that
-                                         starts the operation */
+                                      starts the operation */
     rfc_cond_t condition; /**< Condition for running next command */
     rfc_modulation_t modulation; /**< Modulation parameters */
     struct {
@@ -256,7 +265,7 @@ typedef struct {
     void *next_op; /**< Pointer to the next operation to run */
     rfc_ratmr_t start_time; /**< Absolute or relative start time */
     rfc_trigger_t start_trigger; /**< Identification of the trigger that
-                                         starts the operation */
+                                      starts the operation */
     rfc_cond_t condition; /**< Condition for running next command */
     struct {
         /**
@@ -334,7 +343,7 @@ typedef struct {
     void *next_op; /**< Pointer to the next operation to run */
     rfc_ratmr_t start_time; /**< Absolute or relative start time */
     rfc_trigger_t start_trigger; /**< Identification of the trigger that
-                                         starts the operation */
+                                      starts the operation */
     rfc_cond_t condition; /**< Condition for running next command */
     struct {
         /**
@@ -455,6 +464,92 @@ typedef struct {
     rfc_data_queue_t *queue; /**< Pointer to receive queue */
     uint8_t *output; /**< Pointer to output structure */
 } rfc_cmd_prop_rx_adv_t;
+/** @} */
+
+//! @}
+
+/**
+ * @brief   CMD_PROP_CS
+ * @{
+ */
+#define RFC_CMD_PROP_CS (0x3805)
+/**
+ * @brief   Carrier Sense Command
+ */
+typedef struct {
+    uint16_t command_no; /**< The command ID number */
+    uint16_t status; /**< An integer telling the status of the command. */
+    void *next_op; /**< Pointer to the next operation to run */
+    rfc_ratmr_t start_time; /**< Absolute or relative start time */
+    rfc_trigger_t start_trigger; /**< Identification of the trigger that
+                                      starts the operation */
+    rfc_cond_t condition; /**< Condition for running next command */
+    struct {
+        /**
+         * 0h = Keep synth running if command ends with channel Idle.
+         * 1h = Turn off synth if command ends with channel Idle.
+         */
+        uint8_t off_idle:1;
+        /**
+         * 0h = Keep synth running if command ends with channel Busy.
+         * 1h = Turn off synth if command ends with channel Busy.
+         */
+        uint8_t off_busy:1;
+    } fs_conf; /**< Synthesizer configuration */
+    uint8_t __dummy0; /**< Padding */
+    struct {
+       /**
+        * If 1, enable RSSI as a criterion
+        */
+        uint8_t ena_rssi:1;
+        /**
+         * If 1, enable correlation as a criterion
+         */
+        uint8_t ena_corr:1;
+        /**
+         * 0h = Busy if either RSSI or correlation indicates Busy.
+         * 1h = Busy if both RSSI and correlation indicates Busy.
+         */
+        uint8_t operation:1;
+        /**
+         * 0h = Continue carrier sense on channel Busy.
+         * 1h = End carrier sense on channel Busy.
+         *
+         * For an RX command, the receiver will continue when carrier sense
+         * ends, but it will then not end if channel goes Idle.
+         */
+        uint8_t busy_op:1;
+        /**
+         * 0h = Continue on channel Idle.
+         * 1h = End on channel Idle
+         */
+        uint8_t idle_op:1;
+        /**
+         * 0h = Timeout with channel state Invalid treated as Busy.
+         * 1h = Timeout with channel state Invalid treated as Idle.
+         */
+        uint8_t timeout_res:1;
+    } conf; /**< Carrier sense configuration command */
+    int8_t rssi_thr; /**< RSSI threshold */
+    uint8_t num_rssi_idle; /**< Number of consecutive RSSI measurements below
+                                the threshold needed before the channel is
+                                declared Idle */
+    uint8_t num_rssi_busy; /**< Number of consecutive RSSI measurements above the
+                                threshold needed before the channel is declared
+                                Busy */
+    uint16_t corr_period; /**< Number of RAT ticks for a correlation
+                               observation periods */
+    struct {
+        uint8_t num_corr_inv:4; /**< Number of subsequent correlation tops with
+                                     maximum `corr_period` RAT ticks between
+                                     them needed to go from Idle to Invalid */
+        uint8_t num_corr_busy:4; /**< Number of subsequent correlation tops with
+                                      maximum `corr_period` RAT ticks between
+                                      them needed to go from Invalid to Busy */
+    } corr_config; /**< Correlation observation configuration. */
+    rfc_trigger_t end_trigger; /**< Trigger for ending the operation */
+    rfc_ratmr_t end_time; /**< Time used together with `end_trigger` */
+} rfc_cmd_prop_cs_t;
 /** @} */
 
 #ifdef __cplusplus
