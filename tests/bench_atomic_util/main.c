@@ -34,6 +34,7 @@
 #endif
 
 #define CONCAT(a, b) a ## b
+#define CONCAT3(a, b, c) a ## b ## c
 #define CONCAT4(a, b, c, d) a ## b ## c ## d
 
 enum {
@@ -188,8 +189,8 @@ BENCH_ATOMIC_FETCH_OP(and, &, u64, uint64_t, atomic_uint_least64_t)
     static void CONCAT4(bench_atomic_, opname, _bit_, name)(uint32_t *result_us) \
     {                                                                          \
         uint32_t start, stop;                                                  \
-        static const uint8_t bit = 5;                                          \
-        type mask = ((type)1) << bit;                                          \
+        static const uint8_t _bit = 5;                                         \
+        type mask = ((type)1) << _bit;                                         \
                                                                                \
         {                                                                      \
             volatile type val = 0;                                             \
@@ -208,10 +209,12 @@ BENCH_ATOMIC_FETCH_OP(and, &, u64, uint64_t, atomic_uint_least64_t)
         }                                                                      \
                                                                                \
         {                                                                      \
-            type val = 0;                                                      \
+            static type val = 0;                                               \
+            CONCAT3(atomic_bit_, name, _t) bit =                               \
+                CONCAT(atomic_bit_, name)(&val, _bit);                         \
             start = xtimer_now_usec();                                         \
             for (uint32_t i = 0; i < LOOPS; i++) {                             \
-                CONCAT4(atomic_, opname, _bit_, name)(&val, bit);              \
+                CONCAT4(atomic_, opname, _bit_, name)(bit);                    \
             }                                                                  \
             stop = xtimer_now_usec();                                          \
             result_us[IMPL_ATOMIC_UTIL] = stop - start;                        \
