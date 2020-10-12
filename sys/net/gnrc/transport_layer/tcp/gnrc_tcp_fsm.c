@@ -403,7 +403,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
 
     DEBUG("gnrc_tcp_fsm.c : _fsm_rcvd_pkt()\n");
     /* Search for TCP header. */
-    LL_SEARCH_SCALAR(in_pkt, snp, type, GNRC_NETTYPE_TCP);
+    snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_TCP);
     tcp_hdr_t *tcp_hdr = (tcp_hdr_t *) snp->data;
 
     /* Parse packet options, return if they are malformed */
@@ -419,7 +419,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
 
     /* Extract network layer header */
 #ifdef MODULE_GNRC_IPV6
-    LL_SEARCH_SCALAR(in_pkt, snp, type, GNRC_NETTYPE_IPV6);
+    snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_IPV6);
     if (snp == NULL) {
         DEBUG("gnrc_tcp_fsm.c : _fsm_rcvd_pkt() : incoming packet had no IPv6 header\n");
         return 0;
@@ -481,9 +481,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
                 /* In case peer_addr is link local: Store interface Id in tcb */
                 if (ipv6_addr_is_link_local((ipv6_addr_t *) tcb->peer_addr)) {
                     gnrc_pktsnip_t *tmp = NULL;
-                    LL_SEARCH_SCALAR(in_pkt, tmp, type, GNRC_NETTYPE_NETIF);
-                    /* cppcheck-suppress knownConditionTrueFalse
-                     * (reason: tmp *can* be != NULL after LL_SEARCH_SCALAR) */
+                    tmp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_NETIF);
                     if (tmp == NULL) {
                         DEBUG("gnrc_tcp_fsm.c : _fsm_rcvd_pkt() :\
                                incoming packet had no netif header\n");
@@ -687,7 +685,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
             if (tcb->state == FSM_STATE_ESTABLISHED || tcb->state == FSM_STATE_FIN_WAIT_1 ||
                 tcb->state == FSM_STATE_FIN_WAIT_2) {
                 /* Search for begin of payload */
-                LL_SEARCH_SCALAR(in_pkt, snp, type, GNRC_NETTYPE_UNDEF);
+                snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_UNDEF);
 
                 /* Accept only data that is expected, to be received */
                 if (tcb->rcv_nxt == seg_seq) {
