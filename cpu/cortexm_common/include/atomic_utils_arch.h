@@ -69,79 +69,108 @@ static inline void atomic_store_u32(uint32_t *dest, uint32_t val)
 #endif /* __clang__ */
 
 #if CPU_HAS_BITBAND
-#define ATOMIC_BITMASK __attribute__((section(".srambb")))
+#define HAS_ATOMIC_BIT
 
-#define HAS_ATOMIC_SET_BIT_U8
-static inline void atomic_set_bit_u8(uint8_t *mask, uint8_t bit)
+typedef volatile uint32_t *atomic_bit_u8_t;
+typedef volatile uint32_t *atomic_bit_u16_t;
+typedef volatile uint32_t *atomic_bit_u32_t;
+typedef volatile uint32_t *atomic_bit_u64_t;
+
+static inline bool _is_addr_valid_for_bitbanding(void *_addr)
+{
+    /* SRAM bit-band region goes from 0x20000000 to 0x200fffff,
+     * peripheral bit-band region goes from 0x40000000 to 0x400fffff */
+    uintptr_t addr = (uintptr_t)_addr;
+    if ((addr < 0x20000000UL) || (addr > 0x400fffffUL)) {
+        return false;
+    }
+
+    if ((addr >= 0x200fffffUL) && (addr < 0x40000000UL)) {
+        return false;
+    }
+
+    return true;
+}
+
+static inline atomic_bit_u8_t atomic_bit_u8(uint8_t *dest, uint8_t bit)
+{
+    assert(_is_addr_valid_for_bitbanding(dest));
+    return bitband_addr(dest, bit);
+}
+
+static inline atomic_bit_u16_t atomic_bit_u16(uint16_t *dest, uint8_t bit)
+{
+    assert(_is_addr_valid_for_bitbanding(dest));
+    return bitband_addr(dest, bit);
+}
+
+static inline atomic_bit_u32_t atomic_bit_u32(uint32_t *dest, uint8_t bit)
+{
+    assert(_is_addr_valid_for_bitbanding(dest));
+    return bitband_addr(dest, bit);
+}
+
+static inline atomic_bit_u64_t atomic_bit_u64(uint64_t *dest, uint8_t bit)
+{
+    assert(_is_addr_valid_for_bitbanding(dest));
+    return bitband_addr(dest, bit);
+}
+
+static inline void atomic_set_bit_u8(atomic_bit_u8_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 1;
+    *bit = 1;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_SET_BIT_U16
-static inline void atomic_set_bit_u16(uint16_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u16(atomic_bit_u16_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 1;
+    *bit = 1;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_SET_BIT_U32
-static inline void atomic_set_bit_u32(uint32_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u32(atomic_bit_u32_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 1;
+    *bit = 1;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_SET_BIT_U64
-static inline void atomic_set_bit_u64(uint64_t *mask, uint8_t bit)
+static inline void atomic_set_bit_u64(atomic_bit_u64_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 1;
+    *bit = 1;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_CLEAR_BIT_U8
-static inline void atomic_clear_bit_u8(uint8_t *mask, uint8_t bit)
+static inline void atomic_clear_bit_u8(atomic_bit_u8_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 0;
+    *bit = 0;
+    __asm__ volatile ("" ::: "memory");
+}
+static inline void atomic_clear_bit_u16(atomic_bit_u16_t bit)
+{
+    __asm__ volatile ("" ::: "memory");
+    *bit = 0;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_CLEAR_BIT_U16
-static inline void atomic_clear_bit_u16(uint16_t *mask, uint8_t bit)
+static inline void atomic_clear_bit_u32(atomic_bit_u32_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 0;
+    *bit = 0;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_CLEAR_BIT_U32
-static inline void atomic_clear_bit_u32(uint32_t *mask, uint8_t bit)
+static inline void atomic_clear_bit_u64(atomic_bit_u64_t bit)
 {
     __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 0;
+    *bit = 0;
     __asm__ volatile ("" ::: "memory");
 }
 
-#define HAS_ATOMIC_CLEAR_BIT_U64
-static inline void atomic_clear_bit_u64(uint64_t *mask, uint8_t bit)
-{
-    __asm__ volatile ("" ::: "memory");
-    volatile uint32_t *bbaddr = bitband_addr(mask, bit);
-    *bbaddr = 0;
-    __asm__ volatile ("" ::: "memory");
-}
 
 #endif /* CPU_HAS_BITBAND */
 
