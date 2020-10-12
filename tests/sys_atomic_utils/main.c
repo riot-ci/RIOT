@@ -802,10 +802,10 @@ static mutex_t stop_mutex = MUTEX_INIT_LOCKED;
 static int testing_active = 0;
 
 /* Testing values to operate on */
-static ATOMIC_BITMASK uint8_t val_u8;
-static ATOMIC_BITMASK uint16_t val_u16;
-static ATOMIC_BITMASK uint32_t val_u32;
-static ATOMIC_BITMASK uint64_t val_u64;
+static uint8_t val_u8;
+static uint16_t val_u16;
+static uint32_t val_u32;
+static uint64_t val_u64;
 
 static uint64_t stats_ops;
 static uint64_t stats_tests;
