@@ -27,6 +27,7 @@
 
 #include "kernel_types.h"
 #include "net/gnrc/nettype.h"
+#include "utlist.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -121,6 +122,68 @@ typedef struct gnrc_pktsnip {
                                      *   packet snip */
 #endif
 } gnrc_pktsnip_t;
+
+/**
+ * @brief   Appends a snip to a packet.
+ *
+ * @param[in] pkt   A packet.
+ * @param[in] snip  A snip.
+ *
+ * @return  The new head of @p pkt.
+ */
+static inline gnrc_pktsnip_t *gnrc_pkt_append(gnrc_pktsnip_t *pkt,
+                                              gnrc_pktsnip_t *snip)
+{
+    LL_APPEND(pkt, snip);
+    return pkt;
+}
+
+/**
+ * @brief   Prepends a snip to a packet.
+ *
+ * @param[in] pkt   A packet.
+ * @param[in] snip  A snip.
+ *
+ * @return  The new head of @p pkt.
+ */
+static inline gnrc_pktsnip_t *gnrc_pkt_prepend(gnrc_pktsnip_t *pkt,
+                                               gnrc_pktsnip_t *snip)
+{
+    LL_PREPEND(pkt, snip);
+    return pkt;
+}
+
+/**
+ * @brief   Deletes a snip from a packet.
+ *
+ * @param[in] pkt   A packet.
+ * @param[in] snip  A snip.
+ *
+ * @return  The new head of @p pkt.
+ */
+static inline gnrc_pktsnip_t *gnrc_pkt_delete(gnrc_pktsnip_t *pkt,
+                                              gnrc_pktsnip_t *snip)
+{
+    LL_DELETE(pkt, snip);
+    return pkt;
+}
+
+/**
+ * @brief   Returns the snip before a given snip in a packet
+ *
+ * @param[in] pkt   A packet.
+ * @param[in] snip  The snip for which the predecessor in @p pkt is searched for.
+ *
+ * @return  The snip before @p snip in @p pkt if @p snip is in @p pkt.
+ * @return  `NULL`, if @p snip is not in @p pkt.
+ */
+static inline gnrc_pktsnip_t *gnrc_pkt_prev_snip(gnrc_pktsnip_t *pkt,
+                                                 gnrc_pktsnip_t *snip)
+{
+    gnrc_pktsnip_t *prev;
+    LL_SEARCH_SCALAR(pkt, prev, next, snip);
+    return prev;
+}
 
 /**
  * @brief Calculates length of a packet in byte.
