@@ -71,7 +71,7 @@ static inline void setchan(const saul_pwm_channel_t *chan, uint16_t value)
 {
     pwm_set(chan->dev,
             chan->channel,
-            chan->flags & SAUL_PWM_INVERTED ? saul_pwm_resolution - value : value);
+            (chan->flags & SAUL_PWM_INVERTED) ? saul_pwm_resolution - value : value);
 }
 
 static int write_dimmer(const void *dev, phydat_t *state)
