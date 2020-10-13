@@ -85,11 +85,10 @@ static int _send(gnrc_pktsnip_t *pkt)
     assert(pkt != NULL);
 
     /* NOTE: In sending direction: pkt = nw, nw->next = tcp, tcp->next = payload */
-    gnrc_pktsnip_t *tcp;
+    /* Search for TCP header */
+    gnrc_pktsnip_t *tcp = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_TCP);
     gnrc_pktsnip_t *nw = NULL;
 
-    /* Search for TCP header */
-    tcp = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_TCP);
     if (tcp == NULL) {
         DEBUG("gnrc_tcp_eventloop : _send() : tcp header missing.\n");
         gnrc_pktbuf_release(pkt);

@@ -54,12 +54,12 @@ int _pkt_build_reset_from_pkt(gnrc_pktsnip_t **out_pkt, gnrc_pktsnip_t *in_pkt)
     tcp_hdr_t tcp_hdr_out;
 
     /* Extract headers */
-    gnrc_pktsnip_t *tcp_snp;
-    tcp_snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_TCP);
+    gnrc_pktsnip_t *tcp_snp = gnrc_pktsnip_search_type(in_pkt,
+                                                       GNRC_NETTYPE_TCP);
     tcp_hdr_t *tcp_hdr_in = (tcp_hdr_t *)tcp_snp->data;
 #ifdef MODULE_GNRC_IPV6
-    gnrc_pktsnip_t *ip6_snp;
-    ip6_snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_IPV6);
+    gnrc_pktsnip_t *ip6_snp = gnrc_pktsnip_search_type(in_pkt,
+                                                       GNRC_NETTYPE_IPV6);
     ipv6_hdr_t *ip6_hdr = (ipv6_hdr_t *)ip6_snp->data;
 #endif
 
@@ -117,8 +117,8 @@ int _pkt_build_reset_from_pkt(gnrc_pktsnip_t **out_pkt, gnrc_pktsnip_t *in_pkt)
     if (ipv6_addr_is_link_local(&ip6_hdr->src)) {
 
         /* Search for netif header in received packet */
-        gnrc_pktsnip_t *net_snp;
-        net_snp = gnrc_pktsnip_search_type(in_pkt, GNRC_NETTYPE_NETIF);
+        gnrc_pktsnip_t *net_snp = gnrc_pktsnip_search_type(in_pkt,
+                                                           GNRC_NETTYPE_NETIF);
         gnrc_netif_hdr_t *net_hdr = (gnrc_netif_hdr_t *)net_snp->data;
 
         /* Allocate new header and set interface id */
