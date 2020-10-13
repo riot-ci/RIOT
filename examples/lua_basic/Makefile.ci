@@ -1,3 +1,7 @@
+BOARD_BLACKLIST := \
+    nucleo-l011k4 \
+    #
+
 BOARD_INSUFFICIENT_MEMORY := \
     blackpill \
     blackpill-128kib \
