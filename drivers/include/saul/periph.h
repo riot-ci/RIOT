@@ -151,7 +151,7 @@ typedef struct {
  * @brief Suppress saul_pwm's RGB LED generation
  *
  * This can be defined in `pwm_params.h` if the saul_pwm module is used, but no
- * RGB LEDs (and only dimmers) are in use. Then, no @ref saul_pwm_rgb_params
+ * RGB LEDs (and only dimmers) are in use. Then, no @ref saul_pwm_rgb_params_t
  * needs to be set.
  */
 #if DOXYGEN
