@@ -1,4 +1,4 @@
 # Use Picolibc to reduce ROM usage
-PICOLIBC = 1
+FEATURES_REQUIRED += picolibc
 
 include $(RIOTBOARD)/common/nucleo/Makefile.dep
