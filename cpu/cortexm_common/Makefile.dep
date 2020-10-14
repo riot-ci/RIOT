@@ -4,7 +4,7 @@ USEMODULE += cortexm_common
 # include common periph code
 USEMODULE += cortexm_common_periph
 
-ifneq (,$(filter picolibc,$(FEATURES_USED)))
+ifneq (,$(filter picolibc,$(FEATURES_USED) $(USEMODULE)))
   # Use Picolibc when explicitly selected
   USEMODULE += picolibc
 else
