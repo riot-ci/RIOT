@@ -24,12 +24,12 @@
 #include "net/gnrc.h"
 #include "evtimer.h"
 #include "evtimer_msg.h"
-#include "internal/gnrc_tcp_common.h"
-#include "internal/gnrc_tcp_eventloop.h"
-#include "internal/gnrc_tcp_pkt.h"
-#include "internal/gnrc_tcp_option.h"
-#include "internal/gnrc_tcp_rcvbuf.h"
-#include "internal/gnrc_tcp_fsm.h"
+#include "include/gnrc_tcp_common.h"
+#include "include/gnrc_tcp_eventloop.h"
+#include "include/gnrc_tcp_pkt.h"
+#include "include/gnrc_tcp_option.h"
+#include "include/gnrc_tcp_rcvbuf.h"
+#include "include/gnrc_tcp_fsm.h"
 
 #ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"

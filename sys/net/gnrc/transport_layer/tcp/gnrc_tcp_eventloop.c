@@ -22,10 +22,10 @@
 #include "net/af.h"
 #include "net/tcp.h"
 #include "net/gnrc.h"
-#include "internal/gnrc_tcp_common.h"
-#include "internal/gnrc_tcp_pkt.h"
-#include "internal/gnrc_tcp_fsm.h"
-#include "internal/gnrc_tcp_eventloop.h"
+#include "include/gnrc_tcp_common.h"
+#include "include/gnrc_tcp_pkt.h"
+#include "include/gnrc_tcp_fsm.h"
+#include "include/gnrc_tcp_eventloop.h"
 
 #ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"

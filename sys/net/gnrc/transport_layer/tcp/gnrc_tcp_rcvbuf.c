@@ -19,8 +19,8 @@
 #include <mutex.h>
 #include <stdint.h>
 #include "net/gnrc/tcp/config.h"
-#include "internal/gnrc_tcp_common.h"
-#include "internal/gnrc_tcp_rcvbuf.h"
+#include "include/gnrc_tcp_common.h"
+#include "include/gnrc_tcp_rcvbuf.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
