@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief Initializes global receive buffer.
  */
-void _rcvbuf_init(void);
+void _gnrc_tcp_rcvbuf_init(void);
 
 /**
  * @brief Allocate receive buffer and assign it to TCB.
@@ -39,14 +39,14 @@ void _rcvbuf_init(void);
  * @returns   Zero  on success.
  *            -ENOMEM if all receive buffers are currently used.
  */
-int _rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb);
+int _gnrc_tcp_rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb);
 
 /**
  * @brief Release allocated receive buffer.
  *
  * @param[in,out] tcb   TCB holding the receive buffer that should be released.
  */
-void _rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb);
+void _gnrc_tcp_rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb);
 
 #ifdef __cplusplus
 }

@@ -47,19 +47,6 @@ typedef struct rcvbuf {
 static rcvbuf_t _static_buf;
 
 /**
- * @brief Initializes all receive buffers.
- */
-void _rcvbuf_init(void)
-{
-    TCP_DEBUG_ENTER;
-    mutex_init(&(_static_buf.lock));
-    for (size_t i = 0; i < CONFIG_GNRC_TCP_RCV_BUFFERS; ++i) {
-        _static_buf.entries[i].used = 0;
-    }
-    TCP_DEBUG_LEAVE;
-}
-
-/**
  * @brief Allocate receive buffer.
  *
  * @returns   Not NULL if a receive buffer was allocated.
@@ -100,7 +87,17 @@ static void _rcvbuf_free(void * const buf)
     TCP_DEBUG_LEAVE;
 }
 
-int _rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb)
+void _gnrc_tcp_rcvbuf_init(void)
+{
+    TCP_DEBUG_ENTER;
+    mutex_init(&(_static_buf.lock));
+    for (size_t i = 0; i < CONFIG_GNRC_TCP_RCV_BUFFERS; ++i) {
+        _static_buf.entries[i].used = 0;
+    }
+    TCP_DEBUG_LEAVE;
+}
+
+int _gnrc_tcp_rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb)
 {
     TCP_DEBUG_ENTER;
     if (tcb->rcv_buf_raw == NULL) {
@@ -118,7 +115,7 @@ int _rcvbuf_get_buffer(gnrc_tcp_tcb_t *tcb)
     return 0;
 }
 
-void _rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb)
+void _gnrc_tcp_rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb)
 {
     TCP_DEBUG_ENTER;
     if (tcb->rcv_buf_raw != NULL) {

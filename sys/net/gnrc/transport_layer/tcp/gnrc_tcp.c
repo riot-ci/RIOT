@@ -387,8 +387,8 @@ int gnrc_tcp_ep_from_str(gnrc_tcp_ep_t *ep, const char *str)
 int gnrc_tcp_init(void)
 {
     TCP_DEBUG_ENTER;
-    /* Initialize TCB list */
-    _rcvbuf_init();
+    /* Initialize receive buffers */
+    _gnrc_tcp_rcvbuf_init();
 
     /* Initialize timers */
     evtimer_init_mbox(&_tcp_mbox_timer);

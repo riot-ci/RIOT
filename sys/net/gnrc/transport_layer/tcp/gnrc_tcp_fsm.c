@@ -145,7 +145,7 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
             mutex_unlock(&list->lock);
 
             /* Free potentially allocated receive buffer */
-            _rcvbuf_release_buffer(tcb);
+            _gnrc_tcp_rcvbuf_release_buffer(tcb);
             tcb->status |= STATUS_NOTIFY_USER;
             break;
 
@@ -228,7 +228,7 @@ static int _fsm_call_open(gnrc_tcp_tcb_t *tcb)
     int ret = 0;
 
     /* Allocate receive buffer */
-    if (_rcvbuf_get_buffer(tcb) == -ENOMEM) {
+    if (_gnrc_tcp_rcvbuf_get_buffer(tcb) == -ENOMEM) {
         TCP_DEBUG_ERROR("-ENOMEM: Can't allocate receive buffer.");
         TCP_DEBUG_LEAVE;
         return -ENOMEM;
