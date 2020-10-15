@@ -27,7 +27,7 @@
 #include "internal/common.h"
 #include "internal/eventloop.h"
 #include "internal/gnrc_tcp_option.h"
-#include "internal/pkt.h"
+#include "internal/gnrc_tcp_pkt.h"
 
 #ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"
@@ -473,7 +473,7 @@ int _gnrc_tcp_pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack)
     seg = byteorder_ntohl(hdr->seq_num) + _gnrc_tcp_pkt_get_seg_len(
         tcb->pkt_retransmit) - 1;
 
-    /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
+        /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
     if (LSS_32_BIT(seg, ack)) {
         _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
         gnrc_pktbuf_release(tcb->pkt_retransmit);

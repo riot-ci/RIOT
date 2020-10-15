@@ -30,7 +30,7 @@
 #include "net/gnrc/tcp.h"
 #include "internal/common.h"
 #include "internal/fsm.h"
-#include "internal/pkt.h"
+#include "internal/gnrc_tcp_pkt.h"
 #include "internal/eventloop.h"
 #include "internal/gnrc_tcp_rcvbuf.h"
 
