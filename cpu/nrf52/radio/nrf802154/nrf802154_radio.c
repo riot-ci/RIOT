@@ -716,6 +716,12 @@ static int _set_csma_params(ieee802154_dev_t *dev, const ieee802154_csma_be_t *b
     return 0;
 }
 
+void nrf802154_setup(nrf802154_t *dev)
+{
+    netdev_ieee802154_submac_init(&dev->netdev, &nrf802154_hal_dev);
+    nrf802154_init();
+}
+
 static const ieee802154_radio_ops_t nrf802154_ops = {
     .write = _write,
     .request_transmit = _request_transmit,

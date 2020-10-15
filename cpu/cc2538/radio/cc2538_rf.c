@@ -193,6 +193,11 @@ bool cc2538_on(void)
 
 void cc2538_setup(cc2538_rf_t *dev)
 {
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+    extern ieee802154_dev_t cc2538_rf_dev;
+    netdev_ieee802154_submac_init(&dev->netdev, &cc2538_rf_dev);
+    cc2538_init();
+#else
     netdev_t *netdev = (netdev_t *)dev;
 
     netdev->driver = &cc2538_rf_driver;
@@ -210,4 +215,5 @@ void cc2538_setup(cc2538_rf_t *dev)
     cc2538_set_addr_short(dev->netdev.short_addr);
 
     cc2538_on();
+#endif
 }
