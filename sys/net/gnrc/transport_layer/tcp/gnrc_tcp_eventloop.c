@@ -211,7 +211,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
     }
 
     /* Find TCB to for this packet */
-    tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
+    _gnrc_tcp_common_tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
     mutex_lock(&list->lock);
     tcb = list->head;
     while (tcb) {

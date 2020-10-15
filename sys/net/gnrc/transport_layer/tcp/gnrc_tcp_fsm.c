@@ -57,7 +57,7 @@ static int _is_local_port_in_use(const uint16_t port_number)
 {
     TCP_DEBUG_ENTER;
     gnrc_tcp_tcb_t *iter = NULL;
-    tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
+    _gnrc_tcp_common_tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
     LL_SEARCH_SCALAR(list->head, iter, local_port, port_number);
     TCP_DEBUG_LEAVE;
     return (iter != NULL);
@@ -132,7 +132,7 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_state_t state)
 {
     TCP_DEBUG_ENTER;
     gnrc_tcp_tcb_t *iter = NULL;
-    tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
+    _gnrc_tcp_common_tcb_list_t *list = _gnrc_tcp_common_get_tcb_list();
 
     switch (state) {
         case FSM_STATE_CLOSED:
