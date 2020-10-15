@@ -17,8 +17,8 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef GNRC_TCP_COMMON_H
+#define GNRC_TCP_COMMON_H
 
 #include <stdint.h>
 #include "assert.h"
@@ -165,5 +165,5 @@ _gnrc_tcp_common_tcb_list_t *_gnrc_tcp_common_get_tcb_list(void);
 }
 #endif
 
-#endif /* COMMON_H */
+#endif /* GNRC_TCP_COMMON_H */
 /** @} */
