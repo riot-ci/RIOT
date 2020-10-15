@@ -81,8 +81,9 @@ static int write_dimmer(const void *dev, phydat_t *state)
     int factor, shiftback;
 
     int err = extract_scaling(state, &factor, &shiftback);
-    if (err < 0)
+    if (err < 0) {
         return err;
+    }
 
     setchan(&p->channel, (state->val[0] * factor) >> shiftback);
     return 3;
@@ -101,8 +102,9 @@ static int write_rgb(const void *dev, phydat_t *state)
     int factor, shiftback;
 
     int err = extract_scaling(state, &factor, &shiftback);
-    if (err < 0)
+    if (err < 0) {
         return err;
+    }
 
     for (int i = 0; i < 3; ++i) {
         setchan(&p->channels[i], (state->val[i] * factor) >> shiftback);
