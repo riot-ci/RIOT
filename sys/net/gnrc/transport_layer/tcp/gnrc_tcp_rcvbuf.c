@@ -16,11 +16,30 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  */
 #include <errno.h>
+#include <mutex.h>
+#include <stdint.h>
+#include "net/gnrc/tcp/config.h"
 #include "internal/common.h"
 #include "internal/rcvbuf.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+/**
+ * @brief Receive buffer entry.
+ */
+typedef struct rcvbuf_entry {
+    uint8_t used;                          /**< Flag: Is buffer in use? */
+    uint8_t buffer[GNRC_TCP_RCV_BUF_SIZE]; /**< Receive buffer storage */
+} rcvbuf_entry_t;
+
+/**
+ * @brief Struct holding receive buffers.
+ */
+typedef struct rcvbuf {
+    mutex_t lock;                                        /**< Access lock */
+    rcvbuf_entry_t entries[CONFIG_GNRC_TCP_RCV_BUFFERS]; /**< Receive buffers */
+} rcvbuf_t;
 
 /**
  * @brief Internal struct holding receive buffers.

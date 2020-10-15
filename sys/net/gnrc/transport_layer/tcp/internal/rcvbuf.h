@@ -20,9 +20,6 @@
 #ifndef RCVBUF_H
 #define RCVBUF_H
 
-#include <stdint.h>
-#include "mutex.h"
-#include "net/gnrc/tcp/config.h"
 #include "net/gnrc/tcp/tcb.h"
 
 #ifdef __cplusplus
@@ -30,23 +27,7 @@ extern "C" {
 #endif
 
 /**
- * @brief Receive buffer entry.
- */
-typedef struct rcvbuf_entry {
-    uint8_t used;                          /**< Flag: Is buffer in use? */
-    uint8_t buffer[GNRC_TCP_RCV_BUF_SIZE]; /**< Receive buffer storage */
-} rcvbuf_entry_t;
-
-/**
- * @brief   Struct holding receive buffers.
- */
-typedef struct rcvbuf {
-    mutex_t lock;                                 /**< Lock for allocation synchronization */
-    rcvbuf_entry_t entries[CONFIG_GNRC_TCP_RCV_BUFFERS]; /**< Maintained receive buffers */
-} rcvbuf_t;
-
-/**
- * @brief   Initializes global receive buffer.
+ * @brief Initializes global receive buffer.
  */
 void _rcvbuf_init(void);
 
