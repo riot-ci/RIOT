@@ -394,7 +394,7 @@ int gnrc_tcp_init(void)
     evtimer_init_mbox(&_tcp_mbox_timer);
 
     /* Start TCP processing thread */
-    kernel_pid_t pid = _gnrc_tcp_event_loop_init();
+    kernel_pid_t pid = _gnrc_tcp_eventloop_init();
     TCP_DEBUG_LEAVE;
     return pid;
 }

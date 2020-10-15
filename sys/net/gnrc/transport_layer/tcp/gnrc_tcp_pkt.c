@@ -446,8 +446,8 @@ int _gnrc_tcp_pkt_setup_retransmit(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *pkt,
     }
 
     /* Setup retransmission timer, msg to TCP thread with ptr to TCB */
-    _gnrc_tcp_event_loop_sched(&tcb->event_retransmit, tcb->rto,
-                               MSG_TYPE_RETRANSMISSION, tcb);
+    _gnrc_tcp_eventloop_sched(&tcb->event_retransmit, tcb->rto,
+                              MSG_TYPE_RETRANSMISSION, tcb);
     TCP_DEBUG_LEAVE;
     return 0;
 }
@@ -475,7 +475,7 @@ int _gnrc_tcp_pkt_acknowledge(gnrc_tcp_tcb_t *tcb, const uint32_t ack)
 
         /* If segment can be acknowledged -> stop timer, release packet from pktbuf and update rto. */
     if (LSS_32_BIT(seg, ack)) {
-        _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
+        _gnrc_tcp_eventloop_unsched(&tcb->event_retransmit);
         gnrc_pktbuf_release(tcb->pkt_retransmit);
         tcb->pkt_retransmit = NULL;
 

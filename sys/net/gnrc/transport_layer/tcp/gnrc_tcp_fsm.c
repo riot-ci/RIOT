@@ -93,7 +93,7 @@ static int _clear_retransmit(gnrc_tcp_tcb_t *tcb)
 {
     TCP_DEBUG_ENTER;
     if (tcb->pkt_retransmit != NULL) {
-        _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
+        _gnrc_tcp_eventloop_unsched(&tcb->event_retransmit);
         gnrc_pktbuf_release(tcb->pkt_retransmit);
         tcb->pkt_retransmit = NULL;
     }
@@ -111,9 +111,9 @@ static int _clear_retransmit(gnrc_tcp_tcb_t *tcb)
 static int _restart_timewait_timer(gnrc_tcp_tcb_t *tcb)
 {
     TCP_DEBUG_ENTER;
-    _gnrc_tcp_event_loop_unsched(&tcb->event_retransmit);
-    _gnrc_tcp_event_loop_sched(&tcb->event_retransmit, 2 * CONFIG_GNRC_TCP_MSL_MS,
-                               MSG_TYPE_TIMEWAIT, tcb);
+    _gnrc_tcp_eventloop_unsched(&tcb->event_retransmit);
+    _gnrc_tcp_eventloop_sched(&tcb->event_retransmit, 2 * CONFIG_GNRC_TCP_MSL_MS,
+                              MSG_TYPE_TIMEWAIT, tcb);
     TCP_DEBUG_LEAVE;
     return 0;
 }

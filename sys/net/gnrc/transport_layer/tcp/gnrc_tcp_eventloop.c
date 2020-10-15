@@ -57,24 +57,6 @@ static evtimer_t _tcp_msg_timer;
  */
 static kernel_pid_t _tcp_eventloop_pid = KERNEL_PID_UNDEF;
 
-void _gnrc_tcp_event_loop_sched(evtimer_msg_event_t *event, uint32_t offset,
-                                uint16_t type, void *context)
-{
-    TCP_DEBUG_ENTER;
-    event->event.offset = offset;
-    event->msg.type = type;
-    event->msg.content.ptr = context;
-    evtimer_add_msg(&_tcp_msg_timer, event, _tcp_eventloop_pid);
-    TCP_DEBUG_LEAVE;
-}
-
-void _gnrc_tcp_event_loop_unsched(evtimer_msg_event_t *event)
-{
-    TCP_DEBUG_ENTER;
-    evtimer_del(&_tcp_msg_timer, (evtimer_event_t *)event);
-    TCP_DEBUG_LEAVE;
-}
-
 /**
  * @brief Send function, pass packet down the network stack.
  *
@@ -293,7 +275,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
     return 0;
 }
 
-static void *_event_loop(__attribute__((unused)) void *arg)
+static void *_eventloop(__attribute__((unused)) void *arg)
 {
     TCP_DEBUG_ENTER;
     msg_t msg;
@@ -360,7 +342,25 @@ static void *_event_loop(__attribute__((unused)) void *arg)
     return NULL;
 }
 
-int _gnrc_tcp_event_loop_init(void)
+void _gnrc_tcp_eventloop_sched(evtimer_msg_event_t *event, uint32_t offset,
+                               uint16_t type, void *context)
+{
+    TCP_DEBUG_ENTER;
+    event->event.offset = offset;
+    event->msg.type = type;
+    event->msg.content.ptr = context;
+    evtimer_add_msg(&_tcp_msg_timer, event, _tcp_eventloop_pid);
+    TCP_DEBUG_LEAVE;
+}
+
+void _gnrc_tcp_eventloop_unsched(evtimer_msg_event_t *event)
+{
+    TCP_DEBUG_ENTER;
+    evtimer_del(&_tcp_msg_timer, (evtimer_event_t *)event);
+    TCP_DEBUG_LEAVE;
+}
+
+int _gnrc_tcp_eventloop_init(void)
 {
     TCP_DEBUG_ENTER;
     /* Guard: Check if thread is already running */
@@ -374,7 +374,7 @@ int _gnrc_tcp_event_loop_init(void)
     evtimer_init_msg(&_tcp_msg_timer);
 
     kernel_pid_t pid = thread_create(_stack, sizeof(_stack), TCP_EVENTLOOP_PRIO,
-                                     THREAD_CREATE_STACKTEST, _event_loop, NULL,
+                                     THREAD_CREATE_STACKTEST, _eventloop, NULL,
                                      "gnrc_tcp");
     TCP_DEBUG_LEAVE;
     return pid;
