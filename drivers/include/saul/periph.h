@@ -91,7 +91,6 @@ typedef enum {
  * This does never need to be declared on its own, but is used inisde @ref
  * saul_pwm_dimmer_params_t and @ref saul_pwm_rgb_params_t structs.
  */
-
 typedef struct {
     pwm_t dev;                  /**< PWM device backing this entry */
     uint8_t channel;            /**< Channel on the PWM device */

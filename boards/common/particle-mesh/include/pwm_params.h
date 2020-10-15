@@ -33,9 +33,9 @@ static const saul_pwm_rgb_params_t saul_pwm_rgb_params[] =
     {
         .name  = "LED",
         .channels = {
-            { PWM_DEV(0), 0, SAUL_PWM_INVERTED},
-            { PWM_DEV(0), 1, SAUL_PWM_INVERTED},
-            { PWM_DEV(0), 2, SAUL_PWM_INVERTED}
+            { PWM_DEV(0), 0, SAUL_PWM_INVERTED },
+            { PWM_DEV(0), 1, SAUL_PWM_INVERTED },
+            { PWM_DEV(0), 2, SAUL_PWM_INVERTED }
         }
     }
 };
