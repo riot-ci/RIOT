@@ -28,7 +28,7 @@
 #include "net/tcp.h"
 #include "net/gnrc.h"
 #include "net/gnrc/tcp.h"
-#include "internal/common.h"
+#include "internal/gnrc_tcp_common.h"
 #include "internal/gnrc_tcp_fsm.h"
 #include "internal/gnrc_tcp_pkt.h"
 #include "internal/gnrc_tcp_eventloop.h"

@@ -16,7 +16,7 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  * @}
  */
-#include "internal/common.h"
+#include "internal/gnrc_tcp_common.h"
 #include "internal/gnrc_tcp_option.h"
 
 #define ENABLE_DEBUG (0)

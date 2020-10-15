@@ -17,7 +17,7 @@
  * @}
  */
 
-#include "internal/common.h"
+#include "internal/gnrc_tcp_common.h"
 
 static _gnrc_tcp_common_tcb_list_t _list = {NULL, MUTEX_INIT};
 
