@@ -425,7 +425,7 @@ static int _fsm_rcvd_pkt(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t *in_pkt)
     tcp_hdr_t *tcp_hdr = (tcp_hdr_t *) snp->data;
 
     /* Parse packet options, return if they are malformed */
-    if (_option_parse(tcb, tcp_hdr) < 0) {
+    if (_gnrc_tcp_option_parse(tcb, tcp_hdr) < 0) {
         TCP_DEBUG_ERROR("Failed to parse TCP header options.");
         TCP_DEBUG_LEAVE;
         return 0;

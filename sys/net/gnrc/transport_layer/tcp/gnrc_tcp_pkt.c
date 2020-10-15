@@ -180,7 +180,8 @@ int _pkt_build(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t **out_pkt, uint16_t *seq_con,
         offset += 1;
     }
     /* Set offset and control bit accordingly */
-    tcp_hdr.off_ctl = byteorder_htons(_option_build_offset_control(offset, ctl));
+    tcp_hdr.off_ctl = byteorder_htons(
+        _gnrc_tcp_option_build_offset_control(offset, ctl));
 
     tcp_snp = gnrc_pktbuf_add(pay_snp, &tcp_hdr, sizeof(tcp_hdr), GNRC_NETTYPE_TCP);
     if (tcp_snp == NULL) {
@@ -210,7 +211,9 @@ int _pkt_build(gnrc_tcp_tcb_t *tcb, gnrc_pktsnip_t **out_pkt, uint16_t *seq_con,
 
             /* If SYN flag is set: Add MSS option */
             if (ctl & MSK_SYN) {
-                network_uint32_t mss_option = byteorder_htonl(_option_build_mss(CONFIG_GNRC_TCP_MSS));
+                network_uint32_t mss_option = byteorder_htonl(
+                    _gnrc_tcp_option_build_mss(CONFIG_GNRC_TCP_MSS));
+
                 memcpy(opt_ptr, &mss_option, sizeof(mss_option));
             }
             /* Increase opt_ptr and decrease opt_left, if other options are added */

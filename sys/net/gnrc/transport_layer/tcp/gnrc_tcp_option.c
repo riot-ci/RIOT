@@ -22,7 +22,7 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-int _option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
+int _gnrc_tcp_option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr)
 {
     TCP_DEBUG_ENTER;
     /* Extract offset value. Return if no options are set */
