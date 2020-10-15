@@ -17,8 +17,8 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  */
 
-#ifndef FSM_H
-#define FSM_H
+#ifndef GNRC_TCP_FSM_H
+#define GNRC_TCP_FSM_H
 
 #include <stdint.h>
 #include "mbox.h"
@@ -92,5 +92,5 @@ void _gnrc_tcp_fsm_set_mbox(gnrc_tcp_tcb_t *tcb, mbox_t *mbox);
 }
 #endif
 
-#endif /* FSM_H */
+#endif /* GNRC_TCP_FSM_H */
 /** @} */

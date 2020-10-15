@@ -29,7 +29,7 @@
 #include "internal/gnrc_tcp_pkt.h"
 #include "internal/gnrc_tcp_option.h"
 #include "internal/gnrc_tcp_rcvbuf.h"
-#include "internal/fsm.h"
+#include "internal/gnrc_tcp_fsm.h"
 
 #ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"
