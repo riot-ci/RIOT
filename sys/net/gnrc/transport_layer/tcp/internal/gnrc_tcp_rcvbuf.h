@@ -17,8 +17,8 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  */
 
-#ifndef RCVBUF_H
-#define RCVBUF_H
+#ifndef GNRC_TCP_RCVBUF_H
+#define GNRC_TCP_RCVBUF_H
 
 #include "net/gnrc/tcp/tcb.h"
 
@@ -52,5 +52,5 @@ void _gnrc_tcp_rcvbuf_release_buffer(gnrc_tcp_tcb_t *tcb);
 }
 #endif
 
-#endif /* RCVBUF_H */
+#endif /* GNRC_TCP_RCVBUF_H */
 /** @} */

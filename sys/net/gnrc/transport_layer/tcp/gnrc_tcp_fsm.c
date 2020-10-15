@@ -28,7 +28,7 @@
 #include "internal/eventloop.h"
 #include "internal/pkt.h"
 #include "internal/option.h"
-#include "internal/rcvbuf.h"
+#include "internal/gnrc_tcp_rcvbuf.h"
 #include "internal/fsm.h"
 
 #ifdef MODULE_GNRC_IPV6

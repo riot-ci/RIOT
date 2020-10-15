@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include "net/gnrc/tcp/config.h"
 #include "internal/common.h"
-#include "internal/rcvbuf.h"
+#include "internal/gnrc_tcp_rcvbuf.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"

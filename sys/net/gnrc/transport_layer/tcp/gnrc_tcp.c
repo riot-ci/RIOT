@@ -32,7 +32,7 @@
 #include "internal/pkt.h"
 #include "internal/option.h"
 #include "internal/eventloop.h"
-#include "internal/rcvbuf.h"
+#include "internal/gnrc_tcp_rcvbuf.h"
 
 #ifdef MODULE_GNRC_IPV6
 #include "net/gnrc/ipv6.h"
