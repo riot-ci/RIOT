@@ -3,6 +3,12 @@ APPLICATION = lua_basic
 # If no BOARD is found in the environment, use this default:
 BOARD ?= native
 
+# nucleo-l011k4 forces picolibc usage by default and lua is not compatible with
+# picolibc
+BOARD_BLACKLIST := \
+    nucleo-l011k4 \
+    #
+
 # This has to be the absolute path to the RIOT base directory:
 RIOTBASE ?= $(CURDIR)/../..
 
