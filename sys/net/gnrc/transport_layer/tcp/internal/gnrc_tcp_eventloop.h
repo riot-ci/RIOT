@@ -17,8 +17,8 @@
 * @author       Simon Brummer <simon.brummer@posteo.de>
  */
 
-#ifndef EVENTLOOP_H
-#define EVENTLOOP_H
+#ifndef GNRC_TCP_EVENTLOOP_H
+#define GNRC_TCP_EVENTLOOP_H
 
 #include <stdint.h>
 
@@ -62,5 +62,5 @@ void _gnrc_tcp_eventloop_unsched(evtimer_msg_event_t *event);
 }
 #endif
 
-#endif /* EVENTLOOP_H */
+#endif /* GNRC_TCP_EVENTLOOP_H */
 /** @} */

@@ -25,7 +25,7 @@
 #include "evtimer.h"
 #include "evtimer_msg.h"
 #include "internal/common.h"
-#include "internal/eventloop.h"
+#include "internal/gnrc_tcp_eventloop.h"
 #include "internal/gnrc_tcp_pkt.h"
 #include "internal/gnrc_tcp_option.h"
 #include "internal/gnrc_tcp_rcvbuf.h"
