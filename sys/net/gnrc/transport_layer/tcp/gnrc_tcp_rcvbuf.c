@@ -28,23 +28,23 @@
 /**
  * @brief Receive buffer entry.
  */
-typedef struct rcvbuf_entry {
+typedef struct {
     uint8_t used;                          /**< Flag: Is buffer in use? */
     uint8_t buffer[GNRC_TCP_RCV_BUF_SIZE]; /**< Receive buffer storage */
-} rcvbuf_entry_t;
+} _rcvbuf_entry_t;
 
 /**
  * @brief Struct holding receive buffers.
  */
-typedef struct rcvbuf {
-    mutex_t lock;                                        /**< Access lock */
-    rcvbuf_entry_t entries[CONFIG_GNRC_TCP_RCV_BUFFERS]; /**< Receive buffers */
-} rcvbuf_t;
+typedef struct {
+    mutex_t lock;                                         /**< Access lock */
+    _rcvbuf_entry_t entries[CONFIG_GNRC_TCP_RCV_BUFFERS]; /**< Buffers */
+} _rcvbuf_t;
 
 /**
  * @brief Internal struct holding receive buffers.
  */
-static rcvbuf_t _static_buf;
+static _rcvbuf_t _static_buf;
 
 /**
  * @brief Allocate receive buffer.
