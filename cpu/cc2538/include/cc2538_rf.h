@@ -25,8 +25,15 @@
 #include <stdbool.h>
 
 #include "net/ieee802154.h"
+#include "kernel_defines.h"
+
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+#include "net/ieee802154/radio.h"
+#include "net/netdev/ieee802154_submac.h"
+#else
 #include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -209,10 +216,15 @@ enum {
 /**
  * @brief   Device descriptor for CC2538 transceiver
  *
- * @extends netdev_ieee802154_t
+ * @extends netdev_ieee802154_t if using legacy radio
+ * @extends netdev_ieee802154_submac_t if using radio HAL
  */
 typedef struct {
+#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+    netdev_ieee802154_submac_t netdev;   /**< netdev parent struct */
+#else
     netdev_ieee802154_t netdev;   /**< netdev parent struct */
+#endif
     uint8_t state;                /**< current state of the radio */
 } cc2538_rf_t;
 
