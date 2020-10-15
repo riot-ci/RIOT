@@ -76,7 +76,7 @@ static inline void setchan(const saul_pwm_channel_t *chan, uint16_t value)
 
 static int write_dimmer(const void *dev, phydat_t *state)
 {
-    const saul_pwm_dimmer_params_t *p = (const saul_pwm_dimmer_params_t *)dev;
+    const saul_pwm_dimmer_params_t *p = dev;
 
     int factor, shiftback;
 
@@ -97,7 +97,7 @@ const saul_driver_t dimmer_saul_driver = {
 
 static int write_rgb(const void *dev, phydat_t *state)
 {
-    const saul_pwm_rgb_params_t *p = (const saul_pwm_rgb_params_t *)dev;
+    const saul_pwm_rgb_params_t *p = dev;
 
     int factor, shiftback;
 

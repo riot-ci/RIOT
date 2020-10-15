@@ -132,7 +132,7 @@ void auto_init_saul_pwm(void)
 
         LOG_DEBUG("[auto_init_saul] initializing dimmer #%u\n", i);
 
-        saul_reg_entries_dimmer[i].dev = (void *)p;
+        saul_reg_entries_dimmer[i].dev = (void*)p;
         saul_reg_entries_dimmer[i].name = p->name;
         saul_reg_entries_dimmer[i].driver = &dimmer_saul_driver;
 
@@ -159,7 +159,7 @@ void auto_init_saul_pwm(void)
 
         LOG_DEBUG("[auto_init_saul] initializing RGB #%u\n", i);
 
-        saul_reg_entries_rgb[i].dev = (void *)p;
+        saul_reg_entries_rgb[i].dev = (void*)p;
         saul_reg_entries_rgb[i].name = p->name;
         saul_reg_entries_rgb[i].driver = &rgb_saul_driver;
 
