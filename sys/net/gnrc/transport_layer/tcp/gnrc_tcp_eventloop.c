@@ -272,7 +272,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
      * (reason: tcb can be NULL at runtime)
      */
     if (tcb != NULL) {
-        _fsm(tcb, FSM_EVENT_RCVD_PKT, pkt, NULL, 0);
+        _gnrc_tcp_fsm(tcb, FSM_EVENT_RCVD_PKT, pkt, NULL, 0);
     }
     /* No fitting TCB has been found. Respond with reset */
     else {
@@ -339,15 +339,15 @@ static void *_event_loop(__attribute__((unused)) void *arg)
             /* Retransmission timer expired: Call FSM with retransmission event */
             case MSG_TYPE_RETRANSMISSION:
                 TCP_DEBUG_INFO("Received MSG_TYPE_RETRANSMISSION.");
-                _fsm((gnrc_tcp_tcb_t *)msg.content.ptr, FSM_EVENT_TIMEOUT_RETRANSMIT,
-                     NULL, NULL, 0);
+                _gnrc_tcp_fsm((gnrc_tcp_tcb_t *)msg.content.ptr,
+                              FSM_EVENT_TIMEOUT_RETRANSMIT, NULL, NULL, 0);
                 break;
 
             /* Timewait timer expired: Call FSM with timewait event */
             case MSG_TYPE_TIMEWAIT:
                 TCP_DEBUG_INFO("Received MSG_TYPE_TIMEWAIT.");
-                _fsm((gnrc_tcp_tcb_t *)msg.content.ptr, FSM_EVENT_TIMEOUT_TIMEWAIT,
-                     NULL, NULL, 0);
+                _gnrc_tcp_fsm((gnrc_tcp_tcb_t *)msg.content.ptr,
+                              FSM_EVENT_TIMEOUT_TIMEWAIT, NULL, NULL, 0);
                 break;
 
             default:

@@ -128,7 +128,7 @@ static int _restart_timewait_timer(gnrc_tcp_tcb_t *tcb)
  * @return   -EADDRINUSE, if @p state == FSM_STATE_SYN_SENT and tcb->local_port
  *           is already in use.
  */
-static int _transition_to(gnrc_tcp_tcb_t *tcb, fsm_state_t state)
+static int _transition_to(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_state_t state)
 {
     TCP_DEBUG_ENTER;
     gnrc_tcp_tcb_t *iter = NULL;
@@ -894,8 +894,8 @@ static int _fsm_clear_retransmit(gnrc_tcp_tcb_t *tcb)
  *           -EADDRINUSE if given local port number in @p tcb is already in use.
  *           -EOPNOTSUPP if event is not implemented.
  */
-static int _fsm_unprotected(gnrc_tcp_tcb_t *tcb, fsm_event_t event, gnrc_pktsnip_t *in_pkt,
-                            void *buf, size_t len)
+static int _fsm_unprotected(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_event_t event,
+                            gnrc_pktsnip_t *in_pkt, void *buf, size_t len)
 {
     TCP_DEBUG_ENTER;
     int ret = 0;
@@ -939,7 +939,8 @@ static int _fsm_unprotected(gnrc_tcp_tcb_t *tcb, fsm_event_t event, gnrc_pktsnip
     return ret;
 }
 
-int _fsm(gnrc_tcp_tcb_t *tcb, fsm_event_t event, gnrc_pktsnip_t *in_pkt, void *buf, size_t len)
+int _gnrc_tcp_fsm(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_event_t event,
+                  gnrc_pktsnip_t *in_pkt, void *buf, size_t len)
 {
     TCP_DEBUG_ENTER;
     /* Lock FSM */
@@ -962,7 +963,7 @@ int _fsm(gnrc_tcp_tcb_t *tcb, fsm_event_t event, gnrc_pktsnip_t *in_pkt, void *b
     return result;
 }
 
-void _fsm_set_mbox(gnrc_tcp_tcb_t *tcb, mbox_t *mbox)
+void _gnrc_tcp_fsm_set_mbox(gnrc_tcp_tcb_t *tcb, mbox_t *mbox)
 {
     TCP_DEBUG_ENTER;
     mutex_lock(&(tcb->fsm_lock));
