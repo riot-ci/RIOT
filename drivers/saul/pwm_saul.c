@@ -24,14 +24,6 @@
 #include "saul/periph.h"
 #include "bitarithm.h"
 
-/* Read operations are not supported through the PWM device API */
-static int no_read(const void *dev, phydat_t *state)
-{
-    (void)dev;
-    (void)state;
-    return -ENOTSUP;
-}
-
 /**
  * Find factor and shiftback such that for each value entry in the phydat, the
  * resulting PWM duty cycle would be (value * factor) >> shiftback.
@@ -90,7 +82,7 @@ static int write_dimmer(const void *dev, phydat_t *state)
 }
 
 const saul_driver_t dimmer_saul_driver = {
-    .read = no_read,
+    .read = saul_notsup,
     .write = write_dimmer,
     .type = SAUL_ACT_DIMMER
 };
@@ -113,7 +105,7 @@ static int write_rgb(const void *dev, phydat_t *state)
 }
 
 const saul_driver_t rgb_saul_driver = {
-    .read = no_read,
+    .read = saul_notsup,
     .write = write_rgb,
     .type = SAUL_ACT_LED_RGB
 };
