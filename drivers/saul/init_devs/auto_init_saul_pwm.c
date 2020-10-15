@@ -92,9 +92,11 @@ static int configure(pwm_t dev)
  * overflowing into saul_pwm_rgb_params) unless that device came up previously,
  * in which case the function returns without any action.
  * */
-static int configure_on_first_use(pwm_t dev, int index)
+static int configure_on_first_use(pwm_t dev, unsigned index)
 {
-    for (int i = 0; i < (int)SAUL_PWM_DIMMER_NUMOF; ++i) {
+    /* Work around -Werror=type-limits that would otherwise trigger */
+    unsigned dimmer_numof = SAUL_PWM_DIMMER_NUMOF;
+    for (unsigned i = 0; i < dimmer_numof; ++i) {
         pwm_t currentdev = saul_pwm_dimmer_params[i].channel.dev;
         if (currentdev == dev) {
             if (i == index) {
@@ -103,9 +105,12 @@ static int configure_on_first_use(pwm_t dev, int index)
             return 0;
         }
     }
-    for (int i = 0; i < (int)SAUL_PWM_RGB_NUMOF; ++i) {
+
+    /* Work around -Werror=type-limits that would otherwise trigger */
+    unsigned rgb_numof = SAUL_PWM_RGB_NUMOF;
+    for (unsigned i = 0; i < rgb_numof; ++i) {
         for (int j = 0; j < 3; ++j) {
-            int index = SAUL_PWM_DIMMER_NUMOF + i * 3 + j;
+            unsigned index = SAUL_PWM_DIMMER_NUMOF + i * 3 + j;
             pwm_t currentdev = saul_pwm_rgb_params[i].channels[j].dev;
             if (currentdev == dev) {
                 if (i == index) {
@@ -120,7 +125,9 @@ static int configure_on_first_use(pwm_t dev, int index)
 
 void auto_init_saul_pwm(void)
 {
-    for (int i = 0; i < (int)SAUL_PWM_DIMMER_NUMOF; i++) {
+    /* Work around -Werror=type-limits that would otherwise trigger */
+    unsigned dimmer_numof = SAUL_PWM_DIMMER_NUMOF;
+    for (unsigned i = 0; i < dimmer_numof; i++) {
         const saul_pwm_dimmer_params_t *p = &saul_pwm_dimmer_params[i];
 
         LOG_DEBUG("[auto_init_saul] initializing dimmer #%u\n", i);
@@ -145,7 +152,9 @@ void auto_init_saul_pwm(void)
         saul_reg_add(&(saul_reg_entries_dimmer[i]));
     }
 
-    for (int i = 0; i < (int)SAUL_PWM_RGB_NUMOF; i++) {
+    /* Work around -Werror=type-limits that would otherwise trigger */
+    unsigned rgb_numof = SAUL_PWM_RGB_NUMOF;
+    for (unsigned i = 0; i < rgb_numof; i++) {
         const saul_pwm_rgb_params_t *p = &saul_pwm_rgb_params[i];
 
         LOG_DEBUG("[auto_init_saul] initializing RGB #%u\n", i);
@@ -155,7 +164,7 @@ void auto_init_saul_pwm(void)
         saul_reg_entries_rgb[i].driver = &rgb_saul_driver;
 
         for (int j = 0; j < 3; ++j) {
-            int index = SAUL_PWM_DIMMER_NUMOF + i * 3 + j;
+            unsigned index = SAUL_PWM_DIMMER_NUMOF + i * 3 + j;
             int err = configure_on_first_use(p->channels[j].dev, index);
             if (err != 0) {
                 LOG_ERROR(
