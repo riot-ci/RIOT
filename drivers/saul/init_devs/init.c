@@ -36,8 +36,8 @@ void saul_init_devs(void)
         auto_init_gpio();
     }
     if (IS_USED(MODULE_SAUL_PWM)) {
-        extern void auto_init_pwm(void);
-        auto_init_pwm();
+        extern void auto_init_saul_pwm(void);
+        auto_init_saul_pwm();
     }
     if (IS_USED(MODULE_SAUL_NRF_TEMPERATURE)) {
         extern void auto_init_nrf_temperature(void);

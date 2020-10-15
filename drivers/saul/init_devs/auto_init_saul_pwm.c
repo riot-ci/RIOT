@@ -118,7 +118,7 @@ static int configure_on_first_use(pwm_t dev, int index)
     return -ENOENT;
 }
 
-void auto_init_pwm(void)
+void auto_init_saul_pwm(void)
 {
     for (int i = 0; i < (int)SAUL_PWM_DIMMER_NUMOF; i++) {
         const saul_pwm_dimmer_params_t *p = &saul_pwm_dimmer_params[i];
