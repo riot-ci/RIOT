@@ -219,7 +219,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
     }
 
     /* Validate checksum */
-    if (byteorder_ntohs(hdr->checksum) != _pkt_calc_csum(tcp, ip, pkt)) {
+    if (byteorder_ntohs(hdr->checksum) != _gnrc_tcp_pkt_calc_csum(tcp, ip, pkt)) {
 #ifndef MODULE_FUZZING
         gnrc_pktbuf_release(pkt);
         TCP_DEBUG_ERROR("-EINVAL: Invalid checksum.");
@@ -277,7 +277,7 @@ static int _receive(gnrc_pktsnip_t *pkt)
     /* No fitting TCB has been found. Respond with reset */
     else {
         if ((ctl & MSK_RST) != MSK_RST) {
-            _pkt_build_reset_from_pkt(&reset, pkt);
+            _gnrc_tcp_pkt_build_reset_from_pkt(&reset, pkt);
             if (gnrc_netapi_send(_tcp_eventloop_pid, reset) < 1) {
                 gnrc_pktbuf_release(reset);
                 TCP_DEBUG_ERROR("Can't dispatch to network layer.");

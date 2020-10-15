@@ -803,7 +803,7 @@ int gnrc_tcp_calc_csum(const gnrc_pktsnip_t *hdr, const gnrc_pktsnip_t *pseudo_h
         return -EBADMSG;
     }
 
-    csum = _pkt_calc_csum(hdr, pseudo_hdr, hdr->next);
+    csum = _gnrc_tcp_pkt_calc_csum(hdr, pseudo_hdr, hdr->next);
     if (csum == 0) {
         TCP_DEBUG_ERROR("-ENOENT");
         TCP_DEBUG_LEAVE;
