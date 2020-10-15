@@ -30,8 +30,6 @@
 #include "pwm_params.h"
 #include "periph/pwm.h"
 
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-
 #if !defined(SAUL_PWM_FREQ)
 #define SAUL_PWM_FREQ SAUL_PWM_FREQ_DEFAULT
 #endif
@@ -43,7 +41,7 @@
 #define SAUL_PWM_DIMMER_NUMOF ARRAY_SIZE(saul_pwm_dimmer_params)
 #else
 #define SAUL_PWM_DIMMER_NUMOF 0
-static const saul_pwm_dimmer_params_t saul_pwm_dimmer_params[1];
+static const saul_pwm_dimmer_params_t saul_pwm_dimmer_params[0];
 #endif
 
 /**
@@ -53,20 +51,20 @@ static const saul_pwm_dimmer_params_t saul_pwm_dimmer_params[1];
 #define SAUL_PWM_RGB_NUMOF ARRAY_SIZE(saul_pwm_rgb_params)
 #else
 #define SAUL_PWM_RGB_NUMOF 0
-static const saul_pwm_rgb_params_t saul_pwm_rgb_params[1];
+static const saul_pwm_rgb_params_t saul_pwm_rgb_params[0];
 #endif
 
 /**
  * @brief   Memory for the registry RGB LED entries
  */
 /* The static variable will be unused in the 0 case and thus not emitted. */
-static saul_reg_t saul_reg_entries_rgb[MAX(SAUL_PWM_RGB_NUMOF, 1)];
+static saul_reg_t saul_reg_entries_rgb[SAUL_PWM_RGB_NUMOF];
 
 /**
  * @brief   Memory for the registry dimmer entries
  */
 /* The static variable will be unused in the 0 case and thus not emitted. */
-static saul_reg_t saul_reg_entries_dimmer[MAX(SAUL_PWM_DIMMER_NUMOF, 1)];
+static saul_reg_t saul_reg_entries_dimmer[SAUL_PWM_DIMMER_NUMOF];
 
 /**
  * @brief   Reference to the driver for single-channel dimmers
