@@ -17,8 +17,8 @@
  * @author      Simon Brummer <simon.brummer@posteo.de>
  */
 
-#ifndef OPTION_H
-#define OPTION_H
+#ifndef GNRC_TCP_OPTION_H
+#define GNRC_TCP_OPTION_H
 
 #include <stdint.h>
 #include "assert.h"
@@ -71,5 +71,5 @@ int _gnrc_tcp_option_parse(gnrc_tcp_tcb_t *tcb, tcp_hdr_t *hdr);
 }
 #endif
 
-#endif /* OPTION_H */
+#endif /* GNRC_TCP_OPTION_H */
 /** @} */

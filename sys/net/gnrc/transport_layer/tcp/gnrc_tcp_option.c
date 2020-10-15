@@ -17,7 +17,7 @@
  * @}
  */
 #include "internal/common.h"
-#include "internal/option.h"
+#include "internal/gnrc_tcp_option.h"
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"

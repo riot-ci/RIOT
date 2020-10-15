@@ -25,12 +25,12 @@
 #include "evtimer_mbox.h"
 #include "mbox.h"
 #include "net/af.h"
+#include "net/tcp.h"
 #include "net/gnrc.h"
 #include "net/gnrc/tcp.h"
 #include "internal/common.h"
 #include "internal/fsm.h"
 #include "internal/pkt.h"
-#include "internal/option.h"
 #include "internal/eventloop.h"
 #include "internal/gnrc_tcp_rcvbuf.h"
 

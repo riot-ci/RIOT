@@ -27,7 +27,7 @@
 #include "internal/common.h"
 #include "internal/eventloop.h"
 #include "internal/pkt.h"
-#include "internal/option.h"
+#include "internal/gnrc_tcp_option.h"
 #include "internal/gnrc_tcp_rcvbuf.h"
 #include "internal/fsm.h"
 

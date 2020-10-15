@@ -26,7 +26,7 @@
 #include "net/gnrc.h"
 #include "internal/common.h"
 #include "internal/eventloop.h"
-#include "internal/option.h"
+#include "internal/gnrc_tcp_option.h"
 #include "internal/pkt.h"
 
 #ifdef MODULE_GNRC_IPV6
