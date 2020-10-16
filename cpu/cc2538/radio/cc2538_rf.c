@@ -194,8 +194,11 @@ bool cc2538_on(void)
 void cc2538_setup(cc2538_rf_t *dev)
 {
 #if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+    (void) dev;
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
     extern ieee802154_dev_t cc2538_rf_dev;
     netdev_ieee802154_submac_init(&dev->netdev, &cc2538_rf_dev);
+#endif
     cc2538_init();
 #else
     netdev_t *netdev = (netdev_t *)dev;
