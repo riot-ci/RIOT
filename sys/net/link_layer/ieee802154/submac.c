@@ -290,8 +290,8 @@ int ieee802154_send(ieee802154_submac_t *submac, const iolist_t *iolist)
     return 0;
 }
 
-int ieee802154_submac_init(ieee802154_submac_t *submac, network_uint16_t *short_addr,
-                           eui64_t *ext_addr)
+int ieee802154_submac_init(ieee802154_submac_t *submac, const network_uint16_t *short_addr,
+                           const eui64_t *ext_addr)
 {
     ieee802154_dev_t *dev = submac->dev;
 
