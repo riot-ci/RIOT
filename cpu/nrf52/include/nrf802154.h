@@ -57,9 +57,9 @@ extern "C" {
  */
 typedef struct {
 #if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
-    netdev_ieee802154_submac_t netdev;      /* netdev SubMAC descriptor */
+    netdev_ieee802154_submac_t netdev;      /**< netdev SubMAC descriptor */
 #elif !IS_USED(MODULE_IEEE802154_RADIO_HAL)
-    netdev_ieee802154_t netdev;             /* ieee802154 device descriptor */
+    netdev_ieee802154_t netdev;             /**< ieee802154 device descriptor */
 #endif
 } nrf802154_t;
 
