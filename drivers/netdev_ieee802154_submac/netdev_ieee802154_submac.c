@@ -306,6 +306,7 @@ int netdev_ieee802154_submac_init(netdev_ieee802154_submac_t *netdev_submac,
 
     uint16_t chan = CONFIG_IEEE802154_DEFAULT_CHANNEL;
     int16_t tx_power = CONFIG_IEEE802154_DEFAULT_TXPOWER;
+    netopt_enable_t enable = NETOPT_ENABLE;
 
     netdev_ieee802154_setup(netdev_ieee802154);
 
