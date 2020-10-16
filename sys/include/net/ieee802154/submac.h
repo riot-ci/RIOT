@@ -336,7 +336,8 @@ static inline int ieee802154_read_frame(ieee802154_submac_t *submac, void *buf,
  * @return 0 on success
  * @return negative errno on error
  */
-int ieee802154_submac_init(ieee802154_submac_t *submac);
+int ieee802154_submac_init(ieee802154_submac_t *submac, network_uint16_t *short_addr,
+                           eui64_t *ext_addr);
 
 /**
  * @brief Set the ACK timeout timer
