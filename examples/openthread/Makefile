@@ -20,6 +20,14 @@ BOARD_WHITELIST := \
 					omote \
 					openmote-b \
 					openmote-cc2538 \
+					adafruit-clue \
+					adafruit-itsybitsy-nrf52 \
+					arduino-nano-33-ble \
+					feather-nrf52840 \
+					nrf52840dk \
+					nrf52840dongle \
+					nrf52840-mdk \
+					reel \
 					#
 
 # This has to be the absolute path to the RIOT base directory:
