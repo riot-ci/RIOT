@@ -38,7 +38,9 @@
 
 #if IS_USED(MODULE_IEEE802154_RADIO_HAL)
 #include "net/ieee802154/radio.h"
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
 #include "net/netdev/ieee802154_submac.h"
+#endif
 #else
 #include "net/netdev/ieee802154.h"
 #endif
@@ -54,9 +56,9 @@ extern "C" {
  * @extends netdev_ieee802154_submac_t if using radio HAL
  */
 typedef struct {
-#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
     netdev_ieee802154_submac_t netdev;
-#else
+#elif !IS_USED(MODULE_IEEE802154_RADIO_HAL)
     netdev_ieee802154_t netdev;
 #endif
 } nrf802154_t;
