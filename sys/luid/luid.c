@@ -26,43 +26,32 @@
 
 #include "luid.h"
 
-#ifndef MAX
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#endif
+/* based on DJB2 Hash */
+static void _luid_round(const uint8_t *in, size_t in_len, uint8_t *out, size_t out_len)
+{
+    union {
+        uint32_t u32;
+        uint8_t u8[4];
+    } hash;
+
+    hash.u32 = 5381;
+
+    for (size_t i = 0; i < in_len; i++) {
+        hash.u32 = hash.u32 * 33 + in[i];
+        out[i % out_len] ^= hash.u8[0];
+    }
+}
 
 void __attribute__((weak)) luid_base(void *buf, size_t len)
 {
     memset(buf, LUID_BACKUP_SEED, len);
 
 #if CPUID_LEN
-    uint8_t *out = buf;
     uint8_t cid[CPUID_LEN];
-    uint8_t sum = 0;
-
     cpuid_get(cid);
 
-    /* CPU ID is XORed with LUID_BACKUP_SEED.
-     * Then Fisher–Yates shuffle is performed to mix
-     * the bytes, as often large continuous chunks of
-     * CPU ID are equal on machines with the same CPU.
-     */
-    for (size_t i = 0; i < MAX(len, CPUID_LEN); i++) {
-        uint8_t tmp, j, k;
-        j = i % len;
-        k = i % CPUID_LEN;
-
-        /* xor with CPU ID */
-        out[j] ^= cid[k];
-
-        /* get 'random' position */
-        sum += out[j];
-        k = sum % (j + 1);
-
-        /* shuffle bytes */
-        tmp    = out[j];
-        out[j] = out[k];
-        out[k] = tmp;
-    }
+    _luid_round(cid, sizeof(cid), buf, len);
+    _luid_round(buf, len, buf, len);
 #endif
 }
 
