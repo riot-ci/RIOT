@@ -112,7 +112,11 @@ typedef struct {
      */
     uint8_t RIOTBOOT_FLASHPAGE_BUFFER_ATTRS
         flashpage_buf[RIOTBOOT_FLASHPAGE_BUFFER_SIZE];
-#if CONFIG_RIOTBOOT_FLASHWRITE_RAW
+#if CONFIG_RIOTBOOT_FLASHWRITE_RAW || DOXYGEN
+    /**
+     * @brief Buffer for the first chunk containing the checksum when using
+     *        FLASHWRITE_RAW
+     */
     uint8_t RIOTBOOT_FLASHPAGE_BUFFER_ATTRS
         firstblock_buf[RIOTBOOT_FLASHPAGE_BUFFER_SIZE];
 #endif

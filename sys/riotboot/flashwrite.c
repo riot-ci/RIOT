@@ -69,18 +69,17 @@ int riotboot_flashwrite_flush(riotboot_flashwrite_t *state)
     if (CONFIG_RIOTBOOT_FLASHWRITE_RAW) {
         /* Check if there is leftover data in the buffer */
         size_t flashwrite_buffer_pos = state->offset % RIOTBOOT_FLASHPAGE_BUFFER_SIZE;
-        if (flashwrite_buffer_pos) {
-            uint8_t* slot_start =
-                (uint8_t*)riotboot_slot_get_hdr(state->target_slot);
-            /* Get the offset of the remaining chunk */
-            size_t flashpage_pos = state->offset -
-                (state->offset % RIOTBOOT_FLASHPAGE_BUFFER_SIZE);
-            /* Write remaining chunk */
-            flashpage_write_raw(slot_start + flashpage_pos,
-                                state->flashpage_buf,
-                                RIOTBOOT_FLASHPAGE_BUFFER_SIZE);
+        if (flashwrite_buffer_pos == 0) {
+            return 0;
         }
-
+        uint8_t* slot_start =
+            (uint8_t*)riotboot_slot_get_hdr(state->target_slot);
+        /* Get the offset of the remaining chunk */
+        size_t flashpage_pos = state->offset - flashwrite_buffer_pos;
+        /* Write remaining chunk */
+        flashpage_write_raw(slot_start + flashpage_pos,
+                            state->flashpage_buf,
+                            RIOTBOOT_FLASHPAGE_BUFFER_SIZE);
     }
     else {
         if (flashpage_write_and_verify(state->flashpage, state->flashpage_buf) != FLASHPAGE_OK) {
