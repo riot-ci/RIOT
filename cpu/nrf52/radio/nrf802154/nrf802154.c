@@ -521,15 +521,6 @@ void nrf802154_setup(nrf802154_t *dev)
     nrf802154_dev = netdev_ieee802154;
 
     netdev->driver = &nrf802154_netdev_driver;
-#ifdef MODULE_GNRC
-#ifdef MODULE_GNRC_SIXLOWPAN
-    netdev_ieee802154->proto = GNRC_NETTYPE_SIXLOWPAN;
-#else
-    netdev_ieee802154->proto = GNRC_NETTYPE_UNDEF;
-#endif
-#endif
-    netdev_ieee802154->pan = CONFIG_IEEE802154_DEFAULT_PANID;
-    netdev_ieee802154->chan = CONFIG_IEEE802154_DEFAULT_CHANNEL;
     netdev_register(netdev, NETDEV_NRF802154, 0);
 }
 
