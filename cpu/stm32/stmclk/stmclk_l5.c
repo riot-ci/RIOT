@@ -344,16 +344,5 @@ void stmclk_init_sysclk(void)
         RCC->CCIPR1 = CLOCK48MHZ_SELECT;
     }
 
-    if (IS_USED(MODULE_PERIPH_RTT)) {
-        /* Ensure LPTIM1 clock source (LSI or LSE) is correctly reset when initializing
-           the clock, this is particularly useful after waking up from deep sleep */
-        if (IS_ACTIVE(CONFIG_BOARD_HAS_LSE)) {
-            RCC->CCIPR1 |= RCC_CCIPR1_LPTIM1SEL_0 | RCC_CCIPR1_LPTIM1SEL_1;
-        }
-        else {
-            RCC->CCIPR1 |= RCC_CCIPR1_LPTIM1SEL_0;
-        }
-    }
-
     irq_restore(is);
 }
