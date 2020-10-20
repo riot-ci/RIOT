@@ -124,7 +124,8 @@ int riotboot_flashwrite_putbytes(riotboot_flashwrite_t *state,
             void * addr = flashpage_addr(state->flashpage);
             if (addr == riotboot_slot_get_hdr(state->target_slot) &&
                     state->offset == RIOTBOOT_FLASHPAGE_BUFFER_SIZE) {
-                /* Skip flashing the first block, copy it over instead */
+                /* Skip flashing the first block, store it for later to flash it
+                 * during the flashwrite_finish function */
                 memcpy(state->firstblock_buf,
                        state->flashpage_buf, RIOTBOOT_FLASHPAGE_BUFFER_SIZE);
             }
