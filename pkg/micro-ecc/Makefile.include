@@ -1,5 +1,7 @@
 INCLUDES += -I$(PKGDIRBASE)/micro-ecc
 
+CFLAGS += -Wno-unused-parameter
+
 ifneq (,$(filter cortex-m0%,$(CPU_CORE)))
   # LLVM/clang can't handle the inline assembler instructions on M0 in this
   # package

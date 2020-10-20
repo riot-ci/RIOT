@@ -1,0 +1,33 @@
+From 6a53a0fbde6aba848c79b1b76859acd4f6d7804a Mon Sep 17 00:00:00 2001
+From: Benjamin Valentin <benjamin.valentin@ml-pa.com>
+Date: Tue, 20 Oct 2020 18:10:24 +0200
+Subject: [PATCH] platform-specific.inc: add support for RIOT-OS
+
+---
+ platform-specific.inc | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/platform-specific.inc b/platform-specific.inc
+index 148cafc..92ba2b1 100644
+--- a/platform-specific.inc
++++ b/platform-specific.inc
+@@ -66,6 +66,16 @@ static int default_RNG(uint8_t *dest, unsigned size) {
+ }
+ #define default_RNG_defined 1
+ 
++#elif defined(RIOT_VERSION)
++
++#include <random.h>
++
++static int default_RNG(uint8_t *dest, unsigned size) {
++    random_bytes(dest, size);
++    return 1;
++}
++#define default_RNG_defined 1
++
+ #endif /* platform */
+ 
+ #endif /* _UECC_PLATFORM_SPECIFIC_H_ */
+-- 
+2.25.1
+
