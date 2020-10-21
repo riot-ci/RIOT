@@ -52,9 +52,6 @@
 #ifndef CLOCK_HSE
 #define CLOCK_HSE   (0U)
 #endif
-#ifndef CLOCK_LSE
-#define CLOCK_LSE   (0U)
-#endif
 
 void stmclk_enable_hsi(void)
 {
@@ -75,7 +72,7 @@ void stmclk_disable_hsi(void)
 
 void stmclk_enable_lfclk(void)
 {
-    if (CLOCK_LSE) {
+    if (IS_ACTIVE(CONFIG_BOARD_HAS_LSE)) {
         stmclk_dbp_unlock();
         RCC->REG_LSE |= BIT_LSEON;
         while (!(RCC->REG_LSE & BIT_LSERDY)) {}
@@ -89,7 +86,7 @@ void stmclk_enable_lfclk(void)
 
 void stmclk_disable_lfclk(void)
 {
-    if (CLOCK_LSE) {
+    if (IS_ACTIVE(CONFIG_BOARD_HAS_LSE)) {
         stmclk_dbp_unlock();
         RCC->REG_LSE &= ~(BIT_LSEON);
         while (!(RCC->REG_LSE & BIT_LSERDY)) {}
