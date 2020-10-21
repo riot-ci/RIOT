@@ -422,7 +422,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_MR_FSK_SRATE:
             assert(max_len >= sizeof(uint16_t));
-            *((uint16_t *)val) = 10 * at86rf215_fsk_srate_10kHz[at86rf215_FSK_get_srate(dev)];
+            *((uint16_t *)val) = 10 * _at86rf215_fsk_srate_10kHz[at86rf215_FSK_get_srate(dev)];
             res = max_len;
             break;
 
@@ -691,10 +691,10 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 return -ENOTSUP;
             }
 
-            res = _get_best_match(at86rf215_fsk_srate_10kHz,
+            res = _get_best_match(_at86rf215_fsk_srate_10kHz,
                                   FSK_SRATE_400K + 1, *(uint16_t *)val / 10);
             if (at86rf215_FSK_set_srate(dev, res) == 0) {
-                res = 10 * at86rf215_fsk_srate_10kHz[res];
+                res = 10 * _at86rf215_fsk_srate_10kHz[res];
             } else {
                 res = -ERANGE;
             }
@@ -718,10 +718,10 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 return -ENOTSUP;
             }
 
-            res = _get_best_match(at86rf215_fsk_channel_spacing_25kHz,
+            res = _get_best_match(_at86rf215_fsk_channel_spacing_25kHz,
                                   FSK_CHANNEL_SPACING_400K + 1, *(uint16_t *)val / 25);
             if (at86rf215_FSK_set_channel_spacing(dev, res) == 0) {
-                res = 25 * at86rf215_fsk_channel_spacing_25kHz[res];
+                res = 25 * _at86rf215_fsk_channel_spacing_25kHz[res];
             } else {
                 res = -ERANGE;
             }

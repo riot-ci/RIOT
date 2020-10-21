@@ -148,12 +148,12 @@ void at86rf215_get_random(at86rf215_t *dev, void *data, size_t len);
 /**
  * @brief   Symbol Rates for register values, in 10kHz
  */
-extern const uint8_t at86rf215_fsk_srate_10kHz[];
+extern const uint8_t _at86rf215_fsk_srate_10kHz[];
 
 /**
  * @brief   Channel Spacing for register values, in 25kHz
  */
-extern const uint8_t at86rf215_fsk_channel_spacing_25kHz[];
+extern const uint8_t _at86rf215_fsk_channel_spacing_25kHz[];
 
 /**
  * @brief   Configure the radio to make use of FSK modulation

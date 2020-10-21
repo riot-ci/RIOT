@@ -27,7 +27,7 @@
 #define FSK_SYMBOL_TIME_US  20
 
 /* also used by at86rf215_netdev.c */
-const uint8_t at86rf215_fsk_srate_10kHz[] = {
+const uint8_t _at86rf215_fsk_srate_10kHz[] = {
     [FSK_SRATE_50K]  = 5,
     [FSK_SRATE_100K] = 10,
     [FSK_SRATE_150K] = 15,
@@ -37,7 +37,7 @@ const uint8_t at86rf215_fsk_srate_10kHz[] = {
 };
 
 /* also used by at86rf215_netdev.c */
-const uint8_t at86rf215_fsk_channel_spacing_25kHz[] = {
+const uint8_t _at86rf215_fsk_channel_spacing_25kHz[] = {
     [FSK_CHANNEL_SPACING_200K] = 8,
     [FSK_CHANNEL_SPACING_400K] = 16,
 };
@@ -45,7 +45,7 @@ const uint8_t at86rf215_fsk_channel_spacing_25kHz[] = {
 /* IEEE Std 802.15.4™-2015
  * Table 10-10—Channel numbering for SUN PHYs,
  * index is channel spacing */
-static const uint16_t chan_center_freq0_subghz_25khz[] = {
+static const uint16_t _chan_center_freq0_subghz_25khz[] = {
     [FSK_CHANNEL_SPACING_200K] = 863125U / 25,
     [FSK_CHANNEL_SPACING_400K] = 863225U / 25
 };
@@ -53,13 +53,13 @@ static const uint16_t chan_center_freq0_subghz_25khz[] = {
 /* IEEE Std 802.15.4™-2015
  * Table 10-10—Channel numbering for SUN PHYs,
  * index is channel spacing */
-static const uint16_t chan_center_freq0_24ghz_25khz[] = {
+static const uint16_t _chan_center_freq0_24ghz_25khz[] = {
     [FSK_CHANNEL_SPACING_200K] = (2400200U - CCF0_24G_OFFSET) / 25,
     [FSK_CHANNEL_SPACING_400K] = (2400400U - CCF0_24G_OFFSET) / 25
 };
 
 /* Table 6-57, index is symbol rate */
-static const uint8_t FSKPE_Val[3][6] = {
+static const uint8_t _FSKPE_Val[3][6] = {
     { 0x02, 0x0E, 0x3E, 0x74, 0x05, 0x13 }, /* FSKPE0 */
     { 0x03, 0x0F, 0x3F, 0x7F, 0x3C, 0x29 }, /* FSKPE1 */
     { 0xFC, 0xF0, 0xC0, 0x80, 0xC3, 0xC7 }  /* FSKPE2 */
@@ -309,12 +309,12 @@ static uint8_t _FSKPL(uint8_t srate)
 }
 
 /* fsk modulation indices / 8 */
-static const uint8_t fsk_mod_idx[] = {
+static const uint8_t _fsk_mod_idx[] = {
     3, 4, 6, 8, 10, 12, 14, 16
 };
 
 /* FSK modulation scale / 8 */
-static const uint8_t fsk_mod_idx_scale[] = {
+static const uint8_t _fsk_mod_idx_scale[] = {
     7, 8, 9, 10
 };
 
@@ -324,10 +324,10 @@ static void _fsk_mod_idx_get(uint8_t num, uint8_t *idx, uint8_t *scale)
     *scale = 0;
 
     uint8_t diff = 0xFF;
-    for (uint8_t i = 0; i < ARRAY_SIZE(fsk_mod_idx_scale); ++i) {
-        for (uint8_t j = 0; j < ARRAY_SIZE(fsk_mod_idx); ++j) {
-            if (abs(num - fsk_mod_idx_scale[i] * fsk_mod_idx[j]) < diff) {
-                diff   = abs(num - fsk_mod_idx_scale[i] * fsk_mod_idx[j]);
+    for (uint8_t i = 0; i < ARRAY_SIZE(_fsk_mod_idx_scale); ++i) {
+        for (uint8_t j = 0; j < ARRAY_SIZE(_fsk_mod_idx); ++j) {
+            if (abs(num - _fsk_mod_idx_scale[i] * _fsk_mod_idx[j]) < diff) {
+                diff   = abs(num - _fsk_mod_idx_scale[i] * _fsk_mod_idx[j]);
                 *idx   = j;
                 *scale = i;
             }
@@ -374,9 +374,9 @@ static void _set_srate(at86rf215_t *dev, uint8_t srate, bool mod_idx_half)
                                               | TXDFE_DM_MASK);
 
     /* configure pre-emphasis */
-    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE0, FSKPE_Val[0][srate]);
-    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE1, FSKPE_Val[1][srate]);
-    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE2, FSKPE_Val[2][srate]);
+    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE0, _FSKPE_Val[0][srate]);
+    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE1, _FSKPE_Val[1][srate]);
+    at86rf215_reg_write(dev, dev->BBC->RG_FSKPE2, _FSKPE_Val[2][srate]);
 
     /* set preamble length in octets */
     dev->fsk_pl = _FSKPL(srate);
@@ -384,7 +384,7 @@ static void _set_srate(at86rf215_t *dev, uint8_t srate, bool mod_idx_half)
     at86rf215_FSK_prepare_rx(dev);
 
     /* t_on = t_off = t_min (time to TX minimal preamble length) */
-    uint8_t t_on = 4 * _FSKPL(srate) * 100 / at86rf215_fsk_srate_10kHz[srate];
+    uint8_t t_on = 4 * _FSKPL(srate) * 100 / _at86rf215_fsk_srate_10kHz[srate];
 
     at86rf215_reg_write(dev, dev->BBC->RG_FSKRPCONT, t_on);
     at86rf215_reg_write(dev, dev->BBC->RG_FSKRPCOFFT, t_on);
@@ -506,7 +506,7 @@ uint8_t at86rf215_FSK_get_mod_idx(at86rf215_t *dev)
     uint8_t _mod_idx = (fskc0 & FSKC0_MIDX_MASK) >> FSKC0_MIDX_SHIFT;
     uint8_t _mod_idx_scale = (fskc0 & FSKC0_MIDXS_MASK) >> FSKC0_MIDXS_SHIFT;
 
-    return fsk_mod_idx[_mod_idx] * fsk_mod_idx_scale[_mod_idx_scale];
+    return _fsk_mod_idx[_mod_idx] * _fsk_mod_idx_scale[_mod_idx_scale];
 }
 
 int at86rf215_FSK_set_mod_idx(at86rf215_t *dev, uint8_t mod_idx)
@@ -595,13 +595,13 @@ int at86rf215_FSK_set_channel_spacing(at86rf215_t *dev, uint8_t ch_space)
     at86rf215_await_state_end(dev, RF_STATE_TX);
 
     /* set channel spacing, same for both sub-GHz & 2.4 GHz */
-    at86rf215_reg_write(dev, dev->RF->RG_CS, at86rf215_fsk_channel_spacing_25kHz[ch_space]);
+    at86rf215_reg_write(dev, dev->RF->RG_CS, _at86rf215_fsk_channel_spacing_25kHz[ch_space]);
 
     /* set center frequency */
     if (is_subGHz(dev)) {
-        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, chan_center_freq0_subghz_25khz[ch_space]);
+        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, _chan_center_freq0_subghz_25khz[ch_space]);
     } else {
-        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, chan_center_freq0_24ghz_25khz[ch_space]);
+        at86rf215_reg_write16(dev, dev->RF->RG_CCF0L, _chan_center_freq0_24ghz_25khz[ch_space]);
     }
 
     DEBUG("CCF0 configured as: %lu kHz\n",
