@@ -416,13 +416,16 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
 
         case NETOPT_MR_FSK_MODULATION_ORDER:
             assert(max_len >= sizeof(int8_t));
-            *((int8_t *)val) = 2 + 2*at86rf215_FSK_get_mod_order(dev);
+            /* 0 -> 2-FSK, 1 -> 4-FSK */
+            *((int8_t *)val) = 2 + 2 * at86rf215_FSK_get_mod_order(dev);
             res = max_len;
             break;
 
         case NETOPT_MR_FSK_SRATE:
             assert(max_len >= sizeof(uint16_t));
-            *((uint16_t *)val) = 10 * _at86rf215_fsk_srate_10kHz[at86rf215_FSK_get_srate(dev)];
+            /* netopt expects symbol rate in kHz, internally it's stored in 10kHz steps */
+            *((uint16_t *)val) = _at86rf215_fsk_srate_10kHz[at86rf215_FSK_get_srate(dev)]
+                               * 10;
             res = max_len;
             break;
 
@@ -681,6 +684,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
             if (*(uint8_t *)val != 2 && *(uint8_t *)val != 4) {
                 res = -ERANGE;
             } else {
+                /* 4-FSK -> 1, 2-FSK -> 0 */
                 at86rf215_FSK_set_mod_order(dev, *(uint8_t *)val >> 2);
                 res = sizeof(uint8_t);
             }
@@ -691,6 +695,8 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 return -ENOTSUP;
             }
 
+            /* find the closest symbol rate value (in 10 kHz) that matches
+               the requested input (in kHz) */
             res = _get_best_match(_at86rf215_fsk_srate_10kHz,
                                   FSK_SRATE_400K + 1, *(uint16_t *)val / 10);
             if (at86rf215_FSK_set_srate(dev, res) == 0) {
@@ -718,6 +724,8 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
                 return -ENOTSUP;
             }
 
+            /* find the closest channel spacing value (in 25 kHz) that matches
+               the requested input (in kHz) */
             res = _get_best_match(_at86rf215_fsk_channel_spacing_25kHz,
                                   FSK_CHANNEL_SPACING_400K + 1, *(uint16_t *)val / 25);
             if (at86rf215_FSK_set_channel_spacing(dev, res) == 0) {
