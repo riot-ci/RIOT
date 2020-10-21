@@ -234,6 +234,10 @@ static int _init(void)
     ieee802154_radio_config_phy(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID), &conf);
     ieee802154_radio_set_cca_threshold(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID), CONFIG_IEEE802154_CCA_THRESH_DEFAULT);
 
+    /* ieee802154_radio_set_cca_mode*/
+    ieee802154_radio_set_cca_mode(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID), IEEE802154_CCA_MODE_ED_THRESHOLD);
+    ieee802154_radio_set_cca_threshold(ieee802154_hal_test_get_dev(RADIO_DEFAULT_ID), -35);
+
     /* Set the transceiver state to RX_ON in order to receive packets */
     _set_trx_state(IEEE802154_TRX_STATE_RX_ON, false);
 
