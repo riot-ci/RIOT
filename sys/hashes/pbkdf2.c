@@ -43,8 +43,6 @@ static void inplace_xor_digests(uint8_t *d1, const uint8_t *d2)
     }
 }
 
-#define _WIPE(a) crypto_secure_wipe(&a, sizeof(a))
-
 void pbkdf2_sha256(const uint8_t *password, size_t password_len,
                    const uint8_t *salt, size_t salt_len,
                    int iterations,
@@ -79,7 +77,7 @@ void pbkdf2_sha256(const uint8_t *password, size_t password_len,
         inplace_xor_scalar(processed_pass, sizeof(processed_pass), 0x36 ^ 0x5C);
         sha256_update(&outer, processed_pass, sizeof(processed_pass));
 
-        _WIPE(processed_pass);
+        crypto_secure_wipe(&processed_pass, sizeof(processed_pass));
     }
 
     memset(output, 0, SHA256_DIGEST_LENGTH);
@@ -103,12 +101,12 @@ void pbkdf2_sha256(const uint8_t *password, size_t password_len,
         inplace_xor_digests(output, tmp_digest);
 
         if (iterations == 0) {
-            _WIPE(inner_copy);
-            _WIPE(outer_copy);
+            crypto_secure_wipe(&inner_copy, sizeof(inner_copy));
+            crypto_secure_wipe(&outer_copy, sizeof(outer_copy));
         }
     }
 
-    _WIPE(inner);
-    _WIPE(outer);
-    _WIPE(tmp_digest);
+    crypto_secure_wipe(&inner, sizeof(inner));
+    crypto_secure_wipe(&outer, sizeof(outer));
+    crypto_secure_wipe(&tmp_digest, sizeof(tmp_digest));
 }
