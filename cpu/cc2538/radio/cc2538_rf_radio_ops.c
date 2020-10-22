@@ -338,7 +338,9 @@ void cc2538_irq_handler(void)
         if (rfcore_peek_rx_fifo(pkt_len) & CC2538_CRC_BIT_MASK) {
             /* Disable RX while the frame has not been processed */
             RFCORE_XREG_RXMASKCLR = 0xFF;
-            if (RFCORE->XREG_FRMCTRL0bits.AUTOACK) {
+            /* If AUTOACK is enabled and the ACK request bit is set */
+            if (RFCORE->XREG_FRMCTRL0bits.AUTOACK &&
+                (rfcore_peek_rx_fifo(1) & IEEE802154_FCF_ACK_REQ)) {
                 /* The next SFD will be the ACK's, ignore it */
                 cc2538_sfd_listen = false;
             }
