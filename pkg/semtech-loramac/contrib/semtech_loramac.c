@@ -710,7 +710,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         /* save the uplink counter */
                         _save_uplink_counter(mac);
 #endif
-                        if (ENABLE_DEBUG) {
+                        if (IS_ACTIVE(ENABLE_DEBUG)) {
                             switch (confirm->McpsRequest) {
                                 case MCPS_UNCONFIRMED:
                                 {
@@ -753,7 +753,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         break;
                     }
 
-                    if (ENABLE_DEBUG) {
+                    if (IS_ACTIVE(ENABLE_DEBUG)) {
                         switch (indication->McpsIndication) {
                             case MCPS_UNCONFIRMED:
                                 DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");
