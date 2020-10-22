@@ -245,7 +245,11 @@ static void _on_sock_evt(sock_udp_t *sock, sock_async_flags_t type, void *arg)
     if (messagelayer_emptyresponse_type != NO_IMMEDIATE_REPLY) {
         coap_hdr_set_type(pdu.hdr, (uint8_t)messagelayer_emptyresponse_type);
         coap_hdr_set_code(pdu.hdr, COAP_CODE_EMPTY);
-        /* FIXME make this a coap_hdr_set_token or set_token_length */
+        /* Set the token length to 0, preserving the CoAP version as it was and
+         * the empty message type that was just set.
+         *
+         * FIXME: Introduce an internal function to set or truncate the token
+         * */
         pdu.hdr->ver_t_tkl &= 0xf0;
 
         ssize_t bytes = sock_udp_send(sock, _listen_buf,
