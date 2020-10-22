@@ -4,5 +4,3 @@ ifneq (,$(filter saul_default,$(USEMODULE)))
   USEMODULE += mag3110
   USEMODULE += mma8x5x
 endif
-
-include $(RIOTCPU)/kinetis/Makefile.dep

@@ -1,12 +1,8 @@
-# define the cpu used by the board
-export CPU = kinetis
-export CPU_MODEL = mkl43z256vlh4
-
 # This board comes with OpenSDA configured with a P&E debugger application,
 # which we do not have any support for. Update your OpenSDA firmware with
 # the latest CMSIS-DAP firmware for your board from
 # https://www.nxp.com/support/developer-resources/run-time-software/kinetis-developer-resources/ides-for-kinetis-mcus/opensda-serial-and-debug-adapter:OPENSDA
-export DEBUG_ADAPTER ?= dap
+DEBUG_ADAPTER ?= dap
 
 # Include default FRDM board config
 include $(RIOTBOARD)/common/frdm/Makefile.include
