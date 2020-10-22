@@ -32,7 +32,7 @@
 
 #include "socket_zep.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG            0
 #include "debug.h"
 
 #define _UNIX_NTP_ERA_OFFSET    (2208988800U)
@@ -183,14 +183,14 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
           (unsigned)len, (void *)info);
     if ((buf == NULL) || (len == 0)) {
         int res = real_ioctl(dev->sock_fd, FIONREAD, &size);
-#if ENABLE_DEBUG
-        if (res < 0) {
-            DEBUG("socket_zep::recv: error reading FIONREAD: %s",
-                  strerror(errno));
+
+        if (IS_ACTIVE(ENABLE_DEBUG)) {
+            if (res < 0) {
+                DEBUG("socket_zep::recv: error reading FIONREAD: %s",
+                    strerror(errno));
+            }
         }
-#else
-        (void)res;
-#endif
+
         return size;
     }
     else if (len > 0) {
