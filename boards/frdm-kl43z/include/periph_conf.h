@@ -108,7 +108,7 @@ static const uart_conf_t uart_config[] = {
         .type   = KINETIS_LPUART,
     },
 };
-#define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
+#define UART_NUMOF          ARRAY_SIZE(uart_config)
 #define LPUART_0_ISR        isr_lpuart0
 /* Use MCGIRCLK (internal reference 4 MHz clock) */
 #define LPUART_0_SRC        3
@@ -128,7 +128,7 @@ static const adc_conf_t adc_config[] = {
     { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  1), .chan = 15, .avg = ADC_AVG_MAX }, /* Arduino A5 */
 };
 
-#define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
+#define ADC_NUMOF           ARRAY_SIZE(adc_config)
 /*
  * KL43Z ADC reference settings:
  * 0: VREFH/VREFL external pin pair
@@ -164,9 +164,9 @@ static const i2c_conf_t i2c_config[] = {
         .sda_pcr = (PORT_PCR_MUX(6)),
     },
 };
-#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
-#define I2C_0_ISR           (isr_i2c0)
-#define I2C_1_ISR           (isr_i2c1)
+#define I2C_NUMOF           ARRAY_SIZE(i2c_config)
+#define I2C_0_ISR           isr_i2c0
+#define I2C_1_ISR           isr_i2c1
 /** @} */
 
 #ifdef __cplusplus
