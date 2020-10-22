@@ -27,7 +27,6 @@
 #include "mtd.h"
 #if MODULE_XTIMER
 #include "xtimer.h"
-#include "timex.h"
 #else
 #include "thread.h"
 #endif
@@ -107,7 +106,7 @@ static void mtd_spi_cmd_addr_read(const mtd_spi_nor_t *dev, uint8_t opcode,
           addr.u8[3], dest, count);
 
     uint8_t *addr_buf = &addr.u8[4 - dev->params->addr_width];
-    if (ENABLE_TRACE) {
+    if (IS_ACTIVE(ENABLE_TRACE)) {
         TRACE("mtd_spi_cmd_addr_read: addr:");
         for (unsigned int i = 0; i < dev->params->addr_width; ++i) {
             TRACE(" %02x", addr_buf[i]);
@@ -145,7 +144,7 @@ static void mtd_spi_cmd_addr_write(const mtd_spi_nor_t *dev, uint8_t opcode,
           addr.u8[3], src, count);
 
     uint8_t *addr_buf = &addr.u8[4 - dev->params->addr_width];
-    if (ENABLE_TRACE) {
+    if (IS_ACTIVE(ENABLE_TRACE)) {
         TRACE("mtd_spi_cmd_addr_write: addr:");
         for (unsigned int i = 0; i < dev->params->addr_width; ++i) {
             TRACE(" %02x", addr_buf[i]);
@@ -317,8 +316,11 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
 {
     unsigned i = 0, j = 0;
     uint32_t div = 2;
-#if ENABLE_DEBUG && defined(MODULE_XTIMER)
-    uint32_t diff = xtimer_now_usec();
+#if MODULE_XTIMER
+    uint32_t diff = 0;
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        uint32_t diff = xtimer_now_usec();
+    }
 #endif
     do {
         uint8_t status;
@@ -353,9 +355,11 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
 #endif
     } while (1);
     DEBUG("wait loop %u times, yield %u times", i, j);
-#if ENABLE_DEBUG && defined(MODULE_XTIMER)
-    diff = xtimer_now_usec() - diff;
-    DEBUG(", total wait %"PRIu32"us", diff);
+#if MODULE_XTIMER
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        diff = xtimer_now_usec() - diff;
+        DEBUG(", total wait %"PRIu32"us", diff);
+    }
 #endif
     DEBUG("\n");
 }
