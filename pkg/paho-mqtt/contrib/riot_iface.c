@@ -29,13 +29,13 @@
 #include "tsrb.h"
 #include "log.h"
 
-#define ENABLE_DEBUG                        (0)
+#define ENABLE_DEBUG        (0)
 #include "debug.h"
 
-#define IP_MAX_LEN_ADDRESS                  (39)    /*IPv6 max length */
+#define IP_MAX_LEN_ADDRESS  (39)    /*IPv6 max length */
 
 #ifndef TSRB_MAX_SIZE
-#define TSRB_MAX_SIZE                       (1024)
+#define TSRB_MAX_SIZE       (1024)
 #endif
 
 #ifdef MODULE_LWIP
@@ -45,7 +45,7 @@ static tsrb_t tsrb_lwip_tcp;
 #endif
 
 #ifndef PAHO_MQTT_YIELD_MS
-#define PAHO_MQTT_YIELD_MS                  (10)
+#define PAHO_MQTT_YIELD_MS  (10)
 #endif
 
 static int mqtt_read(struct Network *n, unsigned char *buf, int len,
@@ -88,8 +88,7 @@ static int mqtt_read(struct Network *n, unsigned char *buf, int len,
         }
     } while (rc < len && xtimer_now64().ticks64 < send_tick && rc >= 0);
 
-#ifdef ENABLE_DEBUG
-    if (IS_USED(MODULE_LWIP) && rc > 0) {
+    if (IS_ACTIVE(ENABLE_DEBUG) && IS_USED(MODULE_LWIP) && rc > 0) {
         DEBUG("MQTT buf asked for %d, available to read %d\n",
                 rc, tsrb_avail(&tsrb_lwip_tcp));
         for (int i = 0; i < rc; i++) {
@@ -97,7 +96,6 @@ static int mqtt_read(struct Network *n, unsigned char *buf, int len,
         }
         DEBUG("\n");
     }
-#endif
 
     return rc;
 }
