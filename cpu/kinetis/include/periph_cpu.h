@@ -311,10 +311,17 @@ typedef enum {
 #ifdef KINETIS_HAVE_MK_SPI
 #define HAVE_SPI_MODE_T
 typedef enum {
+#if defined(SPI_CTAR_CPHA_MASK)
     SPI_MODE_0 = 0,                                         /**< CPOL=0, CPHA=0 */
     SPI_MODE_1 = (SPI_CTAR_CPHA_MASK),                      /**< CPOL=0, CPHA=1 */
     SPI_MODE_2 = (SPI_CTAR_CPOL_MASK),                      /**< CPOL=1, CPHA=0 */
     SPI_MODE_3 = (SPI_CTAR_CPOL_MASK | SPI_CTAR_CPHA_MASK)  /**< CPOL=1, CPHA=1 */
+#elif defined(SPI_C1_CPHA_MASK)
+    SPI_MODE_0 = 0,                                         /**< CPOL=0, CPHA=0 */
+    SPI_MODE_1 = (SPI_C1_CPHA_MASK),                        /**< CPOL=0, CPHA=1 */
+    SPI_MODE_2 = (SPI_C1_CPOL_MASK),                        /**< CPOL=1, CPHA=0 */
+    SPI_MODE_3 = (SPI_C1_CPOL_MASK | SPI_C1_CPHA_MASK)      /**< CPOL=1, CPHA=1 */
+#endif
 } spi_mode_t;
 /** @} */
 #endif /* KINETIS_HAVE_MK_SPI */
@@ -525,6 +532,15 @@ typedef struct {
     uart_type_t type;             /**< Hardware module type (KINETIS_UART or KINETIS_LPUART)*/
 } uart_conf_t;
 
+#if !defined(KINETIS_MCG_LITE)
+#ifdef MCG_MC_HIRCEN_MASK
+/* MGC_Lite used by many KL parts */
+#define KINETIS_HAVE_MCG_LITE 1
+#define KINETIS_HAVE_PLL 0
+#else
+#define KINETIS_HAVE_MCG_LITE 0
+#endif
+#endif /* !defined(KINETIS_MCG_LITE) */
 #if !defined(KINETIS_HAVE_PLL)
 #if defined(MCG_C6_PLLS_MASK) || DOXYGEN
 /**
@@ -541,6 +557,12 @@ typedef struct {
  * @brief Kinetis possible MCG modes
  */
 typedef enum kinetis_mcg_mode {
+#if KINETIS_HAVE_MCG_LITE
+    KINETIS_MCG_MODE_LIRC8M = 0, /**< LIRC 8 MHz mode*/
+    KINETIS_MCG_MODE_HIRC   = 1, /**< HIRC 48 MHz mode */
+    KINETIS_MCG_MODE_EXT    = 2, /**< External clocking mode */
+    KINETIS_MCG_MODE_LIRC2M = 3, /**< LIRC 2 MHz mode */
+#else /* KINETIS_HAVE_MCG_LITE */
     KINETIS_MCG_MODE_FEI  = 0, /**< FLL Engaged Internal Mode */
     KINETIS_MCG_MODE_FEE  = 1, /**< FLL Engaged External Mode */
     KINETIS_MCG_MODE_FBI  = 2, /**< FLL Bypassed Internal Mode */
@@ -550,10 +572,12 @@ typedef enum kinetis_mcg_mode {
 #if KINETIS_HAVE_PLL
     KINETIS_MCG_MODE_PBE  = 6, /**< PLL Bypassed External Mode */
     KINETIS_MCG_MODE_PEE  = 7, /**< PLL Engaged External Mode */
-#endif
+#endif /* KINETIS_HAVE_PLL */
+#endif /* else KINETIS_HAVE_MCG_LITE */
     KINETIS_MCG_MODE_NUMOF,    /**< Number of possible modes */
 } kinetis_mcg_mode_t;
 
+#if !KINETIS_HAVE_MCG_LITE
 /**
  * @brief Kinetis MCG FLL multiplier settings
  */
@@ -575,6 +599,7 @@ typedef enum {
     /** FLL multiplier = 2929 */
     KINETIS_MCG_FLL_FACTOR_2929 = (MCG_C4_DRST_DRS(3) | MCG_C4_DMX32_MASK),
 } kinetis_mcg_fll_t;
+#endif
 
 /**
  * @brief Kinetis FLL external reference clock range settings
@@ -618,6 +643,8 @@ typedef enum {
      * @note This flag affects the clock frequency of the CPU when using the MCG
      * in FBI, or BLPI clocking modes.
      *
+     * @note This flag is ignored on MCG_Lite parts
+     *
      * - If this flag is set, the fast internal reference clock (up to 4 MHz,
      * depends on settings) will be routed to the MCGIRCLK internal clock signal.
      * - If not set, the slow internal reference clock (32 kHz) will be routed to
@@ -645,6 +672,17 @@ typedef enum {
      *   CPU STOP modes.
      */
     KINETIS_CLOCK_MCGIRCLK_STOP_EN  = (1 <<  4),
+    /**
+     * @brief   Enable MCGPCLK (HIRC) internal clock signal
+     *
+     * This flag corresponds to the HIRCEN bit in the MCG_MC register.
+     *
+     * This clock source is only available on MCG_Lite parts
+     *
+     * - If this flag is set, the MCG will provide MCGPCLK for use by other
+     * peripherals.
+     */
+    KINETIS_CLOCK_MCGPCLK_EN        = (1 <<  5),
 } kinetis_clock_flags_t;
 
 /**
@@ -716,6 +754,7 @@ typedef struct {
      * @see CPU reference manual, OSC_CR[SCxP]
      */
     uint8_t osc_clc;
+#if !KINETIS_HAVE_MCG_LITE
     /**
      * @brief   MCG external reference oscillator selection
      *
@@ -726,8 +765,11 @@ typedef struct {
      * @see CPU reference manual, MCG_C7[OSCSEL]
      */
     uint8_t oscsel;
+#endif /* !KINETIS_HAVE_MCG_LITE */
     /**
      * @brief   Fast internal reference clock divider
+     *
+     * This field is also known as LIRC_DIV1 on MCG_Lite parts.
      *
      * The bits will be passed directly to the MCG_SC register without any
      * transformation, use the MCG_SC_FCRDIV() macro to ensure the proper bit
@@ -736,6 +778,21 @@ typedef struct {
      * @see CPU reference manual, MCG_SC[FCRDIV]
      */
     uint8_t fcrdiv;
+#if KINETIS_HAVE_MCG_LITE
+    /**
+     * @brief   LIRC second clock divider
+     *
+     * The bits will be passed directly to the MCG_MC register without any
+     * transformation, use the MCG_MC_LIRC_DIV2() macro to ensure the proper bit
+     * shift for the chosen setting.
+     * This divider only affects the MCGIRCLK output, it does not affect the
+     * core frequency when running the MCU in a LIRC clocking mode.
+     *
+     * @see CPU reference manual, MCG_MC[LIRC_DIV2]
+     */
+    uint8_t lirc_div2;
+#endif /* KINETIS_HAVE_MCG_LITE */
+#if !KINETIS_HAVE_MCG_LITE
     /**
      * @brief   FLL ERC divider setting
      *
@@ -782,6 +839,7 @@ typedef struct {
      */
     uint8_t pll_vdiv;
 #endif /* KINETIS_HAVE_PLL */
+#endif /* !KINETIS_HAVE_MCG_LITE */
 } clock_config_t;
 #endif /* MODULE_PERIPH_MCG */
 /**
