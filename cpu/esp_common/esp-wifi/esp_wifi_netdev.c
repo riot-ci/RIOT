@@ -46,9 +46,6 @@
 #include "esp_wifi_params.h"
 #include "esp_wifi_netdev.h"
 
-#define ENABLE_DEBUG_HEXDUMP    (0)
-#define ENABLE_DEBUG            (0)
-#include "debug.h"
 #include "log.h"
 
 #define ESP_WIFI_DEBUG(f, ...) \
@@ -92,6 +89,10 @@
 #include "lwip/pbuf.h"
 
 #endif /* MCU_ESP8266 */
+
+#define ENABLE_DEBUG_HEXDUMP    0
+#define ENABLE_DEBUG            0
+#include "debug.h"
 
 /**
  * There is only one ESP WiFi device. We define it as static device variable
@@ -538,12 +539,13 @@ static int _esp_wifi_send(netdev_t *netdev, const iolist_t *iolist)
         }
     }
 
-#if ENABLE_DEBUG
-    ESP_WIFI_DEBUG("send %d byte", dev->tx_len);
-#if MODULE_OD && ENABLE_DEBUG_HEXDUMP
-    od_hex_dump(dev->tx_buf, dev->tx_len, OD_WIDTH_DEFAULT);
-#endif /* MODULE_OD && ENABLE_DEBUG_HEXDUMP */
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        ESP_WIFI_DEBUG("send %d byte", dev->tx_len);
+        if (IS_ACTIVE(ENABLE_DEBUG_HEXDUMP) && IS_USED(MODULE_OD)) {
+            od_hex_dump(dev->tx_buf, dev->tx_len, OD_WIDTH_DEFAULT);
+        }
+    }
+
     critical_exit();
 
     /* send the the packet to the peer(s) mac address */
@@ -605,15 +607,15 @@ static int _esp_wifi_recv(netdev_t *netdev, void *buf, size_t len, void *info)
     ringbuffer_remove(&dev->rx_buf, sizeof(uint16_t));
     ringbuffer_get(&dev->rx_buf, buf, size);
 
-#if ENABLE_DEBUG
-    ethernet_hdr_t *hdr = (ethernet_hdr_t *)buf;
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        ethernet_hdr_t *hdr = (ethernet_hdr_t *)buf;
+        ESP_WIFI_DEBUG("received %u byte from addr " MAC_STR,
+                    size, MAC_STR_ARG(hdr->src));
 
-    ESP_WIFI_DEBUG("received %u byte from addr " MAC_STR,
-                   size, MAC_STR_ARG(hdr->src));
-#if MODULE_OD && ENABLE_DEBUG_HEXDUMP
-    od_hex_dump(buf, size, OD_WIDTH_DEFAULT);
-#endif /* MODULE_OD && ENABLE_DEBUG_HEXDUMP */
-#endif /* ENABLE_DEBUG */
+        if (IS_ACTIVE(ENABLE_DEBUG_HEXDUMP) && IS_USED(MODULE_OD))
+            od_hex_dump(buf, size, OD_WIDTH_DEFAULT);
+        }
+    }
 
     critical_exit();
     return size;

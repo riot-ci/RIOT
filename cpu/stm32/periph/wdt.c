@@ -29,7 +29,7 @@
 #include "periph_cpu.h"
 #include "periph/wdt.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 #ifdef __cplusplus
@@ -133,9 +133,7 @@ void wdt_setup_reboot(uint32_t min_time, uint32_t max_time)
     _set_prescaler(pre);
     _set_reload(rel);
 
-#if ENABLE_DEBUG
     DEBUG("[wdt]: reset time %lu [us]\n", _wdt_time(pre, rel));
-#endif
 
     /* Refresh wdt counter */
     wdt_kick();
