@@ -120,12 +120,12 @@ static const uart_conf_t uart_config[] = {
  */
 static const adc_conf_t adc_config[] = {
     /* dev, pin, channel */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  0), .chan =  8 }, /* Arduino A0 */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  1), .chan =  9 }, /* Arduino A1 */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  2), .chan = 15 }, /* Arduino A2 */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  3), .chan =  4 }, /* Arduino A3 */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  2), .chan = 11 }, /* Arduino A4 */
-    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  1), .chan = 15 }, /* Arduino A5 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  0), .chan =  8, .avg = ADC_AVG_MAX }, /* Arduino A0 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  1), .chan =  9, .avg = ADC_AVG_MAX }, /* Arduino A1 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  2), .chan = 15, .avg = ADC_AVG_MAX }, /* Arduino A2 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_B,  3), .chan =  4, .avg = ADC_AVG_MAX }, /* Arduino A3 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  2), .chan = 11, .avg = ADC_AVG_MAX }, /* Arduino A4 */
+    { .dev = ADC0, .pin = GPIO_PIN(PORT_C,  1), .chan = 15, .avg = ADC_AVG_MAX }, /* Arduino A5 */
 };
 
 #define ADC_NUMOF           (sizeof(adc_config) / sizeof(adc_config[0]))
