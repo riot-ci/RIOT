@@ -83,8 +83,10 @@ static void _hal_radio_cb(ieee802154_dev_t *dev, ieee802154_trx_ev_t status)
 
     switch (status) {
     case IEEE802154_RADIO_CONFIRM_TX_DONE:
+        ieee802154_radio_confirm_transmit(openwsn_radio.dev, NULL);
         ieee802154_radio_request_set_trx_state(openwsn_radio.dev,
                                                IEEE802154_TRX_STATE_TRX_OFF);
+        while (ieee802154_radio_confirm_set_trx_state(openwsn_radio.dev) == -EAGAIN) {}
         openwsn_radio.endFrame_cb(_txrx_event_capture_time);
         break;
     case IEEE802154_RADIO_INDICATION_RX_DONE:
@@ -125,19 +127,16 @@ int openwsn_radio_init(void *radio_dev)
 
     /* Enable basic mode, no AUTOACK. no CSMA */
     ieee802154_radio_set_rx_mode(dev, IEEE802154_RX_AACK_DISABLED);
+    /* MAC layer retransmissions are disabled by _set_csma_params() */
     ieee802154_radio_set_csma_params(dev, NULL, -1);
 
-    /* MAC layer will handle retransmissions */
-    if (ieee802154_radio_has_frame_retrans(dev)) {
-        ieee802154_radio_set_frame_retrans(dev, 0);
+    if (IS_USED(MODULE_CC2538_RF)) {
+        /* If frame filtering is enabled cc2538 will not accept beacons
+        where the destination-address mode is 0 (no destination address).
+        per rfc8180 4.5.1 the destination address must be set, which means
+        the destination-address mode can't be 0 */
+        ieee802154_radio_set_rx_mode(dev, IEEE802154_RX_PROMISC);
     }
-#ifdef MODULE_CC2538_RF
-    /* If frame filtering is enabled cc2538 will not accept beacons
-       where the destination-address mode is 0 (no destination address).
-       per rfc8180 4.5.1 the destination address must be set, which means
-       the destination-address mode can't be 0 */
-    ieee802154_radio_set_rx_mode(dev, IEEE802154_RX_PROMISC);
-#endif
 
     /* Configure PHY settings (channel, TX power) */
     ieee802154_phy_conf_t conf =
@@ -185,10 +184,12 @@ void radio_setFrequency(uint8_t frequency, radio_freq_t tx_or_rx)
 void radio_rfOn(void)
 {
     ieee802154_radio_request_on(openwsn_radio.dev);
-    ieee802154_radio_request_set_trx_state(openwsn_radio.dev,
-                                           IEEE802154_TRX_STATE_TRX_OFF);
     /* If the radio is still not in TRX_OFF state, spin */
     while (ieee802154_radio_confirm_on(openwsn_radio.dev) == -EAGAIN) {}
+    /* HACK: cc2538 does not implement on() correctly, remove when it does*/
+    ieee802154_radio_request_set_trx_state(openwsn_radio.dev,
+                                           IEEE802154_TRX_STATE_TRX_OFF);
+    while (ieee802154_radio_confirm_set_trx_state(openwsn_radio.dev) == -EAGAIN) {}
 }
 
 void radio_rfOff(void)
