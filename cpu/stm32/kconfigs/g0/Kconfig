@@ -20,3 +20,5 @@ config HAS_CPU_STM32G0
     bool
     help
         Indicates that the cpu being used belongs to the 'stm32g0' family.
+
+rsource "Kconfig.clock"
