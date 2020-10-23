@@ -98,6 +98,9 @@
 
 /**
  * @name    OpenWSN debugpins configuration
+ *
+ * @note This configuration mimics the one done in OpenWSN-fw for the
+ *       same platform
  * @{
  */
 #define OPENWSN_DEBUGPIN_FRAME  GPIO_PIN(0, 7) /* A7 */
