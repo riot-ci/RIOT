@@ -9,8 +9,10 @@ TAPSETUP="$(cd "${ZEP_DISPATCH_DIR}/../tapsetup/" && pwd -P)/tapsetup"
 TAP=tap0
 TAP_GLB="fdea:dbee:f::1/64"
 
+NOSUDO=sudo -u ${SUDO_USER}
+
 create_tap() {
-    ip tuntap add ${TAP} mode tap user ${USER}
+    ip tuntap add ${TAP} mode tap user ${SUDO_USER}
     sysctl -w net.ipv6.conf.${TAP}.forwarding=1
     sysctl -w net.ipv6.conf.${TAP}.accept_ra=0
     ip link set ${TAP} up
@@ -40,7 +42,7 @@ cleanup() {
 }
 
 start_uhcpd() {
-    ${UHCPD} ${TAP} ${PREFIX} > /dev/null &
+    ${NOSUDO} ${UHCPD} ${TAP} ${PREFIX} > /dev/null &
     UHCPD_PID=$!
 }
 
@@ -50,7 +52,7 @@ start_dhcpd() {
 }
 
 start_zep_dispatch() {
-    ${ZEP_DISPATCH} ::1 ${ZEP_PORT_BASE} > /dev/null &
+    ${NOSUDO} ${ZEP_DISPATCH} ::1 ${ZEP_PORT_BASE} > /dev/null &
     ZEP_DISPATCH_PID=$!
 }
 
@@ -90,4 +92,4 @@ if [ ${USE_DHCPV6} -eq 1 ]; then
 else
     start_uhcpd
 fi && \
-${ELFFILE} ${TAP} $*
+${NOSUDO} ${ELFFILE} ${TAP} $*
