@@ -5,6 +5,10 @@
  * License v2. See the file LICENSE for more details.
  */
 
+#ifndef ZEP_DISPATCH_PDU
+#define ZEP_DISPATCH_PDU    256
+#endif
+
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdbool.h>
@@ -28,7 +32,7 @@ static void dispatch_loop(int sock)
     puts("entering loop…");
     while (1) {
         char addr_str[INET6_ADDRSTRLEN];
-        uint8_t buffer[256];
+        uint8_t buffer[ZEP_DISPATCH_PDU];
         struct sockaddr_in6 src_addr;
         socklen_t addr_len = sizeof(src_addr);
 
