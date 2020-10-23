@@ -25,18 +25,15 @@
 #include <errno.h>
 
 #include "mtd.h"
-#if MODULE_XTIMER
 #include "xtimer.h"
-#else
 #include "thread.h"
-#endif
 #include "byteorder.h"
 #include "mtd_spi_nor.h"
 
 #define ENABLE_DEBUG    0
 #include "debug.h"
 
-#define ENABLE_TRACE    0
+#define ENABLE_TRACE    (0)
 #define TRACE(...)      DEBUG(__VA_ARGS__)
 
 /* after power up, on an invalid JEDEC ID, wait and read N times */
@@ -316,12 +313,10 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
 {
     unsigned i = 0, j = 0;
     uint32_t div = 2;
-#if MODULE_XTIMER
     uint32_t diff = 0;
-    if (IS_ACTIVE(ENABLE_DEBUG)) {
-        uint32_t diff = xtimer_now_usec();
+    if (IS_ACTIVE(ENABLE_DEBUG) && IS_USED(MODULE_XTIMER)) {
+        diff = xtimer_now_usec();
     }
-#endif
     do {
         uint8_t status;
         mtd_spi_cmd_read(dev, dev->params->opcode->rdsr, &status, sizeof(status));
@@ -355,12 +350,10 @@ static inline void wait_for_write_complete(const mtd_spi_nor_t *dev, uint32_t us
 #endif
     } while (1);
     DEBUG("wait loop %u times, yield %u times", i, j);
-#if MODULE_XTIMER
-    if (IS_ACTIVE(ENABLE_DEBUG)) {
+    if (IS_ACTIVE(ENABLE_DEBUG) && IS_ACTIVE(MODULE_XTIMER)) {
         diff = xtimer_now_usec() - diff;
         DEBUG(", total wait %"PRIu32"us", diff);
     }
-#endif
     DEBUG("\n");
 }
 
