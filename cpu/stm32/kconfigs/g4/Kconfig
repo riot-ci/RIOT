@@ -22,3 +22,5 @@ config HAS_CPU_STM32G4
     bool
     help
         Indicates that the cpu being used belongs to the 'stm32g4' family.
+
+orsource "Kconfig.clock"
