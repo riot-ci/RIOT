@@ -28,7 +28,7 @@
 #include "net/sock/async/event.h"
 #endif
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 #include "dtls_debug.h"
 
@@ -117,19 +117,19 @@ static int _event(struct dtls_context_t *ctx, session_t *session,
 
     sock_dtls_t *sock = dtls_get_app_data(ctx);
     msg_t msg = { .type = code, .content.ptr = session };
-#ifdef ENABLE_DEBUG
-    switch (code) {
-        case DTLS_EVENT_CONNECT:
-            DEBUG("sock_dtls: event connect\n");
-            break;
-        case DTLS_EVENT_CONNECTED:
-            DEBUG("sock_dtls: event connected\n");
-            break;
-        case DTLS_EVENT_RENEGOTIATE:
-            DEBUG("sock_dtls: event renegotiate\n");
-            break;
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        switch (code) {
+            case DTLS_EVENT_CONNECT:
+                DEBUG("sock_dtls: event connect\n");
+                break;
+            case DTLS_EVENT_CONNECTED:
+                DEBUG("sock_dtls: event connected\n");
+                break;
+            case DTLS_EVENT_RENEGOTIATE:
+                DEBUG("sock_dtls: event renegotiate\n");
+                break;
+        }
     }
-#endif  /* ENABLE_DEBUG */
     if (!level && (code != DTLS_EVENT_CONNECT)) {
         mbox_put(&sock->mbox, &msg);
     }
