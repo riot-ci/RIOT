@@ -21,4 +21,8 @@ config HAS_CPU_STM32G0
     help
         Indicates that the cpu being used belongs to the 'stm32g0' family.
 
+# Only include clock config when using a G0 CPU to avoid name clash between
+# symbols
+if CPU_FAM_G0
 rsource "Kconfig.clock"
+endif
