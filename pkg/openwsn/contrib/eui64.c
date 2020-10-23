@@ -45,6 +45,7 @@ void eui64_get(uint8_t *addressToWrite)
     memcpy(addressToWrite, _eui64.uint8, sizeof(_eui64.uint8));
 #else
     eui64_t eui64;
+
     if (openwsn_radio.dev->driver->get(openwsn_radio.dev, NETOPT_ADDRESS_LONG,
                                        &eui64,
                                        sizeof(eui64_t)) == sizeof(eui64_t)) {

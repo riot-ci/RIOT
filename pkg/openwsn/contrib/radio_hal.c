@@ -59,7 +59,7 @@ void _idmanager_addr_override(void)
     /* override PANID */
     id.type = ADDR_PANID;
     network_uint16_t panid_be = byteorder_htons(OPENWSN_PANID);
-    memcpy(&id.addr_16b, &panid_be, IEEE802154_SHORT_ADDRESS_LEN);
+    memcpy(&id.panid, &panid_be, IEEE802154_SHORT_ADDRESS_LEN);
     idmanager_setMyID(&id);
 
     /* recover ADDR_64B */
