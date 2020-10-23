@@ -8,6 +8,7 @@ BOARD_WHITELIST = \
   adafruit-clue \
   adafruit-itsybitsy-nrf52 \
   arduino-nano-33-ble \
+  cc2538dk \
   feather-nrf52840 \
   firefly \
   fox \
@@ -36,7 +37,7 @@ USEMODULE += openwsn_openstack
 
 # Optional OpenWSN Modules
 ## Enable Constrained Join Protocol (CoJP)
-USEMODULE += openwsn_cjoin
+# USEMODULE += openwsn_cjoin
 ## Enable 6lowpan fragmentation
 USEMODULE += openwsn_6lo_frag
 ## Enable link layer security
