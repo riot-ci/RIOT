@@ -30,14 +30,13 @@
 #include "assert.h"
 #include "memarray.h"
 
-#ifdef MODULE_CAN_MBOX
 #include "mbox.h"
-#endif
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 #if ENABLE_DEBUG
+/* For PRIu16 etc. */
 #include <inttypes.h>
 #endif
 
@@ -213,13 +212,15 @@ int can_router_register(can_reg_entry_t *entry, canid_t can_id, canid_t mask, vo
     filter_el_t *filter;
     int ret;
 
-#if ENABLE_DEBUG
-    if (entry->type == CAN_TYPE_DEFAULT) {
-        DEBUG("can_router_register: ifnum=%d, pid=%" PRIkernel_pid ", can_id=0x%" PRIx32
-              ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, entry->target.pid, can_id, mask, param);
-    } else if (entry->type == CAN_TYPE_MBOX) {
-        DEBUG("can_router_register: ifnum=%d, mbox=%p, can_id=0x%" PRIx32
-              ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, (void *)entry->target.mbox, can_id, mask, param);
+#ifdef MODULE_CAN_MBOX
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        if (entry->type == CAN_TYPE_DEFAULT) {
+            DEBUG("can_router_register: ifnum=%d, pid=%" PRIkernel_pid ", can_id=0x%" PRIx32
+                ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, entry->target.pid, can_id, mask, param);
+        } else if (entry->type == CAN_TYPE_MBOX) {
+            DEBUG("can_router_register: ifnum=%d, mbox=%p, can_id=0x%" PRIx32
+                ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, (void *)entry->target.mbox, can_id, mask, param);
+        }
     }
 #endif
 
@@ -262,13 +263,15 @@ int can_router_unregister(can_reg_entry_t *entry, canid_t can_id,
     filter_el_t *el;
     int ret;
 
-#if ENABLE_DEBUG
-    if (entry->type == CAN_TYPE_DEFAULT) {
-        DEBUG("can_router_unregister: ifnum=%d, pid=%" PRIkernel_pid ", can_id=0x%" PRIx32
-              ", mask=0x%" PRIx32 ", data=%p", entry->ifnum, entry->target.pid, can_id, mask, param);
-    } else if (entry->type == CAN_TYPE_MBOX) {
-        DEBUG("can_router_unregister: ifnum=%d, mbox=%p, can_id=0x%" PRIx32
-              ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, (void *)entry->target.mbox, can_id, mask, param);
+#ifdef MODULE_CAN_MBOX
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        if (entry->type == CAN_TYPE_DEFAULT) {
+            DEBUG("can_router_unregister: ifnum=%d, pid=%" PRIkernel_pid ", can_id=0x%" PRIx32
+                ", mask=0x%" PRIx32 ", data=%p", entry->ifnum, entry->target.pid, can_id, mask, param);
+        } else if (entry->type == CAN_TYPE_MBOX) {
+            DEBUG("can_router_unregister: ifnum=%d, mbox=%p, can_id=0x%" PRIx32
+                ", mask=0x%" PRIx32 ", data=%p\n", entry->ifnum, (void *)entry->target.mbox, can_id, mask, param);
+        }
     }
 #endif
 
@@ -316,9 +319,8 @@ int can_router_dispatch_rx_indic(can_pkt_t *pkt)
     int res = 0;
     msg_t msg;
     msg.type = CAN_MSG_RX_INDICATION;
-#if ENABLE_DEBUG
     int msg_cnt = 0;
-#endif
+
     DEBUG("can_router_dispatch_rx_indic: pkt=%p, ifnum=%d, can_id=%" PRIx32 "\n",
           (void *)pkt, pkt->entry.ifnum, pkt->frame.can_id);
 
@@ -334,9 +336,11 @@ int can_router_dispatch_rx_indic(can_pkt_t *pkt)
                   PRIkernel_pid "\n", entry->target.pid);
             atomic_fetch_add(&pkt->ref_count, 1);
             msg.content.ptr = can_pkt_alloc_rx_data(&pkt->frame, sizeof(pkt->frame), el->data);
-#if ENABLE_DEBUG
-            msg_cnt++;
-#endif
+
+            if (IS_ACTIVE(ENABLE_DEBUG)) {
+                msg_cnt++;
+            }
+
             if (!msg.content.ptr || (_send_msg(&msg, entry) <= 0)) {
                 can_pkt_free_rx_data(msg.content.ptr);
                 atomic_fetch_sub(&pkt->ref_count, 1);
@@ -348,9 +352,9 @@ int can_router_dispatch_rx_indic(can_pkt_t *pkt)
         }
     }
     mutex_unlock(&lock);
-#if ENABLE_DEBUG
+
     DEBUG("can_router_dispatch_rx: msg send to %d threads\n", msg_cnt);
-#endif
+
     if (atomic_load(&pkt->ref_count) == 0) {
         can_pkt_free(pkt);
     }

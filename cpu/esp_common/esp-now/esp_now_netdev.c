@@ -40,7 +40,7 @@
 #include "esp_now_params.h"
 #include "esp_now_netdev.h"
 
-#define ENABLE_DEBUG             (0)
+#define ENABLE_DEBUG             0
 #include "debug.h"
 
 #define ESP_NOW_UNICAST          (1)
@@ -154,12 +154,12 @@ static void IRAM_ATTR esp_now_scan_peers_done(void)
         critical_exit_var(state);
     }
 
-#if ENABLE_DEBUG
-    esp_now_peer_num_t peer_num;
-    esp_now_get_peer_num(&peer_num);
-    DEBUG("associated peers total=%d, encrypted=%d\n",
-          peer_num.total_num, peer_num.encrypt_num);
-#endif /* ENABLE_DEBUG */
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        esp_now_peer_num_t peer_num;
+        esp_now_get_peer_num(&peer_num);
+        DEBUG("associated peers total=%d, encrypted=%d\n",
+            peer_num.total_num, peer_num.encrypt_num);
+    }
 
     _esp_now_scan_peers_done = true;
 
