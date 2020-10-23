@@ -532,17 +532,8 @@ typedef struct {
     uart_type_t type;             /**< Hardware module type (KINETIS_UART or KINETIS_LPUART)*/
 } uart_conf_t;
 
-#if !defined(KINETIS_MCG_LITE)
-#ifdef MCG_MC_HIRCEN_MASK
-/* MGC_Lite used by many KL parts */
-#define KINETIS_HAVE_MCG_LITE 1
-#define KINETIS_HAVE_PLL 0
-#else
-#define KINETIS_HAVE_MCG_LITE 0
-#endif
-#endif /* !defined(KINETIS_MCG_LITE) */
-#if !defined(KINETIS_HAVE_PLL)
-#if defined(MCG_C6_PLLS_MASK) || DOXYGEN
+#if !defined(KINETIS_HAVE_PLL) && defined(MODULE_PERIPH_MCG) \
+  && defined(MCG_C6_PLLS_MASK) || DOXYGEN
 /**
  * @brief Defined to 1 if the MCG in this Kinetis CPU has a PLL
  */
@@ -550,19 +541,25 @@ typedef struct {
 #else
 #define KINETIS_HAVE_PLL 0
 #endif
-#endif /* !defined(KINETIS_HAVE_PLL) */
+
+#ifdef MODULE_PERIPH_MCG_LITE
+/**
+ * @brief Kinetis possible MCG modes
+ */
+typedef enum kinetis_mcg_mode {
+    KINETIS_MCG_MODE_LIRC8M = 0, /**< LIRC 8 MHz mode*/
+    KINETIS_MCG_MODE_HIRC   = 1, /**< HIRC 48 MHz mode */
+    KINETIS_MCG_MODE_EXT    = 2, /**< External clocking mode */
+    KINETIS_MCG_MODE_LIRC2M = 3, /**< LIRC 2 MHz mode */
+    KINETIS_MCG_MODE_NUMOF,    /**< Number of possible modes */
+} kinetis_mcg_mode_t;
+#endif /* MODULE_PERIPH_MCG_LITE */
 
 #ifdef MODULE_PERIPH_MCG
 /**
  * @brief Kinetis possible MCG modes
  */
 typedef enum kinetis_mcg_mode {
-#if KINETIS_HAVE_MCG_LITE
-    KINETIS_MCG_MODE_LIRC8M = 0, /**< LIRC 8 MHz mode*/
-    KINETIS_MCG_MODE_HIRC   = 1, /**< HIRC 48 MHz mode */
-    KINETIS_MCG_MODE_EXT    = 2, /**< External clocking mode */
-    KINETIS_MCG_MODE_LIRC2M = 3, /**< LIRC 2 MHz mode */
-#else /* KINETIS_HAVE_MCG_LITE */
     KINETIS_MCG_MODE_FEI  = 0, /**< FLL Engaged Internal Mode */
     KINETIS_MCG_MODE_FEE  = 1, /**< FLL Engaged External Mode */
     KINETIS_MCG_MODE_FBI  = 2, /**< FLL Bypassed Internal Mode */
@@ -572,12 +569,10 @@ typedef enum kinetis_mcg_mode {
 #if KINETIS_HAVE_PLL
     KINETIS_MCG_MODE_PBE  = 6, /**< PLL Bypassed External Mode */
     KINETIS_MCG_MODE_PEE  = 7, /**< PLL Engaged External Mode */
-#endif /* KINETIS_HAVE_PLL */
-#endif /* else KINETIS_HAVE_MCG_LITE */
+#endif
     KINETIS_MCG_MODE_NUMOF,    /**< Number of possible modes */
 } kinetis_mcg_mode_t;
 
-#if !KINETIS_HAVE_MCG_LITE
 /**
  * @brief Kinetis MCG FLL multiplier settings
  */
@@ -599,7 +594,9 @@ typedef enum {
     /** FLL multiplier = 2929 */
     KINETIS_MCG_FLL_FACTOR_2929 = (MCG_C4_DRST_DRS(3) | MCG_C4_DMX32_MASK),
 } kinetis_mcg_fll_t;
-#endif
+
+#endif /* MODULE_PERIPH_MCG */
+#if defined(MODULE_PERIPH_MCG) || defined(MODULE_PERIPH_MCG_LITE)
 
 /**
  * @brief Kinetis FLL external reference clock range settings
@@ -754,7 +751,7 @@ typedef struct {
      * @see CPU reference manual, OSC_CR[SCxP]
      */
     uint8_t osc_clc;
-#if !KINETIS_HAVE_MCG_LITE
+#ifdef MODULE_PERIPH_MCG
     /**
      * @brief   MCG external reference oscillator selection
      *
@@ -765,7 +762,7 @@ typedef struct {
      * @see CPU reference manual, MCG_C7[OSCSEL]
      */
     uint8_t oscsel;
-#endif /* !KINETIS_HAVE_MCG_LITE */
+#endif /* MODULE_PERIPH_MCG */
     /**
      * @brief   Fast internal reference clock divider
      *
@@ -778,7 +775,7 @@ typedef struct {
      * @see CPU reference manual, MCG_SC[FCRDIV]
      */
     uint8_t fcrdiv;
-#if KINETIS_HAVE_MCG_LITE
+#ifdef MODULE_PERIPH_MCG_LITE
     /**
      * @brief   LIRC second clock divider
      *
@@ -791,8 +788,7 @@ typedef struct {
      * @see CPU reference manual, MCG_MC[LIRC_DIV2]
      */
     uint8_t lirc_div2;
-#endif /* KINETIS_HAVE_MCG_LITE */
-#if !KINETIS_HAVE_MCG_LITE
+#else
     /**
      * @brief   FLL ERC divider setting
      *
@@ -839,9 +835,9 @@ typedef struct {
      */
     uint8_t pll_vdiv;
 #endif /* KINETIS_HAVE_PLL */
-#endif /* !KINETIS_HAVE_MCG_LITE */
-} clock_config_t;
 #endif /* MODULE_PERIPH_MCG */
+} clock_config_t;
+#endif /* MODULE_PERIPH_MCG || MODULE_PERIPH_MCG_LITE */
 /**
  * @brief   CPU internal function for initializing PORTs
  *

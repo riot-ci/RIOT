@@ -25,11 +25,6 @@
 #include "mcg.h"
 #include "bit.h"
 
-#if KINETIS_HAVE_MCG_LITE
-/* The CPU is in LIRC8M mode after hardware reset */
-static kinetis_mcg_mode_t current_mode = KINETIS_MCG_MODE_LIRC8M;
-
-#else /* KINETIS_HAVE_MCG_LITE */
 /* Pathfinding for the clocking modes, this table lists the next mode in the
  * chain when moving from mode <first> to mode <second> */
 static const uint8_t mcg_mode_routing[8][8] = {
@@ -45,9 +40,7 @@ static const uint8_t mcg_mode_routing[8][8] = {
 
 /* The CPU is in FEI mode after hardware reset */
 static kinetis_mcg_mode_t current_mode = KINETIS_MCG_MODE_FEI;
-#endif /* else KINETIS_HAVE_MCG_LITE */
 
-#if !KINETIS_HAVE_MCG_LITE
 /**
  * @brief Disable Phase Locked Loop (PLL)
  */
@@ -69,7 +62,6 @@ static inline void kinetis_mcg_set_fll_factor(kinetis_mcg_fll_t factor)
 {
     MCG->C4 = (MCG->C4 & ~(MCG_C4_DMX32_MASK | MCG_C4_DRST_DRS_MASK)) | (uint8_t)factor;
 }
-#endif /* !KINETIS_HAVE_MCG_LITE */
 
 /**
  * @brief Enable Oscillator module
@@ -152,13 +144,6 @@ static void kinetis_mcg_init_erclk32k(void)
 static void kinetis_mcg_init_mcgirclk(void)
 {
     /* Configure internal reference clock */
-#if KINETIS_HAVE_MCG_LITE
-    /* On MCG_Lite, LIRC is divided first by LIRC_DIV1, controlled by
-     * MCG_SC[FCRDIV], then by LIRC_DIV2, controlled by MCG_MC[LIRC_DIV2] */
-    MCG->SC = (MCG->SC & ~MCG_SC_FCRDIV_MASK) | clock_config.fcrdiv;
-    MCG->MC = (MCG->MC & ~MCG_MC_LIRC_DIV2_MASK) | clock_config.lirc_div2;
-    /* on MCG_Lite, we control the IRCS flag via the mode selection (LIRC2M vs LIRC8M) */
-#else /* KINETIS_HAVE_MCG_LITE */
     if (clock_config.clock_flags & KINETIS_CLOCK_USE_FAST_IRC) {
         /* Fast IRC divider setting */
         uint8_t tmp = MCG->SC;
@@ -173,8 +158,6 @@ static void kinetis_mcg_init_mcgirclk(void)
     else {
         bit_clear8(&MCG->C2, MCG_C2_IRCS_SHIFT);
     }
-#endif /* else KINETIS_HAVE_MCG_LITE */
-
     /* Enable/disable MCGIRCLK */
     /* MCGIRCLK can be used as an alternate clock source for certain modules */
     if (clock_config.clock_flags & KINETIS_CLOCK_MCGIRCLK_EN) {
@@ -193,24 +176,6 @@ static void kinetis_mcg_init_mcgirclk(void)
     }
 }
 
-#if KINETIS_HAVE_MCG_LITE
-/**
- * @brief   Initialize the MCG high speed peripheral clock (MCGPCLK)
- *
- * This clock signal can be used for directly clocking certain peripherals
- */
-static void kinetis_mcg_init_mcgpclk(void)
-{
-    if (clock_config.clock_flags & KINETIS_CLOCK_MCGPCLK_EN) {
-        bit_set8(&MCG->MC, MCG_MC_HIRCEN_SHIFT);
-    }
-    else {
-        bit_clear8(&MCG->MC, MCG_MC_HIRCEN_SHIFT);
-    }
-}
-#endif /* KINETIS_HAVE_MCG_LITE */
-
-#if !KINETIS_HAVE_MCG_LITE
 /**
  * @brief Initialize the FLL Engaged Internal Mode.
  *
@@ -397,99 +362,9 @@ static void kinetis_mcg_set_pee(void)
     current_mode = KINETIS_MCG_MODE_PEE;
 }
 #endif /* KINETIS_HAVE_PLL */
-#endif /* !KINETIS_HAVE_MCG_LITE */
-
-#if KINETIS_HAVE_MCG_LITE
-/**
- * @brief Initialize HIRC (48 MHz) mode.
- */
-static void kinetis_mcg_set_hirc(void)
-{
-    /* select HIRC mode */
-    MCG->C1 = (MCG->C1 & ~MCG_C1_CLKS_MASK) | (MCG_C1_CLKS(0));
-
-    /* Wait until HIRC is selected */
-    while ((MCG->S & (MCG_S_CLKST_MASK)) != 0) {}
-
-    current_mode = KINETIS_MCG_MODE_HIRC;
-}
-
-/**
- * @brief Initialize EXT (external clock) mode.
- */
-static void kinetis_mcg_set_ext(void)
-{
-    kinetis_mcg_enable_osc();
-
-    /* select EXT mode */
-    MCG->C1 = (MCG->C1 & ~MCG_C1_CLKS_MASK) | (MCG_C1_CLKS(0));
-
-    /* Wait until HIRC is selected */
-    while ((MCG->S & (MCG_S_CLKST_MASK)) != 0) {}
-
-    current_mode = KINETIS_MCG_MODE_HIRC;
-}
-
-/**
- * @brief Initialize LIRC mode.
- *
- * Use @p ircs to select between LIRC8M (8 MHz) and LIRC2M (2 MHz).
- *
- * @param[in]   lirc8m  set to 1 -> LIRC8M, 0 -> LIRC2M
- */
-static void kinetis_mcg_set_lirc(unsigned lirc8m)
-{
-    uint32_t clkdiv = SIM->CLKDIV1;
-    if ((lirc8m && (current_mode == KINETIS_MCG_MODE_LIRC8M)) ||
-        (!lirc8m && (current_mode == KINETIS_MCG_MODE_LIRC2M))) {
-        /* We can not switch directly between LIRC2M <-> LIRC8M, go via HIRC */
-        /* Set safe clock dividers so we don't run out of specs while switching */
-        SIM->CLKDIV1 = SIM_CLKDIV1_OUTDIV1(3); /* divide clock by 4 => 12 MHz */
-        kinetis_mcg_set_hirc();
-    }
-
-    if (lirc8m) {
-        /* Select 8 MHz mode */
-        bit_set8(&MCG->C2, MCG_C2_IRCS_SHIFT);
-        current_mode = KINETIS_MCG_MODE_LIRC8M;
-    }
-    else {
-        /* Select 2 MHz mode */
-        bit_clear8(&MCG->C2, MCG_C2_IRCS_SHIFT);
-        current_mode = KINETIS_MCG_MODE_LIRC2M;
-    }
-
-    /* select LIRC as clock source */
-    MCG->C1 = (MCG->C1 & ~MCG_C1_CLKS_MASK) | (MCG_C1_CLKS(1));
-
-    /* Wait until LIRC is selected */
-    while ((MCG->S & (MCG_S_CLKST_MASK)) != MCG_S_CLKST(1)) {}
-
-    /* Restore clock divider settings */
-    SIM->CLKDIV1 = clkdiv;
-}
-#endif /* KINETIS_HAVE_MCG_LITE */
 
 int kinetis_mcg_set_mode(kinetis_mcg_mode_t mode)
 {
-#if KINETIS_HAVE_MCG_LITE
-    switch(mode) {
-        case KINETIS_MCG_MODE_LIRC8M:
-            kinetis_mcg_set_lirc(1);
-            break;
-        case KINETIS_MCG_MODE_HIRC:
-            kinetis_mcg_set_hirc();
-            break;
-        case KINETIS_MCG_MODE_EXT:
-            kinetis_mcg_set_ext();
-            break;
-        case KINETIS_MCG_MODE_LIRC2M:
-            kinetis_mcg_set_lirc(0);
-            break;
-        default:
-            return -1;
-    }
-#else /* KINETIS_HAVE_MCG_LITE */
     if (mode >= KINETIS_MCG_MODE_NUMOF) {
         return -1;
     }
@@ -529,12 +404,10 @@ int kinetis_mcg_set_mode(kinetis_mcg_mode_t mode)
                 return -1;
         }
     } while (current_mode != mode);
-#endif /* else KINETIS_HAVE_MCG_LITE */
 
     return 0;
 }
 
-#if !KINETIS_HAVE_MCG_LITE
 /**
  * @brief Go to a safe clocking mode that should work for all boards regardless
  * of external components
@@ -589,24 +462,19 @@ static void kinetis_mcg_set_safe_mode(void)
      * 32.768 kHz x 640 = 20.971520 MHz. This should be safe regardless of the
      * SIM_CLKDIV1 settings used, for all supported Kinetis CPUs */
 }
-#endif /* !KINETIS_HAVE_MCG_LITE */
 
 void kinetis_mcg_init(void)
 {
     unsigned mask = irq_disable();
-#if !KINETIS_HAVE_MCG_LITE
     /* Go to FBI mode for safety */
     kinetis_mcg_set_safe_mode();
-
     /* at this point the core should be running from the internal reference
      * clock, slow or fast, which is 32.768 kHz up to 4 MHz, depending on
      * previous settings */
-#endif /* !KINETIS_HAVE_MCG_LITE */
 
     /* Set module clock dividers */
     SIM->CLKDIV1 = clock_config.clkdiv1;
 
-#if !KINETIS_HAVE_MCG_LITE
     /* Select external reference clock source for the FLL */
     MCG->C7 = clock_config.oscsel;
 
@@ -620,11 +488,6 @@ void kinetis_mcg_init(void)
     /* set PLL VCO divider */
     MCG->C6 = clock_config.pll_vdiv;
 #endif /* KINETIS_HAVE_PLL */
-#endif /* !KINETIS_HAVE_MCG_LITE */
-
-#if KINETIS_HAVE_MCG_LITE
-    kinetis_mcg_init_mcgpclk();
-#endif /* KINETIS_HAVE_MCG_LITE */
 
     kinetis_mcg_init_mcgirclk();
 
