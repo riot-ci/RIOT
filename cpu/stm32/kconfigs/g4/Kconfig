@@ -22,3 +22,9 @@ config HAS_CPU_STM32G4
     bool
     help
         Indicates that the cpu being used belongs to the 'stm32g4' family.
+
+# Only include clock config when using a G0 CPU to avoid name clash between
+# symbols
+if CPU_FAM_G4
+rsource "Kconfig.clock"
+endif
