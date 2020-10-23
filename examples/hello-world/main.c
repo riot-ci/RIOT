@@ -20,6 +20,9 @@
  */
 
 #include <stdio.h>
+#include <inttypes.h>
+
+#include "board.h"
 
 int main(void)
 {
@@ -27,6 +30,16 @@ int main(void)
 
     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
+
+    printf("Clock coreclock: %" PRIu32 "\n", (uint32_t)CLOCK_CORECLOCK);
+    printf("AHB clock: %" PRIu32 "\n", (uint32_t)CLOCK_AHB);
+    printf("APB1 clock: %" PRIu32 "\n", (uint32_t)CLOCK_APB1);
+#ifdef CLOCK_APB2
+    printf("APB2 clock: %" PRIu32 "\n", (uint32_t)CLOCK_APB2);
+#endif
+#ifdef CLOCK_PLLQ
+    printf("PLLQ clock: %" PRIu32 "\n", (uint32_t)CLOCK_PLLQ);
+#endif
 
     return 0;
 }
