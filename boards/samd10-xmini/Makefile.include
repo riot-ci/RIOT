@@ -1,0 +1,3 @@
+BAUD ?= 57600
+
+include $(RIOTMAKE)/boards/sam0.inc.mk

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Freie Universität Berlin
+ * Copyright (C) 2020 ML!PA Consulting GmbH
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,14 +13,14 @@
  * @file
  * @brief       Startup code and interrupt vector definition
  *
- * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
  *
  * @}
  */
 
 #include <stdint.h>
 #include "vectors_cortexm.h"
+#include "cpu.h"
 
 /* define a local dummy handler as it needs to be in the same compilation unit
  * as the alias definition */
@@ -41,22 +41,13 @@ WEAK_DEFAULT void isr_evsys(void);
 WEAK_DEFAULT void isr_sercom0(void);
 WEAK_DEFAULT void isr_sercom1(void);
 WEAK_DEFAULT void isr_sercom2(void);
-WEAK_DEFAULT void isr_sercom3(void);
-WEAK_DEFAULT void isr_sercom4(void);
-WEAK_DEFAULT void isr_sercom5(void);
 WEAK_DEFAULT void isr_tcc0(void);
-WEAK_DEFAULT void isr_tcc1(void);
-WEAK_DEFAULT void isr_tcc2(void);
-WEAK_DEFAULT void isr_tc3(void);
-WEAK_DEFAULT void isr_tc4(void);
-WEAK_DEFAULT void isr_tc5(void);
-WEAK_DEFAULT void isr_tc6(void);
-WEAK_DEFAULT void isr_tc7(void);
+WEAK_DEFAULT void isr_tc1(void);
+WEAK_DEFAULT void isr_tc2(void);
 WEAK_DEFAULT void isr_adc(void);
 WEAK_DEFAULT void isr_ac(void);
 WEAK_DEFAULT void isr_dac(void);
 WEAK_DEFAULT void isr_ptc(void);
-WEAK_DEFAULT void isr_i2c(void);
 
 /* CPU specific interrupt vector table */
 ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
@@ -72,20 +63,11 @@ ISR_VECTOR(1) const isr_t vector_cpu[CPU_IRQ_NUMOF] = {
     isr_sercom0,            /*  9 Serial Communication Interface 0 */
     isr_sercom1,            /* 10 Serial Communication Interface 1 */
     isr_sercom2,            /* 11 Serial Communication Interface 2 */
-    isr_sercom3,            /* 12 Serial Communication Interface 3 */
-    isr_sercom4,            /* 13 Serial Communication Interface 4 */
-    isr_sercom5,            /* 14 Serial Communication Interface 5 */
-    isr_tcc0,               /* 15 Timer Counter Control 0 */
-    isr_tcc1,               /* 16 Timer Counter Control 1 */
-    isr_tcc2,               /* 17 Timer Counter Control 2 */
-    isr_tc3,                /* 18 Basic Timer Counter 0 */
-    isr_tc4,                /* 19 Basic Timer Counter 1 */
-    isr_tc5,                /* 20 Basic Timer Counter 2 */
-    isr_tc6,                /* 21 Basic Timer Counter 3 */
-    isr_tc7,                /* 22 Basic Timer Counter 4 */
-    isr_adc,                /* 23 Analog Digital Converter */
-    isr_ac,                 /* 24 Analog Comparators */
-    isr_dac,                /* 25 Digital Analog Converter */
-    isr_ptc,                /* 26 Peripheral Touch Controller */
-    isr_i2c                 /* 27 Inter-IC Sound Interface */
+    isr_tcc0,               /* 12 Timer Counter Control 0 */
+    isr_tc1,                /* 13 Basic Timer Control 1 */
+    isr_tc2,                /* 14 Basic Timer Control 2 */
+    isr_adc,                /* 15 Analog Digital Converter */
+    isr_ac,                 /* 16 Analog Comparators */
+    isr_dac,                /* 17 Digital Analog Converter */
+    isr_ptc,                /* 18 Peripheral Touch Controller */
 };
