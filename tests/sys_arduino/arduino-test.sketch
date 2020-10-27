@@ -104,6 +104,10 @@ static void print_test(void)
         Serial.print(s_formats[f]);
         Serial.print("): ");
         Serial.println(ul, f);
+
+        Serial.print("print(float): ");
+        Serial.print((float)3.14);
+        Serial.println();
     }
 }
 
