@@ -58,10 +58,13 @@ def testfunc(child):
     child.expect_exact("println(long, HEX): b669fd2e")
     child.expect_exact("print(unsigned long, BIN): 1001001100101100000001011010010")
     child.expect_exact("println(unsigned long, BIN): 1001001100101100000001011010010")
+    child.expect_exact("print(float): 3.14")
     child.expect_exact("print(unsigned long, OCT): 11145401322")
     child.expect_exact("println(unsigned long, OCT): 11145401322")
+    child.expect_exact("print(float): 3.14")
     child.expect_exact("print(unsigned long, DEC): 1234567890")
     child.expect_exact("println(unsigned long, DEC): 1234567890")
+    child.expect_exact("print(float): 3.14")
     child.expect_exact("print(unsigned long, HEX): 499602d2")
     child.expect_exact("println(unsigned long, HEX): 499602d2")
 
