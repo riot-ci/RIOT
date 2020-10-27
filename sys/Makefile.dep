@@ -13,7 +13,11 @@ ifneq (,$(filter arduino,$(USEMODULE)))
   FEATURES_OPTIONAL += arduino_pwm
   FEATURES_OPTIONAL += periph_adc
   FEATURES_REQUIRED += periph_gpio
-  USEMODULE += xtimer
+  USEMODULE += ztimer_usec
+  USEMODULE += ztimer_msec
+  ifneq (,$(filter periph_rtt,$(USEMODULE)))
+    USEMODULE += ztimer_msec_periph_rtt
+  endif
 endif
 
 ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
