@@ -613,6 +613,35 @@ typedef ssize_t (*gcoap_link_encoder_t)(const coap_resource_t *resource, char *b
                                         size_t maxlen, coap_link_encoder_ctx_t *context);
 
 /**
+ * @name    Return values for resource related operations
+ * @{
+ */
+#define GCOAP_RESOURCE_FOUND        (0)
+#define GCOAP_RESOURCE_MISMATCH     (1)
+#define GCOAP_RESOURCE_WRONG_METHOD (2)
+#define GCOAP_RESOURCE_NO_PATH      (3)
+#define GCOAP_RESOURCE_ERROR        (4)
+/** @} */
+
+typedef struct gcoap_listener gcoap_listener_t;
+
+/**
+ * @brief   Handler function for the request matcher strategy
+ *
+ * @param[in]  listener     Listener context
+ * @param[out] resource     Matching resource
+ * @param[in]  pdu          Pointer to the PDU
+ *
+ * @return  GCOAP_RESOURCE_FOUND      on resource match
+ * @return  GCOAP_RESOURCE_MISMATCH   on resource mismatch
+ * @return  GCOAP_RESOURCE_NO_PATH    on no path in @p pdu
+ * @return  GCOAP_RESOURCE_ERROR      on error
+ */
+typedef int (*gcoap_request_matcher_t)(gcoap_listener_t *listener,
+                                       const coap_resource_t **resource,
+                                       const coap_pkt_t *pdu);
+
+/**
  * @brief   A modular collection of resources for a server
  */
 typedef struct gcoap_listener {
@@ -621,6 +650,18 @@ typedef struct gcoap_listener {
     size_t resources_len;               /**< Length of array */
     gcoap_link_encoder_t link_encoder;  /**< Writes a link for a resource */
     struct gcoap_listener *next;        /**< Next listener in list */
+
+    /**
+     * @brief  Function that picks a suitable request handler from a
+     * request.
+     *
+     * @note Leaving this NULL selects the default strategy that picks
+     * handlers by matching their Uri-Path to resource paths (as per
+     * the documentation of the @ref resources and @ref resources_len
+     * fields). Alternative handlers may cast the @ref resources and
+     * @ref resources_len fields to fit their needs.
+     */
+    gcoap_request_matcher_t request_matcher;
 } gcoap_listener_t;
 
 /**
