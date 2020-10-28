@@ -350,6 +350,10 @@ static size_t _handle_req(coap_pkt_t *pdu, uint8_t *buf, size_t len,
             /* find observe registration for resource */
             _find_obs_memo_resource(&resource_memo, resource);
             break;
+        case GCOAP_RESOURCE_ERROR:
+        default:
+            return gcoap_response(pdu, buf, len, COAP_CODE_INTERNAL_SERVER_ERROR);
+            break;
     }
 
     if (coap_get_observe(pdu) == COAP_OBS_REGISTER) {
@@ -499,6 +503,8 @@ static int _find_resource(const coap_pkt_t *pdu,
                           const coap_resource_t **resource_ptr,
                           gcoap_listener_t **listener_ptr)
 {
+    int ret = GCOAP_RESOURCE_NO_PATH;
+
     /* Find path for CoAP msg among listener resources and execute callback. */
     gcoap_listener_t *listener = _coap_state.listeners;
 
@@ -511,20 +517,26 @@ static int _find_resource(const coap_pkt_t *pdu,
             listener = listener->next;
             continue;
         }
+        /* found a resource, but methods do not match */
+        else if (res == GCOAP_RESOURCE_WRONG_METHOD) {
+            ret = GCOAP_RESOURCE_WRONG_METHOD;
+            listener = listener->next;
+            continue;
+        }
         /* found a suitable resource */
         else if (res == GCOAP_RESOURCE_FOUND) {
             *resource_ptr = resource;
             *listener_ptr = listener;
             return GCOAP_RESOURCE_FOUND;
         }
-
-        /* res is probably GCOAP_RESOURCE_ERROR or
-         * GCOAP_RESOURCE_NO_PATH. There is an error with
-         * iterating the listener, break. */
-        break;
+        /* res is probably GCOAP_RESOURCE_ERROR or some other
+         * unhandled error */
+        else {
+            return GCOAP_RESOURCE_ERROR;
+        }
     }
 
-    return GCOAP_RESOURCE_NO_PATH;
+    return ret;
 }
 
 /*
