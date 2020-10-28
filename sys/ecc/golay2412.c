@@ -45,7 +45,7 @@
 #include "bitarithm.h"
 #include "ecc/golay2412.h"
 
-#define ENABLE_DEBUG        0
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 /* generator matrix transposed [24 x 12] */
@@ -99,16 +99,15 @@ static uint32_t block_get_enc_msg_len(uint32_t _dec_msg_len,
     /* compute total number of bytes out: ceil(num_bits_out/8) */
     uint32_t num_bytes_out = num_bits_out / 8 + ((num_bits_out % 8) ? 1 : 0);
 
-    if (IS_ACTIVE(ENABLE_DEBUG)) {
-        printf("block_get_enc_msg_len(%" PRIu32 ",%" PRIu32 ",%" PRIu32 ")\n", _dec_msg_len, _m, _k);
-        printf("    dec msg len :   %" PRIu32 " bytes\n", _dec_msg_len);
-        printf("    m           :   %" PRIu32 " bits\n", _m);
-        printf("    k           :   %" PRIu32 " bits\n", _k);
-        printf("    num bits in :   %" PRIu32 " bits\n", num_bits_in);
-        printf("    num blocks  :   %" PRIu32 "\n", num_blocks);
-        printf("    num bits out:   %" PRIu32 " bits\n", num_bits_out);
-        printf("    enc msg len :   %" PRIu32 " bytes\n", num_bytes_out);
-    }
+    DEBUG("block_get_enc_msg_len(%" PRIu32 ",%" PRIu32 ",%" PRIu32 ")\n",
+          _dec_msg_len, _m, _k);
+    DEBUG("    dec msg len :   %" PRIu32 " bytes\n", _dec_msg_len);
+    DEBUG("    m           :   %" PRIu32 " bits\n", _m);
+    DEBUG("    k           :   %" PRIu32 " bits\n", _k);
+    DEBUG("    num bits in :   %" PRIu32 " bits\n", num_bits_in);
+    DEBUG("    num blocks  :   %" PRIu32 "\n", num_blocks);
+    DEBUG("    num bits out:   %" PRIu32 " bits\n", num_bits_out);
+    DEBUG("    enc msg len :   %" PRIu32 " bytes\n", num_bytes_out);
 
     return num_bytes_out;
 }
@@ -187,32 +186,24 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
 
     /* compute weight of s (12 bits) */
     uint8_t ws = bitarithm_bits_set_u32(s & 0x00000fff);
-    if (IS_ACTIVE(ENABLE_DEBUG)) {
-        printf("w(s) = %u\n", ws);
-    }
+    DEBUG("w(s) = %u\n", ws);
 
     /* step 2: */
     e_hat = 0;
     if (ws <= 3) {
-    if (IS_ACTIVE(ENABLE_DEBUG)) {
-        printf("    w(s) <= 3: estimating error vector as [s, 0(12)]\n");
-    }
+        DEBUG("    w(s) <= 3: estimating error vector as [s, 0(12)]\n");
         /* set e_hat = [s 0(12)] */
         e_hat = (s << 12) & 0xfff000;
     }
     else {
         /* step 3: search for p[i] s.t. w(s+p[i]) <= 2 */
-        if (IS_ACTIVE(ENABLE_DEBUG)) {
-            printf("    searching for w(s + p_i) <= 2...\n");
-        }
+        DEBUG("    searching for w(s + p_i) <= 2...\n");
         int8_t s_index = golay2412_parity_search(s, _A);
 
         if (s_index >= 0) {
             /* vector found! */
-            if (IS_ACTIVE(ENABLE_DEBUG)) {
-                printf("    w(s + p[%2i]) <= 2: estimating error vector as [s+p[%2i],"
-                    "u[%2i]]\n", s_index, s_index, s_index);
-            }
+            DEBUG("    w(s + p[%2i]) <= 2: estimating error vector as "
+                  "[s+p[%2i],u[%2i]]\n", s_index, s_index, s_index);
 
             /* NOTE : uj = 1 << (12-j-1) */
             e_hat = ((s ^ _A[s_index]) << 12) | (1 << (11 - s_index));
@@ -229,32 +220,25 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
 
             /* compute weight of sP (12 bits) */
             uint8_t wsP = bitarithm_bits_set_u32(sP & 0x00000fff);
-            if (IS_ACTIVE(ENABLE_DEBUG)) {
-                printf("w(s*P) = %u\n", wsP);
-            }
+            DEBUG("w(s*P) = %u\n", wsP);
 
             if (wsP == 2 || wsP == 3) {
                 /* step 5: set e = [0, s*P] */
-                if (IS_ACTIVE(ENABLE_DEBUG)) {
-                    printf("    w(s*P) in [2,3]: estimating error vector as [0(12), s*P]\n");
-                }
+                DEBUG("    w(s*P) in [2,3]: estimating error vector as "
+                      "[0(12), s*P]\n");
                 e_hat = sP;
             }
             else {
                 /* step 6: search for p[i] s.t. w(s*P + p[i]) == 2... */
-
-                if (IS_ACTIVE(ENABLE_DEBUG)) {
-                    printf("    searching for w(s*P + p_i) == 2...\n");
-                }
+                DEBUG("    searching for w(s*P + p_i) == 2...\n");
 
                 int8_t sP_index = golay2412_parity_search(sP, _A);
 
                 if (sP_index >= 0) {
                     /* vector found! */
-                    if (IS_ACTIVE(ENABLE_DEBUG)) {
-                        printf("    w(s*P + p[%2i]) == 2: estimating error vector as [u[%2i],"
-                               "s*P+p[%2i]]\n", sP_index, sP_index, sP_index);
-                    }
+                    DEBUG("    w(s*P + p[%2i]) == 2: estimating error vector "
+                          "as [u[%2i],s*P+p[%2i]]\n",
+                          sP_index, sP_index, sP_index);
 
                     /* NOTE : uj = 1 << (12-j-1)
                      *      [      uj << 1 2    ] [    sP + p[j]    ] */
@@ -262,10 +246,7 @@ static uint32_t golay2412_decode_symbol(uint32_t _sym_enc,
                 }
                 else {
                     /* step 7: decoding error */
-
-                    if (IS_ACTIVE(ENABLE_DEBUG)) {
-                        printf("  **** decoding error\n");
-                    }
+                    DEBUG("  **** decoding error\n");
                 }
             }
         }

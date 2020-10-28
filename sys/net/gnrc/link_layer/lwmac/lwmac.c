@@ -924,10 +924,8 @@ static void _lwmac_msg_handler(gnrc_netif_t *netif, msg_t *msg)
         }
 #endif
         default: {
-            if (IS_ACTIVE(ENABLE_DEBUG)) {
-                DEBUG("[LWMAC]: unknown message type 0x%04x"
-                    "(no message handler defined)\n", msg->type);
-            }
+            DEBUG("[LWMAC]: unknown message type 0x%04x "
+                  "(no message handler defined)\n", msg->type);
             break;
         }
     }
