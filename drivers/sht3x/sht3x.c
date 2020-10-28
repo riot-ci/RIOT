@@ -324,9 +324,10 @@ static int _read_data(sht3x_dev_t* dev, uint8_t *data, uint8_t len)
     if (res == 0) {
         if (IS_ACTIVE(ENABLE_DEBUG)) {
             printf("[sht3x] %s bus=%d addr=%02x: read following bytes: ",
-                __func__, dev->i2c_dev, dev->i2c_addr);
-            for (int i=0; i < len; i++)
+                   __func__, dev->i2c_dev, dev->i2c_addr);
+            for (int i=0; i < len; i++) {
                 printf("%02x ", data[i]);
+            }
             printf("\n");
         }
     }

@@ -78,7 +78,8 @@ int tsl2561_init(tsl2561_t *dev, const tsl2561_params_t *params)
     if (IS_ACTIVE(ENABLE_DEBUG)) {
         uint8_t timing;
         i2c_read_reg(DEV_I2C, DEV_ADDR,
-                    TSL2561_COMMAND_MODE | TSL2561_REGISTER_TIMING, &timing, 0);
+                     TSL2561_COMMAND_MODE | TSL2561_REGISTER_TIMING,
+                     &timing, 0);
         DEBUG("[Info] Timing ? %d (expected: %d)\n",
               timing, DEV_INTEGRATION | DEV_GAIN);
     }
