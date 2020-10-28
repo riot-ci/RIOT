@@ -442,9 +442,12 @@ static int _request_matcher_default(gcoap_listener_t *listener,
                                     const coap_pkt_t *pdu)
 {
     uint8_t uri[CONFIG_NANOCOAP_URI_MAX];
-    int ret = GCOAP_RESOURCE_MISMATCH;
+    int ret = GCOAP_RESOURCE_NO_PATH;
 
     if (coap_get_uri_path(pdu, uri) <= 0) {
+        /* The Uri-Path options are longer than
+         * CONFIG_NANOCOAP_URI_MAX, and thus do not match anything
+         * that could be found by this handler. */
         return GCOAP_RESOURCE_NO_PATH;
     }
 
@@ -496,8 +499,6 @@ static int _find_resource(const coap_pkt_t *pdu,
                           const coap_resource_t **resource_ptr,
                           gcoap_listener_t **listener_ptr)
 {
-    int ret = GCOAP_RESOURCE_NO_PATH;
-
     /* Find path for CoAP msg among listener resources and execute callback. */
     gcoap_listener_t *listener = _coap_state.listeners;
 
@@ -506,7 +507,7 @@ static int _find_resource(const coap_pkt_t *pdu,
         int res = listener->request_matcher(listener, &resource, pdu);
 
         /* check next resource on mismatch */
-        if (res == GCOAP_RESOURCE_MISMATCH) {
+        if (res == GCOAP_RESOURCE_NO_PATH) {
             listener = listener->next;
             continue;
         }
@@ -514,7 +515,7 @@ static int _find_resource(const coap_pkt_t *pdu,
         else if (res == GCOAP_RESOURCE_FOUND) {
             *resource_ptr = resource;
             *listener_ptr = listener;
-            return res;
+            return GCOAP_RESOURCE_FOUND;
         }
 
         /* res is probably GCOAP_RESOURCE_ERROR or
@@ -523,7 +524,7 @@ static int _find_resource(const coap_pkt_t *pdu,
         break;
     }
 
-    return ret;
+    return GCOAP_RESOURCE_NO_PATH;
 }
 
 /*
@@ -740,12 +741,12 @@ void gcoap_register_listener(gcoap_listener_t *listener)
      * behavior will notice this. */
     assert(listener->next == NULL);
 
+    listener->next = _coap_state.listeners;
+    _coap_state.listeners = listener;
+
     if (!listener->link_encoder) {
         listener->link_encoder = gcoap_encode_link;
     }
-
-    listener->next = _coap_state.listeners;
-    _coap_state.listeners = listener;
 
     if (!listener->request_matcher) {
         listener->request_matcher = _request_matcher_default;

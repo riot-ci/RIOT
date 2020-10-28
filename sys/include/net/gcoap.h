@@ -636,9 +636,9 @@ typedef struct gcoap_listener gcoap_listener_t;
  * @param[in]  pdu          Pointer to the PDU
  *
  * @return  GCOAP_RESOURCE_FOUND      on resource match
- * @return  GCOAP_RESOURCE_MISMATCH   on resource mismatch
- * @return  GCOAP_RESOURCE_NO_PATH    on no path in @p pdu
- * @return  GCOAP_RESOURCE_ERROR      on error
+ * @return  GCOAP_RESOURCE_NO_PATH    on no path found in @p resource
+ *                                    that matches @p pdu
+ * @return  GCOAP_RESOURCE_ERROR      on processing failure of the request
  */
 typedef int (*gcoap_request_matcher_t)(gcoap_listener_t *listener,
                                        const coap_resource_t **resource,
