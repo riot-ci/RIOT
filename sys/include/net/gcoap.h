@@ -623,6 +623,9 @@ typedef ssize_t (*gcoap_link_encoder_t)(const coap_resource_t *resource, char *b
 #define GCOAP_RESOURCE_ERROR        (4)
 /** @} */
 
+/**
+ * @brief   Forward declaration of the gcoap listener state container
+ */
 typedef struct gcoap_listener gcoap_listener_t;
 
 /**
@@ -644,7 +647,7 @@ typedef int (*gcoap_request_matcher_t)(gcoap_listener_t *listener,
 /**
  * @brief   A modular collection of resources for a server
  */
-typedef struct gcoap_listener {
+struct gcoap_listener {
     const coap_resource_t *resources;   /**< First element in the array of
                                          *   resources; must order alphabetically */
     size_t resources_len;               /**< Length of array */
@@ -662,7 +665,7 @@ typedef struct gcoap_listener {
      * @ref resources_len fields to fit their needs.
      */
     gcoap_request_matcher_t request_matcher;
-} gcoap_listener_t;
+};
 
 /**
  * @brief   Forward declaration of the request memo type
