@@ -462,7 +462,7 @@ static int _request_matcher_default(gcoap_listener_t *listener,
         }
         /* resources expected in alphabetical order */
         else if (res < 0) {
-            return GCOAP_RESOURCE_ERROR;
+            break;
         }
 
         /* potential match, check for method */
