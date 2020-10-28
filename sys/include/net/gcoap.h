@@ -617,10 +617,9 @@ typedef ssize_t (*gcoap_link_encoder_t)(const coap_resource_t *resource, char *b
  * @{
  */
 #define GCOAP_RESOURCE_FOUND        (0)
-#define GCOAP_RESOURCE_MISMATCH     (1)
-#define GCOAP_RESOURCE_WRONG_METHOD (2)
-#define GCOAP_RESOURCE_NO_PATH      (3)
-#define GCOAP_RESOURCE_ERROR        (4)
+#define GCOAP_RESOURCE_WRONG_METHOD (1)
+#define GCOAP_RESOURCE_NO_PATH      (2)
+#define GCOAP_RESOURCE_ERROR        (3)
 /** @} */
 
 /**
