@@ -317,7 +317,8 @@ unsigned int IRAM timer_read(tim_t dev)
         uint32_t count_lo = timer_get_counter_lo(dev);
         DEBUG("%s %u\n", __func__, count_lo);
         return count_lo;
-    } else {
+    }
+    else {
         return timer_get_counter_lo(dev);
     }
 }
