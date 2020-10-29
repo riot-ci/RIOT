@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     boards_weact-f411ce
+ * @ingroup     boards_common_weact-f4x1cx
  * @{
  *
  * @file
- * @brief       Board initialization code for the WeAct-F411CE board.
+ * @brief       Board initialization code for the WeAct-F4x1Cx board.
  *
  * @author      Benjamin Valentin <benpicco@googlemail.com>
  *
@@ -21,7 +21,6 @@
 #include "board.h"
 #include "cpu.h"
 #include "mtd.h"
-#include "timex.h"
 #include "mtd_spi_nor.h"
 #include "periph/gpio.h"
 
@@ -33,19 +32,19 @@ static const mtd_spi_nor_params_t _weact_nor_params = {
     .wait_32k_erase = 300LU * US_PER_MS,
     .wait_sector_erase = 70LU * US_PER_MS,
     .wait_chip_wake_up = 1LU * US_PER_MS,
-    .clk = WEACT_411CE_NOR_SPI_CLK,
-    .flag = WEACT_411CE_NOR_FLAGS,
-    .spi = WEACT_411CE_NOR_SPI_DEV,
-    .mode = WEACT_411CE_NOR_SPI_MODE,
-    .cs = WEACT_411CE_NOR_SPI_CS,
+    .clk = WEACT_4X1CX_NOR_SPI_CLK,
+    .flag = WEACT_4X1CX_NOR_FLAGS,
+    .spi = WEACT_4X1CX_NOR_SPI_DEV,
+    .mode = WEACT_4X1CX_NOR_SPI_MODE,
+    .cs = WEACT_4X1CX_NOR_SPI_CS,
     .addr_width = 3,
 };
 
 static mtd_spi_nor_t weact_nor_dev = {
     .base = {
         .driver = &mtd_spi_nor_driver,
-        .page_size = WEACT_411CE_NOR_PAGE_SIZE,
-        .pages_per_sector = WEACT_411CE_NOR_PAGES_PER_SECTOR,
+        .page_size = WEACT_4X1CX_NOR_PAGE_SIZE,
+        .pages_per_sector = WEACT_4X1CX_NOR_PAGES_PER_SECTOR,
     },
     .params = &_weact_nor_params,
 };

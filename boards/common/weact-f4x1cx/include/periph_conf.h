@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     boards_weact-f411ce
+ * @ingroup     boards_common_weact-f4x1cx
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for the WeAct-F411CE Board
+ * @brief       Peripheral MCU configuration for the WeAct-F4X1CX Board
  *
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      José Ignacio Alamos <jialamos@uc.cl>
@@ -36,7 +36,15 @@
 #define CLOCK_HSE               MHZ(25)
 
 #include "periph_cpu.h"
-#include "clk_conf.h"
+
+#if defined(CPU_LINE_STM32F401xC) || defined(CPU_LINE_STM32F401xE)
+#include "f2f4f7/cfg_clock_default_84.h"
+#elif defined(CPU_LINE_STM32F411xE)
+#include "f2f4f7/cfg_clock_default_96.h"
+#else
+#error "Unknown CPU"
+#endif
+
 #include "cfg_i2c1_pb8_pb9.h"
 #include "cfg_timer_tim5.h"
 #include "cfg_usb_otg_fs.h"
@@ -170,7 +178,7 @@ static const spi_conf_t spi_config[] = {
  * @name   ADC configuration
  *
  * Note that we do not configure all ADC channels,
- * and not in the STM32F411 order.
+ * and not in the STM32F4x1 order.
  * Feel free to add more if needed.
  *
  * @{
