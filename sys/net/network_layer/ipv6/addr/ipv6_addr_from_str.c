@@ -47,7 +47,6 @@ ipv6_addr_t *ipv6_addr_from_buf(ipv6_addr_t *result, const char *addr,
     const char *curtok = addr;
 #endif
     uint32_t val = 0;
-    char ch;
     uint8_t saw_xdigit = 0;
     uint8_t i = 0;
 
@@ -66,7 +65,7 @@ ipv6_addr_t *ipv6_addr_from_buf(ipv6_addr_t *result, const char *addr,
     }
 
     while ((size_t)(addr - start) < addr_len) {
-        ch = *addr++;
+        char ch = *addr++;
         const char *pch;
         const char *xdigits;
 

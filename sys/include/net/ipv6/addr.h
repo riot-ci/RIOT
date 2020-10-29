@@ -736,6 +736,8 @@ ipv6_addr_t *ipv6_addr_from_str(ipv6_addr_t *result, const char *addr);
  * @see <a href="https://tools.ietf.org/html/rfc5952">
  *          RFC 5952
  *      </a>
+ * 
+ * @note    @p addr_len should be between 0 and IPV6_ADDR_MAX_STR_LEN
  *
  * @param[out] result    The resulting byte representation
  * @param[in] addr       An IPv6 address string representation

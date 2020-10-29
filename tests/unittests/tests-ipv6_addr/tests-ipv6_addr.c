@@ -1073,6 +1073,13 @@ static void test_ipv6_addr_from_buf__success(void)
     TEST_ASSERT(ipv6_addr_equal(&a, &result));
 }
 
+static void test_ipv6_addr_from_buf__too_long_len(void)
+{
+    ipv6_addr_t result;
+
+    TEST_ASSERT_NULL(ipv6_addr_from_buf(&result, "::1", IPV6_ADDR_MAX_STR_LEN + 1));
+}
+
 Test *tests_ipv6_addr_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -1166,6 +1173,7 @@ Test *tests_ipv6_addr_tests(void)
         new_TestFixture(test_ipv6_addr_split_prefix__no_prefix),
         new_TestFixture(test_ipv6_addr_split_prefix__with_prefix),
         new_TestFixture(test_ipv6_addr_from_buf__success),
+        new_TestFixture(test_ipv6_addr_from_buf__too_long_len),
     };
 
     EMB_UNIT_TESTCALLER(ipv6_addr_tests, NULL, NULL, fixtures);
