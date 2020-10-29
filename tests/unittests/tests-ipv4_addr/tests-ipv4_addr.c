@@ -153,6 +153,13 @@ static void test_ipv4_addr_from_buf__illegal_chars(void)
     TEST_ASSERT_NULL(ipv4_addr_from_buf(&result, "1.1.1.1%tap0", 13));
 }
 
+static void test_ipv4_addr_from_buf__too_long_len(void)
+{
+    ipv4_addr_t result;
+
+    TEST_ASSERT_NULL(ipv4_addr_from_buf(&result, "1.1.1.1", IPV4_ADDR_MAX_STR_LEN + 1));
+}
+
 Test *tests_ipv4_addr_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -174,6 +181,7 @@ Test *tests_ipv4_addr_tests(void)
         new_TestFixture(test_ipv4_addr_from_buf__success),
         new_TestFixture(test_ipv4_addr_from_buf__result_NULL),
         new_TestFixture(test_ipv4_addr_from_buf__illegal_chars),
+        new_TestFixture(test_ipv4_addr_from_buf__too_long_len),
     };
 
     EMB_UNIT_TESTCALLER(ipv4_addr_tests, NULL, NULL, fixtures);

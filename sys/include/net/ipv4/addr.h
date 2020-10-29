@@ -87,6 +87,8 @@ ipv4_addr_t *ipv4_addr_from_str(ipv4_addr_t *result, const char *addr);
 /**
  * @brief   Converts an IPv4 address from a buffer of characters to a
  *          byte-represented IPv4 address
+ * 
+ * @note    @p addr_len should be between 0 and IPV4_ADDR_MAX_STR_LEN
  *
  * @param[out] result    The resulting byte representation
  * @param[in] addr       An IPv4 address string representation

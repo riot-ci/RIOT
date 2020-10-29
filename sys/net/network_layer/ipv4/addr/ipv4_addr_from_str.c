@@ -24,7 +24,7 @@
 ipv4_addr_t *ipv4_addr_from_buf(ipv4_addr_t *result, const char *addr,
                                 size_t addr_len)
 {
-    uint8_t saw_digit, octets, ch;
+    uint8_t saw_digit, octets;
     uint8_t tmp[sizeof(ipv4_addr_t)], *tp;
     const char *start = addr;
 
@@ -38,7 +38,7 @@ ipv4_addr_t *ipv4_addr_from_buf(ipv4_addr_t *result, const char *addr,
     *(tp = tmp) = 0;
 
     while ((size_t)(addr - start) < addr_len) {
-        ch = *addr++;
+        uint8_t ch = *addr++;
         const char *pch;
 
         if ((pch = strchr(DEC, ch)) != NULL) {
