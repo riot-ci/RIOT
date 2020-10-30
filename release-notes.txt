@@ -128,7 +128,6 @@ Boards
 * samr21-xpro: fix reading EUI-64 from EDBG on cold boot
 * nucleo-l452re: add i2c config
 * hifive1b: add support for openocd programmer
-- stm32f4: remove default clock configuration for 96MHz and 168MHz CPUs
 - remove support for wsn430-1_3b and wsn430-1_4
 
 CPU
@@ -142,24 +141,22 @@ CPU
     * fix check for bitbanding
     * Flush pipeline after triggering PendSV
 + cc2538: add Watchdog implementation
+* cc26xx_cc13xx:
+    * add & link CCFG configuration
+    * enable periph clocks on sleep
 * fe310:
     + Add custom PLIC driver as peripheral
     * Merge and optimize trap_entry with irq_arch
     * Unify linker scripts
 * msp430: Update to inline-able IRQ API Area
 * nrf5x_common: UART: add support for 1 MBaud
-* stm32l0l1: rework clock initialization and configuration
 * stm32:
     + generate vectors C files and IRQ defines from CMSIS headers
     + stm32cmsis: retrieve STM32 CMSIS header from a package
     + g0: add basic support
     + implement periph_timer_periodic
     * Add support for arbitrary SPI clock rate
-    * f3: fix clock configuration for HSI
-    * l0: rework clock initialization and configuration
-    * l1: rework clock initialization and configuration
-    * l4: rework clock configuration and initialization
-    * wb: rework clock configuration and initialization
+    * f0/f1/f3/l0/l1/l4/wb: rework clock initialization and configuration
     - disable MPU for cortex-m0+
 * sam0:
     + GPIO: use tamper detection to wake from Deep Sleep
@@ -350,7 +347,7 @@ Native related issues (3)
 #5796: native: tlsf: early malloc will lead to a crash
 #495: native not float safe
 
-Other platforms related issues (20)
+Other platforms related issues (19)
 -----------------------------------
 #14822: MPU doesn't work on cortex-m0+
 #14728: stm32f7: Large performance difference between stm32f746 and stm32f767
@@ -374,7 +371,6 @@ Other platforms related issues (20)
         (not previous)
 #6567: periph/spi: Switching between CPOL=0,1 problems on Kinetis with software
        CS
-#4954: chronos: compiling with -O0 breaks
 
 Build system related issues (14)
 --------------------------------
@@ -447,7 +443,7 @@ Other issues (41)
        everywhere
 #2346: Tracker: Reduce scope on unintended COMMON variables
 
-There are 149 known issues in this release
+There are 148 known issues in this release
 
 Fixed Issues since the last release (2020.07)
 =============================================
@@ -497,8 +493,9 @@ Fixed Issues since the last release (2020.07)
 #8408: pkg/fatfs: linker error when build tests/pkg_fatfs_vfs for msb430 based
        boards
 #6650: GPIO Port shift in cc2538 is inconsistent
+#4954: chronos: compiling with -O0 breaks
 
-41 fixed issues since last release (2020.07)
+42 fixed issues since last release (2020.07)
 
 Acknowledgements
 ================
