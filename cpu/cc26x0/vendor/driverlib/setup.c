@@ -57,6 +57,7 @@
 #include "chipinfo.h"
 #include "setup.h"
 #include "setup_rom.h"
+#include "cpu.h"
 
 //*****************************************************************************
 //
