@@ -113,7 +113,7 @@ void IRAM hw_timer_handler(void* arg)
     irq_isr_exit();
 }
 
-int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
+int timer_init (tim_t dev, uint32_t freq, timer_cb_t cb, void *arg)
 {
     DEBUG("%s dev=%u freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
 
@@ -378,7 +378,7 @@ void IRAM os_timer_handler (void* arg)
     irq_isr_exit ();
 }
 
-int timer_init (tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
+int timer_init (tim_t dev, uint32_t freq, timer_cb_t cb, void *arg)
 {
     DEBUG("%s dev=%u freq=%lu cb=%p arg=%p\n", __func__, dev, freq, cb, arg);
 
