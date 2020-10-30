@@ -17,12 +17,15 @@ endif
 TARGET_ARCH ?= $(TARGET_ARCH_RISCV)
 
 # define build specific options
-CFLAGS_CPU   = -march=rv32imac -mabi=ilp32 -mcmodel=medlow -msmall-data-limit=8
-CFLAGS_LINK  = -nostartfiles -ffunction-sections -fdata-sections
+CFLAGS_CPU   = -march=rv32imac -mabi=ilp32
+ifneq ($(TOOLCHAIN),llvm)
+  CFLAGS_CPU += -mcmodel=medlow -msmall-data-limit=8
+endif
+CFLAGS_LINK  = -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -g3
 CFLAGS_OPT  ?= -Os
 
-LINKFLAGS += -L$(RIOTCPU)/$(CPU)/ldscripts
+LINKFLAGS += -nostartfiles -L$(RIOTCPU)/$(CPU)/ldscripts
 LINKER_SCRIPT ?= $(CPU_MODEL).ld
 LINKFLAGS += -T$(LINKER_SCRIPT)
 

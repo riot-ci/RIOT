@@ -31,4 +31,6 @@ endif
 
 LINKER_SCRIPT ?= fe310.ld
 
+TOOLCHAINS_SUPPORTED = gnu llvm
+
 include $(RIOTMAKE)/arch/riscv.inc.mk
