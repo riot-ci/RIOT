@@ -29,7 +29,7 @@ The 2020.10 release includes:
  - Initial rework of the clock modelling on stm32 devices
  - 5 new boards, 2 new device drivers, 7 packages updated
 
-48 pull requests, composed of 1355 commits, have been merged since the
+482 pull requests, composed of 1355 commits, have been merged since the
 last release, and 84 issues have been solved. 64 people contributed with
 code in 94 days. 2426 files have been touched with 133358 (+) insertions and
 756906 deletions (-).
