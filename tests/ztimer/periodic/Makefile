@@ -1,5 +1,6 @@
 DEVELHELP ?= 0
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 # The test depends on how fast and often the host schedules the RIOT native
 # application. If the host is busy enough it won't schedule the process,

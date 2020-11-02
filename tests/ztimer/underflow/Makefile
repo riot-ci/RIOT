@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 TEST_ZTIMER_CLOCK ?= ZTIMER_USEC
 
