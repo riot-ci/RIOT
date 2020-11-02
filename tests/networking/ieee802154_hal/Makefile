@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 BOARD_WHITELIST :=  \
 					adafruit-clue \
@@ -16,11 +17,18 @@ BOARD_WHITELIST :=  \
 					remote-reva \
 					remote-revb \
 					#
+
+DISABLE_MODULE += auto_init_at86rf2xx auto_init_nrf802154
+
 USEMODULE += od
+USEMODULE += luid
+USEMODULE += ieee802154
 USEMODULE += shell
 USEMODULE += ps
 USEMODULE += event_thread_highest
-USEMODULE += netdev_ieee802154_submac
+USEMODULE += event_callback
+USEMODULE += xtimer
+USEMODULE += ieee802154_radio_hal
 USEMODULE += netdev_default
 
 CFLAGS += -DEVENT_THREAD_HIGHEST_STACKSIZE=1024
