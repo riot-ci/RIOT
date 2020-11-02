@@ -1,10 +1,11 @@
 APPLICATION ?= tests_$(notdir $(patsubst %/,%,$(CURDIR)))
+APPLICATION_DIR ?= $(notdir $(patsubst %/,%,$(dir $(lastword $(CURDIR)))))
 
 ifneq (,$(wildcard $(CURDIR)/tests/.))
   DEFAULT_MODULE += test_utils_interactive_sync
 endif
 
-ifneq (,$(filter tests_driver_%,$(APPLICATION)))
+ifneq (,$(filter drivers,$(APPLICATION_DIR)))
   BOARD ?= samr21-xpro
 endif
 BOARD ?= native
