@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 LWIP_IPV4 ?= 0
 
@@ -23,7 +24,7 @@ USEMODULE += lwip_netdev
 USEMODULE += netdev_eth
 USEMODULE += netdev_test
 USEMODULE += ps
-USEMODULE += sock_udp
+USEMODULE += sock_ip
 
 DISABLE_MODULE += auto_init_lwip
 
