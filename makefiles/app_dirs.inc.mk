@@ -4,7 +4,19 @@
 RIOTBASE ?= .
 
 # Define the list of tests sudirectories that contain application directories
-TEST_APPLICATIONS_SUBDIRS := bench cpp drivers gnrc periph pkg thread xtimer ztimer
+TEST_APPLICATIONS_SUBDIRS := \
+    bench                    \
+    build_system             \
+    cpp                      \
+    drivers                  \
+    networking               \
+    periph                   \
+    pkg                      \
+    sys                      \
+    thread                   \
+    xtimer                   \
+    ztimer                   \
+    #
 TEST_APPLICATIONS_SUBDIRS := $(addprefix tests/,$(TEST_APPLICATIONS_SUBDIRS))
 
 # Prepare the list of application directories
