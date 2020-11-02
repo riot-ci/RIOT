@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 # If you want to add some extra flags when compile c++ files, add these flags
 # to CXXEXFLAGS variable
@@ -6,6 +7,5 @@ CXXEXFLAGS += -std=c++11
 
 USEMODULE += cpp11-compat
 USEMODULE += xtimer
-USEMODULE += timex
 
 include $(RIOTBASE)/Makefile.include
