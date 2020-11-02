@@ -1,1 +1,1 @@
-../periph_spi/main.c
+../spi/main.c
