@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 USEMODULE += sntp
 USEMODULE += gnrc_ipv6_default
