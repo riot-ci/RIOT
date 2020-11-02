@@ -1,0 +1,14 @@
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
+
+USEMODULE += libfixmath-unittests
+
+ifneq (,$(filter native,$(BOARD)))
+  LINKFLAGS += -lm
+endif
+
+USEMODULE += printf_float
+
+TEST_ON_CI_WHITELIST += native
+
+include $(RIOTBASE)/Makefile.include
