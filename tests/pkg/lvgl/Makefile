@@ -1,0 +1,12 @@
+BOARD ?= stm32f429i-disc1
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
+
+# No interactive_sync
+DISABLE_MODULE += test_utils_interactive_sync
+
+USEPKG += lvgl
+USEMODULE += lvgl_contrib
+USEMODULE += ili9341
+
+include $(RIOTBASE)/Makefile.include
