@@ -1,5 +1,6 @@
 DEVELHELP := 1
-include $(CURDIR)/../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 export TAP ?= tap0
 
