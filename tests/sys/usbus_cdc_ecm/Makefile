@@ -1,5 +1,6 @@
 BOARD ?= samr21-xpro
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_ipv6_router_default
