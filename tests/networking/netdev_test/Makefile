@@ -2,7 +2,8 @@
 # testing this netdev simulating framework, so I it's better if the assert is
 # ignored.
 CFLAGS += -DNDEBUG
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 DISABLE_MODULE += auto_init_gnrc_%
 
