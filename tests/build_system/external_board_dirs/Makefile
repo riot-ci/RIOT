@@ -1,4 +1,5 @@
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 # Require arch_native feature so this is not compiled for other boards in
 # $(RIOTBOARD)/
