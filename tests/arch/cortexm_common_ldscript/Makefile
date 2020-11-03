@@ -1,5 +1,6 @@
 BOARD ?= samr21-xpro
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 
 # Normally all boards using `cortexm_common/ldscripts/cortexm.ld` linkerscript
