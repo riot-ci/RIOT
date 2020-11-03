@@ -1,6 +1,7 @@
 BOARD ?= microbit
 
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 # This test application is for the BBC micro:bit only
 BOARD_WHITELIST := microbit
