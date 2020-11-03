@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Bas Stottelaar <basstottelaar@gmail.com>
+ * Copyright (C) 2017-2020 Bas Stottelaar <basstottelaar@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -52,7 +52,6 @@ extern "C" {
  * @name    RTT configuration
  * @{
  */
-
 #define RTT_MAX_VALUE       (0xFFFFFFFF)
 #define RTT_FREQUENCY       (1U)
 /** @} */
