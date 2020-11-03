@@ -711,13 +711,16 @@ static inline void semi_atomic_fetch_and_u64(uint64_t *dest, uint64_t val);
  * @param   name    Name of the variable type, e.g. "u8"
  * @param   type    Variable type, e.g. `uint8_t`
  */
-#define ATOMIC_LOAD_IMPL(name, type) \
-    static inline type CONCAT(atomic_load_, name)(const type *var) \
-    { \
-        unsigned state = irq_disable(); \
-        type result = *var; \
-        irq_restore(state); \
-        return result; \
+#define ATOMIC_LOAD_IMPL(name, type)                                           \
+    static inline type CONCAT(atomic_load_, name)(const type *var)             \
+    {                                                                          \
+        unsigned state = irq_disable();                                        \
+        /* var can be register allocated, hence the memory barrier of          \
+         * irq_disable() and irq_restore() may not apply here. Using volatile  \
+         * to ensure write is not optimized out. */                            \
+        type result = *((const volatile type *)var);                           \
+        irq_restore(state);                                                    \
+        return result;                                                         \
     }
 
 #ifndef HAS_ATOMIC_LOAD_U8
@@ -741,11 +744,14 @@ ATOMIC_LOAD_IMPL(u64, uint64_t)
  * @param   type    Variable type, e.g. `uint8_t`
  */
 #define ATOMIC_STORE_IMPL(name, type) \
-    static inline void CONCAT(atomic_store_, name)(type *dest, type val) \
-    { \
-        unsigned state = irq_disable(); \
-        *dest = val; \
-        irq_restore(state); \
+    static inline void CONCAT(atomic_store_, name)(type *dest, type val)       \
+    {                                                                          \
+        unsigned state = irq_disable();                                        \
+        /* dest can be register allocated, hence the memory barrier of         \
+         * irq_disable() and irq_restore() may not apply here. Using volatile  \
+         * to ensure write is not optimized out. */                            \
+        *((volatile type *)dest) = val;                                        \
+        irq_restore(state);                                                    \
     }
 
 #ifndef HAS_ATOMIC_STORE_U8
@@ -775,7 +781,11 @@ ATOMIC_STORE_IMPL(u64, uint64_t)
                                                                type val)       \
     {                                                                          \
         unsigned state = irq_disable();                                        \
-        *dest = *dest op val;                                                  \
+        /* dest can be register allocated, hence the memory barrier of         \
+         * irq_disable() and irq_restore() may not apply here. Using volatile  \
+         * to ensure write is not optimized out. */                            \
+        volatile type *tmp = dest;                                             \
+        *tmp = *tmp op val;                                                    \
         irq_restore(state);                                                    \
     }
 
