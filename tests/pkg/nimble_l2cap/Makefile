@@ -13,7 +13,7 @@ USEMODULE += ps
 USEMODULE += bluetil_ad
 
 # Get the shared NimBLE and test configuration from the backend server
-include $(RIOTBASE)/tests/nimble_l2cap_server/nimble.inc.mk
+include $(RIOTBASE)/tests/pkg/nimble_l2cap_server/nimble.inc.mk
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
