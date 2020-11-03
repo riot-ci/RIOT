@@ -1,0 +1,9 @@
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
+
+DRIVER ?= shtc1
+
+USEMODULE += fmt
+USEMODULE += $(DRIVER)
+
+include $(RIOTBASE)/Makefile.include
