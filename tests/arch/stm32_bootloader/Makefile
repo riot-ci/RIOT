@@ -1,5 +1,6 @@
 BOARD ?= nucleo-f411re
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 FEATURES_REQUIRED = bootloader_stm32
 

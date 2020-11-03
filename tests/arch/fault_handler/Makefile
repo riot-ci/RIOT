@@ -1,5 +1,6 @@
 # name of your application
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 ifeq ($(shell uname),Darwin)
 CFLAGS += -Wno-language-extension-token

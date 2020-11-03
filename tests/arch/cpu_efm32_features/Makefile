@@ -1,5 +1,6 @@
 BOARD ?= sltb001a
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 BOARD_WHITELIST := ikea-tradfri \
                    slstk3401a \
