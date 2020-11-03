@@ -1,5 +1,6 @@
 BOARD ?= samr21-xpro
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 
 USEMODULE += mpu_stack_guard
 
