@@ -8,39 +8,46 @@
 # Author: Juan Carrano <j.carrano@fu-berlin.de>
 """Random test vectors"""
 
+from bisect import bisect as _bisect
+from itertools import accumulate as _accumulate
 import hashlib
-import random
+import random as rand
 
 import test_base
 
-randgen = random.Random(42)
 
 _pass_chars = [c for c in (chr(x) for x in range(128))
                if c.isprintable()]
 
-# Murdock uses python 3.5 where random.choices is not available, this
-# is a verbatim copy from python 3.6
-def choices(population, weights=None, *, cum_weights=None, k=1):
-    """Return a k sized list of population elements chosen with replacement.
-    If the relative weights or cumulative weights are not specified,
-    the selections are made with equal probability.
-    """
-    n = len(population)
-    if cum_weights is None:
-        if weights is None:
-            _int = int
-            n += 0.0    # convert to float for a small speed improvement
-            return [population[_int(random.random() * n)] for i in _repeat(None, k)]
-        cum_weights = list(_accumulate(weights))
-    elif weights is not None:
-        raise TypeError('Cannot specify both weights and cumulative weights')
-    if len(cum_weights) != n:
-        raise ValueError('The number of weights does not match the population')
-    bisect = _bisect
-    total = cum_weights[-1] + 0.0   # convert to float
-    hi = n - 1
-    return [population[bisect(cum_weights, random.random() * total, 0, hi)]
-            for i in _repeat(None, k)]
+
+class random2(rand.Random):
+    # Murdock uses python 3.5 where random.choices is not available, this
+    # is a verbatim copy from python 3.6
+    def choices(self, population, weights=None, *, cum_weights=None, k=1):
+        """Return a k sized list of population elements chosen with replacement.
+        If the relative weights or cumulative weights are not specified,
+        the selections are made with equal probability.
+        """
+        random = self.random
+        if cum_weights is None:
+            if weights is None:
+                _int = int
+                total = len(population)
+                return [population[_int(random() * total)] for i in range(k)]
+            cum_weights = list(_accumulate(weights))
+        elif weights is not None:
+            raise TypeError('Cannot specify both weights and cumulative weights')
+        if len(cum_weights) != len(population):
+            raise ValueError('The number of weights does not match the population')
+        bisect = _bisect.bisect
+        total = cum_weights[-1]
+        hi = len(cum_weights) - 1
+        return [population[bisect(cum_weights, random() * total, 0, hi)]
+                for i in range(k)]
+
+
+randgen = random2(42)
+
 
 def randompass(length):
     return "".join(randgen.choices(_pass_chars, k=length))
