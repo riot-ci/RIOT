@@ -9,6 +9,9 @@ CFLAGS_OPT  ?= -Os
 
 CFLAGS    += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT)
 ASFLAGS   += $(CFLAGS_CPU) $(CFLAGS_DBG)
+
+# needed for xfa support. Order is important.
+LINKFLAGS += -L$(RIOTCPU)/atmega_common/ldscripts
 LINKFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG) $(CFLAGS_OPT) -static -lgcc -e reset_handler -Wl,--gc-sections
 OFLAGS    += -j .text -j .data
 
