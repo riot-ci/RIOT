@@ -18,6 +18,8 @@ then
         RESULT=0
         RECALL="$1"
 
+        git config diff.renameLimit 2000
+
         if [ "$RECALL" != "recall" ]; then
             if git diff ${CI_BASE_BRANCH} HEAD -- "$0" &> /dev/null; then
                 git rebase ${CI_BASE_BRANCH} || git rebase --abort
