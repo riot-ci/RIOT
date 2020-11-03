@@ -29,5 +29,6 @@ BUILD_FILES += $(SLOT_RIOT_ELFS:%.elf=%.bin)
 # submitted along with the test jobs.
 TEST_EXTRA_FILES=$(SLOT_RIOT_ELFS)
 
-include ../Makefile.tests_common
+RIOTBASE ?= $(CURDIR)/../../..
+include $(RIOTBASE)/tests/Makefile.tests_common
 include $(RIOTBASE)/Makefile.include
