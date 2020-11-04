@@ -364,13 +364,6 @@ int ieee802154_sec_encrypt_frame(ieee802154_sec_context_t *ctx,
            (see 9.4.2) */
         return -IEEE802154_SEC_FRAME_COUNTER_OVERFLOW;
     }
-    if (*header_size + payload_size >
-         /* TODO: support 802.15.4g frame sizes */
-        (IEEE802154_FRAME_LEN_MAX
-        - IEEE802154_MAX_AUX_HDR_LEN
-        - IEEE802154_FCS_LEN)) {
-        return -IEEE802154_SEC_FRAME_TOO_LARGE;
-    }
 
     /* write the auxiliary header */
     ieee802154_aux_sec_t *aux = (ieee802154_aux_sec_t *)(header + *header_size);

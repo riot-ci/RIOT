@@ -220,7 +220,6 @@ typedef enum {
     IEEE802154_SEC_NO_KEY,                              /**< Could not find the key to perform a requested cipher operation */
     IEEE802154_SEC_MAC_CHECK_FAILURE,                   /**< The computet MAC did not match */
     IEEE802154_SEC_UNSUPORTED,                          /**< Unsupported operation */
-    IEEE802154_SEC_FRAME_TOO_LARGE                      /**< The frame exceeded the maximum expected size */
 } ieee802154_sec_error_t;
 
 /**
