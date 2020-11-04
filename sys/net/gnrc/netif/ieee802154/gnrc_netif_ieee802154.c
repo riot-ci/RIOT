@@ -306,30 +306,30 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     };
 #if IS_USED(MODULE_IEEE802154_SECURITY)
     gnrc_pktbuf_merge(pkt->next);
-    iolist_payload.iol_next = (iolist_t *)pkt->next->next,
+    gnrc_pktsnip_t *mic = gnrc_pktbuf_add(pkt->next->next, NULL,
+                                          IEEE802154_MAC_SIZE,
+                                          GNRC_NETTYPE_UNDEF);
+    if (!mic) {
+        DEBUG("_send_ieee802154: no space left in pktbuf to allocate MIC\n");
+        return -ENOMEM;
+    }
+    iolist_payload.iol_next = (iolist_t *)mic;
     iolist_payload.iol_base = pkt->next->data,
     iolist_payload.iol_len = pkt->next->size;
     uint8_t hdr_len = res;
     uint8_t mic_len;
-    uint8_t mic[IEEE802154_MAC_SIZE];
     if (flags & NETDEV_IEEE802154_SECURITY_EN) {
         res = ieee802154_sec_encrypt_frame(&state->sec_ctx,
                                            mhr, &hdr_len,
                                            pkt->next->data, pkt->next->size,
-                                           mic, &mic_len,
+                                           mic->data, &mic_len,
                                            state->long_addr);
         if (res != 0) {
             return res;
         }
     }
-    iolist_t iolist_mic = {
-        .iol_next = NULL,
-        .iol_base = mic,
-        .iol_len = mic_len
-    };
     iolist_header.iol_len = hdr_len;
-    iolist_mic.iol_next = iolist_payload.iol_next;
-    iolist_payload.iol_next = &iolist_mic;
+    mic->size = mic_len;
 #endif
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
