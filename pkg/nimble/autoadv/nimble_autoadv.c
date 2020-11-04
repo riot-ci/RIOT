@@ -29,16 +29,22 @@
 
 #include "nimble_autoadv.h"
 
+/* settings for advertising procedure */
 static struct ble_gap_adv_params _advp;
 
+/* duration of the advertisement procedure */
 static int32_t _adv_duration;
 
+/* buffer for _ad */
 static uint8_t buf[BLE_HS_ADV_MAX_SZ];
+
+/* advertising data struct */
 static bluetil_ad_t _ad;
 
-static int _gap_event_cb(struct ble_gap_event *event, void *arg);
-
+/* GAP callback function */
 static ble_gap_event_fn *_gap_cb;
+
+/* arguments for GAP callback function */
 static void *_gap_cb_arg;
 
 void nimble_autoadv_start(void);
