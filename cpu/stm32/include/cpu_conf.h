@@ -25,6 +25,8 @@
 
 #if defined(CPU_LINE_STM32F030x4)
 #include "vendor/stm32f030x4.h"
+#elif defined(CPU_LINE_STM32MP157Cxx)
+#include "vendor/stm32mp157cxx_cm4.h"
 #elif CPU_FAM_STM32F0
 #include "stm32f0xx.h"
 #include "irqs/f0/irqs.h"
@@ -82,6 +84,8 @@ extern "C" {
 /* CPU_IRQ_NUMOF cannot be determined automatically from cmsis header */
 #if defined(CPU_LINE_STM32F030x4)
 #define CPU_IRQ_NUMOF                   (28U)
+#elif defined(CPU_MODEL_STM32MP157CAC)
+#define CPU_IRQ_NUMOF                   (150U)
 #endif
 /** @} */
 
