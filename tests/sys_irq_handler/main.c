@@ -122,7 +122,7 @@ static void *some_thread(void *arg)
         mutex_lock(&mutex);
         i++;
         mutex_unlock(&mutex);
-        xtimer_usleep(US_PER_MS);
+        xtimer_msleep(1);
     }
     return NULL;
 }
