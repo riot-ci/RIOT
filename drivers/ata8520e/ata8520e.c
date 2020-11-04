@@ -270,7 +270,7 @@ int ata8520e_init(ata8520e_t *dev, const ata8520e_params_t *params)
         return -ATA8520E_ERR_SPI;
     }
 
-    xtimer_usleep(100 * US_PER_MS); /* 100 ms */
+    xtimer_msleep(100); /* 100 ms */
 
     if (IS_ACTIVE(ENABLE_DEBUG)) {
         char sigfox_id[SIGFOX_ID_LENGTH + 1];
@@ -392,7 +392,7 @@ static bool _wait_event(ata8520e_t *dev, uint8_t timeout)
 static void _prepare_send_frame(ata8520e_t *dev, uint8_t *msg, uint8_t msg_len)
 {
     _poweron(dev);
-    xtimer_usleep(5 * US_PER_MS);
+    xtimer_msleep(5);
     _status(dev);
 
     /* Verify message length */
@@ -487,7 +487,7 @@ int ata8520e_send_bit(ata8520e_t *dev, bool bit)
 {
     DEBUG("[ata8520e] Sending bit '%d'\n", bit);
     _poweron(dev);
-    xtimer_usleep(5 * US_PER_MS);
+    xtimer_msleep(5);
     _status(dev);
 
     dev->internal_state = ATA8520E_STATE_TX;
