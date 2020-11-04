@@ -4,7 +4,7 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-config MODULE_SAM21_VECTORS
+config MODULE_SAMD21_VECTORS
     bool
     default y
     depends on CPU_COMMON_SAMD21
