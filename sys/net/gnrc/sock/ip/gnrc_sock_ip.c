@@ -130,8 +130,11 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
     }
     tmp.family = sock->local.family;
     sock_ip_ep_t *local = NULL;
-#ifdef MODULE_SOCK_AUX_LOCAL
-    local = (aux != NULL) ? &aux->local : NULL;
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
+    if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
+        local = &aux->local;
+        aux->flags &= ~(SOCK_AUX_GET_LOCAL);
+    }
 #endif
     res = gnrc_sock_recv((gnrc_sock_reg_t *)sock, &pkt, timeout, &tmp, local);
     if (res < 0) {
@@ -140,10 +143,6 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
     if (remote != NULL) {
         /* return remote to possibly block if wrong remote */
         memcpy(remote, &tmp, sizeof(tmp));
-    }
-    if (aux != NULL) {
-        if (IS_USED(MODULE_SOCK_AUX_LOCAL))
-            aux->flags &= ~(SOCK_AUX_GET_LOCAL);
     }
     if ((sock->remote.family != AF_UNSPEC) &&   /* check remote end-point if set */
         /* We only have IPv6 for now, so just comparing the whole end point
