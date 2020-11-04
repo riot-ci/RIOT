@@ -22,8 +22,8 @@ The samd10-xmini is available from various hardware vendors for ~8€ (as of
 |:-----------|:--------------------- |
 | Family     | ARM Cortex-M0+        |
 | Vendor     | Atmel                 |
-| RAM        | 4 kb                  |
-| Flash      | 16 kb                 |
+| RAM        | 4 kiB                 |
+| Flash      | 16 kiB                |
 | Frequency  | up to 48 MHz          |
 | FPU        | no                    |
 | Timers     | 3 (2 x 16-bit, 1 x 24-bit)       |
