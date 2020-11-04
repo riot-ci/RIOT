@@ -362,9 +362,11 @@ static void test_sock_ip_recv__aux(void)
     expect(AF_INET6 == result.family);
     expect(memcmp(&result.addr, &src_addr, sizeof(result.addr)) == 0);
     expect(_TEST_NETIF == result.netif);
-#ifdef MODULE_SOCK_AUX_LOCAL
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
     expect(!(aux.flags & SOCK_AUX_GET_LOCAL));
     expect(memcmp(&aux.local.addr, &dst_addr, sizeof(dst_addr)) == 0);
+#else
+    expect(aux.flags & SOCK_AUX_GET_LOCAL);
 #endif
     expect(_check_net());
 }
