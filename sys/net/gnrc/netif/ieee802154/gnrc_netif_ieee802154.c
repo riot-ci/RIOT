@@ -174,25 +174,25 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             netif->last_pkt.src_len = hdr->src_l2addr_len;
             netif->last_pkt.seq = ieee802154_get_seq(mhr);
 #endif /* MODULE_GNRC_NETIF_DEDUP */
-#if IS_USED(MODULE_IEEE802154_SECURITY)
-            uint8_t *payload = NULL;
-            uint16_t payload_size = 0;
-            uint8_t *mic = NULL;
-            uint8_t mic_size = 0;
-            if (mhr[0] & NETDEV_IEEE802154_SECURITY_EN) {
-                if (ieee802154_sec_decrypt_frame(&((netdev_ieee802154_t *)dev)->sec_ctx,
-                                                 nread,
-                                                 mhr, (uint8_t *)&mhr_len,
-                                                 &payload, &payload_size,
-                                                 &mic, &mic_size,
-                                                 gnrc_netif_hdr_get_src_addr(hdr)) != 0) {
-                    gnrc_pktbuf_release(pkt);
-                    DEBUG("_recv_ieee802154: packet dropped by security check\n");
-                    return NULL;
+            if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+                uint8_t *payload = NULL;
+                uint16_t payload_size = 0;
+                uint8_t *mic = NULL;
+                uint8_t mic_size = 0;
+                if (mhr[0] & NETDEV_IEEE802154_SECURITY_EN) {
+                    if (ieee802154_sec_decrypt_frame(&((netdev_ieee802154_t *)dev)->sec_ctx,
+                                                     nread,
+                                                     mhr, (uint8_t *)&mhr_len,
+                                                     &payload, &payload_size,
+                                                     &mic, &mic_size,
+                                                     gnrc_netif_hdr_get_src_addr(hdr)) != 0) {
+                        gnrc_pktbuf_release(pkt);
+                        DEBUG("_recv_ieee802154: packet dropped by security check\n");
+                        return NULL;
+                    }
                 }
+                nread -= mic_size;
             }
-            nread -= mic_size;
-#endif
             hdr->lqi = rx_info.lqi;
             hdr->rssi = rx_info.rssi;
             gnrc_netif_hdr_set_netif(hdr, netif);
@@ -239,6 +239,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     const uint8_t *src, *dst = NULL;
     int res = 0;
     size_t src_len, dst_len;
+    uint8_t mhr_len;
 #if IS_USED(MODULE_IEEE802154_SECURITY)
     uint8_t mhr[IEEE802154_MAX_HDR_LEN + IEEE802154_MAX_AUX_HDR_LEN];
 #else
@@ -294,6 +295,28 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         DEBUG("_send_ieee802154: Error preperaring frame\n");
         return -EINVAL;
     }
+    mhr_len = res;
+    if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+        /* write protect `pkt` to set `pkt->next` */
+        gnrc_pktsnip_t *tmp = gnrc_pktbuf_start_write(pkt);
+        if (tmp == NULL) {
+            DEBUG("_send_ieee802154: no write access to pkt");
+            return -ENOMEM;
+        }
+        pkt = tmp;
+        tmp = gnrc_pktbuf_start_write(pkt->next);
+        if (tmp == NULL) {
+            DEBUG("_send_ieee802154: no write access to pkt->next");
+            return -ENOMEM;
+        }
+        pkt->next = tmp;
+        /* merge snippets to store the L2 payload uniformly in one buffer */
+        res = gnrc_pktbuf_merge(pkt->next);
+        if (res < 0) {
+            DEBUG("_send_ieee802154: failed to merge pktbuf\n");
+            return res;
+        }
+    }
     iolist_t iolist_payload = {
         .iol_next = (iolist_t *)pkt->next->next,
         .iol_base = pkt->next->data,
@@ -302,35 +325,33 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
     iolist_t iolist_header = {
         .iol_next = &iolist_payload,
         .iol_base = mhr,
-        .iol_len = res
+        .iol_len = mhr_len
     };
-#if IS_USED(MODULE_IEEE802154_SECURITY)
-    gnrc_pktbuf_merge(pkt->next);
-    gnrc_pktsnip_t *mic = gnrc_pktbuf_add(pkt->next->next, NULL,
-                                          IEEE802154_MAC_SIZE,
-                                          GNRC_NETTYPE_UNDEF);
-    if (!mic) {
-        DEBUG("_send_ieee802154: no space left in pktbuf to allocate MIC\n");
-        return -ENOMEM;
-    }
-    iolist_payload.iol_next = (iolist_t *)mic;
-    iolist_payload.iol_base = pkt->next->data,
-    iolist_payload.iol_len = pkt->next->size;
-    uint8_t hdr_len = res;
-    uint8_t mic_len;
-    if (flags & NETDEV_IEEE802154_SECURITY_EN) {
-        res = ieee802154_sec_encrypt_frame(&state->sec_ctx,
-                                           mhr, &hdr_len,
-                                           pkt->next->data, pkt->next->size,
-                                           mic->data, &mic_len,
-                                           state->long_addr);
-        if (res != 0) {
-            return res;
+    if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+        gnrc_pktsnip_t *mic = gnrc_pktbuf_add(pkt->next->next, NULL,
+                                              IEEE802154_MAC_SIZE,
+                                              GNRC_NETTYPE_UNDEF);
+        if (!mic) {
+            DEBUG("_send_ieee802154: no space left in pktbuf to allocate MIC\n");
+            return -ENOMEM;
         }
+        iolist_payload.iol_next = (iolist_t *)mic;
+        iolist_payload.iol_base = pkt->next->data,
+        iolist_payload.iol_len = pkt->next->size;
+        uint8_t mic_size;
+        if (flags & NETDEV_IEEE802154_SECURITY_EN) {
+            res = ieee802154_sec_encrypt_frame(&state->sec_ctx,
+                                               mhr, &mhr_len,
+                                               pkt->next->data, pkt->next->size,
+                                               mic->data, &mic_size,
+                                               state->long_addr);
+            if (res != 0) {
+                return res;
+            }
+        }
+        iolist_header.iol_len = mhr_len;
+        mic->size = mic_size;
     }
-    iolist_header.iol_len = hdr_len;
-    mic->size = mic_len;
-#endif
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
             (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
