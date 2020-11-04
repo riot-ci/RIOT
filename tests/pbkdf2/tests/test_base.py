@@ -15,7 +15,7 @@ MAX_LINE = 128
 
 
 def safe_encode(data):
-    """Empty lines will confue the target, replace them with padding."""
+    """Empty lines will confuse the target, replace them with padding."""
     return base64.b64encode(data).decode('ascii') if data else ""
 
 
