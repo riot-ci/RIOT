@@ -76,6 +76,16 @@ typedef volatile uint32_t *atomic_bit_u16_t;
 typedef volatile uint32_t *atomic_bit_u32_t;
 typedef volatile uint32_t *atomic_bit_u64_t;
 
+static inline void __attribute__((always_inline)) _bit_barrier_pre(void)
+{
+    __asm__ volatile ("" : : : "memory");
+}
+
+static inline void __attribute__((always_inline)) _bit_barrier_post(void)
+{
+    __asm__ volatile ("" : : : "memory");
+}
+
 static inline bool _is_addr_valid_for_bitbanding(void *_addr)
 {
     /* SRAM bit-band region goes from 0x20000000 to 0x200fffff,
@@ -118,57 +128,57 @@ static inline atomic_bit_u64_t atomic_bit_u64(uint64_t *dest, uint8_t bit)
 
 static inline void atomic_set_bit_u8(atomic_bit_u8_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 1;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_set_bit_u16(atomic_bit_u16_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 1;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_set_bit_u32(atomic_bit_u32_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 1;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_set_bit_u64(atomic_bit_u64_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 1;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_clear_bit_u8(atomic_bit_u8_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 0;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 static inline void atomic_clear_bit_u16(atomic_bit_u16_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 0;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_clear_bit_u32(atomic_bit_u32_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 0;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 static inline void atomic_clear_bit_u64(atomic_bit_u64_t bit)
 {
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_pre();
     *bit = 0;
-    __asm__ volatile ("" ::: "memory");
+    _bit_barrier_post();
 }
 
 
