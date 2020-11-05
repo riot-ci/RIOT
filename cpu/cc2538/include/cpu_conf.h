@@ -43,6 +43,32 @@ extern "C" {
 #define CPU_HAS_BITBAND                 (1)
 /** @} */
 
+
+/**
+ * @brief   Flash page configuration
+ * @{
+ */
+#define FLASHPAGE_SIZE          (2048U)
+/* Last page holds the CCA region for safety this will not be allowed
+   to be erased */
+#ifndef FLASHPAGE_CC2538_CCA_PAGE
+#define FLASHPAGE_CC2538_CCA_PAGE   (0)
+#endif
+#if FLASHPAGE_CC2538_CCA_PAGE
+#define FLASHPAGE_NUMOF         ((CC2538_FLASHSIZE / FLASHPAGE_SIZE))
+#else
+#define FLASHPAGE_NUMOF         ((CC2538_FLASHSIZE / FLASHPAGE_SIZE) -1)
+#endif
+#define FLASH_ERASE_STATE       (0x1)
+
+/* The minimum block size which can be written is 4B. However, the erase
+ * block is always FLASHPAGE_SIZE.
+ */
+#define FLASHPAGE_RAW_BLOCKSIZE    (4U)
+/* Writing should be always 4 bytes aligned */
+#define FLASHPAGE_RAW_ALIGNMENT    (4U)
+/** @} */
+
 /**
  * @name    OpenWSN timing constants
  *
