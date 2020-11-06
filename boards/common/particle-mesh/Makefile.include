@@ -18,8 +18,6 @@ ifeq (1,$(PARTICLE_MONOFIRMWARE))
   FFLAGS = -d 0x2B04:0xD00E -a 0 -s 0x30000:leave -D $(FLASHFILE)
   PROGRAMMER = dfu-util
   include $(RIOTMAKE)/tools/dfu.inc.mk
-
-  USEMODULE += usb_board_reset
 else
   # This board uses a DAP-Link programmer
   # Flashing support is provided through pyocd (default) and openocd.
