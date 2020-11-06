@@ -11,6 +11,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     bluepill \
     calliope-mini \
     derfmega128 \
+    e104-bt5010a-tb \
     hifive1 \
     hifive1b \
     i-nucleo-lrwan1 \
