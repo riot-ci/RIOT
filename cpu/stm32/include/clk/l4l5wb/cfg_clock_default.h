@@ -135,6 +135,9 @@ extern "C" {
 #ifndef CONFIG_CLOCK_PLL_N
 #if IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) && (CLOCK_HSE == MHZ(32))
 #define CONFIG_CLOCK_PLL_N              (16)
+#elif IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI) || \
+      (IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) && (CLOCK_HSE == MHZ(16)))
+#define CONFIG_CLOCK_PLL_N              (32)
 #else
 #define CONFIG_CLOCK_PLL_N              (20)
 #endif
