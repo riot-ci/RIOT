@@ -22,8 +22,6 @@
  * @}
  */
 
-#ifdef MODULE_USB_BOARD_RESET
-
 #include <stdint.h>
 #include "cpu.h"
 
@@ -48,7 +46,3 @@ void usb_board_reset_in_bootloader(void)
      * the RAM content */
     NVIC_SystemReset();
 }
-
-#else
-typedef int dont_be_pedantic;
-#endif /* MODULE_USB_BOARD_RESET */
