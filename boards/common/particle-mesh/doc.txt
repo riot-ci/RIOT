@@ -75,7 +75,14 @@ the `reset` target with `make`:
     make BOARD=<board name> -C examples/hello-world reset
 ```
 
-### Accessing STDIO via UART
+### STDIO configuration
+
+By default, the board uses USB to expose a serial terminal.
+Other stdio options can be enabled as modules to replace that.
+
+When the `stdio_uart` module is used,
+it defaults to using UART0,
+which is configured for the board's RX/TX pin pair.
 
 The STDIO is not accessible via the USB port.
 
