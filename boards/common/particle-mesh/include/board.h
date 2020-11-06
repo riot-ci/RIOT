@@ -65,6 +65,20 @@ extern "C" {
 #define PARTICLE_MONOFIRMWARE_CHECKSUMLIMIT
 #endif
 
+/** @brief Platform ID of the board for the Particle bootloader
+ *
+ * This is set by the individual board's build configuration, and gets used
+ * when building with @ref PARTICLE_MONOFIRMWARE; then, it is put into the
+ * module information for the board bootloader to verify that the firmware was
+ * built for the rigth device.
+ *
+ * The individual values are documented in the Particle DeviceOS source code in
+ * `build/platform-id.mk`.
+ */
+#ifdef DOXYGEN
+#define PARTICLE_PLATFORM_ID
+#endif
+
 /** @} */
 
 /**

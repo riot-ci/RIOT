@@ -72,16 +72,7 @@ ISR_VECTOR(51) static const struct module_info_t particle_monofirmware_module_in
 #endif
     .module_version = 0x138, /* module version that micropython uses */
 
-    /* Platform IDs indicae the actual board: see Particle's build/platform-id.mk */
-#ifdef BOARD_PARTICLE_ARGON
-    .platform_id = 12,
-#endif
-#ifdef BOARD_PARTICLE_BORON
-    .platform_id = 13,
-#endif
-#ifdef BOARD_PARTICLE_XENON
-    .platform_id = 14,
-#endif
+    .platform_id = PARTICLE_PLATFORM_ID,
 
     .module_index = 3, /* MOD_FUNC_MONO_FIRMWARE from dynalib/inc/module_info.h */
 };
