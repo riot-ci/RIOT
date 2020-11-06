@@ -27,6 +27,49 @@ extern "C" {
 #endif
 
 /**
+ *
+ * @name    Bootloader configuration options
+ * @{
+ */
+
+/** @brief Build a firmware suitable for the Particle bootloader
+ *
+ * If this is defined, additional metadata about the firmware is included in
+ * the firmware (called the module_info in Particle), and additional code is
+ * inserted in board setup.
+ *
+ * Do not define this manually; instead, set `PARTICLE_MONOFIRMWARE=1` as an
+ * variable in the build scripts like `BOARD` is defined, and the particle
+ * common make file defines it and configures suitable postprocessing of the
+ * binary.
+ *
+ * <!-- not \@see as that doesn't accept group references -->
+ * See also: @ref boards_common_particle-mesh
+ *
+ */
+#ifdef DOXYGEN
+#define PARTICLE_MONOFIRMWARE
+#endif
+
+/** @brief Limit Particle bootloader checksumming to the binary start
+ *
+ * If this define is set in the Makefile, the binary size announced to the
+ * bootloader is limited to the reset vector and the firmware metadata, and
+ * only that part is checksummed.
+ *
+ * This is useful when @ref drivers_periph_flashpage is used, as otherwise the
+ * firmware's writes on itself would invalidate its checksum.
+ *
+ * <!-- not \@see as that doesn't accept group references -->
+ * See also: @ref boards_common_particle-mesh
+ */
+#ifdef DOXYGEN
+#define PARTICLE_MONOFIRMWARE_CHECKSUMLIMIT
+#endif
+
+/** @} */
+
+/**
  * @name    LED pin configuration
  * @{
  */
