@@ -6,6 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-uno \
     atmega328p \
     chronos \
+    e104-bt5010a-tb \
     i-nucleo-lrwan1 \
     msb-430 \
     msb-430h \

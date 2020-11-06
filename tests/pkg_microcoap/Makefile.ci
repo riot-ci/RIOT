@@ -6,6 +6,7 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-uno \
     atmega328p \
     derfmega128 \
+    e104-bt5010a-tb \
     i-nucleo-lrwan1 \
     microduino-corerf \
     msb-430 \
