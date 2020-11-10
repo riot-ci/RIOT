@@ -5,10 +5,6 @@
 # directory for more details.
 #
 
-config APPLICATION
-    bool
-    default y
-    imply MODULE_PERIPH_FLASHPAGE_RAW
-    imply MODULE_PERIPH_FLASHPAGE_RWEE
-    select MODULE_OD
-    depends on TEST_KCONFIG
+config MODULE_OD
+    bool "OD Hex Dump"
+    select MODULE_FMT

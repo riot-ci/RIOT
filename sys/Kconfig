@@ -22,6 +22,7 @@ rsource "test_utils/Kconfig"
 rsource "tsrb/Kconfig"
 rsource "usb/Kconfig"
 rsource "xtimer/Kconfig"
+rsource "od/Kconfig"
 
 config MODULE_SYS
     bool
