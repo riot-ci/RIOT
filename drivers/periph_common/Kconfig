@@ -125,6 +125,8 @@ config MODULE_PERIPH_INIT_RTC
     default y if MODULE_PERIPH_INIT
     depends on MODULE_PERIPH_RTC
 
+osource "$(RIOTCPU)/$(CPU)/periph/Kconfig.rtc"
+
 config MODULE_PERIPH_RTT
     bool "RTT peripheral driver"
     depends on HAS_PERIPH_RTT
