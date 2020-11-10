@@ -395,6 +395,7 @@ static int _connect_remote(socket_zep_t *dev, const socket_zep_params_t *params)
 
 static void _send_zep_hello(socket_zep_t *dev)
 {
+#ifdef MODULE_SOCKET_ZEP_HELLO
     /* dummy packet */
     zep_v2_data_hdr_t hdr = {
         .hdr.preamble = "EX",
@@ -404,6 +405,9 @@ static void _send_zep_hello(socket_zep_t *dev)
     };
 
     real_write(dev->sock_fd, &hdr, sizeof(hdr));
+#else
+    (void)dev;
+#endif
 }
 
 void socket_zep_setup(socket_zep_t *dev, const socket_zep_params_t *params)
