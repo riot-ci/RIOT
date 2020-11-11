@@ -58,7 +58,8 @@ int main(void)
     for (unsigned i = 0; i < ARRAY_SIZE(_ticktest); i++) {
         uint32_t sec = RTT_TICKS_TO_SEC(_ticktest[i]);
         uint32_t ticks = RTT_SEC_TO_TICKS(sec);
-        printf("Trying to convert %u to seconds and back\n", (unsigned)_ticktest[i]);
+        printf("Trying to convert %" PRIu32 " to seconds and back\n",
+               _ticktest[i]);
         /* account for rounding errors... */
         if ((ticks != 0) && (ticks != _ticktest[i])) {
             puts("error: TICK conversion not working as expected\n");
