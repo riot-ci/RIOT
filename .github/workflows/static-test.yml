@@ -1,0 +1,28 @@
+name: static-tests
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  static-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        # Use the PR branch as-is, not the PR branch merged in master
+        # (default behavior in GH actions)
+        ref: ${{ github.head_ref }}
+    - name: Fetch riot/riotbuild
+      run: docker pull riot/riotbuild:latest
+    - name: Fetch master branch
+      run: git fetch origin master:master
+    - name: Run static-tests
+      run: |
+        docker run --rm -v $(pwd):/data/riotbuild riot/riotbuild:latest make static-test
