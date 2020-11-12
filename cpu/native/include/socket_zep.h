@@ -23,6 +23,9 @@
  *
  * to your Makefile.
  *
+ * A ZEP dispatcher can just drop those packets (ZEP type 0xFF) if it
+ * chooses to parse the ZEP header.
+ *
  * @{
  *
  * @file
