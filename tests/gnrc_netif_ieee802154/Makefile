@@ -4,8 +4,6 @@ include ../Makefile.tests_common
 
 TERMFLAGS ?= -z "0.0.0.0:17755,localhost:17754"
 
-DISABLE_MODULE += socket_zep_hello
-
 USEMODULE += socket_zep
 USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc

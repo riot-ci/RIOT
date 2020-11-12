@@ -13,13 +13,15 @@
  *
  * @see @ref net_zep for protocol definitions
  *
- * This ZEP implementation will send a dummy HELLO packet on startup.
+ * This ZEP implementation can send a dummy HELLO packet on startup.
  * This is used to make dispatchers aware of the node.
- * If this behavior is not wanted, it can be disabled with
+ * To enable this behavior, add
  *
  * ```
- * DISABLE_MODULE += socket_zep_hello
+ * USEMODULE += socket_zep_hello
  * ```
+ *
+ * to your Makefile.
  *
  * @{
  *
