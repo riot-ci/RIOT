@@ -28,4 +28,4 @@ jobs:
       run: docker pull riot/riotbuild:latest
     - name: Run static-tests
       run: |
-        docker run -a STDIN -a STDOUT -a STDERR --rm -v $(pwd):/data/riotbuild riot/riotbuild:latest make static-test
+        docker run --rm -v $(pwd):/data/riotbuild riot/riotbuild:latest make static-test
