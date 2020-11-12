@@ -21,8 +21,10 @@ jobs:
         ref: ${{ github.head_ref }}
     - name: Fetch riot/riotbuild
       run: docker pull riot/riotbuild:latest
-    - name: Fetch master branch
-      run: git fetch origin master:master
+    - name: Setup git
+      run: |
+        git fetch origin master:master
+        git config apply.whitespace nowarn
     - name: Run static-tests
       run: |
         docker run --rm -v $(pwd):/data/riotbuild riot/riotbuild:latest make static-test
