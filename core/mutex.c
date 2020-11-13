@@ -33,21 +33,20 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-void mutex_lock(mutex_t *mutex)
+/**
+ * @brief   Block waiting for a locked mutex
+ * @pre     IRQs are disabled
+ * @post    IRQs are enabled
+ * @post    The calling thread is no longer waiting for the mutex, either
+ *          because it got the mutex, or because the operation was cancelled
+ *          (only possible for @ref mutex_lock_cancelable)
+ *
+ * Most applications don't use @ref mutex_lock_cancelable. Inlining this
+ * function into both @ref mutex_lock and @ref mutex_lock_cancelable is,
+ * therefore, beneficial for the majority of applications.
+ */
+static inline __attribute__((always_inline)) void _block(mutex_t *mutex, unsigned irq_state)
 {
-    unsigned irq_state = irq_disable();
-
-    DEBUG("PID[%" PRIkernel_pid "]: Mutex in use.\n", thread_getpid());
-
-    if (mutex->queue.next == NULL) {
-        /* mutex is unlocked. */
-        mutex->queue.next = MUTEX_LOCKED;
-        DEBUG("PID[%" PRIkernel_pid "]: mutex_wait_and_lock early out.\n",
-              thread_getpid());
-        irq_restore(irq_state);
-        return;
-    }
-
     thread_t *me = thread_get_active();
     DEBUG("PID[%" PRIkernel_pid "]: Adding node to mutex queue: prio: %"
           PRIu32 "\n", thread_getpid(), (uint32_t)me->priority);
@@ -60,10 +59,59 @@ void mutex_lock(mutex_t *mutex)
         thread_add_to_list(&mutex->queue, me);
     }
 
-
     irq_restore(irq_state);
     thread_yield_higher();
     /* We were woken up by scheduler. Waker removed us from queue. */
+}
+
+void mutex_lock(mutex_t *mutex)
+{
+    unsigned irq_state = irq_disable();
+
+    DEBUG("PID[%" PRIkernel_pid "]: Mutex in use.\n", thread_getpid());
+
+    if (mutex->queue.next == NULL) {
+        /* mutex is unlocked. */
+        mutex->queue.next = MUTEX_LOCKED;
+        DEBUG("PID[%" PRIkernel_pid "]: mutex_lock early out.\n",
+              thread_getpid());
+        irq_restore(irq_state);
+    }
+    else {
+        _block(mutex, irq_state);
+    }
+}
+
+int mutex_lock_cancelable(mutex_cancel_t *mc)
+{
+    unsigned irq_state = irq_disable();
+
+    DEBUG("PID[%" PRIkernel_pid "]: Mutex in use.\n", thread_getpid());
+
+    if (mc->cancelled) {
+        DEBUG("PID[%" PRIkernel_pid "]: mutex_lock_cancelable cancelled "
+              "early.\n", thread_getpid());
+        irq_restore(irq_state);
+        return -ECANCELED;
+    }
+
+    mutex_t *mutex = mc->mutex;
+    if (mutex->queue.next == NULL) {
+        /* mutex is unlocked. */
+        mutex->queue.next = MUTEX_LOCKED;
+        DEBUG("PID[%" PRIkernel_pid "]: mutex_lock_cancelable early out.\n",
+              thread_getpid());
+        irq_restore(irq_state);
+        return 0;
+    }
+    else {
+        _block(mutex, irq_state);
+        if (mc->cancelled) {
+            DEBUG("PID[%" PRIkernel_pid "]: mutex_lock_cancelable cancelled.\n",
+                  thread_getpid());
+        }
+        return (mc->cancelled) ? -ECANCELED: 0;
+    }
 }
 
 void mutex_unlock(mutex_t *mutex)
@@ -129,4 +177,32 @@ void mutex_unlock_and_sleep(mutex_t *mutex)
     sched_set_status(thread_get_active(), STATUS_SLEEPING);
     irq_restore(irqstate);
     thread_yield_higher();
+}
+
+void mutex_cancel(mutex_cancel_t *mc)
+{
+    unsigned irq_state = irq_disable();
+    mc->cancelled = 1;
+
+    mutex_t *mutex = mc->mutex;
+    thread_t *thread = mc->thread;
+    if (thread->status >= STATUS_ON_RUNQUEUE) {
+        irq_restore(irq_state);
+        return;
+    }
+
+    if ((mutex->queue.next != MUTEX_LOCKED)
+            && (mutex->queue.next != NULL)
+            && list_remove(&mutex->queue, (list_node_t *)&thread->rq_entry)) {
+        /* Thread was queued and removed from list, wake it up */
+        if (mutex->queue.next == NULL) {
+            mutex->queue.next = MUTEX_LOCKED;
+        }
+        sched_set_status(thread, STATUS_PENDING);
+        irq_restore(irq_state);
+        sched_switch(thread->priority);
+        return;
+    }
+
+    irq_restore(irq_state);
 }
