@@ -26,6 +26,14 @@
  * A ZEP dispatcher can just drop those packets (ZEP type 0xFF) if it
  * chooses to parse the ZEP header.
  *
+ * The header of the HELLO packet will look like this:
+ *
+ * +-------------+---------+------+
+ * |    Magic    | Version | Type |
+ * +-------------+---------+------+
+ * | 0x45 | 0x58 |   0x2   | 0xFF |
+ * +-------------+---------+------+
+ *
  * @{
  *
  * @file
