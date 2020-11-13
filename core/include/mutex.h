@@ -188,12 +188,17 @@ static inline int mutex_trylock(mutex_t *mutex)
  * @param[in,out]   mutex   Mutex object to lock.
  *
  * @retval  0               The mutex was locked by the caller
+ * @retval  -ECANCELED      The mutex was ***NOT*** locked, operation was
+ *                          canceled. See @ref mutex_cancel
  *
  * @pre     @p mutex is not `NULL`
  * @pre     Mutex at @p mutex has been initialized
  * @pre     Must be called in thread context
  *
- * @post    The mutex @p is locked and held by the calling thread.
+ * @post    The mutex @p is locked and held by the calling thread, unless
+ *          `-ECANCELED` was returned. This can only occur when
+ *          @ref mutex_cancel is called for the given mutex and the calling
+ *          thread.
  */
 int mutex_lock(mutex_t *mutex);
 
@@ -216,6 +221,25 @@ void mutex_unlock(mutex_t *mutex);
  * @pre     Must be called in thread context.
  */
 void mutex_unlock_and_sleep(mutex_t *mutex);
+
+/**
+ * @brief   If @p thread is currently blocked waiting for @p mutex, it will
+ *          be unblocked without obtaining the mutex
+ *
+ * @param[in,out]   mutex   Mutex to perform the cancel action on
+ * @param[in,out]   thread  Thread to remove from the @p mutex 's wait queue
+ *
+ * @note    This function is only provided when module `core_mutex_cancel` is
+ *          used.
+ * @note    It is safe to call this function from IRQ context, e.g. from a timer
+ *          interrupt.
+ *
+ * @details If @p thread is currently running (or pending), a subsequent call
+ *          from @p thread to @ref mutex_lock will also be canceled if @p mutex
+ *          is passed as parameter. This avoids race conditions when @ref
+ *          mutex_cancel get called just before @ref mutex_lock is called.
+ */
+void mutex_cancel(mutex_t *mutex, thread_t *thread);
 
 #ifdef __cplusplus
 }
