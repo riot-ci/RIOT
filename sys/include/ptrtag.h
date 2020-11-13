@@ -87,7 +87,7 @@ extern "C" {
  *
  * Expect assertions blowing up when the preconditions are not met.
  */
-static inline __attribute__((always_inline)) void * ptrtag(void *ptr, uint8_t tag)
+static inline void * ptrtag(void *ptr, uint8_t tag)
 {
     uintptr_t tmp = (uintptr_t)ptr;
     /* ensure ptr is aligned to four bytes and tag fits in two bits */
@@ -100,7 +100,7 @@ static inline __attribute__((always_inline)) void * ptrtag(void *ptr, uint8_t ta
  * @param   tagged_ptr  The tagged pointer to extract the original pointer from
  * @return  The original "un-tagged" pointer encoded in @p tagged_ptr
  */
-static inline __attribute__((always_inline)) void * ptrtag_ptr(void *tagged_ptr)
+static inline void * ptrtag_ptr(void *tagged_ptr)
 {
     uintptr_t tagged = (uintptr_t)tagged_ptr;
     const uintptr_t mask = 0x3;
@@ -112,7 +112,7 @@ static inline __attribute__((always_inline)) void * ptrtag_ptr(void *tagged_ptr)
  * @param   tagged_ptr  The tagged pointer to extract the original pointer from
  * @return  The tag encoded into @p tagged_ptr
  */
-static inline __attribute__((always_inline)) uint8_t ptrtag_tag(void *tagged_ptr)
+static inline uint8_t ptrtag_tag(void *tagged_ptr)
 {
     uintptr_t tagged = (uintptr_t)tagged_ptr;
     return tagged & 0x3;
