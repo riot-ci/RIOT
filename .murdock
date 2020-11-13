@@ -2,7 +2,8 @@
 
 : ${TEST_BOARDS_AVAILABLE:="esp32-wroom-32 samr21-xpro"}
 : ${TEST_BOARDS_LLVM_COMPILE:="iotlab-m3 native nrf52dk mulle nucleo-f401re samr21-xpro slstk3402a"}
-: ${TEST_KCONFIG_samr21_xpro:="examples/hello-world tests/periph_*"}
+: ${TEST_KCONFIG_samr21_xpro:="examples/hello-world tests/periph_*
+tests/driver_b* tests/driver_ccs811 tests/driver_ccs811_full"}
 
 export RIOT_CI_BUILD=1
 export CC_NOCOLOR=1
