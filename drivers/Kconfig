@@ -6,6 +6,8 @@
 
 menu "Drivers"
 
+rsource "saul/Kconfig"
+
 menu "Actuator Device Drivers"
 rsource "motor_driver/Kconfig"
 endmenu # Actuator Device Drivers
