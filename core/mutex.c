@@ -158,9 +158,9 @@ void mutex_cancel(mutex_t *mutex, thread_t *thread)
         return;
     }
 
-    if ((mutex->queue.next != MUTEX_LOCKED) &&
-            (mutex->queue.next != NULL) &&
-            list_remove(&mutex->queue, (list_node_t *)&thread->rq_entry)) {
+    if ((mutex->queue.next != MUTEX_LOCKED)
+        && (mutex->queue.next != NULL)
+        && list_remove(&mutex->queue, (list_node_t *)&thread->rq_entry)) {
         /* Thread was queued and removed from list, wake it up */
         if (mutex->queue.next == NULL) {
             mutex->queue.next = MUTEX_LOCKED;
