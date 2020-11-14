@@ -49,6 +49,13 @@ int mutex_lock(mutex_t *mutex)
     }
 
     thread_t *me = thread_get_active();
+#if IS_USED(MODULE_CORE_MUTEX_CANCEL)
+    if (me->wait_data == mutex) {
+        me->wait_data = NULL;
+        irq_restore(irq_state);
+        return -ECANCELED;
+    }
+#endif
     DEBUG("PID[%" PRIkernel_pid "]: Adding node to mutex queue: prio: %"
           PRIu32 "\n", thread_getpid(), (uint32_t)me->priority);
     sched_set_status(me, STATUS_MUTEX_BLOCKED);
@@ -60,10 +67,19 @@ int mutex_lock(mutex_t *mutex)
         thread_add_to_list(&mutex->queue, me);
     }
 
+#if IS_USED(MODULE_CORE_MUTEX_CANCEL)
+    me->wait_data = NULL;
+#endif
 
     irq_restore(irq_state);
     thread_yield_higher();
     /* We were woken up by scheduler. Waker removed us from queue. */
+#if IS_USED(MODULE_CORE_MUTEX_CANCEL)
+    if (me->wait_data) {
+        me->wait_data = NULL;
+        return -ECANCELED;
+    }
+#endif
     return 0;
 }
 
@@ -131,3 +147,31 @@ void mutex_unlock_and_sleep(mutex_t *mutex)
     irq_restore(irqstate);
     thread_yield_higher();
 }
+
+#if IS_USED(MODULE_CORE_MUTEX_CANCEL)
+void mutex_cancel(mutex_t *mutex, thread_t *thread)
+{
+    unsigned irq_state = irq_disable();
+    if (thread->status >= STATUS_ON_RUNQUEUE) {
+        thread->wait_data = mutex;
+        irq_restore(irq_state);
+        return;
+    }
+
+    if ((mutex->queue.next != MUTEX_LOCKED)
+        && (mutex->queue.next != NULL)
+        && list_remove(&mutex->queue, (list_node_t *)&thread->rq_entry)) {
+        /* Thread was queued and removed from list, wake it up */
+        if (mutex->queue.next == NULL) {
+            mutex->queue.next = MUTEX_LOCKED;
+        }
+        sched_set_status(thread, STATUS_PENDING);
+        thread->wait_data = mutex;
+        irq_restore(irq_state);
+        sched_switch(thread->priority);
+        return;
+    }
+
+    irq_restore(irq_state);
+}
+#endif /* IS_USED(MODULE_CORE_MUTEX_CANCEL) */
