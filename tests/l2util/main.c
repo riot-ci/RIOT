@@ -32,6 +32,10 @@
 #define TEST_EUI48_EUI64    { 0x21, 0x55, 0x31, 0xff, 0xfe, 0x02, 0x41, 0xfd }
 #define TEST_EUI48_IID      { 0x23, 0x55, 0x31, 0xff, 0xfe, 0x02, 0x41, 0xfd }
 #define TEST_EUI64_IID      { 0x23, 0x55, 0x31, 0x02, 0x41, 0xfd, 0xfb, 0xfd }
+#define TEST_IPV6_GROUP     { 0xff, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
+                              0x3f, 0x6c, 0xa1, 0xbb, 0xe5, 0x03, 0x6b, 0xe2 }
+/* see https://tools.ietf.org/html/rfc2464#section-7 */
+#define TEST_ETHERNET_GROUP { 0x33, 0x33, 0xe5, 0x03, 0x6b, 0xe2 }
 
 static void test_eui64_from_addr__success(void)
 {
@@ -56,7 +60,7 @@ static void test_eui64_from_addr__success(void)
                                                  test_addr, sizeof(eui64_t),
                                                  &res));
     TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui64, &res, sizeof(eui64_t)));
-    /* test (nordic softdevice) BLE */
+    /* test BLE */
     res.uint64.u64 = 0;
     TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
                           l2util_eui64_from_addr(NETDEV_TYPE_BLE,
@@ -105,7 +109,7 @@ static void test_eui64_from_addr__EINVAL(void)
                           l2util_eui64_from_addr(NETDEV_TYPE_IEEE802154,
                                                  test_addr, sizeof(eui48_t),
                                                  &res));
-    /* test (nordic softdevice) BLE */
+    /* test BLE */
     TEST_ASSERT_EQUAL_INT(-EINVAL,
                           l2util_eui64_from_addr(NETDEV_TYPE_BLE,
                                                  test_addr, sizeof(uint16_t),
@@ -145,6 +149,7 @@ static void test_iid_from_addr__success(void)
     static const eui64_t test_cc110x = { .uint8 = TEST_CC110X_IID };
     static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_IID };
     static const eui64_t test_eui64 = { .uint8 = TEST_EUI64_IID };
+    static const eui64_t test_ble = { .uint8 = TEST_EUI48_EUI64 };
     eui64_t res;
 
     /* test Ethernet */
@@ -168,13 +173,13 @@ static void test_iid_from_addr__success(void)
                                                     IEEE802154_SHORT_ADDRESS_LEN,
                                                     &res));
     TEST_ASSERT_EQUAL_INT(0, memcmp(&test_802154_s, &res, sizeof(eui64_t)));
-    /* test (nordic softdevice) BLE */
+    /* test BLE */
     res.uint64.u64 = 0;
     TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
                           l2util_ipv6_iid_from_addr(NETDEV_TYPE_BLE,
                                                     test_addr, sizeof(eui48_t),
                                                     &res));
-    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_eui48, &res, sizeof(eui64_t)));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_ble, &res, sizeof(eui64_t)));
     /* test cc110x */
     res.uint64.u64 = 0;
     TEST_ASSERT_EQUAL_INT(sizeof(eui64_t),
@@ -213,7 +218,7 @@ static void test_iid_from_addr__EINVAL(void)
                           l2util_ipv6_iid_from_addr(NETDEV_TYPE_IEEE802154,
                                                     test_addr, sizeof(eui48_t),
                                                     &res));
-    /* test (nordic softdevice) BLE */
+    /* test BLE */
     TEST_ASSERT_EQUAL_INT(-EINVAL,
                           l2util_ipv6_iid_from_addr(NETDEV_TYPE_BLE,
                                                     test_addr, sizeof(uint16_t),
@@ -253,6 +258,7 @@ static void test_iid_to_addr__success(void)
     static const eui64_t test_cc110x = { .uint8 = TEST_CC110X_IID };
     static const eui64_t test_eui48 = { .uint8 = TEST_EUI48_IID };
     static const eui64_t test_eui64 = { .uint8 = TEST_EUI64_IID };
+    static const eui64_t test_ble = { .uint8 = TEST_EUI48_EUI64 };
     uint8_t res[L2UTIL_ADDR_MAX_LEN];
 
     /* test Ethernet */
@@ -267,11 +273,11 @@ static void test_iid_to_addr__success(void)
                           l2util_ipv6_iid_to_addr(NETDEV_TYPE_IEEE802154,
                                                   &test_eui64, res));
     TEST_ASSERT_EQUAL_INT(0, memcmp(test_addr, res, sizeof(eui64_t)));
-    /* test (nordic softdevice) BLE */
+    /* test BLE */
     memset(res, 0, sizeof(res));
     TEST_ASSERT_EQUAL_INT(sizeof(eui48_t),
                           l2util_ipv6_iid_to_addr(NETDEV_TYPE_BLE,
-                                                  &test_eui48, res));
+                                                  &test_ble, res));
     TEST_ASSERT_EQUAL_INT(0, memcmp(test_addr, res, sizeof(eui48_t)));
     /* test cc110x */
     memset(res, 0, sizeof(res));
@@ -379,6 +385,37 @@ static void test_addr_len_from_l2ao__ENOTSUP(void)
                                                         &opt));
 }
 
+static void test_ipv6_group_to_l2group__success(void)
+{
+    static const ipv6_addr_t test_group = {
+        .u8 = TEST_IPV6_GROUP,
+    };
+    static const eui48_t test_ethernet = {
+        .uint8 = TEST_ETHERNET_GROUP,
+    };
+    uint8_t res[L2UTIL_ADDR_MAX_LEN];
+
+    /* test Ethernet */
+    memset(res, 0, sizeof(res));
+    TEST_ASSERT_EQUAL_INT(sizeof(test_ethernet),
+                          l2util_ipv6_group_to_l2_group(NETDEV_TYPE_ETHERNET,
+                                                        &test_group, res));
+    TEST_ASSERT_EQUAL_INT(0, memcmp(&test_ethernet, res,
+                                    sizeof(test_ethernet)));
+}
+
+static void test_ipv6_group_to_l2group__ENOTSUP(void)
+{
+    static const ipv6_addr_t test_group = {
+        .u8 = TEST_IPV6_GROUP,
+    };
+    uint8_t res[L2UTIL_ADDR_MAX_LEN];
+
+    TEST_ASSERT_EQUAL_INT(-ENOTSUP,
+                          l2util_ipv6_group_to_l2_group(NETDEV_TYPE_UNKNOWN,
+                                                        &test_group, res));
+}
+
 TestRef test_l2util(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
@@ -393,6 +430,8 @@ TestRef test_l2util(void)
         new_TestFixture(test_addr_len_from_l2ao__success),
         new_TestFixture(test_addr_len_from_l2ao__EINVAL),
         new_TestFixture(test_addr_len_from_l2ao__ENOTSUP),
+        new_TestFixture(test_ipv6_group_to_l2group__success),
+        new_TestFixture(test_ipv6_group_to_l2group__ENOTSUP),
     };
 
     EMB_UNIT_TESTCALLER(tests_l2util, NULL, NULL, fixtures);

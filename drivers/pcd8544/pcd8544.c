@@ -25,7 +25,7 @@
 #include "pcd8544.h"
 #include "pcd8544_internal.h"
 
-#define ENABLE_DEBUG        (0)
+#define ENABLE_DEBUG        0
 #include "debug.h"
 
 #define ASCII_MIN           0x20    /**< start of ASCII table */
@@ -238,7 +238,7 @@ int pcd8544_init(pcd8544_t *dev, spi_t spi, gpio_t cs, gpio_t reset, gpio_t mode
 
     DEBUG("done setting dev members\n");
 
-    /* initialze pins */
+    /* initialize pins */
     gpio_init(reset, GPIO_OUT);
     gpio_init(mode, GPIO_OUT);
     DEBUG("done with gpios\n");

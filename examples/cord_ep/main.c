@@ -83,7 +83,7 @@ static const coap_resource_t _resources[] = {
 
 static gcoap_listener_t _listener = {
     .resources     = (coap_resource_t *)&_resources[0],
-    .resources_len = sizeof(_resources) / sizeof(_resources[0]),
+    .resources_len = ARRAY_SIZE(_resources),
     .next          = NULL
 };
 
@@ -103,7 +103,7 @@ int main(void)
 
     puts("Client information:");
     printf("  ep: %s\n", cord_common_get_ep());
-    printf("  lt: %is\n", (int)CORD_LT);
+    printf("  lt: %is\n", (int)CONFIG_CORD_LT);
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);

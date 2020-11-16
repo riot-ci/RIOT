@@ -28,7 +28,7 @@
 #include "rn2xx3.h"
 #include "rn2xx3_internal.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    0
 /* Warning: to correctly display the debug message from sleep timer callback,,
    add CFLAGS+=-DTHREAD_STACKSIZE_IDLE=THREAD_STACKSIZE_DEFAULT to the build
    command.
@@ -38,7 +38,7 @@
 /**
  * @brief   Delay when resetting the device, 10ms
  */
-#define RESET_DELAY                 (10UL * US_PER_MS)
+#define RESET_DELAY     (10UL * US_PER_MS)
 
 /*
  * Interrupt callbacks
@@ -62,15 +62,11 @@ static void _rx_cb(void *arg, uint8_t c)
         if (dev->int_state == RN2XX3_INT_STATE_MAC_RX_MESSAGE) {
             /* RX state: closing RX buffer */
             dev->rx_buf[(dev->rx_size + 1) / 2] = 0;
-            if (netdev->event_callback) {
-                netdev->event_callback(netdev, NETDEV_EVENT_ISR);
-            }
+            netdev_trigger_event_isr(netdev);
         }
         else if (dev->int_state == RN2XX3_INT_STATE_MAC_TX) {
             /* still in TX state: transmission complete but no data received */
-            if (netdev->event_callback) {
-                netdev->event_callback(netdev, NETDEV_EVENT_ISR);
-            }
+            netdev_trigger_event_isr(netdev);
         }
         dev->resp_size = 0;
         dev->rx_size = 0;
@@ -144,7 +140,7 @@ void rn2xx3_setup(rn2xx3_t *dev, const rn2xx3_params_t *params)
     dev->p = *params;
 
     /* initialize pins and perform hardware reset */
-    if (dev->p.pin_reset != GPIO_UNDEF) {
+    if (gpio_is_valid(dev->p.pin_reset)) {
         gpio_init(dev->p.pin_reset, GPIO_OUT);
         gpio_set(dev->p.pin_reset);
     }
@@ -166,7 +162,7 @@ int rn2xx3_init(rn2xx3_t *dev)
     }
 
     /* if reset pin is connected, do a hardware reset */
-    if (dev->p.pin_reset != GPIO_UNDEF) {
+    if (gpio_is_valid(dev->p.pin_reset)) {
         gpio_clear(dev->p.pin_reset);
         xtimer_usleep(RESET_DELAY);
         gpio_set(dev->p.pin_reset);
@@ -175,7 +171,7 @@ int rn2xx3_init(rn2xx3_t *dev)
     dev->sleep_timer.callback = _sleep_timer_cb;
     dev->sleep_timer.arg = dev;
 
-    rn2xx3_sys_set_sleep_duration(dev, RN2XX3_DEFAULT_SLEEP);
+    rn2xx3_sys_set_sleep_duration(dev, CONFIG_RN2XX3_DEFAULT_SLEEP);
 
     /* sending empty command to clear uart buffer */
     if (rn2xx3_write_cmd(dev) == RN2XX3_TIMEOUT) {
@@ -222,9 +218,23 @@ int rn2xx3_sys_factory_reset(rn2xx3_t *dev)
 int rn2xx3_sys_sleep(rn2xx3_t *dev)
 {
     size_t p = snprintf(dev->cmd_buf, sizeof(dev->cmd_buf) - 1,
-                        "sys sleep %lu", (unsigned long)dev->sleep);
+                        "sys sleep %" PRIu32 "", dev->sleep);
     dev->cmd_buf[p] = 0;
-    if (rn2xx3_write_cmd_no_wait(dev) == RN2XX3_ERR_INVALID_PARAM) {
+
+    if (dev->int_state == RN2XX3_INT_STATE_SLEEP) {
+        DEBUG("[rn2xx3] sleep: device already in sleep mode\n");
+        return RN2XX3_ERR_SLEEP_MODE;
+    }
+
+    /* always succeeds */
+    rn2xx3_write_cmd_no_wait(dev);
+
+    /* Wait a little to check if the device could go to sleep. No answer means
+       it worked. */
+    xtimer_msleep(1);
+
+    DEBUG("[rn2xx3] RESP: %s\n", dev->resp_buf);
+    if (rn2xx3_process_response(dev) == RN2XX3_ERR_INVALID_PARAM) {
         DEBUG("[rn2xx3] sleep: cannot put module in sleep mode\n");
         return RN2XX3_ERR_INVALID_PARAM;
     }

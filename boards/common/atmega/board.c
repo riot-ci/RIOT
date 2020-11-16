@@ -29,7 +29,7 @@
 
 void led_init(void);
 
-void board_init(void)
+void __attribute__((weak)) board_init(void)
 {
 #ifdef CPU_ATMEGA32U4
     /* disable usb interrupt on Atmega32U4 */
@@ -38,11 +38,9 @@ void board_init(void)
 
     atmega_set_prescaler(CPU_ATMEGA_CLK_SCALE_INIT);
 
-#ifdef MODULE_AVR_LIBC_EXTRA
-    atmega_stdio_init();
-#endif
-
     cpu_init();
+#ifdef LED0_ON
     led_init();
+#endif
     irq_enable();
 }

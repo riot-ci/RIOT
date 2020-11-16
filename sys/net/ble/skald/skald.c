@@ -36,7 +36,7 @@
 #error "[skald] error: unable to find any netdev-ble capable radio"
 #endif
 
-#define ENABLE_DEBUG            (0)
+#define ENABLE_DEBUG            0
 #include "debug.h"
 
 #define JITTER_MIN              (0U)            /* 0ms */
@@ -63,7 +63,7 @@ static void _stop_radio(void)
 
 static void _sched_next(skald_ctx_t *ctx)
 {
-    ctx->last += SKALD_INTERVAL;
+    ctx->last += CONFIG_SKALD_INTERVAL;
     /* schedule next advertising event, adding a random jitter between
      * 0ms and 10ms (see spec v5.0-vol6-b-4.4.2.2.1) */
     ctx->last += random_uint32_range(JITTER_MIN, JITTER_MAX);
@@ -104,8 +104,6 @@ static void _on_radio_evt(netdev_t *netdev, netdev_event_t event)
 
 void skald_init(void)
 {
-    assert(dev);
-
     /* setup and a fitting radio driver - potentially move to auto-init at some
      * point */
 #if defined(MODULE_NRFBLE)

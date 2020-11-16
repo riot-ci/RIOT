@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    net_credman (D)TLS Credential Manager
- * @ingroup     net
+ * @ingroup     net net_dtls
  * @brief       Credentials management module for (D)TLS
  *
  * @{
@@ -35,17 +35,23 @@ extern "C" {
 #endif
 
 /**
+ * @defgroup net_credman_conf (D)TLS Credential Manager compile configurations
+ * @ingroup config
+ * @{
+ */
+/**
  * @brief Maximum number of credentials in credential pool
  */
-#ifndef CREDMAN_MAX_CREDENTIALS
-#define CREDMAN_MAX_CREDENTIALS  (2)
+#ifndef CONFIG_CREDMAN_MAX_CREDENTIALS
+#define CONFIG_CREDMAN_MAX_CREDENTIALS  (2)
 #endif
+/** @} */
 
 /**
  * @brief Buffer of the credential
  */
 typedef struct {
-    void *s;                /**< Pointer to the buffer */
+    const void *s;          /**< Pointer to the buffer */
     size_t len;             /**< Length of credman_buffer_t::s */
 } credman_buffer_t;
 
@@ -90,9 +96,14 @@ typedef uint16_t credman_tag_t;
  * @brief Credential types
  */
 typedef enum {
+    /**
+     * @brief Empty type
+     *
+     * Used to detect uninitialized @ref credman_credential_t internally.
+     */
     CREDMAN_TYPE_EMPTY  = 0,
-    CREDMAN_TYPE_PSK    = 1,
-    CREDMAN_TYPE_ECDSA  = 2,
+    CREDMAN_TYPE_PSK    = 1,    /**< PSK credential type */
+    CREDMAN_TYPE_ECDSA  = 2,    /**< ECDSA credential type */
 } credman_type_t;
 
 /**
@@ -168,7 +179,7 @@ void credman_delete(credman_tag_t tag, credman_type_t type);
 /**
  * @brief Gets the number of credentials currently in the credential pool
  *
- * Maximum number of allowed credentials is defined by CREDMAN_MAX_CREDENTIALS
+ * Maximum number of allowed credentials is defined by CONFIG_CREDMAN_MAX_CREDENTIALS
  *
  * @return number of credentials currently in the credential pool
  */

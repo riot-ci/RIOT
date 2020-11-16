@@ -1,6 +1,5 @@
-## the cpu to build for
-export CPU = stm32f1
-export CPU_MODEL = stm32f103re
+# Include shared STM32 headers
+INCLUDES += -I$(RIOTBOARD)/common/stm32/include
 
 # set default port depending on operating system
 PORT_LINUX ?= /dev/ttyUSB1

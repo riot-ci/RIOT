@@ -94,10 +94,79 @@ extern "C" {
 #define IEEE802154_CHANNEL_MAX          (26U)   /**< Maximum channel for 2.4 GHz band */
 /** @} */
 
-#define IEEE802154_FRAME_LEN_MAX        (127U)  /**< maximum frame length */
+#define IEEE802154_FRAME_LEN_MAX        (127U)  /**< maximum 802.15.4 frame length */
+#define IEEE802154G_FRAME_LEN_MAX      (2047U)  /**< maximum 802.15.4g-2012 frame length */
+#define IEEE802154_ACK_FRAME_LEN          (5U)  /**< ACK frame length */
 
 /**
- * @brief   Special address defintions
+ * @brief Number of symbols to wait during Long Inter Frame Spacing
+ */
+#define IEEE802154_LIFS_SYMS            (40U)
+
+/**
+ * @brief Number of symbols to wait during Short Inter Frame Spacing
+ */
+#define IEEE802154_SIFS_SYMS            (12U)
+
+/**
+ * @brief Maximum frame size to consider a frame as short.
+ */
+#define IEEE802154_SIFS_MAX_FRAME_SIZE  (18U)
+
+/**
+ * @brief value of measured power when RSSI is zero.
+ *
+ * This value is defined in the IEEE 802.15.4 standard
+ */
+#define IEEE802154_RADIO_RSSI_OFFSET        (-174)
+
+/**
+ * For the SUN PHYs, the value is 1 ms expressed in symbol periods, rounded
+ * up to the next integer number of symbol periods using the ceiling() function.
+ *
+ * 802.15.4g, Table 70 (p. 43)
+ */
+#define IEEE802154G_ATURNAROUNDTIME_US          (1 * US_PER_MS)
+
+/**
+ * IEEE Std 802.15.4-2020
+ * Table 11-1—PHY constants: The value is 12 for all other PHYs.
+ */
+#define IEEE802154_ATURNAROUNDTIME_IN_SYMBOLS   (12)
+
+/**
+ * IEEE Std 802.15.4-2020
+ * Table 11-1—PHY constants: For all other PHYs¹, the duration of
+ * 8 symbol periods.
+ *
+ * [1] all but MR-O-QPSK
+ */
+#define IEEE802154_CCA_DURATION_IN_SYMBOLS      (8)
+
+/**
+ * @brief   802.15.4 PHY modes
+ */
+enum {
+    IEEE802154_PHY_DISABLED,        /**< PHY disabled, no mode selected */
+    IEEE802154_PHY_BPSK,            /**< Binary Phase Shift Keying */
+    IEEE802154_PHY_ASK,             /**< Amplitude-Shift Keying */
+    IEEE802154_PHY_OQPSK,           /**< Offset Quadrature Phase-Shift Keying */
+    IEEE802154_PHY_MR_OQPSK,        /**< Multi-Rate Offset Quadrature Phase-Shift Keying */
+    IEEE802154_PHY_MR_OFDM,         /**< Multi-Rate Orthogonal Frequency-Division Multiplexing */
+    IEEE802154_PHY_MR_FSK           /**< Multi-Rate Frequency Shift Keying */
+};
+
+/**
+ * @brief   802.15.4 forward error correction schemes
+ */
+enum {
+    IEEE802154_FEC_NONE,            /**< no forward error correction */
+    IEEE802154_FEC_NRNSC,           /**< non-recursive and non-systematic code */
+    IEEE802154_FEC_RSC              /**< recursive and systematic code */
+};
+
+/**
+ * @brief   Special address definitions
  * @{
  */
 /**
@@ -124,29 +193,29 @@ extern const uint8_t ieee802154_addr_bcast[IEEE802154_ADDR_BCAST_LEN];
 /**
  * @brief IEEE802.15.4 default sub-GHZ channel
  */
-#ifndef IEEE802154_DEFAULT_SUBGHZ_CHANNEL
-#define IEEE802154_DEFAULT_SUBGHZ_CHANNEL   (5U)
+#ifndef CONFIG_IEEE802154_DEFAULT_SUBGHZ_CHANNEL
+#define CONFIG_IEEE802154_DEFAULT_SUBGHZ_CHANNEL   (5U)
 #endif
 
 /**
  * @brief IEEE802.15.4 default channel
  */
-#ifndef IEEE802154_DEFAULT_CHANNEL
-#define IEEE802154_DEFAULT_CHANNEL          (26U)
+#ifndef CONFIG_IEEE802154_DEFAULT_CHANNEL
+#define CONFIG_IEEE802154_DEFAULT_CHANNEL          (26U)
 #endif
 
 /**
  * @brief IEEE802.15.4 default sub-GHZ page
  */
-#ifndef IEEE802154_DEFAULT_SUBGHZ_PAGE
-#define IEEE802154_DEFAULT_SUBGHZ_PAGE      (2U)
+#ifndef CONFIG_IEEE802154_DEFAULT_SUBGHZ_PAGE
+#define CONFIG_IEEE802154_DEFAULT_SUBGHZ_PAGE      (2U)
 #endif
 
 /**
  * @brief IEEE802.15.4 default PANID
  */
-#ifndef IEEE802154_DEFAULT_PANID
-#define IEEE802154_DEFAULT_PANID            (0x0023U)
+#ifndef CONFIG_IEEE802154_DEFAULT_PANID
+#define CONFIG_IEEE802154_DEFAULT_PANID            (0x0023U)
 #endif
 
 /**
@@ -159,10 +228,38 @@ extern const uint8_t ieee802154_addr_bcast[IEEE802154_ADDR_BCAST_LEN];
 /**
  * @brief IEEE802.15.4 default TX power (in dBm)
  */
-#ifndef IEEE802154_DEFAULT_TXPOWER
-#define IEEE802154_DEFAULT_TXPOWER          (0)
+#ifndef CONFIG_IEEE802154_DEFAULT_TXPOWER
+#define CONFIG_IEEE802154_DEFAULT_TXPOWER          (0)
 #endif
 /** @} */
+
+/**
+ * @brief IEEE802.15.4 default value for minimum backoff exponent
+ */
+#ifndef CONFIG_IEEE802154_DEFAULT_CSMA_CA_MIN_BE
+#define CONFIG_IEEE802154_DEFAULT_CSMA_CA_MIN_BE   (3U)
+#endif
+
+/**
+ * @brief IEEE802.15.4 default value for maximum number of CSMA-CA retries.
+ */
+#ifndef CONFIG_IEEE802154_DEFAULT_CSMA_CA_RETRIES
+#define CONFIG_IEEE802154_DEFAULT_CSMA_CA_RETRIES  (4U)
+#endif
+
+/**
+ * @brief IEEE802.15.4 default value for maximum backoff exponent
+ */
+#ifndef CONFIG_IEEE802154_DEFAULT_CSMA_CA_MAX_BE
+#define CONFIG_IEEE802154_DEFAULT_CSMA_CA_MAX_BE   (5U)
+#endif
+
+/**
+ * @brief IEEE802.15.4 default value for CCA threshold (in dBm)
+ */
+#ifndef CONFIG_IEEE802154_CCA_THRESH_DEFAULT
+#define CONFIG_IEEE802154_CCA_THRESH_DEFAULT       (-70)
+#endif
 
 /**
  * @brief   Initializes an IEEE 802.15.4 MAC frame header in @p buf.
@@ -194,7 +291,7 @@ extern const uint8_t ieee802154_addr_bcast[IEEE802154_ADDR_BCAST_LEN];
  *                      Otherwise, it will be ignored, when
  *                      @ref IEEE802154_FCF_PAN_COMP is set.
  * @param[in] dst_pan   Destination PAN ID in little-endian.
- * @param[in] flags     Flags for the frame. These are interchangable with the
+ * @param[in] flags     Flags for the frame. These are interchangeable with the
  *                      first byte of the IEEE 802.15.4 FCF. This means that
  *                      it encompasses the type values,
  *                      @ref IEEE802154_FCF_SECURITY_EN,

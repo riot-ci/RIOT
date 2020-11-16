@@ -57,7 +57,7 @@ static const spi_conf_t spi_config[] = {
     }
 };
 
-#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+#define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
 /**
@@ -74,7 +74,7 @@ static const i2c_conf_t i2c_config[] = {
     }
 };
 
-#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
+#define I2C_NUMOF           ARRAY_SIZE(i2c_config)
 /** @} */
 
 /**
@@ -83,8 +83,9 @@ static const i2c_conf_t i2c_config[] = {
  * The configuration consists simply of a list of channels that should be used
  * @{
  */
-#define ADC_CONFIG          {4, 5, 6, 7}
-#define ADC_NUMOF           (4)
+static const adc_conf_t adc_config[] = {4, 5, 6, 7};
+
+#define ADC_NUMOF           ARRAY_SIZE(adc_config)
 /** @} */
 
 #ifdef __cplusplus

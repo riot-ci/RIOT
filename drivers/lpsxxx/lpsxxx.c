@@ -31,7 +31,7 @@
 #include "lpsxxx.h"
 #include "lpsxxx_internal.h"
 
-#define ENABLE_DEBUG        (0)
+#define ENABLE_DEBUG        0
 #include "debug.h"
 
 /**
@@ -84,7 +84,7 @@ int lpsxxx_init(lpsxxx_t *dev, const lpsxxx_params_t * params)
     }
 
     /* Disable automatic increment of register address during byte access
-       (recommanded in datasheet (section 9.6 CTRL_REG2) */
+       (recommended in datasheet (section 9.6 CTRL_REG2) */
     tmp &= ~LPSXXX_CTRL_REG2_ID_ADD_INC;
 
     DEBUG("[lpsxxx] init: update reg2, %02X\n", tmp);

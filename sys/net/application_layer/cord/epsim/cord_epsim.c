@@ -37,12 +37,12 @@ static uint8_t buf[BUFSIZE];
 /* keep state of the latest registration attempt */
 static int _state = CORD_EPSIM_ERROR;
 
-static void _req_handler(unsigned req_state, coap_pkt_t* pdu,
-                         sock_udp_ep_t *remote)
+static void _req_handler(const gcoap_request_memo_t *memo, coap_pkt_t* pdu,
+                         const sock_udp_ep_t *remote)
 {
     (void)remote;
     (void)pdu;
-    _state = (req_state == GCOAP_MEMO_RESP) ? CORD_EPSIM_OK : CORD_EPSIM_ERROR;
+    _state = (memo->state == GCOAP_MEMO_RESP) ? CORD_EPSIM_OK : CORD_EPSIM_ERROR;
 }
 
 int cord_epsim_register(const sock_udp_ep_t *rd_ep)
@@ -65,9 +65,9 @@ int cord_epsim_register(const sock_udp_ep_t *rd_ep)
         return CORD_EPSIM_ERROR;
     }
     /* finish, we don't have any payload */
-    ssize_t len = gcoap_finish(&pkt, 0, COAP_FORMAT_NONE);
+    ssize_t len = coap_opt_finish(&pkt, COAP_OPT_FINISH_NONE);
     _state = CORD_EPSIM_BUSY;
-    if (gcoap_req_send(buf, len, rd_ep, _req_handler) == 0) {
+    if (gcoap_req_send(buf, len, rd_ep, _req_handler, NULL) == 0) {
         return CORD_EPSIM_ERROR;
     }
 

@@ -25,6 +25,12 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "thread.h"
+#include "macros/units.h"
+
+#include "vendor/platform.h"
+#include "vendor/plic_driver.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,6 +39,23 @@ extern "C" {
  * @brief   Initialization of the CPU
  */
 void cpu_init(void);
+
+/**
+ * @brief   Initialization of the clock
+ */
+void clock_init(void);
+
+/**
+ * @brief   Get and eventually compute the current CPU core clock frequency
+ *
+ * @return  the cpu core clock frequency in Hz
+ */
+uint32_t cpu_freq(void);
+
+/**
+ * @brief   Initialization of interrupts
+ */
+void irq_init(void);
 
 /**
  * @brief   Print the last instruction's address

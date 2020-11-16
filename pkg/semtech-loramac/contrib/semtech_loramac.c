@@ -47,7 +47,7 @@
 #include "periph/eeprom.h"
 #endif
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 #define SEMTECH_LORAMAC_MSG_QUEUE                   (4U)
@@ -203,17 +203,7 @@ static size_t _write_uint32(size_t pos, uint32_t value)
     return eeprom_write(pos, array, sizeof(uint32_t));
 }
 
-static inline void _set_uplink_counter(semtech_loramac_t *mac, uint32_t counter)
-{
-    DEBUG("[semtech-loramac] reading uplink counter: %" PRIu32 " \n", counter);
 
-    mutex_lock(&mac->lock);
-    MibRequestConfirm_t mibReq;
-    mibReq.Type = MIB_UPLINK_COUNTER;
-    mibReq.Param.UpLinkCounter = counter;
-    LoRaMacMibSetRequestConfirm(&mibReq);
-    mutex_unlock(&mac->lock);
-}
 
 static inline void _set_join_state(semtech_loramac_t *mac, bool joined)
 {
@@ -260,7 +250,7 @@ static inline void _read_loramac_config(semtech_loramac_t *mac)
     /* Read uplink counter */
     uint32_t ul_counter;
     pos += _read_uint32(pos, &ul_counter);
-    _set_uplink_counter(mac, ul_counter);
+    semtech_loramac_set_uplink_counter(mac, ul_counter);
 
     /* Read RX2 freq */
     uint32_t rx2_freq;
@@ -549,13 +539,15 @@ static void _semtech_loramac_event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_RX_COMPLETE:
         {
-            size_t len;
-            uint8_t radio_payload[SX127X_RX_BUFFER_SIZE];
+            int len;
             len = dev->driver->recv(dev, NULL, 0, 0);
-            dev->driver->recv(dev, radio_payload, len, &packet_info);
-            semtech_loramac_radio_events.RxDone(radio_payload,
-                                                len, packet_info.rssi,
-                                                packet_info.snr);
+            if (len > 0) {
+                uint8_t radio_payload[SX127X_RX_BUFFER_SIZE];
+                dev->driver->recv(dev, radio_payload, len, &packet_info);
+                semtech_loramac_radio_events.RxDone(radio_payload,
+                                                    len, packet_info.rssi,
+                                                    packet_info.snr);
+            } /* len could be -EBADMSG, in which case a CRC error message will be received shortly */
             break;
         }
         case NETDEV_EVENT_RX_TIMEOUT:
@@ -619,7 +611,7 @@ void *_semtech_loramac_event_loop(void *arg)
                 case MSG_TYPE_MAC_TIMEOUT:
                 {
                     DEBUG("[semtech-loramac] MAC timer timeout\n");
-                    void (*callback)(void) = msg.content.ptr;
+                    void (*callback)(void) = (void (*)(void))(uintptr_t)msg.content.value;
                     callback();
                     break;
                 }
@@ -678,7 +670,7 @@ void *_semtech_loramac_event_loop(void *arg)
                                 mac->link_chk.demod_margin = confirm->DemodMargin;
                                 mac->link_chk.nb_gateways = confirm->NbGateways;
                                 DEBUG("[semtech-loramac] link check info received:\n"
-                                      "  - Demodulation marging: %d\n"
+                                      "  - Demodulation margin: %d\n"
                                       "  - Number of gateways: %d\n",
                                       mac->link_chk.demod_margin,
                                       mac->link_chk.nb_gateways);
@@ -720,7 +712,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         /* save the uplink counter */
                         _save_uplink_counter(mac);
 #endif
-                        if (ENABLE_DEBUG) {
+                        if (IS_ACTIVE(ENABLE_DEBUG)) {
                             switch (confirm->McpsRequest) {
                                 case MCPS_UNCONFIRMED:
                                 {
@@ -763,7 +755,7 @@ void *_semtech_loramac_event_loop(void *arg)
                         break;
                     }
 
-                    if (ENABLE_DEBUG) {
+                    if (IS_ACTIVE(ENABLE_DEBUG)) {
                         switch (indication->McpsIndication) {
                             case MCPS_UNCONFIRMED:
                                 DEBUG("[semtech-loramac] MCPS indication Unconfirmed\n");

@@ -22,8 +22,11 @@
 
 #include "periph_cpu.h"
 #include "cfg_clock_32_1.h"
+#include "cfg_i2c_default.h"
 #include "cfg_rtt_default.h"
 #include "cfg_timer_default.h"
+
+#include "board.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,29 +38,30 @@ extern "C" {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev  = NRF_SPI0,
-        .sclk = 15,
-        .mosi = 13,
-        .miso = 14
+        .dev  = NRF_SPIM0,
+        .sclk = GPIO_PIN(1,15),
+        .mosi = GPIO_PIN(1,13),
+        .miso = GPIO_PIN(1,14),
     }
 };
 
-#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+#define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
 /**
- * @name    I2C configuration
+ * @name    PWM configuration
+ *
+ * A single PWM device is used to map the three channels of the on-board RGB
+ * LED
+ *
  * @{
  */
-static const i2c_conf_t i2c_config[] = {
-    {
-        .dev = NRF_TWIM1,
-        .scl = 27,
-        .sda = 26,
-        .speed = I2C_SPEED_NORMAL
-    }
+
+static const pwm_conf_t pwm_config[] = {
+    { NRF_PWM0, { LED0_PIN, LED1_PIN, LED2_PIN, GPIO_UNDEF } }
 };
-#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
+#define PWM_NUMOF           ARRAY_SIZE(pwm_config)
+
 /** @} */
 
 #ifdef __cplusplus

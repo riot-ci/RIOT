@@ -23,27 +23,32 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "od.h"
 #include "shell.h"
 #include "periph/flashpage.h"
 
 #define LINE_LEN            (16)
 
+/* For MSP430 cpu's the last page holds the interrupt vector, although the api
+   should not limit erasing that page, we don't want to break when testing */
+#if defined(CPU_CC430) || defined(CPU_MSP430FXYZ)
+#define TEST_LAST_AVAILABLE_PAGE    (FLASHPAGE_NUMOF - 2)
+#else
+#define TEST_LAST_AVAILABLE_PAGE    (FLASHPAGE_NUMOF - 1)
+#endif
+
 /* When writing raw bytes on flash, data must be correctly aligned. */
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
-#define ALIGNMENT_ATTR __attribute__ ((aligned (FLASHPAGE_RAW_ALIGNMENT)))
+#define ALIGNMENT_ATTR __attribute__((aligned(FLASHPAGE_WRITE_BLOCK_ALIGNMENT)))
 /*
  * @brief   Allocate an aligned buffer for raw writings
  */
 static char raw_buf[64] ALIGNMENT_ATTR;
-#else
-#define ALIGNMENT_ATTR
-#endif
 
 /**
  * @brief   Allocate space for 1 flash page in RAM
  *
  * @note    The flash page in RAM must be correctly aligned, even in RAM, when
- *          using flashpage_raw. This is because some architecture uses
+ *          using flashpage. This is because some architecture uses
  *          32 bit alignment implicitly and there are cases (stm32l4) that
  *          requires 64 bit alignment.
  */
@@ -106,6 +111,11 @@ static int cmd_info(int argc, char **argv)
     printf("RWWEE Number of pages:\t%i\n", (int)FLASHPAGE_RWWEE_NUMOF);
 #endif
 
+#ifdef NVMCTRL_USER
+    printf("AUX page size:\t%i\n", FLASH_USER_PAGE_AUX_SIZE + sizeof(nvm_user_page_t));
+    printf("    user area:\t%i\n", FLASH_USER_PAGE_AUX_SIZE);
+#endif
+
     return 0;
 }
 
@@ -162,6 +172,7 @@ static int cmd_read(int argc, char **argv)
     return 0;
 }
 
+#ifdef MODULE_PERIPH_FLASHPAGE_PAGEWISE
 static int cmd_write(int argc, char **argv)
 {
     int page;
@@ -185,8 +196,8 @@ static int cmd_write(int argc, char **argv)
            page, flashpage_addr(page));
     return 0;
 }
+#endif
 
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
 static uint32_t getaddr(const char *str)
 {
     uint32_t addr = strtol(str, NULL, 16);
@@ -196,25 +207,35 @@ static uint32_t getaddr(const char *str)
 
 static int cmd_write_raw(int argc, char **argv)
 {
+#if (__SIZEOF_POINTER__ == 2)
+    uint16_t addr;
+#else
     uint32_t addr;
+#endif
 
     if (argc < 3) {
         printf("usage: %s <addr> <data>\n", argv[0]);
         return 1;
     }
 
+#if (__SIZEOF_POINTER__ == 2)
+    addr = (uint16_t) getaddr(argv[1]);
+#else
     addr = getaddr(argv[1]);
-
+#endif
     /* try to align */
     memcpy(raw_buf, argv[2], strlen(argv[2]));
 
-    flashpage_write_raw((void*)addr, raw_buf, strlen(raw_buf));
-
+    flashpage_write((void*)addr, raw_buf, strlen(raw_buf));
+#if (__SIZEOF_POINTER__ == 2)
+    printf("wrote local data to flash address %#" PRIx16 " of len %u\n",
+           addr, strlen(raw_buf));
+#else
     printf("wrote local data to flash address %#" PRIx32 " of len %u\n",
            addr, strlen(raw_buf));
+#endif
     return 0;
 }
-#endif
 
 static int cmd_erase(int argc, char **argv)
 {
@@ -229,7 +250,7 @@ static int cmd_erase(int argc, char **argv)
     if (page < 0) {
         return 1;
     }
-    flashpage_write(page, NULL);
+    flashpage_erase(page);
 
     printf("successfully erased page %i (addr %p)\n",
            page, flashpage_addr(page));
@@ -262,6 +283,7 @@ static int cmd_edit(int argc, char **argv)
     return 0;
 }
 
+#ifdef MODULE_PERIPH_FLASHPAGE_PAGEWISE
 static int cmd_test(int argc, char **argv)
 {
     int page;
@@ -313,8 +335,10 @@ static int cmd_test_last(int argc, char **argv)
             fill = 'a';
         }
     }
-
-    if (flashpage_write_and_verify((int)FLASHPAGE_NUMOF - 1, page_mem) != FLASHPAGE_OK) {
+#if defined(CPU_CC430) || defined(CPU_MSP430FXYZ)
+    printf("The last page holds the ISR vector, so test page %d\n", TEST_LAST_AVAILABLE_PAGE);
+#endif
+    if (flashpage_write_and_verify(TEST_LAST_AVAILABLE_PAGE, page_mem) != FLASHPAGE_OK) {
         puts("error verifying the content of last page");
         return 1;
     }
@@ -322,8 +346,8 @@ static int cmd_test_last(int argc, char **argv)
     puts("wrote local page buffer to last flash page");
     return 0;
 }
+#endif
 
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
 /**
  * @brief   Does a short raw write on last page available
  *
@@ -338,14 +362,17 @@ static int cmd_test_last_raw(int argc, char **argv)
 
     /* try to align */
     memcpy(raw_buf, "test12344321tset", 16);
+#if defined(CPU_CC430) || defined(CPU_MSP430FXYZ)
+    printf("The last page holds the ISR vector, so test page %d\n", TEST_LAST_AVAILABLE_PAGE);
+#endif
 
     /* erase the page first */
-    flashpage_write(((int)FLASHPAGE_NUMOF - 1), NULL);
+    flashpage_erase(TEST_LAST_AVAILABLE_PAGE);
 
-    flashpage_write_raw(flashpage_addr((int)FLASHPAGE_NUMOF - 1), raw_buf, strlen(raw_buf));
+    flashpage_write(flashpage_addr(TEST_LAST_AVAILABLE_PAGE), raw_buf, strlen(raw_buf));
 
     /* verify that previous write_raw effectively wrote the desired data */
-    if (memcmp(flashpage_addr((int)FLASHPAGE_NUMOF - 1), raw_buf, strlen(raw_buf)) != 0) {
+    if (memcmp(flashpage_addr(TEST_LAST_AVAILABLE_PAGE), raw_buf, strlen(raw_buf)) != 0) {
         puts("error verifying the content of last page");
         return 1;
     }
@@ -353,7 +380,6 @@ static int cmd_test_last_raw(int argc, char **argv)
     puts("wrote raw short buffer to last flash page");
     return 0;
 }
-#endif
 
 
 #ifdef FLASHPAGE_RWWEE_NUMOF
@@ -477,7 +503,6 @@ static int cmd_test_last_rwwee(int argc, char **argv)
     return 0;
 }
 
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
 /**
  * @brief   Does a short raw write on last page available
  *
@@ -494,9 +519,9 @@ static int cmd_test_last_rwwee_raw(int argc, char **argv)
     memcpy(raw_buf, "test12344321tset", 16);
 
     /* erase the page first */
-    flashpage_rwwee_write(((int)FLASHPAGE_RWWEE_NUMOF - 1), NULL);
+    flashpage_rwwee_write_page(((int)FLASHPAGE_RWWEE_NUMOF - 1), NULL);
 
-    flashpage_rwwee_write_raw(flashpage_rwwee_addr((int)FLASHPAGE_RWWEE_NUMOF - 1), raw_buf, strlen(raw_buf));
+    flashpage_rwwee_write(flashpage_rwwee_addr((int)FLASHPAGE_RWWEE_NUMOF - 1), raw_buf, strlen(raw_buf));
 
     /* verify that previous write_raw effectively wrote the desired data */
     if (memcmp(flashpage_rwwee_addr((int)FLASHPAGE_RWWEE_NUMOF - 1), raw_buf, strlen(raw_buf)) != 0) {
@@ -507,34 +532,96 @@ static int cmd_test_last_rwwee_raw(int argc, char **argv)
     puts("wrote raw short buffer to last RWWEE flash page");
     return 0;
 }
-#endif
 
 #endif
+
+#ifdef NVMCTRL_USER
+static int cmd_dump_config(int argc, char **argv)
+{
+    (void) argc;
+    (void) argv;
+
+#ifdef FLASH_USER_PAGE_SIZE
+    od_hex_dump((void*)NVMCTRL_USER, FLASH_USER_PAGE_SIZE, 0);
+#else
+    od_hex_dump((void*)NVMCTRL_USER, AUX_PAGE_SIZE * AUX_NB_OF_PAGES, 0);
+#endif
+
+    return 0;
+}
+
+static int cmd_test_config(int argc, char **argv)
+{
+    (void) argc;
+    (void) argv;
+
+    const uint16_t single_data = 0x1234;
+    const uint8_t test_data[] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE };
+    uint32_t dst = FLASH_USER_PAGE_AUX_SIZE - (sizeof(test_data) + 2);
+
+    puts("[START]");
+
+    sam0_flashpage_aux_reset(NULL);
+
+    /* check if the AUX page has been cleared */
+    for (uint32_t i = 0; i < FLASH_USER_PAGE_AUX_SIZE; ++i) {
+        if (*(uint8_t*)sam0_flashpage_aux_get(i) != 0xFF) {
+            printf("user page not cleared at offset 0x%"PRIx32"\n", i);
+            return -1;
+        }
+    }
+
+    /* write test data */
+    sam0_flashpage_aux_write_raw(dst, test_data, sizeof(test_data));
+
+    /* write single half-word */
+    sam0_flashpage_aux_write_raw(dst + sizeof(test_data), &single_data, sizeof(single_data));
+
+    /* check if half-word was written correctly */
+    uint16_t data_in = *(uint16_t*)sam0_flashpage_aux_get(dst + sizeof(test_data));
+    if (data_in != single_data) {
+        printf("%x != %x, offset = 0x%"PRIx32"\n", single_data, data_in, dst + sizeof(test_data));
+        return -1;
+    }
+
+    /* check if test data was written correctly */
+    if (memcmp(sam0_flashpage_aux_get(dst), test_data, sizeof(test_data))) {
+        printf("write test_data failed, offset = 0x%"PRIx32"\n", dst);
+        return -1;
+    }
+
+    puts("[SUCCESS]");
+
+    return 0;
+}
+#endif /* NVMCTRL_USER */
 
 static const shell_command_t shell_commands[] = {
     { "info", "Show information about pages", cmd_info },
     { "dump", "Dump the selected page to STDOUT", cmd_dump },
     { "dump_local", "Dump the local page buffer to STDOUT", cmd_dump_local },
     { "read", "Copy the given page to the local page buffer and dump to STDOUT", cmd_read },
+#ifdef MODULE_PERIPH_FLASHPAGE_PAGEWISE
     { "write", "Write the local page buffer to the given page", cmd_write },
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
-    { "write_raw", "Write (ASCII, max 64B) data to the given address", cmd_write_raw },
 #endif
+    { "write_raw", "Write (ASCII, max 64B) data to the given address", cmd_write_raw },
     { "erase", "Erase the given page buffer", cmd_erase },
     { "edit", "Write bytes to the local page buffer", cmd_edit },
+#ifdef MODULE_PERIPH_FLASHPAGE_PAGEWISE
     { "test", "Write and verify test pattern", cmd_test },
-    { "test_last", "Write and verify test pattern on last page available", cmd_test_last },
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
-    { "test_last_raw", "Write and verify raw short write on last page available", cmd_test_last_raw },
+    { "test_last_pagewise", "Write and verify test pattern on last page available", cmd_test_last },
 #endif
+    { "test_last_raw", "Write and verify raw short write on last page available", cmd_test_last_raw },
 #ifdef FLASHPAGE_RWWEE_NUMOF
     { "read_rwwee", "Copy the given page from RWWEE to the local page buffer and dump to STDOUT", cmd_read_rwwee },
     { "write_rwwee", "Write the local page buffer to the given RWWEE page", cmd_write_rwwee },
     { "test_rwwee", "Write and verify test pattern to RWWEE", cmd_test_rwwee },
     { "test_last_rwwee", "Write and verify test pattern on last RWWEE page available", cmd_test_last_rwwee },
-#ifdef MODULE_PERIPH_FLASHPAGE_RAW
     { "test_last_rwwee_raw", "Write and verify raw short write on last RWWEE page available", cmd_test_last_rwwee_raw },
 #endif
+#ifdef NVMCTRL_USER
+    { "dump_config_page", "Dump the content of the MCU configuration page", cmd_dump_config },
+    { "test_config_page", "Test writing config page. (!DANGER ZONE!)", cmd_test_config },
 #endif
     { NULL, NULL, NULL }
 };

@@ -26,8 +26,9 @@
 
 #include "net/nanocoap_sock.h"
 #include "net/sock/udp.h"
+#include "timex.h"
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 ssize_t nanocoap_request(coap_pkt_t *pkt, sock_udp_ep_t *local, sock_udp_ep_t *remote, size_t len)
@@ -48,8 +49,8 @@ ssize_t nanocoap_request(coap_pkt_t *pkt, sock_udp_ep_t *local, sock_udp_ep_t *r
 
     /* TODO: timeout random between between ACK_TIMEOUT and (ACK_TIMEOUT *
      * ACK_RANDOM_FACTOR) */
-    uint32_t timeout = COAP_ACK_TIMEOUT * US_PER_SEC;
-    unsigned tries_left = COAP_MAX_RETRANSMIT + 1;  /* add 1 for initial transmit */
+    uint32_t timeout = CONFIG_COAP_ACK_TIMEOUT * US_PER_SEC;
+    unsigned tries_left = CONFIG_COAP_MAX_RETRANSMIT + 1;  /* add 1 for initial transmit */
     while (tries_left) {
 
         res = sock_udp_send(&sock, buf, pdu_len, NULL);
@@ -144,7 +145,7 @@ int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize)
                 continue;
             }
             if ((res = coap_handle_req(&pkt, buf, bufsize)) > 0) {
-                res = sock_udp_send(&sock, buf, res, &remote);
+                sock_udp_send(&sock, buf, res, &remote);
             }
             else {
                 DEBUG("error handling request %d\n", (int)res);

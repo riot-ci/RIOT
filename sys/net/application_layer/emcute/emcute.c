@@ -18,6 +18,7 @@
  * @}
  */
 
+#include <assert.h>
 #include <string.h>
 
 #include "log.h"
@@ -31,7 +32,7 @@
 #include "net/mqttsn.h"
 #include "emcute_internal.h"
 
-#define ENABLE_DEBUG        (0)
+#define ENABLE_DEBUG        0
 #include "debug.h"
 
 #define PROTOCOL_VERSION    (0x01)
@@ -63,7 +64,9 @@ static volatile int result;
 
 static size_t set_len(uint8_t *buf, size_t len)
 {
-    if (len < (0xff - 7)) {
+    /* - `len` field minimum length == 1
+     * - `((len + 1) <= 0xff) == len < 0xff` */
+    if (len < 0xff) {
         buf[0] = len + 1;
         return 1;
     }
@@ -88,14 +91,14 @@ static size_t get_len(uint8_t *buf, uint16_t *len)
 
 static void time_evt(void *arg)
 {
-    thread_flags_set((thread_t *)arg, TFLAGS_TIMEOUT);
+    thread_flags_set(arg, TFLAGS_TIMEOUT);
 }
 
 static int syncsend(uint8_t resp, size_t len, bool unlock)
 {
     int res = EMCUTE_TIMEOUT;
     waiton = resp;
-    timer.arg = (void *)sched_active_thread;
+    timer.arg = thread_get_active();
     /* clear flags, in case the timer was triggered last time right before the
      * remove was called */
     thread_flags_clear(TFLAGS_ANY);
@@ -127,7 +130,7 @@ static void on_disconnect(void)
     if (waiton == DISCONNECT) {
         gateway.port = 0;
         result = EMCUTE_OK;
-        thread_flags_set((thread_t *)timer.arg, TFLAGS_RESP);
+        thread_flags_set(timer.arg, TFLAGS_RESP);
     }
 }
 
@@ -144,7 +147,7 @@ static void on_ack(uint8_t type, int id_pos, int ret_pos, int res_pos)
         } else {
             result = EMCUTE_REJECT;
         }
-        thread_flags_set((thread_t *)timer.arg, TFLAGS_RESP);
+        thread_flags_set(timer.arg, TFLAGS_RESP);
     }
 }
 
@@ -345,7 +348,6 @@ int emcute_pub(emcute_topic_t *topic, const void *data, size_t len,
     mutex_lock(&txlock);
 
     size_t pos = set_len(tbuf, (len + 6));
-    len += (pos + 6);
     tbuf[pos++] = PUBLISH;
     tbuf[pos++] = flags;
     byteorder_htobebufs(&tbuf[pos], topic->id);
@@ -356,10 +358,10 @@ int emcute_pub(emcute_topic_t *topic, const void *data, size_t len,
     memcpy(&tbuf[pos], data, len);
 
     if (flags & EMCUTE_QOS_1) {
-        res = syncsend(PUBACK, len, true);
+        res = syncsend(PUBACK, len + pos, true);
     }
     else {
-        sock_udp_send(&sock, tbuf, len, &gateway);
+        sock_udp_send(&sock, tbuf, len + pos, &gateway);
         mutex_unlock(&txlock);
     }
 
@@ -482,11 +484,10 @@ int emcute_willupd_msg(const void *data, size_t len)
     mutex_lock(&txlock);
 
     size_t pos = set_len(tbuf, (len + 1));
-    len += (pos + 1);
     tbuf[pos++] = WILLMSGUPD;
     memcpy(&tbuf[pos], data, len);
 
-    return syncsend(WILLMSGRESP, len, true);
+    return syncsend(WILLMSGRESP, (pos + len), true);
 }
 
 void emcute_run(uint16_t port, const char *id)
@@ -515,7 +516,7 @@ void emcute_run(uint16_t port, const char *id)
 
         if ((len < 0) && (len != -ETIMEDOUT)) {
             LOG_ERROR("[emcute] error while receiving UDP packet\n");
-            return;
+            continue;
         }
 
         if (len >= 2) {

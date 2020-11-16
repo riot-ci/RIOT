@@ -17,7 +17,7 @@
 #ifndef CC26X0_PRCM_H
 #define CC26X0_PRCM_H
 
-#include <cc26x0.h>
+#include <cc26xx_cc13xx.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,9 +50,6 @@ typedef struct {
  * @brief   DDI_0_OSC register values
  * @{
  */
-#define DDI_0_OSC_CTL0_SCLK_HF_SRC_SEL_RCOSC        0x0
-#define DDI_0_OSC_CTL0_SCLK_HF_SRC_SEL_XOSC         0x1
-#define DDI_0_OSC_CTL0_SCLK_MF_SRC_SEL              0x2
 #define DDI_0_OSC_CTL0_SCLK_LF_SRC_SEL_mask         0x6
 #define DDI_0_OSC_CTL0_SCLK_LF_SRC_SEL_HF_RCOSC     0x0
 #define DDI_0_OSC_CTL0_SCLK_LF_SRC_SEL_HF_XOSC      0x4
@@ -67,13 +64,6 @@ typedef struct {
 #define DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_RCOSC_HF    0x000 /* 48MHz */
 #define DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_RCOSC_LF    0x080 /* 48MHz */
 #define DDI_0_OSC_CTL0_ACLK_TDC_SRC_SEL_XOSC_HF     0x100 /* 24MHz */
-#define DDI_0_OSC_CTL0_CLK_LOSS_EN                  0x200 /* enable clock loss detection */
-#define DDI_0_OSC_CTL0_XOSC_LF_DIG_BYPASS           0x400 /* bypass XOSC_LF and use digital input clock from AON foor xosx_lf (precuations in datasheet) */
-#define DDI_0_OSC_CTL0_XOSC_HF_POWER_MODE           0x800
-#define DDI_0_OSC_CTL0_RCOSC_LF_TRIMMED             0x1000
-#define DDI_0_OSC_CTL0_ALLOW_SCLK_HF_SWITCHING      0x10000
-#define DDI_0_OSC_CTL0_FORCE_KICKSTART_EN           0x400000
-#define DDI_0_OSC_CTL0_DOUBLER_RESET_DURATION       0x2000000
 #define DDI_0_OSC_CTL0_DOUBLER_START_DURATION_mask  0x6000000
 #define DDI_0_OSC_CTL0_BYPASS_RCOSC_LF_CLK_QUAL     0x10000000
 #define DDI_0_OSC_CTL0_BYPASS_XOSC_LF_CLK_QUAL      0x20000000
@@ -140,7 +130,7 @@ typedef struct {
 
 #define AUXCLK_SRC_HF               0x1 /* SCLK for AUX */
 #define AUXCLK_SRC_LF               0x4
-#define AUXCLK_SRC_mask             0x7 /* garuanteed to be glitchless */
+#define AUXCLK_SRC_mask             0x7 /* guaranteed to be glitchless */
 #define AUXCLK_SCLK_HF_DIV_pos      8 /* don't set while SCLK_HF active for AUX */
 #define AUXCLK_SCLK_HF_DIV_mask     0x700 /* divisor will be 2^(value+1) */
 #define AUXCLK_PWR_DWN_SRC_pos      11 /* SCLK_LF in powerdown when SCLK_HF is source (no clock elsewise?!)  */
@@ -201,6 +191,40 @@ typedef struct {
 /*@}*/
 
 #define AON_WUC ((aon_wuc_regs_t *) (AON_WUC_BASE)) /**< AON_WUC register bank */
+
+/**
+ * AON_RTC registers
+ */
+typedef struct {
+    reg32_t CTL; /**< Control */
+    reg32_t EVFLAGS; /**< Event Flags, RTC Status */
+    reg32_t SEC; /**< Second Counter Value, Integer Part */
+    reg32_t SUBSEC; /**< Second Counter Value, Fractional Part */
+    reg32_t SUBSECINC; /**< Subseconds Increment */
+    reg32_t CHCTL; /**< Channel Configuration */
+    reg32_t CH0CMP; /**< Channel 0 Compare Value */
+    reg32_t CH1CMP; /**< Channel 1 Compare Value */
+    reg32_t CH2CMP; /**< Channel 2 Compare Value */
+    reg32_t CH2CMPINC; /**< Channel 2 Compare Value Auto-increment */
+    reg32_t CH1CAPT; /**< Channel 1 Capture Value */
+    reg32_t SYNC; /**< AON Synchronization */
+} aon_rtc_regs_t;
+
+/**
+ * @brief   RTC_UPD is a 16 KHz signal used to sync up the radio timer. The
+ *          16 Khz is SCLK_LF divided by 2
+ * @details 0h = RTC_UPD signal is forced to 0
+ *          1h = RTC_UPD signal is toggling @16 kHz
+ */
+#define AON_RTC_CTL_RTC_UPD_EN 0x00000002
+
+/** @ingroup cpu_specific_peripheral_memory_map
+  * @{
+  */
+#define AON_RTC_BASE (PERIPH_BASE + 0x92000) /**< AON_RTC base address */
+/** @} */
+
+#define AON_RTC ((aon_rtc_regs_t *) (AON_RTC_BASE)) /**< AON_RTC register bank */
 
 
 /**
@@ -303,15 +327,29 @@ typedef struct {
 #define PDSTAT1_CPU_ON      0x2
 #define PDSTAT1_RFC_ON      0x4
 #define PDSTAT1_VIMS_ON     0x8
+
+#define GPIOCLKGR_CLK_EN       0x1
+#define I2CCLKGR_CLK_EN        0x1
+#define UARTCLKGR_CLK_EN_UART0 0x1
+
+#define GPIOCLKGS_CLK_EN       0x1
+#define I2CCLKGS_CLK_EN        0x1
+#define UARTCLKGS_CLK_EN_UART0 0x1
+
+#define GPIOCLKGDS_CLK_EN       0x1
+#define I2CCLKGDS_CLK_EN        0x1
+#define UARTCLKGDS_CLK_EN_UART0 0x1
 /** @} */
 
 /** @ingroup cpu_specific_peripheral_memory_map
   * @{
   */
-#define PRCM_BASE       0x40082000 /**< PRCM base address */
+#define PRCM_BASE        (PERIPH_BASE + 0x82000) /**< PRCM base address */
+#define PRCM_BASE_NONBUF (PERIPH_BASE_NONBUF + 0x82000) /**< PRCM base address (nonbuf) */
 /*@}*/
 
-#define PRCM ((prcm_regs_t *) (PRCM_BASE)) /**< PRCM register bank */
+#define PRCM        ((prcm_regs_t *) (PRCM_BASE)) /**< PRCM register bank */
+#define PRCM_NONBUF ((prcm_regs_t *) (PRCM_BASE_NONBUF)) /**< PRCM register bank (nonbuf) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
