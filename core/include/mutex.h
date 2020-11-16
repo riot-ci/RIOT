@@ -127,6 +127,18 @@ typedef struct {
 } mutex_t;
 
 /**
+ * @brief   A cancellation structure for with with @ref mutex_lock_cancelable
+ *          and @ref mutex_cancel
+ *
+ * @note    The contents of this structure are internal.
+ */
+typedef struct {
+    mutex_t *mutex;     /**< The mutex to lock */
+    thread_t *thread;   /**< The thread trying to lock the mutex */
+    uint8_t cancelled;  /**< Flag whether the mutex has been cancelled */
+} mutex_cancel_t;
+
+/**
  * @brief Static initializer for mutex_t.
  * @details This initializer is preferable to mutex_init().
  */
@@ -159,6 +171,18 @@ static inline void mutex_init(mutex_t *mutex)
 }
 
 /**
+ * @brief   Initialize a mutex cancellation structure
+ * @param   mutex       The mutex that the calling thread wants to lock
+ * @return  The cancellation structure for use with @ref mutex_lock_cancelable
+ *          and @ref mutex_lock_cancel
+ */
+static inline mutex_cancel_t mutex_cancel_init(mutex_t *mutex)
+{
+    mutex_cancel_t result = { mutex, thread_get_active(), 0 };
+    return result;
+}
+
+/**
  * @brief   Tries to get a mutex, non-blocking.
  *
  * @param[in,out]   mutex   Mutex object to lock.
@@ -187,15 +211,33 @@ static inline int mutex_trylock(mutex_t *mutex)
  *
  * @param[in,out]   mutex   Mutex object to lock.
  *
- * @retval  0               The mutex was locked by the caller
- *
  * @pre     @p mutex is not `NULL`
  * @pre     Mutex at @p mutex has been initialized
  * @pre     Must be called in thread context
  *
  * @post    The mutex @p is locked and held by the calling thread.
  */
-int mutex_lock(mutex_t *mutex);
+void mutex_lock(mutex_t *mutex);
+
+/**
+ * @brief   Locks a mutex, blocking. This function can be canceled.
+ *
+ * @param[in,out]   mc      Mutex cancellation structure to work on
+ *
+ * @retval  0               The mutex was locked by the caller
+ * @retval  -ECANCELED      The mutex was ***NOT*** locked, operation was
+ *                          canceled. See @ref mutex_cancel
+ *
+ * @pre     Must be called in thread context
+ * @pre     @p mc has been initialized with @ref mutex_cancel_init by the
+ *          calling thread.
+ * @pre     @p mc has ***NOT*** been used for previous calls to
+ *          this functions. (Reinitialize before reusing!)
+ *
+ * @post    The mutex referred to by @p mc is locked and held by the calling
+ *          thread, unless `-ECANCELED` was returned.
+ */
+int mutex_lock_cancelable(mutex_cancel_t *mc);
 
 /**
  * @brief   Unlocks the mutex.
@@ -216,6 +258,64 @@ void mutex_unlock(mutex_t *mutex);
  * @pre     Must be called in thread context.
  */
 void mutex_unlock_and_sleep(mutex_t *mutex);
+
+/**
+ * @brief   Cancels a call to @ref mutex_lock_cancelable
+ *
+ * @param[in,out]   mc      Mutex cancellation structure referring to the
+ *                          thread calling @ref mutex_lock_cancelable and to
+ *                          the mutex to cancel the operation on
+ *
+ * @pre     This function is called at most once for @p mc. (You can reuse
+ *          @p mc, if you reinitialize it.)
+ * @warning You ***MUST NOT*** call this function once the thread @p mc refers
+ *          to using the mutex @p mc refers to again (not counting the call
+ *          to @ref mutex_lock_cancelable @p mc was used in).
+ * @note    It is safe to call this function from IRQ context, e.g. from a timer
+ *          interrupt.
+ *
+ * @details If @p thread is currently running (or pending), a subsequent call
+ *          from @p thread to @ref mutex_lock_may_fail will - under certain
+ *          conditions - also fail
+ *
+ * Canonical use:
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+ * static void timeout_cb(void *_arg) {
+ *     mutex_cancel(arg);
+ * }
+ *
+ * int ztimer_mutex_lock_timeout(ztimer_clock_t *clock, mutex_t *mutex,
+ *                               uint32_t timeout)
+ * {
+ *     mutex_cancel_t mc = mutex_cancel_init(mutex);
+ *     ztimer_t t;
+ *     t.callback = timeout_cb;
+ *     t.arg = &mc;
+ *     ztimer_set(clock, &t, timeout);
+ *     if (0 == mutex_lock_cancelable(mutex)) {
+ *         ztimer_remove(clock, &t);
+ *         return 0;
+ *     }
+ *     return -ECANCELED;
+ * }
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * In the above example a simple implementation of how to implement mutex
+ * locking with a timeout is given. There are two corner cases:
+ *
+ * 1. The call to @ref mutex_cancel could occur *before* the call to
+ *    @ref mutex_lock_cancelable. (E.g. for `timeout == 0`.)
+ * 2. The call to @ref mutex_cancel could occur right after the mutex was
+ *    *successfully* obtained, but before `ztimer_remove()` was executed.
+ *
+ * In the first corner case the cancellation is stored in @p mc. Hence, the
+ * subsequent call to @ref mutex_lock_cancelable gets indeed canceled. In the
+ * second corner case the cancellation is also stored in @p mc but never used -
+ * the mutex cancellation structure @p mc is not allowed to be reused without
+ * reinitialization.
+ */
+void mutex_cancel(mutex_cancel_t *mc);
 
 #ifdef __cplusplus
 }
