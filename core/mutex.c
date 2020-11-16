@@ -33,7 +33,7 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-int mutex_lock(mutex_t *mutex)
+void mutex_lock(mutex_t *mutex)
 {
     unsigned irq_state = irq_disable();
 
@@ -45,7 +45,7 @@ int mutex_lock(mutex_t *mutex)
         DEBUG("PID[%" PRIkernel_pid "]: mutex_wait_and_lock early out.\n",
               thread_getpid());
         irq_restore(irq_state);
-        return 0;
+        return;
     }
 
     thread_t *me = thread_get_active();
@@ -64,7 +64,6 @@ int mutex_lock(mutex_t *mutex)
     irq_restore(irq_state);
     thread_yield_higher();
     /* We were woken up by scheduler. Waker removed us from queue. */
-    return 0;
 }
 
 void mutex_unlock(mutex_t *mutex)
