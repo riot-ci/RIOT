@@ -235,7 +235,7 @@ void mutex_lock(mutex_t *mutex);
  * @pre     Must be called in thread context
  * @pre     @p mc has been initialized with @ref mutex_cancel_init by the
  *          calling thread.
- * @pre     @p mc must ***NOT*** has not been used for previous calls to
+ * @pre     @p mc has ***NOT*** been used for previous calls to
  *          this functions. (Reinitialize before reusing!)
  *
  * @post    The mutex referred to by @p mc is locked and held by the calling
