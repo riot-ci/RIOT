@@ -5,4 +5,7 @@ USEPKG += hacl
 USEMODULE += random
 USEMODULE += embunit
 
+# upstream repo has moved - quick fix
+TEST_ON_CI_BLACKLIST = all
+
 include $(RIOTBASE)/Makefile.include
