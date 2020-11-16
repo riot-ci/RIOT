@@ -270,6 +270,11 @@ void mutex_unlock_and_sleep(mutex_t *mutex);
  *                          thread calling @ref mutex_lock_cancelable and to
  *                          the mutex to cancel the operation on
  *
+ * @pre     This function is called at most once for @p mc. (You can reuse
+ *          @p mc, if you reinitialize it.)
+ * @warning You ***MUST NOT*** call this function once the thread @p mc refers
+ *          to using the mutex @p mc refers to again (not counting the call
+ *          to @ref mutex_lock_cancelable @p mc was used in).
  * @note    It is safe to call this function from IRQ context, e.g. from a timer
  *          interrupt.
  *
