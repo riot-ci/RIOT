@@ -178,11 +178,7 @@ static inline void mutex_init(mutex_t *mutex)
  */
 static inline mutex_cancel_t mutex_cancel_init(mutex_t *mutex)
 {
-    mutex_cancel_t result = {
-        .mutex = mutex,
-        .thread = thread_get_active(),
-        .cancelled = 0
-    };
+    mutex_cancel_t result = { mutex, thread_get_active(), 0 };
     return result;
 }
 
