@@ -7,9 +7,13 @@
  */
 
 /**
- * @defgroup    sys_shell_lock Shell lock
- * @ingroup     sys
- * @brief       Simple module to provide a password protection for the shell.
+ * @defgroup     sys_shell_lock Shell lock
+ * @ingroup      sys
+ * @brief        Simple module to provide a password protection for the shell.
+ * @experimental This module is an experimental feature and only shows as a PoC
+ *               how the shell could be protected with a password. Don't expect
+ *               relevant security from it for production, as Man-in-the-Middle
+ *               attacks are possible depending on the used connection method!
  *
  * @{
  *

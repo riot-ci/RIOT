@@ -492,6 +492,11 @@ void shell_run_once(const shell_command_t *shell_commands,
                     char *line_buf, int len)
 {
     if (IS_USED(MODULE_SHELL_LOCK)) {
+        puts("shell: This module is an experimental feature and only shows as "
+             "a PoC how the shell could be protected with a password. Don't "
+             "expect relevant security from it for production, as "
+             "Man-in-the-Middle attacks are possible depending on the used "
+             "connection method!");
         shell_lock_checkpoint(line_buf, len);
     }
 
