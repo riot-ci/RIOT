@@ -1,4 +1,7 @@
-read# Usage
+# About
+This is a manual test application for the ST LSM6DSL sensor driver.
+
+# Usage
 
 After successful initialization the following tests are done :
     * Acc power down
