@@ -38,7 +38,7 @@ extern "C" {
 #define GNRC_NETERR_MSG_TYPE        (0x0206)
 
 /**
- * @brief   Error code to signalise success (no error occured) to an gnrc_neterr subscriber.
+ * @brief   Error code to signalise success (no error occurred) to an gnrc_neterr subscriber.
  */
 #define GNRC_NETERR_SUCCESS         (0)
 
@@ -78,7 +78,7 @@ static inline int gnrc_neterr_reg(gnrc_pktsnip_t *pkt)
     if (pkt->err_sub != KERNEL_PID_UNDEF) {
         return EALREADY;
     }
-    pkt->err_sub = sched_active_pid;
+    pkt->err_sub = thread_getpid();
     return 0;
 }
 #else

@@ -25,6 +25,7 @@
 #include "event/timeout.h"
 #include "nimble_riot.h"
 #include "net/bluetil/ad.h"
+#include "timex.h"
 
 #include "host/ble_hs.h"
 #include "host/ble_gatt.h"
@@ -286,6 +287,7 @@ static void _hr_update(event_t *e)
     assert(om != NULL);
     int res = ble_gattc_notify_custom(_conn_handle, _hrs_val_handle, om);
     assert(res == 0);
+    (void)res;
 
     /* schedule next update event */
     event_timeout_set(&_update_timeout_evt, UPDATE_INTERVAL);
@@ -296,6 +298,7 @@ int main(void)
     puts("NimBLE Heart Rate Sensor Example");
 
     int res = 0;
+    (void)res;
 
     /* setup local event queue (for handling heart rate updates) */
     event_queue_init(&_eq);

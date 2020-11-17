@@ -1,6 +1,5 @@
-# define the cpu used by the maple-mini board
-export CPU = stm32f1
-export CPU_MODEL = stm32f103cb
+# Include shared STM32 headers
+INCLUDES += -I$(RIOTBOARD)/common/stm32/include
 
 # define the default port depending on the host OS
 PORT_LINUX ?= /dev/ttyACM0

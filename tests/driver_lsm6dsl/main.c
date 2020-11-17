@@ -31,7 +31,7 @@
 #include "lsm6dsl.h"
 #include "lsm6dsl_params.h"
 
-#define SLEEP       (500UL * US_PER_MS)
+#define SLEEP_USEC  (500UL * US_PER_MS)
 
 static lsm6dsl_t dev;
 

@@ -19,32 +19,19 @@
 #ifndef PERIPH_CONF_H
 #define PERIPH_CONF_H
 
+/* Add specific clock configuration (HSE, LSE) for this board here */
+#ifndef CONFIG_BOARD_HAS_LSE
+#define CONFIG_BOARD_HAS_LSE            1
+#endif
+
 #include "periph_cpu.h"
-#include "l0/cfg_clock_32_16_1.h"
+#include "clk_conf.h"
 #include "cfg_rtt_default.h"
+#include "cfg_timer_tim2.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @name    Timer configuration
- * @{
- */
-static const timer_conf_t timer_config[] = {
-    {
-        .dev      = TIM2,
-        .max      = 0x0000ffff,
-        .rcc_mask = RCC_APB1ENR_TIM2EN,
-        .bus      = APB1,
-        .irqn     = TIM2_IRQn
-    }
-};
-
-#define TIMER_0_ISR         isr_tim2
-
-#define TIMER_NUMOF         (sizeof(timer_config) / sizeof(timer_config[0]))
-/** @} */
 
 /**
  * @name    UART configuration
@@ -67,33 +54,13 @@ static const uart_conf_t uart_config[] = {
 
 #define UART_0_ISR          (isr_rng_lpuart1)
 
-#define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
+#define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
 /**
  * @name    SPI configuration
- *
- * @note    The spi_divtable is auto-generated from
- *          `cpu/stm32_common/dist/spi_divtable/spi_divtable.c`
  * @{
  */
-static const uint8_t spi_divtable[2][5] = {
-    {       /* for APB1 @ 32000000Hz */
-        7,  /* -> 125000Hz */
-        5,  /* -> 500000Hz */
-        4,  /* -> 1000000Hz */
-        2,  /* -> 4000000Hz */
-        1   /* -> 8000000Hz */
-    },
-    {       /* for APB2 @ 32000000Hz */
-        7,  /* -> 125000Hz */
-        5,  /* -> 500000Hz */
-        4,  /* -> 1000000Hz */
-        2,  /* -> 4000000Hz */
-        1   /* -> 8000000Hz */
-    }
-};
-
 static const spi_conf_t spi_config[] = {
     {
         .dev      = SPI1, /* connected to SX1272 */
@@ -101,13 +68,16 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_PIN(PORT_B, 4),
         .sclk_pin = GPIO_PIN(PORT_B, 3),
         .cs_pin   = GPIO_PIN(PORT_A, 15),
-        .af       = GPIO_AF0,
+        .mosi_af  = GPIO_AF0,
+        .miso_af  = GPIO_AF0,
+        .sclk_af  = GPIO_AF0,
+        .cs_af    = GPIO_AF0,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
     },
 };
 
-#define SPI_NUMOF           (sizeof(spi_config) / sizeof(spi_config[0]))
+#define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
 /**
@@ -130,14 +100,7 @@ static const i2c_conf_t i2c_config[] = {
 
 #define I2C_0_ISR           isr_i2c1
 
-#define I2C_NUMOF           (sizeof(i2c_config) / sizeof(i2c_config[0]))
-/** @} */
-
-/**
- * @name    RTC configuration
- * @{
- */
-#define RTC_NUMOF           (1U)
+#define I2C_NUMOF           ARRAY_SIZE(i2c_config)
 /** @} */
 
 #ifdef __cplusplus

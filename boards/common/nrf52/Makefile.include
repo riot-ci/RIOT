@@ -1,30 +1,24 @@
-# this module contains shared code for all boards using the nrf52 CPU
-export CPU = nrf52
-
 # include this module into the build
 INCLUDES += -I$(RIOTBOARD)/common/nrf52/include
 
-# set default port depending on operating system
-PORT_LINUX ?= /dev/ttyACM0
-PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
-include $(RIOTMAKE)/tools/serial.inc.mk
+ifeq (bmp,$(PROGRAMMER))
+  # On Blackmagic Probe, the first ACM is used to connect to the gdb server,
+  # the second is the BMP's UART interface
+  PORT_LINUX ?= /dev/ttyACM1
+  PORT_DARWIN ?= $(wordlist 2, 2, $(sort $(wildcard /dev/tty.usbmodem*)))
+else
+  # configure the serial terminal
+  PORT_LINUX ?= /dev/ttyACM0
+  PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+endif
 
-# The following configuration is dependencies specific
-# but they are resolved later
-# Hack to know now if 'nordic_softdevice_ble' is used
-include $(RIOTBOARD)/$(BOARD)/Makefile.dep
+# setup serial terminal
+include $(RIOTMAKE)/tools/serial.inc.mk
 
 PROGRAMMER ?= jlink
 ifeq (jlink,$(PROGRAMMER))
   # setup JLink for flashing
-  export JLINK_DEVICE := nrf52
-
-  # special options when using SoftDevice
-  ifneq (,$(filter nordic_softdevice_ble,$(USEPKG)))
-    export JLINK_PRE_FLASH := erase\nloadfile $(BINDIR)/softdevice.hex
-    export FLASH_ADDR := 0x1f000
-    export LINKER_SCRIPT ?= $(RIOTCPU)/$(CPU)/ldscripts/$(CPU_MODEL)_sd.ld
-  endif
+  JLINK_DEVICE = nrf52
   include $(RIOTMAKE)/tools/jlink.inc.mk
 else ifeq (openocd,$(PROGRAMMER))
   ifneq (,$(filter $(BOARD),ruuvitag thingy52))
@@ -34,11 +28,9 @@ else ifeq (openocd,$(PROGRAMMER))
   # setup OpenOCD for flashing. Version 0.10 of OpenOCD doesn't contain support
   # for nrf52dk and nrf52840dk boards. To use OpenOCD with these a version
   # build from source (master > 2018, August the 13rd) is required.
-  ifneq (,$(filter nordic_softdevice_ble,$(USEPKG)))
-    # openocd doesn't work (yet) with softdevice
-    $(error Cannot use OpenOCD with nordic_softdevice module)
-  endif
   DEBUG_ADAPTER ?= jlink
-  export OPENOCD_CONFIG := $(RIOTBOARD)/common/nrf52/dist/openocd.cfg
+  OPENOCD_CONFIG = $(RIOTBOARD)/common/nrf52/dist/openocd.cfg
   include $(RIOTMAKE)/tools/openocd.inc.mk
+else ifeq (bmp,$(PROGRAMMER))
+  include $(RIOTMAKE)/tools/bmp.inc.mk
 endif
