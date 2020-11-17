@@ -16,7 +16,7 @@ If all previous step are OK, a shell is launched and the user can do several
 things with the `lsm6dsl` command. For the following commands/examples you can
 read the `usage` by entering the command needed without parameters.
 
-Here are some example :
+Here are some examples:
 
  * Read acc value :
 ```
