@@ -27,29 +27,30 @@
 
 #include "em_device.h"
 
-#define ENABLE_DEBUG 1
-#include "debug.h"
-
 int16_t coretemp_read(void)
 {
     /* initialize factory calibration values */
-    int32_t cal_temp = ((DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> _DEVINFO_CAL_TEMP_SHIFT);
+    int32_t cal_temp = ((DEVINFO->CAL & _DEVINFO_CAL_TEMP_MASK) >> 
+                         _DEVINFO_CAL_TEMP_SHIFT);
 #if defined(_SILICON_LABS_32B_SERIES_0)
-    int32_t cal_value = ((DEVINFO->ADC0CAL2 & _DEVINFO_ADC0CAL2_TEMP1V25_MASK) >> _DEVINFO_ADC0CAL2_TEMP1V25_SHIFT);
+    int32_t cal_value = ((DEVINFO->ADC0CAL2 & _DEVINFO_ADC0CAL2_TEMP1V25_MASK) >> 
+                          _DEVINFO_ADC0CAL2_TEMP1V25_SHIFT);
 #else
-    int32_t cal_value = ((DEVINFO->ADC0CAL3 & _DEVINFO_ADC0CAL3_TEMPREAD1V25_MASK) >> _DEVINFO_ADC0CAL3_TEMPREAD1V25_SHIFT);
+    int32_t cal_value = ((DEVINFO->ADC0CAL3 & _DEVINFO_ADC0CAL3_TEMPREAD1V25_MASK) >> 
+                          _DEVINFO_ADC0CAL3_TEMPREAD1V25_SHIFT);
 #endif
 
-    /* no calibration data */
+    /* no factory calibration values */
     if ((cal_temp == 0xFF) || (cal_value == 0x0FFF)) {
         return -10000;
-    } 
+    }
 
     /* convert temperature channel */
     int32_t value = adc_sample(CORETEMP_ADC, ADC_RES_12BIT);
 
-    /* t_grad is the inverse of 1.25Vref / (4096 * mV/C) times 1000, so that we
-       can divide by an integer below with sufficient resolution */
+    /* t_grad is the inverse of 1.25 Vref / (4096 * mV/C) times 1000, so that
+       we can divide by an integer below with sufficient resolution (values
+       are from the datasheets) */
 #if defined(_SILICON_LABS_32B_SERIES_0)
     int32_t t_grad = -6291; /* -1.92 mV/C */
 #else
