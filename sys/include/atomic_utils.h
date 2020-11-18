@@ -767,10 +767,11 @@ ATOMIC_LOAD_IMPL(u64, uint64_t)
  * @param   name    Name of the variable type, e.g. "u8"
  * @param   type    Variable type, e.g. `uint8_t`
  */
-#define ATOMIC_STORE_IMPL(name, type) \
+#define ATOMIC_STORE_IMPL(name, type)                                          \
     static inline void CONCAT(atomic_store_, name)                             \
             (volatile type *dest, type val)                                    \
     {                                                                          \
+        unsigned state = irq_disable();                                        \
         *dest = val;                                                           \
         irq_restore(state);                                                    \
     }
