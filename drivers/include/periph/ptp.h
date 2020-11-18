@@ -82,16 +82,26 @@ extern "C" {
 #endif
 
 /**
+ * @brief   Unsigned integer type to store seconds since epoch for use in PTP
+ *
+ * The PTP protocol defines the seconds part of PTP timestamps as an 48 bit
+ * unsigned integer. We go for 32 bit for now (works until year 2106) and will
+ * later extend this type to 64 bit. Users are highly encouraged to use this
+ * type instead of `uint32_t`, if they intent that their software still works
+ * in a couple of decades.
+ */
+typedef uint32_t ptp_seconds_t;
+
+/**
  * @brief   A PTP timestamp in seconds + nanoseconds since UNIX epoch
  *
  * According to IEEE 1588-2019 specification in section "5.3.3 Timestamp",
  * timestamps are represented as seconds and nanoseconds since epoch. For the
  * seconds parts an 48 bit unsigned integer is used in the protocol and a 32 bit
- * unsigned integer for the nanoseconds. We go for `uint64_t` for the seconds
- * field as next best match.
+ * unsigned integer for the nanoseconds.
  */
 typedef struct {
-    uint64_t seconds;       /**< Seconds since UNIX epoch */
+    ptp_seconds_t seconds;  /**< Seconds since UNIX epoch */
     uint32_t nanoseconds;   /**< Nanoseconds part */
 } ptp_timestamp_t;
 
