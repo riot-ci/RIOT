@@ -1,3 +1,4 @@
+#include "kernel_defines.h"
 #if IS_USED(MODULE_PERIPH_PTP_TIMER)
 #include "irq.h"
 #include "periph/ptp.h"
