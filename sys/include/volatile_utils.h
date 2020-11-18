@@ -7,13 +7,22 @@
  */
 
 /**
- * @ingroup     tests
+ * @defgroup    sys_atomic_utils_volatile
+ * @ingroup     sys_atomic_utils
  * @{
  *
  * @file
  * @brief       Utility functions for non-atomic but volatile access
  * @author      Marian Buschsieweke <marian.buschsieweke@ovgu.de>
  *
+ * This functions intentionally have the same signature as the
+ * @ref sys_atomic_utils but don't guarantee atomic access and sequential
+ * consistency (or any other consistency). They basically only guarantee that
+ * no compiler optimization is applied to that operation and that the compiler
+ * will not reorder these operations in regard to each other or other `volatile`
+ * accesses.
+ *
+ * @warning     In most cases using this over @ref sys_atomic_utils is a bug!
  */
 
 #ifndef VOLATILE_UTILS_H
