@@ -6,6 +6,8 @@
 
 menu "Drivers"
 
+rsource "saul/Kconfig"
+
 menu "Actuator Device Drivers"
 rsource "motor_driver/Kconfig"
 endmenu # Actuator Device Drivers
@@ -22,7 +24,13 @@ endmenu # Peripherals drivers
 
 menu "Sensor Device Drivers"
 rsource "ads101x/Kconfig"
+rsource "bh1750fvi/Kconfig"
+rsource "bh1900nux/Kconfig"
+rsource "bme680/Kconfig"
+rsource "bmp180/Kconfig"
 rsource "bmx055/Kconfig"
+rsource "bmx280/Kconfig"
+rsource "ccs811/Kconfig"
 rsource "fxos8700/Kconfig"
 rsource "gp2y10xx/Kconfig"
 rsource "hdc1000/Kconfig"
