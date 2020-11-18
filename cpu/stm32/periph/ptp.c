@@ -17,11 +17,13 @@
  *
  * @}
  */
-#include <string.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include "assert.h"
+#include "atomic_utils.h"
 #include "bit.h"
+#include "macros/units.h"
 #include "periph/ptp.h"
 #include "periph_conf.h"
 #include "periph_cpu.h"
@@ -38,9 +40,6 @@
 #define ETH_PTPTSCR_TSSARFE ETH_PTPTSSR_TSSARFE
 #endif
 
-/* The PTP uses the same clock domain as the CPU */
-#define HCLK                CLOCK_CORECLOCK
-
 /* PTPSSIR is the number of nanoseconds to add onto the sub-second register
  * (the one counting the nanoseconds part of the timestamp with the
  * configuration we chose here). It is therefore the resolution of the clock
@@ -48,10 +47,10 @@
  * the resolution.)
  */
 #ifndef STM32_PTPSSIR
-#if CLOCK_CORECLOCK > 200000000
+#if CLOCK_CORECLOCK > MHZ(200)
 /* Go for 10 ns resolution on CPU clocked higher than 200 MHz */
 #define STM32_PTPSSIR       (10LLU)
-#elif CLOCK_CORECLOCK > 100000000
+#elif CLOCK_CORECLOCK > MHZ(100)
 /* Go for 20 ns resolution on CPU clocked higher than 100 MHz */
 #define STM32_PTPSSIR       (20LLU)
 #else
@@ -71,10 +70,15 @@
 #define ROUNDED_DIV(x, y)   (((x) + ((y) / 2)) / (y))
 
 static const uint32_t ptpssir = STM32_PTPSSIR;
-static const uint32_t ptptsar = ROUNDED_DIV(NS_PER_SEC * (1ULL << 32), HCLK * STM32_PTPSSIR);
+static const uint32_t ptptsar = ROUNDED_DIV(NS_PER_SEC * (1ULL << 32), CLOCK_AHB * STM32_PTPSSIR);
 
 void ptp_init(void)
 {
+    /* The PTP clock is initialized during periph_init(), while stm32_eth is
+     * initialized during auto_init(). As auto_init() depends on periph_init(),
+     * we can be sure that the PTP clock is always the first to use the
+     * Ethernet MAC. The Ethernet driver will skip the common initialization
+     * part when the PTP clock is used. */
     stm32_eth_common_init();
 
     /* In the following, the steps described in "Programming steps for
@@ -187,22 +191,15 @@ void ptp_clock_read(ptp_timestamp_t *timestamp)
 #if IS_USED(MODULE_PERIPH_PTP_TIMER)
 void ptp_timer_clear(void)
 {
-    /* TODO: Use atomic utils, once merged */
-    if (IS_ACTIVE(CPU_HAS_BITBAND)) {
-        bit_clear32(&ETH->PTPTSCR, ETH_PTPTSCR_TSITE_Pos);
-    }
-    else {
-        unsigned state = irq_disable();
-        ETH->PTPTSCR &= ~ETH_PTPTSCR_TSITE;
-        irq_restore(state);
-    }
+    const atomic_bit_u32_t tsite = atomic_bit_u32(&ETH->PTPTSCR, ETH_PTPTSCR_TSITE_Pos);
+    atomic_clear_bit_u32(tsite);
 }
 
 void ptp_timer_set_absolute(const ptp_timestamp_t *target)
 {
     assert(target);
-     DEBUG("[periph_ptp] Set timer: %" PRIu32 ".%" PRIu32 "\n",
-           (uint32_t)target->seconds, target->nanoseconds);
+    DEBUG("[periph_ptp] Set timer: %" PRIu32 ".%" PRIu32 "\n",
+          (uint32_t)target->seconds, target->nanoseconds);
     unsigned state = irq_disable();
     /* Mask PTP timer IRQ first, so that an interrupt is not triggered
      * too early. (The target time is not set atomically.) */
