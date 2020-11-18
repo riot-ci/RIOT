@@ -1,16 +1,34 @@
-pipeline:
-    run_tests:
-        image: riot/riotbuild:latest
-        environment:
-            - CLICOLOR_FORCE=1
-            - NPROC_MAX=4
-        commands:
-            - pwd
-            - printenv
-            - git status
-            - git remote -v
-            - ./dist/tools/ci/build_and_test.sh
-matrix:
-    BUILDTEST_MCU_GROUP:
-        - static-tests
-        - host
+kind: pipeline
+type: docker
+name: static_tests
+
+environment:
+  CLICOLOR_FORCE: 1
+  NPROC_MAX: 4
+  GIT_CACHE_DIR: /cache/git
+
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    image: riot/riotbuild:latest
+    commands:
+    - wget https://raw.githubusercontent.com/kaspar030/git-cache/master/git-cache -O /usr/bin/git-cache
+    - chmod a+x /usr/bin/git-cache
+    - git-cache init
+    - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
+    - git branch -a
+    - git tag -l
+    - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    - git merge-base --fork-point $${CI_BASE_BRANCH}
+
+  - name: run_tests
+    image: riot/riotbuild:latest
+    commands:
+        - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+        - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
+        - printenv | sort
+        - git status
+        - git remote -v
+        - ./dist/tools/ci/static_tests.sh
