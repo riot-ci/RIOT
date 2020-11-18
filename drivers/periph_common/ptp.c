@@ -1,7 +1,8 @@
+#if IS_USED(MODULE_PERIPH_PTP_TIMER)
 #include "irq.h"
 #include "periph/ptp.h"
 
-#if IS_USED(MODULE_PERIPH_PTP_TIMER) && !defined(HAVE_PTP_TIMER_SET_U64)
+#if !defined(HAVE_PTP_TIMER_SET_U64)
 void ptp_timer_set_u64(uint64_t target)
 {
     unsigned irq_state = irq_disable();
@@ -23,6 +24,7 @@ void ptp_timer_set_u64(uint64_t target)
     }
     irq_restore(irq_state);
 }
+#endif /* !defined(HAVE_PTP_TIMER_SET_U64) */
 #else
 typedef int dont_be_pedantic;
 #endif
