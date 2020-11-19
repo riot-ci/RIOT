@@ -4,8 +4,9 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-mega2560 \
     arduino-nano \
     arduino-uno \
-    atmega328p \
     atmega1284p \
+    atmega328p \
+    bluepill-stm32f030c8 \
     derfmega128 \
     i-nucleo-lrwan1 \
     mega-xplained \
