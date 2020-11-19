@@ -27,18 +27,24 @@
 
 extern void *sbrk(int incr);
 
-void __attribute__((weak)) *malloc(size_t size)
+void *oneway_malloc(size_t size)
 {
     if (size != 0) {
         void *ptr = sbrk(size);
 
-        DEBUG("malloc(): allocating block of size %u at %p.\n", (unsigned int) size, ptr);
+        DEBUG("malloc(): allocating block of size %u at %p.\n",
+              (unsigned int) size, ptr);
 
         if (ptr != (void*) -1) {
             return ptr;
         }
     }
     return NULL;
+}
+
+void __attribute__((weak)) *malloc(size_t size)
+{
+    return oneway_malloc(size);
 }
 
 void __attribute__((weak)) *realloc(void *ptr, size_t size)

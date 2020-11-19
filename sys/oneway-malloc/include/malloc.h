@@ -39,6 +39,13 @@ extern "C" {
 #endif
 
 /**
+ * @brief       Allocation a block of memory that can not be freed.
+ * @param[in]   size   Size of the block to allocate in bytes.
+ * @returns     The new memory block. `NULL` if the "heap" is exhausted.
+ */
+void *oneway_malloc(size_t size);
+
+/**
  * @brief       Allocation a block of memory.
  * @param[in]   size   Size of the block to allocate in bytes.
  * @returns     The new memory block. `NULL` if the "heap" is exhausted.
