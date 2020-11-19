@@ -36,14 +36,6 @@
 
 #define TEST_FATFS_MAX_VOL_STR_LEN 14 /* "-2147483648:/\0" */
 
-#ifndef CONFIG_FATFS_TYPE
-#if FF_FS_EXFAT
-#define CONFIG_FATFS_TYPE   FM_EXFAT
-#else
-#define CONFIG_FATFS_TYPE   FM_FAT32
-#endif
-#endif
-
 static int fatfs_err_to_errno(int32_t err);
 static void _fatfs_time_to_timespec(WORD fdate, WORD ftime, time_t *time);
 
@@ -71,7 +63,7 @@ static int _format(vfs_mount_t *mountp)
 
     snprintf(volume_str, sizeof(volume_str), "%d:/", fs_desc->vol_idx);
 
-    FRESULT res = f_mkfs(volume_str, CONFIG_FATFS_TYPE, 0, work, FF_MAX_SS);
+    FRESULT res = f_mkfs(volume_str, CONFIG_FATFS_FORMAT_TYPE, 0, work, FF_MAX_SS);
 
     free(work);
 
