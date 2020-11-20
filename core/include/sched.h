@@ -84,7 +84,6 @@
 #include <inttypes.h>
 
 #include "kernel_defines.h"
-#include "kernel_types.h"
 #include "native_sched.h"
 #include "clist.h"
 
