@@ -49,6 +49,5 @@ endif
 BOOTLOADER_SIZE ?= 0
 ROM_RESERVED ?= $(BOOTLOADER_SIZE)
 
-include $(RIOTMAKE)/tools/serial.inc.mk
 # include avrdude flashing tool
 include $(RIOTMAKE)/tools/avrdude.inc.mk
