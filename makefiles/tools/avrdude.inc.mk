@@ -23,6 +23,10 @@ PROGRAMMER_FLAGS = -p $(subst atmega,m,$(CPU))
 
 # Set flasher port only for programmers that require it
 ifneq (,$(filter $(PROGRAMMER),arduino avr109 buspirate stk500v1 stk500v2 wiring))
+  # These avrdude programmers require the serial port used for programming to
+  # be defined, so include it here
+  include $(RIOTMAKE)/tools/serial.inc.mk
+
   # make the flasher port configurable (e.g. with atmelice the port is usb)
   # defaults to terminal's serial port if not configured
   PROGRAMMER_FLAGS += -P $(PROG_DEV)

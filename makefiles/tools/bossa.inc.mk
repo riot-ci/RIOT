@@ -3,6 +3,10 @@ FLASHFILE ?= $(BINFILE)
 FLASHER ?= $(RIOTTOOLS)/bossa-$(BOSSA_VERSION)/bossac
 FFLAGS_OPTS ?=
 
+# Bossa requires the serial port use for programming to be defined, so include
+# it here
+include $(RIOTMAKE)/tools/serial.inc.mk
+
 # Only use ROM_OFFSET with Bossa version 1.9
 ifeq (1.9,$(BOSSA_VERSION))
   FFLAGS_OPTS += -o $(ROM_OFFSET)
