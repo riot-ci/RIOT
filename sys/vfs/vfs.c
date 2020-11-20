@@ -26,7 +26,6 @@
 #include "vfs.h"
 #include "mutex.h"
 #include "thread.h"
-#include "kernel_types.h"
 #include "clist.h"
 
 #define ENABLE_DEBUG 0

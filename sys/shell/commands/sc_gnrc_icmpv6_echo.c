@@ -26,7 +26,6 @@
 
 #include "bitfield.h"
 #include "byteorder.h"
-#include "kernel_types.h"
 #ifdef MODULE_LUID
 #include "luid.h"
 #endif

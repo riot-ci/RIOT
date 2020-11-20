@@ -28,7 +28,6 @@
 #include <stdint.h>
 
 #include "net/fib/table.h"
-#include "kernel_types.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "kernel_types.h"
 
 /* cpu */
 #include "periph/rtc.h"

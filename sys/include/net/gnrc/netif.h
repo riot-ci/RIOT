@@ -33,7 +33,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "kernel_types.h"
 #include "msg.h"
 #ifdef MODULE_GNRC_NETIF_BUS
 #include "msg_bus.h"
