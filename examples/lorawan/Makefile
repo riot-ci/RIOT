@@ -50,3 +50,8 @@ endif
 TEST_ON_CI_BLACKLIST = all
 
 include $(RIOTBASE)/Makefile.include
+
+# Set network as public
+ifndef CONFIG_LORAMAC_DEFAULT_PUBLIC_NETWORK
+  CFLAGS += -DCONFIG_LORAMAC_DEFAULT_PUBLIC_NETWORK=1
+endif

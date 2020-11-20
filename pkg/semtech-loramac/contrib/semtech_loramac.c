@@ -29,6 +29,7 @@
 
 #include "msg.h"
 #include "mutex.h"
+#include "kernel_defines.h"
 
 #include "net/netdev.h"
 #include "net/netdev/lora.h"
@@ -375,9 +376,9 @@ void _init_loramac(semtech_loramac_t *mac,
 #endif
     mutex_unlock(&mac->lock);
 
-    semtech_loramac_set_dr(mac, LORAMAC_DEFAULT_DR);
+    semtech_loramac_set_dr(mac, CONFIG_LORAMAC_DEFAULT_DR);
     semtech_loramac_set_adr(mac, LORAMAC_DEFAULT_ADR);
-    semtech_loramac_set_public_network(mac, LORAMAC_DEFAULT_PUBLIC_NETWORK);
+    semtech_loramac_set_public_network(mac, IS_ACTIVE(CONFIG_LORAMAC_DEFAULT_PUBLIC_NETWORK));
     semtech_loramac_set_class(mac, CONFIG_LORAMAC_DEFAULT_DEVICE_CLASS);
     semtech_loramac_set_tx_port(mac, LORAMAC_DEFAULT_TX_PORT);
     semtech_loramac_set_tx_mode(mac, LORAMAC_DEFAULT_TX_MODE);

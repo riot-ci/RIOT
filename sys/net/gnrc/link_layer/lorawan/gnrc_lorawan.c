@@ -17,11 +17,13 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "errno.h"
+#include "kernel_defines.h"
+
 #include "net/lora.h"
 #include "net/gnrc/lorawan.h"
-#include "errno.h"
 #include "net/gnrc/pktbuf.h"
-
 #include "net/lorawan/hdr.h"
 #include "net/loramac.h"
 #include "net/gnrc/lorawan/region.h"
@@ -95,8 +97,8 @@ void gnrc_lorawan_reset(gnrc_lorawan_t *mac)
 
     dev->driver->set(dev, NETOPT_CODING_RATE, &cr, sizeof(cr));
 
-    uint8_t syncword = LORAMAC_DEFAULT_PUBLIC_NETWORK ? LORA_SYNCWORD_PUBLIC
-                                                      : LORA_SYNCWORD_PRIVATE;
+    uint8_t syncword = IS_ACTIVE(CONFIG_LORAMAC_DEFAULT_PUBLIC_NETWORK) ? LORA_SYNCWORD_PUBLIC
+                                                                        : LORA_SYNCWORD_PRIVATE;
 
     dev->driver->set(dev, NETOPT_SYNCWORD, &syncword, sizeof(syncword));
 
