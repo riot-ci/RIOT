@@ -36,7 +36,6 @@
 #include "msg.h"
 #endif /* MODULE_CORE_MSG */
 #include "mutex.h"
-#include "kernel_types.h"
 #include "rmutex.h"
 
 #ifdef MODULE_ZTIMER_XTIMER_COMPAT

@@ -21,7 +21,6 @@
 
 #include <stdint.h>
 
-#include "kernel_types.h"
 #include "universal_address.h"
 #include "mutex.h"
 
