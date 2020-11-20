@@ -3,7 +3,7 @@ FLASHER = $(RIOTTOOLS)/cc2538-bsl/cc2538-bsl.py
 FFLAGS_OPTS ?=
 PROG_BAUD ?= 500000	# default value in cc2538-bsl
 
-# cc2538-bsl requires the serial port use for programming to be defined, so include
+# cc2538-bsl requires the serial port used for programming to be defined, so include
 # it here
 include $(RIOTMAKE)/tools/serial.inc.mk
 

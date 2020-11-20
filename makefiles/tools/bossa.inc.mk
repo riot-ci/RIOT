@@ -3,7 +3,7 @@ FLASHFILE ?= $(BINFILE)
 FLASHER ?= $(RIOTTOOLS)/bossa-$(BOSSA_VERSION)/bossac
 FFLAGS_OPTS ?=
 
-# Bossa requires the serial port use for programming to be defined, so include
+# Bossa requires the serial port used for programming to be defined, so include
 # it here
 include $(RIOTMAKE)/tools/serial.inc.mk
 
