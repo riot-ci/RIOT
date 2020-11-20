@@ -20,7 +20,6 @@ PORT_DARWIN ?= /dev/tty.usbserial-ARM
 MINITERMFLAGS += --rts 0 --dtr 0
 
 PYTERMFLAGS += -tg
-include $(RIOTMAKE)/tools/serial.inc.mk
 
 FLASHFILE ?= $(HEXFILE)
 FFLAGS = $(PROG_DEV) $(FLASHFILE)
