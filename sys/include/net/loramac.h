@@ -128,9 +128,10 @@ extern "C" {
 /**
  * @brief   Default network type (public or private)
  */
-#ifndef LORAMAC_DEFAULT_PUBLIC_NETWORK
-#define LORAMAC_DEFAULT_PUBLIC_NETWORK         (true)
+#ifdef DOXYGEN
+#define CONFIG_LORAMAC_DEFAULT_PUBLIC_NETWORK
 #endif
+
 /**
  * @brief   Default datarate
  */
