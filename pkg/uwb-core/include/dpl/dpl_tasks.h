@@ -22,7 +22,6 @@
 
 #include "dpl_types.h"
 
-#include "kernel_types.h"
 #include "thread.h"
 
 #ifdef __cplusplus

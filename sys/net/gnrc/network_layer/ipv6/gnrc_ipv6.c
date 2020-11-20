@@ -19,7 +19,6 @@
 
 #include "byteorder.h"
 #include "cpu_conf.h"
-#include "kernel_types.h"
 #include "net/gnrc.h"
 #include "net/gnrc/icmpv6.h"
 #include "net/gnrc/sixlowpan/ctx.h"
