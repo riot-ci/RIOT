@@ -234,7 +234,6 @@
 
 #include <stdint.h>
 
-#include "kernel_types.h"
 #include "msg.h"
 
 #ifdef __cplusplus

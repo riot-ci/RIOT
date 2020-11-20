@@ -22,7 +22,6 @@
 #ifndef PIR_H
 #define PIR_H
 
-#include "kernel_types.h"
 #include "periph/gpio.h"
 #include "stdbool.h"
 

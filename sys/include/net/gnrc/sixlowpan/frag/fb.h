@@ -88,7 +88,6 @@ gnrc_sixlowpan_frag_fb_t *gnrc_sixlowpan_frag_fb_get_by_tag(uint16_t tag);
 uint16_t gnrc_sixlowpan_frag_fb_next_tag(void);
 
 #if defined(TEST_SUITES) && !defined(DOXYGEN)
-#include "kernel_types.h"
 
 /* can't include `net/sixlowpan.h` as this would create a cyclical include */
 extern kernel_pid_t gnrc_sixlowpan_get_pid(void);
