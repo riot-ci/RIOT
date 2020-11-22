@@ -28,7 +28,7 @@ const ieee802154_radio_cipher_ops_t ieee802154_radio_cipher_ops = {
     .cbc = ieee802154_sec_cbc
 };
 
-static inline uint8_t _min(uint8_t a, uint8_t b)
+static inline uint16_t _min(uint16_t a, uint16_t b)
 {
     return a < b ? a : b;
 }
@@ -252,7 +252,7 @@ static uint8_t _ecb(ieee802154_sec_context_t *ctx,
                     uint8_t *tmp1, uint8_t *tmp2, uint8_t *data,
                     const uint8_t *Ai, uint16_t size)
 {
-    uint8_t s = _min(IEEE802154_SEC_BLOCK_SIZE, size);
+    uint16_t s = _min(IEEE802154_SEC_BLOCK_SIZE, size);
     ctx->dev.cipher_ops->ecb(&ctx->dev, tmp2, Ai, 1);
     memcpy(tmp1, data, s);
     memset(tmp1 + s, 0, IEEE802154_SEC_BLOCK_SIZE - s);
@@ -268,7 +268,7 @@ static uint8_t _cbc_next(ieee802154_sec_context_t *ctx,
                          uint8_t *last, uint8_t *tmp,
                          const uint8_t *next, uint16_t size)
 {
-    uint8_t s = _min(IEEE802154_SEC_BLOCK_SIZE, size);
+    uint16_t s = _min(IEEE802154_SEC_BLOCK_SIZE, size);
     memcpy(tmp, next, s);
     memset(tmp + s, 0, IEEE802154_SEC_BLOCK_SIZE - s);
     ctx->dev.cipher_ops->cbc(&ctx->dev, last, last, tmp, 1);
