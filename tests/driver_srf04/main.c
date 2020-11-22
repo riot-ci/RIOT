@@ -30,7 +30,7 @@ int main(void)
     puts("SRF04 range finder example");
 
     srf04_t dev;
-    if (srf04_init(&dev, &srf04_params[0]) != SRF04_OK) {
+    if (srf04_init(&dev, &params) != SRF04_OK) {
         puts("Error: initializing");
         return 1;
     }
@@ -39,7 +39,8 @@ int main(void)
         int distance = srf04_get_distance(&dev);
         if (distance < SRF04_OK) {
             puts("Error: no valid data available");
-        } else {
+        }
+        else {
             printf("D: %d mm\n", distance);
         }
     }
