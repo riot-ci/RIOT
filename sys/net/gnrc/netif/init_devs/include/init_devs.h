@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   extra stack size if ieee802154 security is enables
+ * @brief   extra stack size if ieee802154 security is enabled
  */
 #define IEEE802154_SECURITY_EXTRA_STACKSIZE (32)
 
