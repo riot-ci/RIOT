@@ -490,7 +490,7 @@ void ieee802154_sec_set_key(ieee802154_sec_dev_t *ctx,
        which wraps around the set_key callback and then copies.
        For the software encryption / decryption, there is
        nothing else to do, hence the NOP. For hardware support,
-       the key must be transfered to the transceiver. */
+       the key must be transferred to the transceiver. */
     (void)ctx;
     (void)key;
     (void)key_size;

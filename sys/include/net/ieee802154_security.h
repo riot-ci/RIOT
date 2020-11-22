@@ -7,13 +7,15 @@
  */
 
 /**
- * @ingroup     net_ieee802154 IEEE802.15.4
+ * @defgroup    net_ieee802154_security  IEEE 802.15.4 security
+ * @ingroup     net
+ * @brief       IEEE 802.15.4 security header
  * @{
  *
  * @file
  * @brief       IEEE 802.15.4 security interface
  *
- * Specification: IEEE802154 - 2015
+ * Specification: IEEE 802154 - 2015
  * https://www.silabs.com/content/usergenerated/asi/cloud/attachments/siliconlabs/en/community/wireless/proprietary/forum/jcr:content/content/primary/qna/802_15_4_promiscuous-tbzR/hivukadin_vukadi-iTXQ/802.15.4-2015.pdf
  *
  * @author      Fabian Hüßler <fabian.huessler@ovgu.de>
@@ -26,6 +28,10 @@
 #include "kernel_defines.h"
 #include "ieee802154.h"
 #include "crypto/ciphers.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #if IS_USED(MODULE_IEEE802154_RADIO_HAL)
 #include "net/ieee802154/radio.h"
@@ -152,7 +158,7 @@ struct ieee802154_sec_dev {
  * <em>IEEE802154_SCF_SECLEVEL_MIC*</em>:
  * A message integrity code (MIC), also known as MAC,
  * is used to prove authentication. The MIC covers the whole frame
- * i.e. header, auxilliary header, and frame payload.
+ * i.e. header, auxiliary header, and frame payload.
  * The MIC is always encrypted, thus it must be decrypted by the receiver,
  * to be checked.
  *
@@ -474,6 +480,10 @@ void ieee802154_sec_cbc(const ieee802154_sec_dev_t *dev,
  *                   @ref ieee802154_sec_cbc
  */
 extern const ieee802154_radio_cipher_ops_t ieee802154_radio_cipher_ops;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* NET_IEEE802154_SECURITY_H */
 /** @} */
