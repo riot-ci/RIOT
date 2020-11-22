@@ -338,7 +338,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         iolist_payload.iol_next = (iolist_t *)mic;
         iolist_payload.iol_base = pkt->next->data,
         iolist_payload.iol_len = pkt->next->size;
-        uint8_t mic_size;
+        uint8_t mic_size = 0;
         if (flags & NETDEV_IEEE802154_SECURITY_EN) {
             res = ieee802154_sec_encrypt_frame(&state->sec_ctx,
                                                mhr, &mhr_len,

@@ -450,7 +450,6 @@ int ieee802154_sec_decrypt_frame(ieee802154_sec_context_t *ctx,
     uint16_t c_len = *payload_size;
     uint8_t *mac = *mic;
     ieee802154_ccm_block_t ccm; /* Ai or Bi */
-    uint8_t tmp_mic[IEEE802154_MAC_SIZE];
 
     /* TODO:
        A better implementation would check if the received frame counter is
@@ -471,6 +470,7 @@ int ieee802154_sec_decrypt_frame(ieee802154_sec_context_t *ctx,
     }
     /* check MIC */
     if (_req_mac(security_level)) {
+        uint8_t tmp_mic[IEEE802154_MAC_SIZE];
         _init_cbc_B0(&ccm, frame_counter, security_level, c_len, mac_size, src_address);
         _comp_mic(ctx, tmp_mic, &ccm, a, a_len, c, c_len);
         if (memcmp(tmp_mic, *mic, mac_size)) {
