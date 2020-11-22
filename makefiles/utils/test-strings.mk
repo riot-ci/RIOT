@@ -23,3 +23,4 @@ test-version_is_greater:
 	$(Q)bash -c 'test 1 = "$(call version_is_greater,$(TEST_VERSION_1),$(TEST_VERSION_2))" || { echo ERROR: "$(TEST_VERSION_2)" \< "$(TEST_VERSION_1)"; exit 1; }'
 	$(Q)bash -c 'test 1 = "$(call version_is_greater,$(TEST_VERSION_3),$(TEST_VERSION_1))" || { echo ERROR: "$(TEST_VERSION_1)" \< "$(TEST_VERSION_3)"; exit 1; }'
 	$(Q)bash -c 'test 1 = "$(call version_is_greater,$(TEST_VERSION_4),$(TEST_VERSION_3))" || { echo ERROR: "$(TEST_VERSION_3)" \< "$(TEST_VERSION_4)"; exit 1; }'
+	$(Q)bash -c 'test "" = "$(call version_is_greater,$(TEST_VERSION_3),$(TEST_VERSION_4))" || { echo ERROR: Test should fail, "$(TEST_VERSION_4)" is not \< "$(TEST_VERSION_3)"; exit 1; }'
