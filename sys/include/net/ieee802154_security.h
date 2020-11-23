@@ -15,7 +15,7 @@
  * @file
  * @brief       IEEE 802.15.4 security interface
  *
- * Specification: IEEE 802154 - 2015
+ * Specification: IEEE 802.15.4 - 2015
  * https://www.silabs.com/content/usergenerated/asi/cloud/attachments/siliconlabs/en/community/wireless/proprietary/forum/jcr:content/content/primary/qna/802_15_4_promiscuous-tbzR/hivukadin_vukadi-iTXQ/802.15.4-2015.pdf
  *
  * @author      Fabian Hüßler <fabian.huessler@ovgu.de>
