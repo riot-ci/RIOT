@@ -174,7 +174,8 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             netif->last_pkt.src_len = hdr->src_l2addr_len;
             netif->last_pkt.seq = ieee802154_get_seq(mhr);
 #endif /* MODULE_GNRC_NETIF_DEDUP */
-            if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+#if IS_USED(MODULE_IEEE802154_SECURITY)
+            {
                 uint8_t *payload = NULL;
                 uint16_t payload_size = 0;
                 uint8_t *mic = NULL;
@@ -193,6 +194,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
                 }
                 nread -= mic_size;
             }
+#endif
             hdr->lqi = rx_info.lqi;
             hdr->rssi = rx_info.rssi;
             gnrc_netif_hdr_set_netif(hdr, netif);
@@ -296,7 +298,8 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         return -EINVAL;
     }
     mhr_len = res;
-    if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+#if IS_USED(MODULE_IEEE802154_SECURITY)
+    {
         /* write protect `pkt` to set `pkt->next` */
         gnrc_pktsnip_t *tmp = gnrc_pktbuf_start_write(pkt);
         if (tmp == NULL) {
@@ -317,6 +320,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
             return res;
         }
     }
+#endif
     iolist_t iolist_payload = {
         .iol_next = (iolist_t *)pkt->next->next,
         .iol_base = pkt->next->data,
@@ -327,7 +331,8 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         .iol_base = mhr,
         .iol_len = mhr_len
     };
-    if (IS_USED(MODULE_IEEE802154_SECURITY)) {
+#if IS_USED(MODULE_IEEE802154_SECURITY)
+    {
         gnrc_pktsnip_t *mic = gnrc_pktbuf_add(pkt->next->next, NULL,
                                               IEEE802154_MAC_SIZE,
                                               GNRC_NETTYPE_UNDEF);
@@ -352,6 +357,7 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         iolist_header.iol_len = mhr_len;
         mic->size = mic_size;
     }
+#endif
 #ifdef MODULE_NETSTATS_L2
     if (netif_hdr->flags &
             (GNRC_NETIF_HDR_FLAGS_BROADCAST | GNRC_NETIF_HDR_FLAGS_MULTICAST)) {
