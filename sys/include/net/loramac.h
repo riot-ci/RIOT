@@ -237,8 +237,8 @@ extern "C" {
 /**
  * @brief   Default adaptive datarate state
  */
-#ifndef LORAMAC_DEFAULT_ADR
-#define LORAMAC_DEFAULT_ADR                    (false)
+#ifdef DOXYGEN
+#define CONFIG_LORAMAC_DEFAULT_ADR
 #endif
 
 /**
