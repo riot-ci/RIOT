@@ -272,8 +272,8 @@ extern "C" {
 /**
  * @brief   Default automatic reply status
  */
-#ifndef LORAMAC_DEFAULT_AR
-#define LORAMAC_DEFAULT_AR                     (false)
+#ifdef DOXYGEN
+#define CONFIG_LORAMAC_DEFAULT_AR
 #endif
 
 /**
