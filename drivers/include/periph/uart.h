@@ -272,6 +272,31 @@ int uart_mode(uart_t uart, uart_data_bits_t data_bits, uart_parity_t parity,
 void uart_write(uart_t uart, const uint8_t *data, size_t len);
 
 /**
+ * @brief   Write a single byte of data to the specified UART device
+ *
+ * This function is blocking, as it will only return after @p data
+ * has been send.
+ *
+ * @param[in] uart          UART device to use for transmission
+ * @param[in] data          byte to write
+ *
+ */
+void uart_write_byte(uart_t uart, uint8_t data);
+
+/**
+ * @brief   Write a NULL-terminated string to the specified UART device
+ *
+ * This function is blocking, as it will only return after all characters
+ * of the given string have been send. The way this data is send is up to the
+ * implementation: active waiting, interrupt driven, DMA, etc.
+ *
+ * @param[in] uart          UART device to use for transmission
+ * @param[in] s             string to send (NULL-terminated)
+ *
+ */
+void uart_write_string(uart_t uart, const char *s);
+
+/**
  * @brief   Power on the given UART device
  *
  * @param[in] uart          the UART device to power on

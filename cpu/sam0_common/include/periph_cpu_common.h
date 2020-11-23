@@ -57,6 +57,13 @@ extern "C" {
 /** @} */
 
 /**
+ * @name   UART implements writing single bytes
+ * @{
+ */
+#define PERIPH_UART_HAS_WRITE_BYTE
+/** @} */
+
+/**
  * @brief   Override GPIO type
  * @{
  */
