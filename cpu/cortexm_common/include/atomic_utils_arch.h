@@ -86,11 +86,11 @@ static inline void __attribute__((always_inline)) _bit_barrier_post(void)
     __asm__ volatile ("" : : : "memory");
 }
 
-static inline bool _is_addr_valid_for_bitbanding(void *_addr)
+static inline bool _is_addr_valid_for_bitbanding(volatile void *_addr)
 {
     /* SRAM bit-band region goes from 0x20000000 to 0x200fffff,
      * peripheral bit-band region goes from 0x40000000 to 0x400fffff */
-    uintptr_t addr = (volatile uintptr_t)_addr;
+    uintptr_t addr = (uintptr_t)_addr;
     if ((addr < 0x20000000UL) || (addr > 0x400fffffUL)) {
         return false;
     }
