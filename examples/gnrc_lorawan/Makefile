@@ -8,6 +8,7 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_lorawan
 USEMODULE += gnrc_pktdump
 USEMODULE += gnrc_neterr
+USEMODULE += lorawan
 
 BOARD ?= b-l072z-lrwan1
 RIOTBASE ?= ../../
@@ -20,36 +21,50 @@ DRIVER ?= sx1276
 
 USEMODULE += $(DRIVER)
 
+include $(RIOTBASE)/Makefile.include
+
 ########################### COMPILE TIME CONFIGURATION ########################
 # NOTE: The following options can be configured on runtime as well using
 # `ifconfig`
 
+# The configurations can be accessed via menconfig using `make menuconfig`
+
 # OTAA compile time configuration keys
+ifeq (,$(CONFIG_LORAMAC_APP_KEY_DEFAULT)$(CONFIG_LORAMAC_APP_EUI_DEFAULT)$(CONFIG_LORAMAC_DEV_EUI_DEFAULT))
 CFLAGS += -DCONFIG_LORAMAC_APP_KEY_DEFAULT=\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"
 CFLAGS += -DCONFIG_LORAMAC_APP_EUI_DEFAULT=\"BBBBBBBBBBBBBBBB\"
 CFLAGS += -DCONFIG_LORAMAC_DEV_EUI_DEFAULT=\"CCCCCCCCCCCCCCCC\"
+endif
 
 # Uncomment and replace with proper keys for joining with ABP
 # For TTN, It's necessary to set the RX2 DR to 3
 # NOTE: This values will be overriten in case of OTAA.
-#CFLAGS += -DCONFIG_LORAMAC_DEV_ADDR_DEFAULT=\"00000000\"
-#CFLAGS += -DCONFIG_LORAMAC_NWK_SKEY_DEFAULT=\"00000000000000000000000000000000\"
-#CFLAGS += -DCONFIG_LORAMAC_APP_SKEY_DEFAULT=\"00000000000000000000000000000000\"
-#CFLAGS += -DCONFIG_LORAMAC_DEFAULT_RX2_DR=LORAMAC_DR_3
+# ifeq (,$(CONFIG_LORAMAC_DEV_ADDR_DEFAULT)$(DCONFIG_LORAMAC_NWK_SKEY_DEFAULT)$(DCONFIG_LORAMAC_APP_SKEY_DEFAULT))
+# CFLAGS += -DCONFIG_LORAMAC_DEV_ADDR_DEFAULT=\"00000000\"
+# CFLAGS += -DCONFIG_LORAMAC_NWK_SKEY_DEFAULT=\"00000000000000000000000000000000\"
+# CFLAGS += -DCONFIG_LORAMAC_APP_SKEY_DEFAULT=\"00000000000000000000000000000000\"
+# endif
+
+## For FIT-IoT Lab usage. Use the highest DR since gateway is nearby.
+ifndef CONFIG_LORAMAC_DEFAULT_RX2_DR
+CFLAGS += -DCONFIG_LORAMAC_DEFAULT_DR_5
+endif
 
 # Comment/uncomment as necessary
-CFLAGS += -DCONFIG_LORAMAC_DEFAULT_JOIN_PROCEDURE=LORAMAC_JOIN_OTAA
-#CFLAGS += -DCONFIG_LORAMAC_DEFAULT_JOIN_PROCEDURE=LORAMAC_JOIN_ABP
+ifndef CONFIG_LORAMAC_DEFAULT_JOIN_PROCEDURE
+CFLAGS += -DCONFIG_LORAMAC_DEFAULT_JOIN_PROCEDURE_OTAA
+# CFLAGS += -DCONFIG_LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP
+endif
 
 # Uncomment to set the highest DR for the EU868 in order to maximize throughput.
 # If uncommented, the default value (DR0) is used.
 # Note this value is also used for the OTAA.
-#CFLAGS += -DCONFIG_LORAMAC_DEFAULT_DR=LORAMAC_DR_5
+# CFLAGS += -DCONFIG_LORAMAC_DEFAULT_DR=LORAMAC_DR_5
 
-# Set default messages to unconfirmable
-CFLAGS += -DCONFIG_LORAMAC_DEFAULT_TX_MODE=LORAMAC_TX_UNCNF
-
-include $(RIOTBASE)/Makefile.include
+# # Set default messages to unconfirmable
+ifndef CONFIG_LORAMAC_DEFAULT_TX_MODE
+CFLAGS += -DCONFIG_LORAMAC_DEFAULT_TX_MODE_UNCNF
+endif
 
 # We can reduce the size of the packet buffer for LoRaWAN, since there's no IP
 # support. This will reduce RAM consumption.

@@ -22,6 +22,7 @@ USEPKG += semtech-loramac
 
 USEMODULE += $(DRIVER)
 USEMODULE += fmt
+USEMODULE += lorawan
 FEATURES_REQUIRED += periph_rtc
 
 CFLAGS += -DDEVEUI=\"$(DEVEUI)\" -DAPPEUI=\"$(APPEUI)\" -DAPPKEY=\"$(APPKEY)\"
