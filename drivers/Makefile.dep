@@ -1,3 +1,4 @@
+
 # driver pseudo-modules dependencies (in alphabetical order)
 
 ifneq (,$(filter adc%1c,$(USEMODULE)))
@@ -100,6 +101,10 @@ ifneq (,$(filter nrfmin,$(USEMODULE)))
   FEATURES_REQUIRED += radio_nrfmin
   FEATURES_REQUIRED += periph_cpuid
   USEMODULE += netif
+endif
+
+ifneq (,$(filter nrf24l01p_ng_%,$(USEMODULE)))
+  USEMODULE += nrf24l01p_ng
 endif
 
 ifneq (,$(filter qmc5883l_%,$(USEMODULE)))
