@@ -20,12 +20,19 @@
 
 #include "cpu.h"
 #include "board.h"
+#include "periph/gpio.h"
+
+extern void pm_reboot(void*);
 
 void board_init(void)
 {
     /* initialize the boards LEDs */
     LED_PORT->DIRSET = (LED_MASK);
     LED_PORT->OUTSET = (LED_MASK);
+
+    /* configure software RST button */
+    gpio_init_int(BTN0_PIN, BTN0_MODE, GPIO_FALLING,
+                  pm_reboot, NULL);
 
     /* initialize the CPU */
     cpu_init();
