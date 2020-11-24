@@ -33,7 +33,7 @@ extern "C" {
  *          The E104-BT50xxA module does not have any external oscillators
  * @{
  */
-#define CLOCK_HFCLK         (0U)            /* internal RC oscillator */
+#define CLOCK_HFCLK         (1)             /* external crystal */
 #define CLOCK_LFCLK         (0)             /* internal RC oscillator */
 /** @} */
 
