@@ -19,6 +19,7 @@ menu "Miscellaneous Device Drivers"
 rsource "at/Kconfig"
 rsource "at24mac/Kconfig"
 rsource "disp_dev/Kconfig"
+rsource "ds1307/Kconfig"
 rsource "edbg_eui/Kconfig"
 endmenu # Miscellaneous Device Drivers
 
