@@ -1,8 +1,7 @@
 #include "cpu.h"
 #include "assert.h"
 #include "periph/spi.h"
-
-void _init_dma(spi_t bus, const volatile void *reg_rx, volatile void *reg_tx);
+#include "spi_internal.h"
 
 void _init_qspi(spi_t bus)
 {

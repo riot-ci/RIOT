@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "assert.h"
 #include "periph/spi.h"
+#include "spi_internal.h"
 
 /**
  * @brief   Shortcut for accessing the used SPI SERCOM device
@@ -43,8 +44,6 @@ static inline void _enable(SercomSpi *dev)
     while (dev->SYNCBUSY.reg) {}
 #endif
 }
-
-void _init_dma(spi_t bus, const volatile void *reg_rx, volatile void *reg_tx);
 
 void _init_spi(spi_t bus, SercomSpi *dev)
 {
