@@ -22,6 +22,7 @@ rsource "disp_dev/Kconfig"
 rsource "ds1307/Kconfig"
 rsource "ds3231/Kconfig"
 rsource "ds3234/Kconfig"
+rsource "dsp0401/Kconfig"
 rsource "edbg_eui/Kconfig"
 endmenu # Miscellaneous Device Drivers
 
