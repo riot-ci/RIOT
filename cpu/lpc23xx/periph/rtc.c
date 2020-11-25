@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
 /* cpu */
 #include "periph/rtc.h"
 #include "VIC.h"
