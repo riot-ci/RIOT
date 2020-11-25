@@ -253,7 +253,7 @@ static const spi_conf_t spi_config[] = {
 #endif
     },
 #ifdef MODULE_PERIPH_SPI_ON_QSPI
-    {    /* QSPI */
+    {    /* QSPI in SPI mode */
         .dev      = QSPI,
         .miso_pin = SAM0_QSPI_PIN_DATA_1,
         .mosi_pin = SAM0_QSPI_PIN_DATA_0,
