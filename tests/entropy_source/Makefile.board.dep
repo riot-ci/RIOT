@@ -1,4 +1,4 @@
-# Only include adc noise source if BOARD is not native
+# Only include adc noise source if BOARD has an adc
 FEATURES_OPTIONAL += periph_adc
 
 ifneq (,$(filter periph_adc,$(FEATURES_USED)))
