@@ -1,0 +1,5 @@
+# include driver for bq2429x
+CONFIG_MODULE_BQ2429X=y
+
+# include xtimer for polling
+CONFIG_MODULE_XTIMER=y
