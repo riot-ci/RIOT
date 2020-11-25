@@ -604,7 +604,7 @@ static inline thread_status_t thread_get_status(const thread_t *thread) {
  * @param   thread   thread to work on
  * @returns true if thread is active, false otherwise
  */
-static inline thread_status_t thread_is_active(const thread_t *thread) {
+static inline bool thread_is_active(const thread_t *thread) {
     return thread->status >= STATUS_ON_RUNQUEUE;
 }
 
