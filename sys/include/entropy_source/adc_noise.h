@@ -86,16 +86,23 @@ extern "C" {
  * The entropy value needs to be estimated and evaluated thoroughly beforehand
  * deployment! To avoid float, the
  * actual entropy value per one byte sample needs to be manually multiplied by
- * 2^16 before setting it as configuration parameter. See
+ * 2^16 before before configuring it (e.g., to
+ * an entropy value of 1 bit/sample, a value of 1 * 65536 needs to be set) .
+ * We default to zero which is an invalid configuration to enforce a
+ * thoughtful investigation on the actual entropy properties. See
  * @ref sys_entropy_source for further information about entropy source
  * validation.
  */
 #if !defined(CONFIG_KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE) || defined(DOXYGEN)
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HMIN
-#define CONFIG_ENTROPY_SOURCE_ADC_HMIN         (65536)  /**< H_min=1 bit/sample * 2^16
-                                                         *   only as an example!
-                                                         */
+#define CONFIG_ENTROPY_SOURCE_ADC_HMIN         (0)  /**< H_min=0 bit/sample * 2^16
+                                                     *   is invalid and needs to
+                                                     *   set manually!
+                                                     */
+#if !CONFIG_ENTROPY_SOURCE_ADC_HMIN
+#warning "The min. provided entropy must be set before using this module"
 #endif
+#endif /* !CONFIG_ENTROPY_SOURCE_ADC_HMIN */
 
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
 #define CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST  0  /**< Disable ADC health test
