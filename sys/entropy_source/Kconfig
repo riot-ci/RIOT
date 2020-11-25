@@ -4,13 +4,13 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-menuconfig KCONFIG_MODULE_ENTROPY_SOURCE
+menuconfig KCONFIG_USEMODULE_ENTROPY_SOURCE
     bool "Configure entropy source module"
-    depends on MODULE_ENTROPY_SOURCE
+    depends on USEMODULE_ENTROPY_SOURCE_ADC_NOISE
     help
         Configure entropy sources using Kconfig.
 
-if KCONFIG_MODULE_ENTROPY_SOURCE
+if KCONFIG_USEMODULE_ENTROPY_SOURCE
 
 config ENTROPY_SOURCE_TESTS_WIN
     int "Window size for Adaptive Proportion Test"
@@ -34,4 +34,4 @@ config ENTROPY_SOURCE_NEUMANN_ABORT
 rsource "adc_noise/Kconfig"
 rsource "zero_entropy/Kconfig"
 
-endif # KCONFIG_MODULE_ENTROPY_SOURCE
+endif # KCONFIG_USEMODULE_ENTROPY_SOURCE

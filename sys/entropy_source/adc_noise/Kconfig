@@ -4,13 +4,13 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 
-menuconfig KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE
+menuconfig KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE
     bool "Configure ADC Noise entropy source module"
-    depends on MODULE_ENTROPY_SOURCE_ADC_NOISE
+    depends on USEMODULE_ENTROPY_SOURCE_ADC_NOISE
     help
         Configure the ADC Noise entropy source using Kconfig.
 
-if KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE
+if KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE
 
 choice
     bool "ADC default sampling resolution"
@@ -71,4 +71,4 @@ config ENTROPY_SOURCE_ADC_COND
         Conditioning increases runtime of the entropy generation process. Currently, a von
         Neumann extractor is involved which has an nondeterministic runtime.
 
-endif # KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE
+endif # KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE

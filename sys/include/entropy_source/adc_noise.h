@@ -90,7 +90,7 @@ extern "C" {
  * @ref sys_entropy_source for further information about entropy source
  * validation.
  */
-#if !defined(CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE) || defined(DOXYGEN)
+#if !defined(CONFIG_KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE) || defined(DOXYGEN)
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HMIN
 #define CONFIG_ENTROPY_SOURCE_ADC_HMIN         (65536)  /**< H_min=1 bit/sample * 2^16
                                                          *   only as an example!
@@ -107,7 +107,7 @@ extern "C" {
                                                     *   test by default.
                                                     */
 #endif
-#endif /* !CONFIG_KCONFIG_MODULE_ENTROPY_SOURCE_ADC_NOISE || DOXYGEN */
+#endif /* !CONFIG_KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE || DOXYGEN */
 /** @} */
 
 /**
