@@ -10,6 +10,7 @@
  * @defgroup   sys_entropy_source_common Entropy Source Common
  * @ingroup    sys_entropy_source
  * @brief      Common definitions and functions for entropy sources
+ * @internal
  *
  * @{
  * @file

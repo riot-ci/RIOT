@@ -10,6 +10,7 @@
  * @defgroup   sys_entropy_source_adc ADC Noise Entropy Source
  * @ingroup    sys_entropy_source
  * @brief      Entropy Source based on LSB of ADC samples
+ * @internal
  *
  * This module provides entropy from ADC samples. Thereby, only the LSB is considered for
  * generation of output values. The available resolution as well as internal sampling rates,
