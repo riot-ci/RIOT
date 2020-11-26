@@ -189,7 +189,7 @@ void mutex_cancel(mutex_cancel_t *mc)
 
     mutex_t *mutex = mc->mutex;
     thread_t *thread = mc->thread;
-    if (thread->status >= STATUS_ON_RUNQUEUE) {
+    if (thread_is_active(thread)) {
         /* thread is still running or about to run, so it will check
          * `mc-cancelled` in time */
         irq_restore(irq_state);
