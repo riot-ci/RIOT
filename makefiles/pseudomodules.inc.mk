@@ -73,6 +73,7 @@ PSEUDOMODULES += log
 PSEUDOMODULES += log_printfnoformat
 PSEUDOMODULES += log_color
 PSEUDOMODULES += lora
+PSEUDOMODULES += lorawan
 PSEUDOMODULES += mpu_stack_guard
 PSEUDOMODULES += mpu_noexec_ram
 PSEUDOMODULES += nanocoap_%
