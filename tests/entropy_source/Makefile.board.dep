@@ -3,6 +3,7 @@ FEATURES_OPTIONAL += periph_adc
 
 ifneq (,$(filter periph_adc,$(FEATURES_USED)))
   USEMODULE += entropy_source_adc_noise
+  CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_HMIN=65536
   # enable ADC health tests and conditioning
   ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
     CFLAGS += -DCONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST=1

@@ -20,12 +20,14 @@ Proportion Test (NIST SP 800-90B 4.4.2). The expected output is:
 
 ```
 # main(): This is RIOT! (Version: <version>)
-# Zero entropy single request 0/410 returned: 0
+# Zero entropy single request 0/311 returned: 0
 ...
-# Zero entropy single request 20/410 returned: -3
+# Zero entropy single request 20/311 returned: -3
 ...
-# Zero entropy single request 410/410 returned: -5
+# Zero entropy single request 310/311 returned: -3
+# Zero entropy single request 311/311 returned: -5
 # Zero entropy request 64 Bytes: -5
+
 ```
 
 ## Board
@@ -40,11 +42,11 @@ missing errors do **not** reveal information about the quality of an entropy sou
 
 ```
 # main(): This is RIOT! (Version: <version>)
-# Zero entropy single request 0/410 returned: 0
+# Zero entropy single request 0/311 returned: 0
 ...
-# Zero entropy single request 20/410 returned: -3
+# Zero entropy single request 20/311 returned: -3
 ...
-# Zero entropy single request 410/410 returned: -5
+# Zero entropy single request 311/311 returned: -5
 # Zero entropy request 64 Bytes: -5
 # ADC noise source entropy/sample: 65536 [2^16 * bit / sample]
 # ADC noise source entropy/sample: 1 [bit / sample]

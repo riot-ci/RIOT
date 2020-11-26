@@ -24,8 +24,10 @@
 #include "fmt.h"
 #include "xtimer.h"
 #include "entropy_source.h"
-#include "entropy_source/adc_noise.h"
 #include "entropy_source/zero_entropy.h"
+#if MODULE_PERIPH_ADC
+#include "entropy_source/adc_noise.h"
+#endif
 
 #ifndef NUM_BYTES
 #define NUM_BYTES     (64)
