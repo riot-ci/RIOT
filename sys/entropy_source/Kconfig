@@ -5,8 +5,8 @@
 # directory for more details.
 
 menuconfig KCONFIG_USEMODULE_ENTROPY_SOURCE
-    bool "Configure entropy source module"
-    depends on USEMODULE_ENTROPY_SOURCE_ADC_NOISE
+    bool "Configure entropy sources"
+    depends on USEMODULE_ENTROPY_SOURCE_ADC_NOISE || USEMODULE_ENTROPY_SOURCE_ZERO_ENTROPY
     help
         Configure entropy sources using Kconfig.
 
