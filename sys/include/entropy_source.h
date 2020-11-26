@@ -178,19 +178,19 @@ static inline int entropy_source_test_prop_cutoff(uint32_t entropy_per_sample)
 {
     int ret;
 
-    if (entropy_per_sample < 65536UL) {        /* 1 bit/sample */
+    if (entropy_per_sample < 49152UL) {        /* 0.75 bit/sample */
         ret = 410;
     }
-    else if (entropy_per_sample < 131072UL) {  /* 2 bit/sample */
+    else if (entropy_per_sample < 98304UL) {   /* 1.5 bit/sample */
         ret = 311;
     }
-    else if (entropy_per_sample < 131072UL) {  /* 4 bit/sample */
+    else if (entropy_per_sample < 196608UL) {   /* 3 bit/sample */
         ret = 177;
     }
-    else if (entropy_per_sample < 131072UL) {  /* 8 bit/sample */
+    else if (entropy_per_sample < 393216UL) {   /* 6 bit/sample */
         ret = 62;
     }
-    else if (entropy_per_sample == 131072UL) { /* 8 bit/sample */
+    else if (entropy_per_sample <= 524288UL) {  /* 8 bit/sample */
         ret = 13;
     }
     else {
