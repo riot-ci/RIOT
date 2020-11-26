@@ -100,9 +100,6 @@ extern "C" {
                                                      *   is invalid and needs to
                                                      *   set manually!
                                                      */
-#if !CONFIG_ENTROPY_SOURCE_ADC_HMIN
-#warning "The min. provided entropy must be set before using this module"
-#endif
 #endif /* !CONFIG_ENTROPY_SOURCE_ADC_HMIN */
 
 #ifndef CONFIG_ENTROPY_SOURCE_ADC_HEALTH_TEST
@@ -116,6 +113,11 @@ extern "C" {
                                                     */
 #endif
 #endif /* !CONFIG_KCONFIG_USEMODULE_ENTROPY_SOURCE_ADC_NOISE || DOXYGEN */
+
+/* Throw warning if H_min has not been re-configured */
+#if !CONFIG_ENTROPY_SOURCE_ADC_HMIN
+#warning The min. provided entropy must be set before using this module
+#endif
 /** @} */
 
 /**
