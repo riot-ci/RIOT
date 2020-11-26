@@ -404,6 +404,11 @@ ifneq (,$(filter emulate,$(MAKECMDGOALS)))
   -include $(RIOTMAKE)/tools/$(RIOT_EMULATOR).inc.mk
 endif
 
+# Include serial logic only if term targets are used
+ifneq (,$(filter term cleanterm,$(MAKECMDGOALS)))
+  include $(RIOTMAKE)/tools/serial.inc.mk
+endif
+
 # Include common programmer logic if available
 -include $(RIOTMAKE)/tools/$(PROGRAMMER).inc.mk
 
