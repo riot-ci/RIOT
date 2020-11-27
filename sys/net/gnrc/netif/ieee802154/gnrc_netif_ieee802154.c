@@ -187,8 +187,9 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
                                                      &payload, &payload_size,
                                                      &mic, &mic_size,
                                                      gnrc_netif_hdr_get_src_addr(hdr)) != 0) {
-                        gnrc_pktbuf_release(pkt);
                         DEBUG("_recv_ieee802154: packet dropped by security check\n");
+                        gnrc_pktbuf_release(pkt);
+                        gnrc_pktbuf_release(netif_hdr);
                         return NULL;
                     }
                 }
@@ -216,6 +217,7 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
             if (ieee802154_hdr == NULL) {
                 DEBUG("_recv_ieee802154: no space left in packet buffer\n");
                 gnrc_pktbuf_release(pkt);
+                gnrc_pktbuf_release(netif_hdr);
                 return NULL;
             }
             nread -= ieee802154_hdr->size;
@@ -295,21 +297,32 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
                                         dst, dst_len, dev_pan,
                                         dev_pan, flags, state->seq++)) == 0) {
         DEBUG("_send_ieee802154: Error preperaring frame\n");
+        gnrc_pktbuf_release(pkt);
         return -EINVAL;
     }
     mhr_len = res;
+
+    /* prepare iolist for netdev / mac layer */
+    iolist_t iolist_header = {
+        .iol_next = (iolist_t *)pkt->next,
+        .iol_base = mhr,
+        .iol_len = mhr_len
+    };
+
 #if IS_USED(MODULE_IEEE802154_SECURITY)
     {
         /* write protect `pkt` to set `pkt->next` */
         gnrc_pktsnip_t *tmp = gnrc_pktbuf_start_write(pkt);
-        if (tmp == NULL) {
+        if (!tmp) {
             DEBUG("_send_ieee802154: no write access to pkt");
+            gnrc_pktbuf_release(pkt);
             return -ENOMEM;
         }
         pkt = tmp;
         tmp = gnrc_pktbuf_start_write(pkt->next);
-        if (tmp == NULL) {
+        if (!tmp) {
             DEBUG("_send_ieee802154: no write access to pkt->next");
+            gnrc_pktbuf_release(pkt);
             return -ENOMEM;
         }
         pkt->next = tmp;
@@ -317,45 +330,39 @@ static int _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt)
         res = gnrc_pktbuf_merge(pkt->next);
         if (res < 0) {
             DEBUG("_send_ieee802154: failed to merge pktbuf\n");
+            gnrc_pktbuf_release(pkt);
             return res;
         }
-    }
-#endif
-    iolist_t iolist_payload = {
-        .iol_next = (iolist_t *)pkt->next->next,
-        .iol_base = pkt->next->data,
-        .iol_len = pkt->next->size
-    };
-    iolist_t iolist_header = {
-        .iol_next = &iolist_payload,
-        .iol_base = mhr,
-        .iol_len = mhr_len
-    };
-#if IS_USED(MODULE_IEEE802154_SECURITY)
-    {
-        gnrc_pktsnip_t *mic = gnrc_pktbuf_add(pkt->next->next, NULL,
-                                              IEEE802154_MAC_SIZE,
-                                              GNRC_NETTYPE_UNDEF);
-        if (!mic) {
-            DEBUG("_send_ieee802154: no space left in pktbuf to allocate MIC\n");
-            return -ENOMEM;
-        }
-        iolist_payload.iol_next = (iolist_t *)mic;
-        iolist_payload.iol_base = pkt->next->data,
-        iolist_payload.iol_len = pkt->next->size;
+
+        iolist_header.iol_next = (iolist_t *)pkt->next;
+
+        uint8_t mic[IEEE802154_MAC_SIZE];
         uint8_t mic_size = 0;
+
         if (flags & NETDEV_IEEE802154_SECURITY_EN) {
             res = ieee802154_sec_encrypt_frame(&state->sec_ctx,
                                                mhr, &mhr_len,
                                                pkt->next->data, pkt->next->size,
-                                               mic->data, &mic_size,
+                                               mic, &mic_size,
                                                state->long_addr);
             if (res != 0) {
+                DEBUG("_send_ieee802154: encryption failedf\n");
+                gnrc_pktbuf_release(pkt);
                 return res;
             }
         }
+        if (mic_size) {
+            gnrc_pktsnip_t *pktmic = gnrc_pktbuf_add(pkt->next->next,
+                                                     mic, mic_size,
+                                                     GNRC_NETTYPE_UNDEF);
+            if (!pktmic) {
+                DEBUG("_send_ieee802154: no space left in pktbuf to allocate MIC\n");
+                gnrc_pktbuf_release(pkt);
+                return -ENOMEM;
+            }
+            pkt->next->next = pktmic;
+        }
         iolist_header.iol_len = mhr_len;
-        mic->size = mic_size;
     }
 #endif
 #ifdef MODULE_NETSTATS_L2
