@@ -27,8 +27,11 @@ extern "C" {
 
 /**
  * @brief   extra stack size if ieee802154 security is enabled
+ *
+ * You may increase this value if you experience a stack overflow
+ * with IEEE 802.15.4 security enabled.
  */
-#define IEEE802154_SECURITY_EXTRA_STACKSIZE (32)
+#define IEEE802154_SECURITY_EXTRA_STACKSIZE (128)
 
 #ifndef IEEE802154_STACKSIZE_DEFAULT
 #ifdef MODULE_IEEE802154_SECURITY
