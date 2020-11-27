@@ -8,7 +8,6 @@ USEMODULE += auto_init_gnrc_netif
 USEMODULE += gnrc_lorawan
 USEMODULE += gnrc_pktdump
 USEMODULE += gnrc_neterr
-USEMODULE += lorawan
 
 BOARD ?= b-l072z-lrwan1
 RIOTBASE ?= ../../
@@ -27,7 +26,7 @@ include $(RIOTBASE)/Makefile.include
 # NOTE: The following options can be configured on runtime as well using
 # `ifconfig`
 
-# The configurations can be accessed via menconfig using `make menuconfig`
+# The configurations can be accessed via menuconfig using `make menuconfig`
 
 # OTAA compile time configuration keys
 ifeq (,$(CONFIG_LORAMAC_APP_KEY_DEFAULT)$(CONFIG_LORAMAC_APP_EUI_DEFAULT)$(CONFIG_LORAMAC_DEV_EUI_DEFAULT))

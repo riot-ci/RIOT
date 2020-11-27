@@ -6,7 +6,7 @@
 #
 menuconfig KCONFIG_USEMODULE_LORAWAN
     bool "Configure LoRaWAN MAC"
-    depends on USEMODULE_LORAWAN
+    depends on USEMODULE_GNRC_LORAWAN || USEPKG_SEMTECH_LORAMAC || USEMODULE_RN2XX3
     help
         Configure LoRaWAN module using Kconfig. This may override configurations
         in LoRa PHY.
@@ -15,6 +15,7 @@ if KCONFIG_USEMODULE_LORAWAN
 
 choice
     bool "LoRaWAN region"
+    depends on USEMODULE_GNRC_LORAWAN
     default LORAMAC_REGION_EU_868
     help
         Configure the LoRaWAN region.
@@ -29,6 +30,7 @@ endchoice
 
 choice
     bool "Join procedure"
+    depends on USEMODULE_GNRC_LORAWAN
     default LORAMAC_DEFAULT_JOIN_PROCEDURE_OTAA
     help
         Configure the join procedure for end node activation. There are two
@@ -47,7 +49,7 @@ config LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP
 
 endchoice
 
-if LORAMAC_DEFAULT_JOIN_PROCEDURE_OTAA
+if LORAMAC_DEFAULT_JOIN_PROCEDURE_OTAA || USEPKG_SEMTECH_LORAMAC
 
 config LORAMAC_DEV_EUI_DEFAULT
     string "Device EUI"
@@ -69,7 +71,7 @@ config LORAMAC_APP_KEY_DEFAULT
 
 endif # LORAMAC_DEFAULT_JOIN_PROCEDURE_OTAA
 
-if LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP
+if LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP && USEMODULE_GNRC_LORAWAN
 
 config LORAMAC_APP_SKEY_DEFAULT
     string "Application session key"
@@ -104,6 +106,7 @@ endif # LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP
 
 choice
     bool "Device Class"
+    depends on USEMODULE_GNRC_LORAWAN || USEPKG_SEMTECH_LORAMAC
     default LORAMAC_DEFAULT_DEVICE_CLASS_A
     help
         Configure the class of device. **IMP** GNRC LoRaWAN only supports
@@ -125,6 +128,7 @@ config LORAMAC_DEFAULT_DEVICE_CLASS_A
 
 config LORAMAC_DEFAULT_DEVICE_CLASS_B
     bool "Class B"
+    depends on USEPKG_SEMTECH_LORAMAC
     help
         Class B devices extend Class A by adding scheduled receive windows for
         downlink messages from the server. Using time-synchronized beacons
@@ -133,6 +137,7 @@ config LORAMAC_DEFAULT_DEVICE_CLASS_B
 
 config LORAMAC_DEFAULT_DEVICE_CLASS_C
     bool "Class C"
+    depends on USEPKG_SEMTECH_LORAMAC
     help
         Class C devices extend Class A by keeping the receive windows open
         unless they are transmitting. This allows for low-latency communication
@@ -142,6 +147,7 @@ endchoice
 
 config LORAMAC_DEFAULT_PUBLIC_NETWORK
     bool "Public Network"
+    depends on USEMODULE_GNRC_LORAWAN || USEPKG_SEMTECH_LORAMAC
     default y
     help
         Configure the default network type. Network is set to public by default.
@@ -216,7 +222,7 @@ endchoice
 
 choice
     bool "TX Power index"
-    depends on KCONFIG_USEMODULE_RN2XX3
+    depends on USEMODULE_RN2XX3
     default LORAMAC_DEFAULT_TX_POWER_1
     help
         Configure the TX power index. TXPower index indicates power levels
@@ -314,6 +320,7 @@ if LORAMAC_ADVANCED_OPTIONS
 
 config LORAMAC_DEFAULT_RETX
     int "Uplink retransmissions"
+    depends on USEMODULE_GNRC_LORAWAN || USEMODULE_RN2XX3
     default 5
     range 0 255
     help
@@ -323,6 +330,7 @@ config LORAMAC_DEFAULT_RETX
 
 config LORAMAC_DEFAULT_ADR
     bool "Enable ADR"
+    depends on USEPKG_SEMTECH_LORAMAC || USEMODULE_RN2XX3
     help
         Enable or disable Adaptive Data Rate (ADR). If enabled the end node will
         inform the network server about the status of ADR using the ADR field in
@@ -332,7 +340,7 @@ config LORAMAC_DEFAULT_ADR
 
 config LORAMAC_DEFAULT_LINKCHK
     int "Link check interval (in seconds)"
-    depends on KCONFIG_USEMODULE_RN2XX3
+    depends on USEMODULE_RN2XX3
     default 0
     help
         Configure the default link check interval (in seconds). 0 means the link
@@ -343,6 +351,7 @@ config LORAMAC_DEFAULT_LINKCHK
 
 config LORAMAC_DEFAULT_RX1_DELAY
     int "RX1 window delay (in milliseconds)"
+    depends on USEMODULE_GNRC_LORAWAN || USEMODULE_RN2XX3
     default 1000
     help
         Configure the RX1 window delay (in milliseconds). This configuration
@@ -351,7 +360,7 @@ config LORAMAC_DEFAULT_RX1_DELAY
 
 config LORAMAC_DEFAULT_AR
     bool "Enable automatic reply"
-    depends on KCONFIG_USEMODULE_RN2XX3
+    depends on USEMODULE_RN2XX3
     help
         Enable/disable Automatic Reply (AR) for rn2xx3 module. By enabling the
         automatic reply, the module will transmit a packet without a payload
@@ -360,6 +369,7 @@ config LORAMAC_DEFAULT_AR
 
 choice
     bool "RX2 window datarate index"
+    depends on LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP || USEMODULE_RN2XX3
     default LORAMAC_DEFAULT_RX2_DR_0 if LORAMAC_REGION_EU_868
     default LORAMAC_DEFAULT_RX2_DR_2 if LORAMAC_REGION_IN_865
     help
@@ -422,6 +432,7 @@ endchoice
 
 config LORAMAC_DEFAULT_RX2_FREQ
     int "RX2 Frequency (in Hz)"
+    depends on USEMODULE_RN2XX3 || USEMODULE_GNRC_LORAWAN
     default 869525000 if LORAMAC_REGION_EU_868
     default 866550000 if LORAMAC_REGION_IN_865
     help
@@ -429,6 +440,7 @@ config LORAMAC_DEFAULT_RX2_FREQ
 
 config LORAMAC_DEFAULT_JOIN_DELAY1
     int "Join accept delay 1 (in seconds)"
+    depends on USEMODULE_RN2XX3 || USEMODULE_GNRC_LORAWAN
     default 5
     help
         Configure the maximum wait time in end node to receive the `join-accept`
@@ -437,7 +449,7 @@ config LORAMAC_DEFAULT_JOIN_DELAY1
 
 config LORAMAC_DEFAULT_JOIN_DELAY2
     int "Join accept delay 2 (in seconds)"
-    depends on KCONFIG_USEMODULE_RN2XX3
+    depends on USEMODULE_RN2XX3
     default 6
     help
         Configure the maximum wait time in end node to receive the `join-accept`
@@ -446,6 +458,7 @@ config LORAMAC_DEFAULT_JOIN_DELAY2
 
 config LORAMAC_DEFAULT_MAX_FCNT_GAP
     int "Max frame counter deviation"
+    depends on USEMODULE_GNRC_LORAWAN
     default 16384
     help
         Configure the maximum frame counter deviation which is the difference
@@ -454,6 +467,7 @@ config LORAMAC_DEFAULT_MAX_FCNT_GAP
 
 config LORAMAC_DEFAULT_SYSTEM_MAX_RX_ERROR
     int "Max system timing error ( in milliseconds)"
+    depends on USEPKG_SEMTECH_LORAMAC
     default 50
     help
         Configure the maximum sytem timing error. This configuration is used to
@@ -463,6 +477,7 @@ config LORAMAC_DEFAULT_SYSTEM_MAX_RX_ERROR
 
 config LORAMAC_DEFAULT_MIN_RX_SYMBOLS
     int "Min RX symbols to detect frame"
+    depends on USEPKG_SEMTECH_LORAMAC
     default 12
     help
         Configure the minimum RX symbols used to detect a frame. This
