@@ -129,6 +129,11 @@ typedef struct {
 #define RIOTBOOT_FLASHWRITE_SKIPLEN     sizeof(RIOTBOOT_MAGIC)
 
 /**
+ * @brief Magic number used to invalidate a slot
+ */
+#define INVALIDATE_HDR                  0xAA
+
+/**
  * @brief   Initialize firmware update (raw version)
  *
  * Allows setting the initial offset to @p offset, which would mean that the
@@ -223,6 +228,32 @@ static inline int riotboot_flashwrite_finish(riotboot_flashwrite_t *state)
     return riotboot_flashwrite_finish_raw(state, (const uint8_t *)"RIOT",
                                           RIOTBOOT_FLASHWRITE_SKIPLEN);
 }
+
+/**
+ * @brief   Invalidate a slot header (riotboot version)
+ *
+ * This function invalidates the target slot.
+ *
+ * @note    If this function is called with only one valid slot,
+ *          the invalidation will fail in order to keep one valid
+ *          image to run after reboot
+ *
+ * @param[in]   slot       Target slot to invalidate
+ *
+ * @returns     0 on success, <0 otherwise
+ */
+int riotboot_flashwrite_invalidate(int slot);
+
+/**
+ * @brief   Invalidate the latest firmware version (riotboot version)
+ *
+ * This function invalidates the slot having the most recent firmware revision
+ *
+ * @note    This function requires two valid images to succeed
+ *
+ * @returns     0 on success, <0 otherwise
+ */
+int riotboot_flashwrite_invalidate_latest(void);
 
 /**
  * @brief       Get a slot's size
