@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2020 Otto-von-Guericke-Universität Magdeburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser General
+ * Public License v2.1. See the file LICENSE in the top level directory for more
+ * details.
+ */
+
+/**
+ * @ingroup     drivers_periph_ptp
+ * @{
+ *
+ * @file
+ * @brief       Common code for PTP clocks and timers
+ *
+ * @author      Marian Buschsieweke <marian.buschsieweke@ovgu.de>
+ *
+ * @}
+ */
 #include "kernel_defines.h"
 #if IS_USED(MODULE_PERIPH_PTP_TIMER)
 #include "irq.h"
