@@ -156,7 +156,7 @@ static int test_clock_adjustment(int32_t offset)
     /* Record one extra sample, to throw away the first measurement */
     static int64_t diffs[TEST_ROUNDS + 1];
     int64_t period_ns = PERIOD_US * 1000ULL + offset;
-    uint64_t last_ns, now_ns;
+    uint64_t last_ns;
 
     print_str("Testing clock adjustments for offset ");
     print_s32_dec(offset);
@@ -178,7 +178,7 @@ static int test_clock_adjustment(int32_t offset)
     for (unsigned i = 0; i < TEST_ROUNDS + 1; i++) {
         /* wait for periodic timer IRQ */
         mutex_lock(&sync_mutex);
-        now_ns = atomic_load(&timestamp);
+        uint64_t now_ns = atomic_load(&timestamp);
         diffs[i] = (int64_t)(now_ns - last_ns) - period_ns;
         last_ns = now_ns;
     }
