@@ -121,7 +121,7 @@ void ptp_clock_adjust_speed(int16_t correction)
     offset >>= 16;
     uint32_t adjusted_ptptsar = ptptsar + (uint32_t)offset;
     /* Value to add onto the 32 bit accumulator register (which causes the
-     * value in ETH->PTPSSIR to be added onto the subsection register on 
+     * value in ETH->PTPSSIR to be added onto the subsection register on
      * overflow) */
     ETH->PTPTSAR = adjusted_ptptsar;
     /* Wait for pending clock speed adjustments to complete */
