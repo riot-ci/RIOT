@@ -306,7 +306,7 @@ static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf, int errno)
         gnrc_pktbuf_release(snd_buf->per_frag);
     }
     if (snd_buf->pkt) {
-        gnrc_pktbuf_release(snd_buf->pkt, errno);
+        gnrc_pktbuf_release_error(snd_buf->pkt, errno);
     }
     _snd_buf_del(snd_buf);
 }
