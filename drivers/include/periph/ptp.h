@@ -188,7 +188,7 @@ static inline void ptp_ns2ts(ptp_timestamp_t *dest, uint64_t ns_since_epoch)
  */
 static inline uint64_t ptp_ts2ns(const ptp_timestamp_t *t)
 {
-    return t->seconds * NS_PER_SEC + t->nanoseconds;
+    return (uint64_t)t->seconds * NS_PER_SEC + t->nanoseconds;
 }
 
 /**
