@@ -117,7 +117,6 @@ int timer_set_periodic(tim_t tim, int chan, unsigned int value, uint8_t flags)
     ctx[tim].flags |= (1 << chan);
     ctx[tim].is_periodic |= (1 << chan);
     dev(tim)->CC[chan] = value;
-    (void)flags;
     if (flags & TIM_FLAG_RESET_ON_MATCH) {
         dev(tim)->SHORTS |= (1 << chan);
     }
