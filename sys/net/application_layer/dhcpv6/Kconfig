@@ -21,7 +21,7 @@ menuconfig KCONFIG_USEMODULE_GNRC_DHCPV6_CLIENT_MUD_URL
     help
         Enable the inclusion of a MUD URL in DHCPv6 packets
         as specified in RFC 8520, section 10. This URL
-        has to point a to MUD file containing YANG-based JSON 
+        has to point to a MUD file containing YANG-based JSON 
         with a description of the device and its suggested 
         network behavior. The URL must use the "https" scheme.
 
