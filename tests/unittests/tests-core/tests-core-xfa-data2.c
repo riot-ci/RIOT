@@ -23,5 +23,4 @@ XFA_CONST(xfatest_const, 0) xfatest_t _xfatest_const2 = { .val = 32444, .text = 
 XFA(xfatest_use, 0) xfatest_t _xfatest_use2 = { .val = 11111, .text = "xfatest_use2" };
 XFA_CONST(xfatest_use_const, 0) xfatest_t _xfatest_use_const2 = { .val = 22222, .text = "xfatest_use_const2" };
 
-int hack2;
 /** @} */
