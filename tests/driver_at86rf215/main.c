@@ -119,7 +119,7 @@ static int cmd_set_clock_out(int argc, char **argv)
         [AT86RF215_CLKO_1_MHz]  = "1",
     };
 
-    at86rf215_clko_freq freq = AT86RF215_CLKO_26_MHz;
+    at86rf215_clko_freq_t freq = AT86RF215_CLKO_26_MHz;
 
     if (argc > 1) {
         unsigned tmp = 0xFF;
@@ -151,7 +151,7 @@ static int cmd_set_clock_out(int argc, char **argv)
         return 1;
     }
 
-    at86rf215_t* dev = (at86rf215_t*)netif->dev;
+    at86rf215_t *dev = (at86rf215_t *)netif->dev;
 
     printf("Clock output set to %s %s\n", keys[freq], freq ? "MHz" : "");
     at86rf215_set_clock_output(dev, AT86RF215_CLKO_4mA, freq);
@@ -166,7 +166,8 @@ static int cmd_get_random(int argc, char **argv)
 
     if (argc > 1) {
         values = atoi(argv[1]);
-    } else {
+    }
+    else {
         values = 16;
     }
 
@@ -182,7 +183,7 @@ static int cmd_get_random(int argc, char **argv)
         return 1;
     }
 
-    at86rf215_t* dev = (at86rf215_t*)netif->dev;
+    at86rf215_t *dev = (at86rf215_t *)netif->dev;
 
     at86rf215_get_random(dev, buffer, values);
 
