@@ -45,7 +45,7 @@ $(RIOTTOOLS)/flatc/flatc: $(RIOTTOOLS)/flatc/Makefile
 	$(MAKE) -C $(RIOTTOOLS)/flatc
 	@echo "[INFO] flatc binary successfully built!"
 
-$(RIOTTOOLS)/uf2/uf2conv.py:
+$(RIOTTOOLS)/uf2/uf2conv.py: $(RIOTTOOLS)/uf2/Makefile
 	@echo "[INFO] uf2conv.py not found - fetching it from GitHub now"
 	CC= CFLAGS= $(MAKE) -C $(RIOTTOOLS)/uf2
 	@echo "[INFO] uf2conv.py successfully fetched!"
