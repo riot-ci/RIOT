@@ -34,6 +34,7 @@ struct event_queue_and_size {
 static void *_handler(void *tagged_ptr)
 {
     event_queue_t *qs = ptrtag_ptr(tagged_ptr);
+    /* number of queues is encoded in lower pointer bits */
     size_t n = ptrtag_tag(tagged_ptr) + 1;
     event_queues_claim(qs, n);
     event_loop_multi(qs, n);
