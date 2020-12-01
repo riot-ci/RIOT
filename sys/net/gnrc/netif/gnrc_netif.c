@@ -15,7 +15,6 @@
  * @author  Oliver Hahm <oliver.hahm@inria.fr>
  */
 
-#include <assert.h>
 #include <limits.h>
 #include <string.h>
 #include <kernel_defines.h>
@@ -32,15 +31,14 @@
 #if IS_USED(MODULE_GNRC_NETIF_PKTQ)
 #include "net/gnrc/netif/pktq.h"
 #endif /* IS_USED(MODULE_GNRC_NETIF_PKTQ) */
+#include "net/gnrc/sixlowpan/frag/sfr.h"
 #if IS_USED(MODULE_NETSTATS)
 #include "net/netstats.h"
 #endif /* IS_USED(MODULE_NETSTATS) */
 #include "fmt.h"
 #include "log.h"
 #include "sched.h"
-#if (CONFIG_GNRC_NETIF_MIN_WAIT_AFTER_SEND_US > 0U)
 #include "xtimer.h"
-#endif
 
 #include "net/gnrc/netif.h"
 #include "net/gnrc/netif/internal.h"
@@ -1365,6 +1363,9 @@ void gnrc_netif_default_init(gnrc_netif_t *netif)
 #ifdef DEVELHELP
     _test_options(netif);
 #endif
+    if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR)) {
+        gnrc_sixlowpan_frag_sfr_init_iface(netif);
+    }
     netif->cur_hl = CONFIG_GNRC_NETIF_DEFAULT_HL;
 #ifdef MODULE_GNRC_IPV6_NIB
     gnrc_ipv6_nib_init_iface(netif);
