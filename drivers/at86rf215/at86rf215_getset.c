@@ -96,7 +96,7 @@ void at86rf215_set_trim(at86rf215_t *dev, uint8_t trim)
 }
 
 void at86rf215_set_clock_output(at86rf215_t *dev,
-                                at86rf215_clko_cur cur, at86rf215_clko_freq freq)
+                                at86rf215_clko_cur_t cur, at86rf215_clko_freq_t freq)
 {
     at86rf215_reg_write(dev, RG_RF_CLKO, cur | freq);
 }

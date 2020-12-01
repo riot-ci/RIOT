@@ -281,7 +281,7 @@ typedef enum {
     AT86RF215_CLKO_4mA = 1 << 3,    /**< 4 mA */
     AT86RF215_CLKO_6mA = 2 << 3,    /**< 6 mA */
     AT86RF215_CLKO_8mA = 3 << 3,    /**< 8 mA */
-} at86rf215_clko_cur;
+} at86rf215_clko_cur_t;
 /** @} */
 
 /**
@@ -297,7 +297,7 @@ typedef enum {
     AT86RF215_CLKO_4_MHz,           /**<  4 MHz */
     AT86RF215_CLKO_2_MHz,           /**<  2 MHz */
     AT86RF215_CLKO_1_MHz,           /**<  1 MHz */
-} at86rf215_clko_freq;
+} at86rf215_clko_freq_t;
 
 /**
  * @name    Internal device option flags
@@ -587,7 +587,7 @@ void at86rf215_set_trim(at86rf215_t *dev, uint8_t trim);
  * @param[in] freq          Clock output frequency
  */
 void at86rf215_set_clock_output(at86rf215_t *dev,
-                               at86rf215_clko_cur cur, at86rf215_clko_freq freq);
+                                at86rf215_clko_cur_t cur, at86rf215_clko_freq_t freq);
 
 /**
  * @brief   Convenience function for simply sending data
