@@ -14,6 +14,7 @@
  */
 
 #include <assert.h>
+#include <errno.h>
 #include <stdbool.h>
 
 #include "byteorder.h"
@@ -85,9 +86,9 @@ static gnrc_ipv6_ext_frag_send_t *_snd_buf_alloc(void);
  *          datagrams and fragments.
  *
  * @param[in] snd_buf   A fragmentation send buffer entry
- * @param[in] errno     Error number for the error causing the release
+ * @param[in] error     Error number for the error causing the release
  */
-static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf, int errno);
+static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf, int error);
 
 /**
  * @brief   Removes a fragmentation send buffer without releasing the stored
@@ -300,13 +301,13 @@ static void _snd_buf_del(gnrc_ipv6_ext_frag_send_t *snd_buf)
     snd_buf->pkt = NULL;
 }
 
-static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf, int errno)
+static void _snd_buf_free(gnrc_ipv6_ext_frag_send_t *snd_buf, int error)
 {
     if (snd_buf->per_frag) {
         gnrc_pktbuf_release(snd_buf->per_frag);
     }
     if (snd_buf->pkt) {
-        gnrc_pktbuf_release_error(snd_buf->pkt, errno);
+        gnrc_pktbuf_release_error(snd_buf->pkt, error);
     }
     _snd_buf_del(snd_buf);
 }
