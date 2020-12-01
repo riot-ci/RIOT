@@ -37,6 +37,7 @@ static void *_handler(void *tagged_ptr)
     /* number of queues is encoded in lower pointer bits */
     size_t n = ptrtag_tag(tagged_ptr) + 1;
     event_queues_claim(qs, n);
+    /* start event loop */
     event_loop_multi(qs, n);
 
     /* should be never reached */
