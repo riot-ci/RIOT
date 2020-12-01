@@ -23,6 +23,7 @@
 #include "mtd.h"
 #include "mtd_spi_nor.h"
 #include "periph/gpio.h"
+#include "timex.h"
 
 #ifdef MODULE_MTD
 /* AT25SF041 */
