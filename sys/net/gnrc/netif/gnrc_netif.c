@@ -131,8 +131,8 @@ gnrc_netif_t *gnrc_netif_get_by_type(netdev_type_t type, uint8_t index)
             continue;
         }
 #else
-        (void) type;
-        (void) index;
+        (void)type;
+        (void)index;
 #endif
 
         return netif;
