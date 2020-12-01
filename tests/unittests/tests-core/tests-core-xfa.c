@@ -14,9 +14,6 @@
 #include "tests-core.h"
 #include "tests-core-xfa.h"
 
-extern int hack1;
-extern int hack2;
-
 XFA_INIT(xfatest_t, xfatest);
 XFA_INIT_CONST(xfatest_t, xfatest_const);
 XFA_USE(xfatest_t, xfatest_use);
@@ -25,8 +22,6 @@ XFA_USE_CONST(xfatest_t, xfatest_use_const);
 /* Verifying that cross file array linking is correct by iterating over an external array */
 static void test_xfa_data(void)
 {
-    hack1 = hack2;
-
     unsigned n = XFA_LEN(xfatest_t, xfatest);
     TEST_ASSERT_EQUAL_INT(2, n);
     unsigned found = 0;
