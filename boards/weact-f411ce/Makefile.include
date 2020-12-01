@@ -1,4 +1,4 @@
-# Product & Vendor ID taken from example firmware hat the board was shipped with.
+# Product & Vendor ID taken from example firmware that the board was shipped with.
 CFLAGS += -DINTERNAL_PERIPHERAL_VID=0x0483
 CFLAGS += -DINTERNAL_PERIPHERAL_PID=0x5740
 
