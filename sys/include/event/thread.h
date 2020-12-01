@@ -18,9 +18,9 @@
  * By using the module `event_thread`, the event queues
  * @ref EVENT_PRIO_HIGHEST, @ref EVENT_PRIO_MEDIUM, and
  * @ref EVENT_PRIO_LOWEST are provided and declared in the header
- * `event/thread.h`. With default settings, one or more threads to handle these
- * queues are automatically started during startup due to the module
- * `auto_init`.
+ * `event/thread.h`. With default settings, the `auto_init` module will
+ * automatically start one or more threads to handle these
+ * queues.
  *
  * By default, only a single thread with priority `EVENT_THREAD_MEDIUM_PRIO` is
  * started that handles all three event queues according to their priority.
