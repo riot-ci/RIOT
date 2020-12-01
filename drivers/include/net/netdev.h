@@ -294,6 +294,7 @@ typedef enum {
     NETDEV_STM32_ETH,
     NETDEV_CC110X,
     NETDEV_SX127X,
+    NETDEV_NRF24L01P_NG,
     /* add more if needed */
 } netdev_type_t;
 /** @} */
