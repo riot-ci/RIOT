@@ -31,8 +31,10 @@ void board_init(void)
     LED_PORT->OUTSET = (LED_MASK);
 
     /* configure software RST button */
-    gpio_init_int(BTN0_PIN, BTN0_MODE, GPIO_FALLING,
-                  pm_reboot, NULL);
+    if (IS_ACTIVE(MODULE_BOARD_SOFTWARE_RESET)) {
+        gpio_init_int(BTN0_PIN, BTN0_MODE, GPIO_FALLING,
+                      pm_reboot, NULL);
+    }
 
     /* initialize the CPU */
     cpu_init();
