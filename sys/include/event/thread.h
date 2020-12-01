@@ -22,8 +22,8 @@
  * automatically start one or more threads to handle these
  * queues.
  *
- * By default, only a single thread with priority `EVENT_THREAD_MEDIUM_PRIO` is
- * started that handles all three event queues according to their priority.
+ * By default, a single thread with priority `EVENT_THREAD_MEDIUM_PRIO`
+ * will handle all three event queues according to their priority.
  * An already started event handler will not be preempted in this case by an
  * incoming higher priority event. Still, lower priority event queues will only
  * be worked on once the higher priority queues are empty. Hence, the worst case
