@@ -99,20 +99,39 @@ void i2c_init(i2c_t dev)
     /* disable device during initialization, will be enabled when acquire is
      * called */
     bus(dev)->ENABLE = TWIM_ENABLE_ENABLE_Disabled;
-    /* configure pins */
-    gpio_init(i2c_config[dev].scl, GPIO_IN_OD_PU);
-    gpio_init(i2c_config[dev].sda, GPIO_IN_OD_PU);
-    bus(dev)->PSEL.SCL = i2c_config[dev].scl;
-    bus(dev)->PSEL.SDA = i2c_config[dev].sda;
+
     /* configure dev clock speed */
     bus(dev)->FREQUENCY = i2c_config[dev].speed;
 
     spi_twi_irq_register_i2c(bus(dev), i2c_isr_handler, (void *)dev);
 
-    /* re-enable the device. We expect that the device was being acquired before
+    /* configure pins */
+    /* also re-enables the device internally. We expect that the device was being acquired before
      * the i2c_init_master() function is called, so it should be enabled when
      * exiting this function. */
+    i2c_init_pins(dev);
+}
+
+void i2c_init_pins(i2c_t dev)
+{
+    assert(dev < I2C_NUMOF);
+
+    gpio_init(i2c_config[dev].scl, GPIO_IN_OD_PU);
+    gpio_init(i2c_config[dev].sda, GPIO_IN_OD_PU);
+    bus(dev)->PSEL.SCL = i2c_config[dev].scl;
+    bus(dev)->PSEL.SDA = i2c_config[dev].sda;
+
     bus(dev)->ENABLE = TWIM_ENABLE_ENABLE_Enabled;
+
+    mutex_unlock(&locks[dev]);
+}
+
+void i2c_deinit_pins(i2c_t dev)
+{
+    assert(dev < I2C_NUMOF);
+
+    mutex_lock(&locks[dev]);
+    bus(dev)->ENABLE = TWIM_ENABLE_ENABLE_Disabled;
 }
 
 int i2c_acquire(i2c_t dev)
