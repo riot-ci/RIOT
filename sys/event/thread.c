@@ -31,7 +31,7 @@ struct event_queue_and_size {
     size_t q_numof;
 };
 
-static void *_handler(void *tagged_ptr)
+static void *_handler_thread(void *tagged_ptr)
 {
     event_queue_t *qs = ptrtag_ptr(tagged_ptr);
     /* number of queues is encoded in lower pointer bits */
@@ -58,7 +58,8 @@ void event_thread_init_multi(event_queue_t *queues, size_t queues_numof,
     void *tagged_ptr = ptrtag(queues, queues_numof - 1);
 
 
-    thread_create(stack, stack_size, priority, 0, _handler, tagged_ptr, "event");
+    thread_create(stack, stack_size, priority, 0, _handler_thread, tagged_ptr,
+                  "event");
 }
 
 #ifndef EVENT_THREAD_STACKSIZE_DEFAULT
