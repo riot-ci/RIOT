@@ -104,6 +104,7 @@
 #include "irq.h"
 #include "thread.h"
 #include "thread_flags.h"
+#include "ptrtag.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -147,9 +148,9 @@ struct event {
 /**
  * @brief   event queue structure
  */
-typedef struct {
+typedef struct PTRTAG {
     clist_node_t event_list;    /**< list of queued events              */
-    thread_t *waiter;           /**< thread ownning event queue         */
+    thread_t *waiter;           /**< thread owning event queue          */
 } event_queue_t;
 
 
