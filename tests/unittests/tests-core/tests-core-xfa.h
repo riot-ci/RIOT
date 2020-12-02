@@ -18,10 +18,18 @@
 #ifndef TESTS_CORE_XFA_H
 #define TESTS_CORE_XFA_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     unsigned val;
     const char *text;
 } xfatest_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TESTS_CORE_XFA_H */
 
