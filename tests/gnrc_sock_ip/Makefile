@@ -1,9 +1,14 @@
 include ../Makefile.tests_common
 
+AUX_LOCAL ?= 1
+
+ifeq (1, $(AUX_LOCAL))
+  USEMODULE += sock_aux_local
+endif
+
 USEMODULE += sock_ip
 USEMODULE += gnrc_ipv6
 USEMODULE += ps
-USEMODULE += sock_aux_local
 
 CFLAGS += -DTEST_SUITES
 
