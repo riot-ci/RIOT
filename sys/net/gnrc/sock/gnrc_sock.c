@@ -151,7 +151,12 @@ ssize_t gnrc_sock_recv(gnrc_sock_reg_t *reg, gnrc_pktsnip_t **pkt_out,
     assert(ipv6_hdr != NULL);
     memcpy(&remote->addr, &ipv6_hdr->src, sizeof(ipv6_addr_t));
     remote->family = AF_INET6;
-    if (local) {
+    if (!IS_USED(MODULE_SOCK_AUX_LOCAL)) {
+        /* support for obtaining the received address depends on the module
+         * sock_aux_local for now, as no other users are there. */
+         assert(local == NULL);
+    }
+    else if (local) {
         memcpy(&local->addr, &ipv6_hdr->dst, sizeof(ipv6_addr_t));
         local->family = AF_INET6;
     }
