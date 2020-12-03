@@ -320,7 +320,7 @@ static void test_sock_ip_recv4__aux(void)
     expect(AF_INET == result.family);
     expect(_TEST_ADDR4_REMOTE == result.addr.ipv4_u32);
     expect(_TEST_NETIF == result.netif);
-#if defined(MODULE_SOCK_AUX_LOCAL)
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
     expect(!(aux.flags & SOCK_AUX_GET_LOCAL));
     expect(aux.local.family == AF_INET );
     expect(aux.local.addr.ipv4_u32 == _TEST_ADDR4_LOCAL );
