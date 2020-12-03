@@ -337,14 +337,9 @@ int rtc_tamper_register(gpio_t pin, gpio_flank_t flank)
     return 0;
 }
 
-static void _unlock(void *m)
-{
-    mutex_unlock(m);
-}
-
 void rtc_tamper_enable(void)
 {
-    mutex_t m = MUTEX_INIT;
+    DEBUG("enable tamper\n");
 
     /* clear tamper id */
     RTC->MODE0.TAMPID.reg = 0xF;
@@ -352,16 +347,26 @@ void rtc_tamper_enable(void)
     /* work around errata 2.17.4:
      * ignore the first tamper event on the rising edge */
     if (RTC->MODE0.TAMPCTRL.reg & RTC_TAMPCTRL_TAMLVL_Msk) {
-        mutex_lock(&m);
-        tamper_cb.cb  = _unlock;
-        tamper_cb.arg = &m;
+
+        /* If an RTC alarm happened before, the spurious tamper
+         * event is sometimes generated.
+         * Tamper event must happen within one RTC clock period. */
+        unsigned timeout = CLOCK_CORECLOCK / 32768;
+
+        /* enable tamper detect as wake-up source */
+        RTC->MODE0.INTENSET.bit.TAMPER = 1;
+
+        /* wait for first tamper event */
+        while (!RTC->MODE0.INTFLAG.bit.TAMPER && --timeout) {}
+
+        /* clear tamper flag flag */
+        RTC->MODE0.INTFLAG.reg = RTC_MODE0_INTFLAG_TAMPER;
+    } else {
+        /* no spurious event on falling edge */
+        RTC->MODE0.INTENSET.bit.TAMPER = 1;
     }
 
-    /* enable tamper detect as wake-up source */
-    RTC->MODE0.INTENSET.bit.TAMPER = 1;
-
-    /* wait for first tamper event */
-    mutex_lock(&m);
+    DEBUG("tamper enabled\n");
 }
 
 #endif /* RTC_NUM_OF_TAMPERS */
