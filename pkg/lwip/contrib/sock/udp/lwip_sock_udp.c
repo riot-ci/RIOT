@@ -148,8 +148,9 @@ ssize_t sock_udp_recv_buf_aux(sock_udp_t *sock, void **data, void **ctx,
             remote->port = buf->port;
         }
 #if IS_USED(MODULE_SOCK_AUX_LOCAL)
-        if ((aux != NULL) && IS_ACTIVE(LWIP_NETBUF_RECVINFO)
-            && (aux->flags & SOCK_AUX_GET_LOCAL)) {
+    static_assert(IS_ACTIVE(LWIP_NETBUF_RECVINFO),
+                  "sock_aux_local depends on LWIP_NETBUF_RECVINFO");
+        if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
             aux->flags &= ~(SOCK_AUX_GET_LOCAL);
             aux->local.family = family;
             memcpy(&aux->local.addr, &buf->toaddr, addr_len);
