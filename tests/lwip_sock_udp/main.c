@@ -411,9 +411,8 @@ static void test_sock_udp_recv4__aux(void)
     expect(AF_INET == result.family);
     expect(_TEST_ADDR4_REMOTE == result.addr.ipv4_u32);
     expect(_TEST_PORT_REMOTE == result.port);
-#if LWIP_NETBUF_RECVINFO
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
     expect(_TEST_NETIF == result.netif);
-#ifdef MODULE_SOCK_AUX_LOCAL
     expect(!(aux.flags & SOCK_AUX_GET_LOCAL));
     expect(aux.local.addr.ipv4_u32 == _TEST_ADDR4_LOCAL);
     expect(aux.local.port == _TEST_PORT_LOCAL);
@@ -421,7 +420,6 @@ static void test_sock_udp_recv4__aux(void)
 #else
     expect(aux.flags & SOCK_AUX_GET_LOCAL);
 #endif /* MODULE_SOCK_AUX_LOCAL */
-#endif /* LWIP_NETBUF_RECVINFO */
     expect(_check_net());
 }
 
@@ -1108,9 +1106,8 @@ static void test_sock_udp_recv6__aux(void)
     expect(AF_INET6 == result.family);
     expect(memcmp(&result.addr, &src_addr, sizeof(result.addr)) == 0);
     expect(_TEST_PORT_REMOTE == result.port);
-#if LWIP_NETBUF_RECVINFO
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
     expect(_TEST_NETIF == result.netif);
-#ifdef MODULE_SOCK_AUX_LOCAL
     expect(!(aux.flags & SOCK_AUX_GET_LOCAL));
     expect(memcmp(&aux.local.addr, &dst_addr, sizeof(dst_addr)) == 0);
     expect(aux.local.port == _TEST_PORT_LOCAL);
@@ -1118,7 +1115,6 @@ static void test_sock_udp_recv6__aux(void)
 #else
     expect(aux.flags & SOCK_AUX_GET_LOCAL);
 #endif /* MODULE_SOCK_AUX_LOCAL */
-#endif /* LWIP_NETBUF_RECVINFO */
     expect(_check_net());
 }
 
