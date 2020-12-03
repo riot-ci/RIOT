@@ -147,7 +147,7 @@ ssize_t sock_udp_recv_buf_aux(sock_udp_t *sock, void **data, void **ctx,
             memcpy(&remote->addr, &buf->addr, addr_len);
             remote->port = buf->port;
         }
-#ifdef MODULE_SOCK_AUX_LOCAL
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
         if ((aux != NULL) && IS_ACTIVE(LWIP_NETBUF_RECVINFO)
             && (aux->flags & SOCK_AUX_GET_LOCAL)) {
             aux->flags &= ~(SOCK_AUX_GET_LOCAL);
