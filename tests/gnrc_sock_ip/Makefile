@@ -3,6 +3,7 @@ include ../Makefile.tests_common
 USEMODULE += sock_ip
 USEMODULE += gnrc_ipv6
 USEMODULE += ps
+USEMODULE += sock_aux_local
 
 CFLAGS += -DTEST_SUITES
 
