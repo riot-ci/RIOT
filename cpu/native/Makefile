@@ -30,6 +30,10 @@ ifneq (,$(filter backtrace,$(USEMODULE)))
   DIRS += backtrace
 endif
 
+ifneq (,$(filter native_eui_provider,$(USEMODULE)))
+  DIRS += eui_provider
+endif
+
 include $(RIOTBASE)/Makefile.base
 
 INCLUDES = $(NATIVEINCLUDES)
