@@ -453,6 +453,7 @@ int sock_ip_get_remote(sock_ip_t *sock, sock_ip_ep_t *ep);
  *                      May be NULL, if it is not required by the application.
  * @param[out] aux      Auxiliary data of the reception.
  *                      May be NULL, if it is not required by the application.
+ *                      Contents are undefined if the function returns an error.
  *
  * @note    Function blocks if no packet is currently waiting.
  *
@@ -533,6 +534,7 @@ static inline ssize_t sock_ip_recv(sock_ip_t *sock, void *data, size_t max_len,
  *                      May be NULL, if it is not required by the application.
  * @param[out] aux      Auxiliary data of the reception.
  *                      May be NULL, if it is not required by the application.
+ *                      Contents are undefined if the function returns an error.
  *
  * @experimental    This function is quite new, not implemented for all stacks
  *                  yet, and may be subject to sudden API changes. Do not use in
@@ -627,6 +629,7 @@ static inline ssize_t sock_ip_recv_buf(sock_ip_t *sock,
  *                      end point of @p sock provides this information.
  * @param[out] aux      Auxiliary data for the transmission.
  *                      May be `NULL` if not needed by the caller.
+ *                      Contents are undefined if the function returns an error.
  *
  * @return  The number of bytes sent on success.
  * @return  -EAFNOSUPPORT, if `remote != NULL` and sock_ip_ep_t::family of
