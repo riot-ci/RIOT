@@ -315,6 +315,7 @@ typedef enum {
     NETDEV_SX127X,
     NETDEV_SAM0_ETH,
     NETDEV_ESP_NOW,
+    NETDEV_SOCKET_ZEP,
     /* add more if needed */
 } netdev_type_t;
 /** @} */
