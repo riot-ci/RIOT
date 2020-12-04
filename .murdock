@@ -16,7 +16,6 @@ tests/driver_h* tests/driver_i* tests/driver_j* tests/driver_my9221"}
 
 export RIOT_CI_BUILD=1
 export CC_NOCOLOR=1
-export STATIC_TESTS=${STATIC_TESTS:-1}
 export CFLAGS_DBG=""
 export DLCACHE_DIR=${DLCACHE_DIR:-~/.dlcache}
 export ENABLE_TEST_CACHE=${ENABLE_TEST_CACHE:-1}
@@ -186,15 +185,6 @@ get_app_board_toolchain_pairs() {
             echo $prefix $appdir $board:$toolchain
         done
     done | $(_greplist $BOARDS)
-}
-
-# use dwqc to create full "appdir board toolchain" compile job list
-get_compile_jobs() {
-    check_label "CI: skip compile test" && return
-    get_apps | \
-        dwqc ${DWQ_ENV} -s \
-        ${DWQ_JOBID:+--subjob} \
-        "$0 get_app_board_toolchain_pairs \${1} $0 compile"
 }
 
 print_worker() {
@@ -380,20 +370,13 @@ run_test() {
     return $RES
 }
 
-# execute static tests
-static_tests() {
-    print_worker
-    ./dist/tools/ci/static_tests.sh
-}
-
-get_non_compile_jobs() {
-    [ "$STATIC_TESTS" = "1" ] && \
-        echo "$0 static_tests"
-}
-
 get_jobs() {
-    get_non_compile_jobs
-    get_compile_jobs
+    # use dwqc to create full "appdir board toolchain" compile job list
+    check_label "CI: skip compile test" && return
+    get_apps | \
+        dwqc ${DWQ_ENV} -s \
+        ${DWQ_JOBID:+--subjob} \
+        "$0 get_app_board_toolchain_pairs \${1} $0 compile"
 }
 
 $*
