@@ -35,8 +35,7 @@ extern "C" {
 #include "mtd_native.h"
 #endif
 
-#include "net/eui64.h"
-
+#ifdef EUI64_PROVIDER_PARAMS_H
 /**
  * @name    Get a command-line provided EUI-64
  *
@@ -57,6 +56,7 @@ int native_get_eui64(const void *arg, eui64_t *addr, uint8_t index);
 #define EUI64_PROVIDER_TYPE   NETDEV_ANY
 #define EUI64_PROVIDER_INDEX  NETDEV_INDEX_ANY
 /** @} */
+#endif /* EUI64_PROVIDER_PARAMS_H */
 
 /**
  * @name    LED handlers
