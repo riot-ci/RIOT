@@ -66,6 +66,8 @@ unsigned _native_rng_seed = 0;
 int _native_rng_mode = 0;
 const char *_native_unix_socket_path = NULL;
 
+#include "net/l2util.h"
+
 #ifdef MODULE_NETDEV_TAP
 #include "netdev_tap_params.h"
 
@@ -85,7 +87,6 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #include "gpiodev_linux.h"
 #endif
 #ifdef MODULE_SOCKET_ZEP
-#include "net/l2util.h"
 #include "socket_zep_params.h"
 
 socket_zep_params_t socket_zep_params[SOCKET_ZEP_MAX];
@@ -134,7 +135,7 @@ static const struct option long_opts[] = {
 #endif
 #ifdef MODULE_SOCKET_ZEP
     { "zep", required_argument, NULL, 'z' },
-    { "zep_mac", required_argument, NULL, 'Z' },
+    { "eui64", required_argument, NULL, 'Z' },
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     { "spi", required_argument, NULL, 'p' },
@@ -283,10 +284,8 @@ void usage_exit(int status)
          * the braces (marking them as optional) to be 100% clear on that */
         real_printf(" -z <laddr>:<lport>,<raddr>:<rport>");
     }
-    for (int i = 0; i < SOCKET_ZEP_MAX; i++) {
-        real_printf(" [-Z <eui64>]");
-    }
 #endif
+    real_printf(" [--eui64 <eui64> …]");
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     real_printf(" [-p <b>:<d>:<spidev>]");
 #endif
@@ -329,9 +328,9 @@ void usage_exit(int status)
 "        The ZEP interface connects to the remote address and may listen\n"
 "        on a local address.\n"
 "        Required to be provided SOCKET_ZEP_MAX times\n"
-"    -Z <eui64>, --zep_mac=<eui64>\n"
+"    -Z <eui64>, --eui64=<eui64>\n"
 "        provide a ZEP interface with EUI-64 (MAC address)\n"
-"        This argument can be provided SOCKET_ZEP_MAX times\n"
+"        This argument can be provided multiple times\n"
 #endif
     );
 #ifdef MODULE_MTD_NATIVE
@@ -424,23 +423,41 @@ static void _zep_params_setup(char *zep_str, int zep)
     }
 }
 
-static uint8_t _num_zep_eui64;
-static char *_zep_eui64[SOCKET_ZEP_MAX];
+#endif
 
-int native_get_zep_eui64(const void *arg, eui64_t *addr, uint8_t index)
+/* list of user supplied EUI-64s */
+struct _native_eui64_list;
+static struct _native_eui64_list {
+    eui64_t addr;
+    struct _native_eui64_list *prev;
+} *_eui64_head;
+
+/* callback for EUI provider */
+int native_get_eui64(const void *arg, eui64_t *addr, uint8_t index)
 {
     (void) arg;
 
-    if (index >= _num_zep_eui64) {
-        return -1;
+    uint8_t cnt = 0;
+    for (struct _native_eui64_list *e = _eui64_head; e != NULL; e = e->prev) {
+        if (cnt++ == index) {
+            *addr = e->addr;
+            return 0;
+        }
     }
 
-    assert(l2util_addr_from_str(_zep_eui64[index], addr->uint8) <= sizeof(*addr));
-
-    return 0;
+    return -1;
 }
 
-#endif
+/* parse EUI-64 from command line */
+static void _add_eui64(const char *s)
+{
+    struct _native_eui64_list *e = malloc(sizeof(*_eui64_head));
+
+    assert(l2util_addr_from_str(s, e->addr.uint8) <= sizeof(eui64_t));
+
+    e->prev = _eui64_head;
+    _eui64_head = e;
+}
 
 /** @brief Initialization function pointer type */
 typedef void (*init_func_t)(int argc, char **argv, char **envp);
@@ -556,10 +573,10 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
             case 'z':
                 _zep_params_setup(optarg, zeps++);
                 break;
-            case 'Z':
-                _zep_eui64[_num_zep_eui64++] = optarg;
-                break;
 #endif
+            case 'Z':
+                _add_eui64(optarg);
+                break;
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
             case 'p': {
                     long bus = strtol(optarg, &optarg, 10);
