@@ -440,7 +440,6 @@ int sock_udp_get_remote(sock_udp_t *sock, sock_udp_ep_t *ep);
  *                      May be `NULL`, if it is not required by the application.
  * @param[out] aux      Auxiliary data about the received datagram.
  *                      May be `NULL`, if it is not required by the application.
- *                      Contents are undefined if the function returns an error.
  *
  * @note    Function blocks if no packet is currently waiting.
  *
@@ -522,7 +521,6 @@ static inline ssize_t sock_udp_recv(sock_udp_t *sock,
  *                      May be `NULL`, if it is not required by the application.
  * @param[out] aux      Auxiliary data about the received datagram.
  *                      May be `NULL`, if it is not required by the application.
- *                      Contents are undefined if the function returns an error.
  *
  * @experimental    This function is quite new, not implemented for all stacks
  *                  yet, and may be subject to sudden API changes. Do not use in
@@ -616,7 +614,6 @@ static inline ssize_t sock_udp_recv_buf(sock_udp_t *sock,
  *                      sock_udp_ep_t::port may not be 0.
  * @param[out] aux      Auxiliary data about the transmission.
  *                      May be `NULL`, if it is not required by the application.
- *                      Contents are undefined if the function returns an error.
  *
  * @return  The number of bytes sent on success.
  * @return  -EADDRINUSE, if `sock` has no local end-point or was `NULL` and the
