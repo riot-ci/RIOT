@@ -133,7 +133,6 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
 #if IS_USED(MODULE_SOCK_AUX_LOCAL)
     if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
         _aux.local = &aux->local;
-        aux->flags &= ~(SOCK_AUX_GET_LOCAL);
     }
 #endif
     res = gnrc_sock_recv((gnrc_sock_reg_t *)sock, &pkt, timeout, &tmp, _aux);
@@ -153,6 +152,11 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
         gnrc_pktbuf_release(pkt);
         return -EPROTO;
     }
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
+    if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
+        aux->flags &= ~(SOCK_AUX_GET_LOCAL);
+    }
+#endif
     *data = pkt->data;
     *buf_ctx = pkt;
     res = (int)pkt->size;
