@@ -217,10 +217,12 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **ctx,
         return res;
     }
     sock_ip_ep_t *local = NULL;
-    if (IS_USED(MODULE_SOCK_AUX_LOCAL) && (aux != NULL)) {
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
+    if (aux != NULL) {
         local = &aux->local;
         aux->flags &= ~(SOCK_AUX_GET_LOCAL);
     }
+#endif
     res = _parse_iphdr(buf, data, ctx, remote, local);
     return res;
 }
