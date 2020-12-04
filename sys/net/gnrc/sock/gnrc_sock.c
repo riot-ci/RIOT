@@ -90,8 +90,10 @@ void gnrc_sock_create(gnrc_sock_reg_t *reg, gnrc_nettype_t type, uint32_t demux_
 
 ssize_t gnrc_sock_recv(gnrc_sock_reg_t *reg, gnrc_pktsnip_t **pkt_out,
                        uint32_t timeout, sock_ip_ep_t *remote,
-                       sock_ip_ep_t *local)
+                       gnrc_sock_recv_aux_t aux)
 {
+    /* only used when some sock_aux_% module is used */
+    (void)aux;
     gnrc_pktsnip_t *pkt, *netif;
     msg_t msg;
 
@@ -151,15 +153,12 @@ ssize_t gnrc_sock_recv(gnrc_sock_reg_t *reg, gnrc_pktsnip_t **pkt_out,
     assert(ipv6_hdr != NULL);
     memcpy(&remote->addr, &ipv6_hdr->src, sizeof(ipv6_addr_t));
     remote->family = AF_INET6;
-    if (!IS_USED(MODULE_SOCK_AUX_LOCAL)) {
-        /* support for obtaining the received address depends on the module
-         * sock_aux_local for now, as no other users are there. */
-         assert(local == NULL);
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
+    if (aux.local != NULL) {
+        memcpy(&aux.local->addr, &ipv6_hdr->dst, sizeof(ipv6_addr_t));
+        aux.local->family = AF_INET6;
     }
-    else if (local) {
-        memcpy(&local->addr, &ipv6_hdr->dst, sizeof(ipv6_addr_t));
-        local->family = AF_INET6;
-    }
+#endif /* MODULE_SOCK_AUX_LOCAL */
     netif = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_NETIF);
     if (netif == NULL) {
         remote->netif = SOCK_ADDR_ANY_NETIF;

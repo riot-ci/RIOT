@@ -117,6 +117,7 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
     gnrc_pktsnip_t *pkt;
     sock_ip_ep_t tmp;
     int res;
+    gnrc_sock_recv_aux_t _aux = { 0 };
 
     assert((sock != NULL) && (data != NULL) && (buf_ctx != NULL));
     if (*buf_ctx != NULL) {
@@ -129,14 +130,13 @@ ssize_t sock_ip_recv_buf_aux(sock_ip_t *sock, void **data, void **buf_ctx,
         return -EADDRNOTAVAIL;
     }
     tmp.family = sock->local.family;
-    sock_ip_ep_t *local = NULL;
 #if IS_USED(MODULE_SOCK_AUX_LOCAL)
     if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
-        local = &aux->local;
+        _aux.local = &aux->local;
         aux->flags &= ~(SOCK_AUX_GET_LOCAL);
     }
 #endif
-    res = gnrc_sock_recv((gnrc_sock_reg_t *)sock, &pkt, timeout, &tmp, local);
+    res = gnrc_sock_recv((gnrc_sock_reg_t *)sock, &pkt, timeout, &tmp, _aux);
     if (res < 0) {
         return res;
     }
