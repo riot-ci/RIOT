@@ -23,6 +23,7 @@ endif
 
 ifneq (,$(filter eui_provider,$(USEMODULE)))
   USEMODULE += native_eui_provider
+  USEMODULE += l2util
 endif
 
 USEMODULE += periph

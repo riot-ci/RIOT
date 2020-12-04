@@ -31,7 +31,14 @@ void native_add_eui64(const char *s)
 {
     struct _native_eui64_list *e = malloc(sizeof(*_eui64_head));
 
-    assert(l2util_addr_from_str(s, e->addr.uint8) <= sizeof(eui64_t));
+    size_t res = l2util_addr_from_str(s, e->addr.uint8);
+    assert(res <= sizeof(eui64_t));
+
+    /* if the provided address exceeds eui64_t, l2util_addr_from_str()
+     * *will* corrupt memory. */
+    if (res > sizeof(eui64_t)) {
+        exit(-1);
+    }
 
     e->prev = _eui64_head;
     _eui64_head = e;
