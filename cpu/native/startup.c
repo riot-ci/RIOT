@@ -85,6 +85,7 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #include "gpiodev_linux.h"
 #endif
 #ifdef MODULE_SOCKET_ZEP
+#include "net/l2util.h"
 #include "socket_zep_params.h"
 
 socket_zep_params_t socket_zep_params[SOCKET_ZEP_MAX];
@@ -106,6 +107,7 @@ static const char short_opts[] = ":hi:s:deEoc:"
 #endif
 #ifdef MODULE_SOCKET_ZEP
     "z:"
+    "Z:"
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     "p:"
@@ -132,6 +134,7 @@ static const struct option long_opts[] = {
 #endif
 #ifdef MODULE_SOCKET_ZEP
     { "zep", required_argument, NULL, 'z' },
+    { "zep_mac", required_argument, NULL, 'Z' },
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     { "spi", required_argument, NULL, 'p' },
@@ -280,6 +283,9 @@ void usage_exit(int status)
          * the braces (marking them as optional) to be 100% clear on that */
         real_printf(" -z <laddr>:<lport>,<raddr>:<rport>");
     }
+    for (int i = 0; i < SOCKET_ZEP_MAX; i++) {
+        real_printf(" [-Z <eui64>]");
+    }
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     real_printf(" [-p <b>:<d>:<spidev>]");
@@ -323,6 +329,9 @@ void usage_exit(int status)
 "        The ZEP interface connects to the remote address and may listen\n"
 "        on a local address.\n"
 "        Required to be provided SOCKET_ZEP_MAX times\n"
+"    -Z <eui64>, --zep_mac=<eui64>\n"
+"        provide a ZEP interface with EUI-64 (MAC address)\n"
+"        This argument can be provided SOCKET_ZEP_MAX times\n"
 #endif
     );
 #ifdef MODULE_MTD_NATIVE
@@ -414,6 +423,23 @@ static void _zep_params_setup(char *zep_str, int zep)
                       &socket_zep_params[zep].remote_port);
     }
 }
+
+static uint8_t _num_zep_eui64;
+static char *_zep_eui64[SOCKET_ZEP_MAX];
+
+int native_get_zep_eui64(const void *arg, eui64_t *addr, uint8_t index)
+{
+    (void) arg;
+
+    if (index >= _num_zep_eui64) {
+        return -1;
+    }
+
+    assert(l2util_addr_from_str(_zep_eui64[index], addr->uint8) <= sizeof(*addr));
+
+    return 0;
+}
+
 #endif
 
 /** @brief Initialization function pointer type */
@@ -529,6 +555,9 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
 #ifdef MODULE_SOCKET_ZEP
             case 'z':
                 _zep_params_setup(optarg, zeps++);
+                break;
+            case 'Z':
+                _zep_eui64[_num_zep_eui64++] = optarg;
                 break;
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
