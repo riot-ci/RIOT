@@ -35,6 +35,29 @@ extern "C" {
 #include "mtd_native.h"
 #endif
 
+#include "net/eui64.h"
+
+/**
+ * @name    Get a command-line provided EUI-64
+ *
+ * @param arg       unused
+ * @param addr[out] user supplied EUI-64
+ * @param index     index of ZEP device
+ *
+ * @return 0 on success, negatvie if no more EUIs are available.
+ */
+int native_get_eui64(const void *arg, eui64_t *addr, uint8_t index);
+
+/**
+ * @name    EUI sources on the board
+ *          EUI-64 can be provided with the -Z command line argument
+ * @{
+ */
+#define EUI64_PROVIDER_FUNC   native_get_eui64
+#define EUI64_PROVIDER_TYPE   NETDEV_ANY
+#define EUI64_PROVIDER_INDEX  NETDEV_INDEX_ANY
+/** @} */
+
 /**
  * @name    LED handlers
  * @{
