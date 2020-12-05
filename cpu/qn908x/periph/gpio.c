@@ -48,6 +48,9 @@
 /* Bit mask indicating if a GPIO is set to open_drain. */
 static uint32_t gpio_open_drain[GPIO_PORTS_NUMOF] = {};
 
+/* The IRQ numbers in the NVIC for each GPIO port. */
+static const uint32_t gpio_nvic_irqs[GPIO_PORTS_NUMOF] = GPIO_IRQS;
+
 int gpio_init(gpio_t pin, gpio_mode_t mode)
 {
     GPIO_Type *const base = GPIO_T_ADDR(pin);
@@ -168,6 +171,7 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
 void gpio_irq_enable(gpio_t pin)
 {
+    NVIC_EnableIRQ(gpio_nvic_irqs[GPIO_T_PORT(pin)]);
     GPIO_T_ADDR(pin)->INTENSET = 1u << GPIO_T_PIN(pin);
 }
 
