@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     cpu_cortexm_common
+ * @ingroup     sys
  * @{
  *
  * @file
- * @brief       Bit access macros for Cortex-M based CPUs
+ * @brief       Bit access macros with bit-banding support for Cortex-M based CPUs
  *
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  */
