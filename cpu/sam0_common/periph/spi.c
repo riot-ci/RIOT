@@ -69,6 +69,27 @@ static inline void poweroff(spi_t bus)
     sercom_clk_dis(dev(bus));
 }
 
+static void _syncbusy(SercomSpi *dev)
+{
+#ifdef SERCOM_SPI_STATUS_SYNCBUSY
+    while (dev->STATUS.bit.SYNCBUSY) {}
+#else
+    while (dev->SYNCBUSY.reg) {}
+#endif
+}
+
+static void _reset(SercomSpi *dev)
+{
+    dev->CTRLA.reg |= SERCOM_SPI_CTRLA_SWRST;
+    while (dev->CTRLA.reg & SERCOM_SPI_CTRLA_SWRST) {}
+
+#ifdef SERCOM_SPI_STATUS_SYNCBUSY
+    while (dev->STATUS.bit.SYNCBUSY) {}
+#else
+    while (dev->SYNCBUSY.bit.SWRST) {}
+#endif
+}
+
 static inline bool _use_dma(spi_t bus)
 {
 #ifdef MODULE_PERIPH_DMA
@@ -95,9 +116,7 @@ void spi_init(spi_t bus)
     poweron(bus);
 
     /* reset all device configuration */
-    dev(bus)->CTRLA.reg |= SERCOM_SPI_CTRLA_SWRST;
-    while ((dev(bus)->CTRLA.reg & SERCOM_SPI_CTRLA_SWRST) ||
-           (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_SWRST)) {}
+    _reset(dev(bus));
 
     /* configure base clock: using GLK GEN 0 */
     sercom_set_gen(dev(bus), spi_config[bus].gclk_src);
@@ -178,7 +197,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
     if (dev(bus)->BAUD.reg != baud || dev(bus)->CTRLA.reg != ctrla) {
         /* disable the device */
         dev(bus)->CTRLA.reg &= ~(SERCOM_SPI_CTRLA_ENABLE);
-        while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
+        _syncbusy(dev(bus));
 
         dev(bus)->BAUD.reg = baud;
         dev(bus)->CTRLA.reg = ctrla;
@@ -188,7 +207,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
     /* finally enable the device */
     dev(bus)->CTRLA.reg |= SERCOM_SPI_CTRLA_ENABLE;
-    while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
+    _syncbusy(dev(bus));
 
     /* mux clk_pin to SPI peripheral */
     gpio_init_mux(spi_config[bus].clk_pin, spi_config[bus].clk_mux);
@@ -204,7 +223,7 @@ void spi_release(spi_t bus)
 
     /* disable the device */
     dev(bus)->CTRLA.reg &= ~(SERCOM_SPI_CTRLA_ENABLE);
-    while (dev(bus)->SYNCBUSY.reg & SERCOM_SPI_SYNCBUSY_ENABLE) {}
+    _syncbusy(dev(bus));
 
     /* power off the device */
     poweroff(bus);
