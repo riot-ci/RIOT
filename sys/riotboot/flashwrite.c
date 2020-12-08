@@ -154,11 +154,11 @@ int riotboot_flashwrite_putbytes(riotboot_flashwrite_t *state,
 int riotboot_flashwrite_invalidate(int slot)
 {
     if (riotboot_slot_numof == 1){
-        LOG_WARNING(LOG_PREFIX "Only one slot configured\n");
+        LOG_WARNING(LOG_PREFIX "abort, only one slot configured\n");
         return -1;
     }
-    if ((riotboot_slot_validate(riotboot_slot_other()) != 0) || (riotboot_slot_validate(riotboot_slot_current()) != 0)){
-        LOG_INFO(LOG_PREFIX "There will be no valid images to run after reboot\n");
+    if (riotboot_slot_validate(1 - slot) != 0){
+        LOG_WARNING(LOG_PREFIX "abort, slot %d is the only valid image\n", slot);
         return -2;
     }
 
