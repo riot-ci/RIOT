@@ -317,22 +317,20 @@ void __attribute__((naked)) __attribute__((used)) isr_pendsv(void) {
 
     /* skip context saving if sched_active_thread == NULL */
     "ldr    r1, =sched_active_thread  \n" /* r1 = &sched_active_thread  */
-    "ldr    r1, [r1]                  \n" /* r1 = sched_active_thread   */
-    "push   {lr}                      \n" /* push exception return code */
-    "push   {r1}                      \n" /* save r1 on stack*/
+    "push   {r4, lr}                  \n" /* push r4 and exception return code */
+    "ldr    r4, [r1]                  \n" /* r4 = sched_active_thread   */
 
     "cpsid  i                         \n" /* Disable IRQs during sched_run */
     "bl     sched_run                 \n" /* perform scheduling */
     "cpsie  i                         \n" /* Re-enable interrupts */
 
-    "pop   {r1}                       \n" /* restore r1 from stack*/
-
-    "cmp    r0, r1                    \n" /* if r0 == r1: (new thread == old
+    "cmp    r0, r4                    \n" /* if r0 == r1: (new thread == old
                                                thread, no switch required) */
     "it     eq                        \n"
-    "popeq  {pc}                      \n" /* Pop exception to pc to return */
+    "popeq  {r4, pc}                  \n" /* Pop exception to pc to return */
 
-    "pop    {lr}                      \n" /* Pop exception from the exception stack */
+    "mov    r1, r4                    \n" /* save sched_active_thread in r1 */
+    "pop    {r4, lr}                  \n" /* Pop exception from the exception stack */
 
     "cbz    r1, restore_context       \n" /* goto restore_context if r1 == 0 */
 
