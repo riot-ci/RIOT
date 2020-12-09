@@ -445,27 +445,6 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   Default adaptive datarate ACK limit (in s)
- */
-#ifndef LORAMAC_DEFAULT_ADR_ACK_LIMIT
-#define LORAMAC_DEFAULT_ADR_ACK_LIMIT           (64U)
-#endif
-
-/**
- * @brief   Default adaptive datarate ACK delay (in s)
- */
-#ifndef LORAMAC_DEFAULT_ADR_ACK_DELAY
-#define LORAMAC_DEFAULT_ADR_ACK_DELAY           (32U)
-#endif
-
-/**
- * @brief   Default adaptive datarate timeout
- */
-#ifndef LORAMAC_DEFAULT_ADR_TIMEOUT
-#define LORAMAC_DEFAULT_ADR_TIMEOUT             (3U)
-#endif
-
-/**
  * @brief   Default second RX window delay (in ms)
  */
 #define LORAMAC_DEFAULT_RX2_DELAY               (1000U + CONFIG_LORAMAC_DEFAULT_RX1_DELAY)
