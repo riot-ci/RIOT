@@ -4,6 +4,11 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 #
+config HAVE_LORAWAN
+    bool
+    help
+        Indicates that LoRaWAN headers are present.
+
 menuconfig KCONFIG_USEMODULE_LORAWAN
     bool "Configure LoRaWAN MAC"
     depends on USEMODULE_GNRC_LORAWAN || USEPKG_SEMTECH_LORAMAC || USEMODULE_RN2XX3
@@ -316,10 +321,8 @@ endchoice
 config LORAMAC_ADVANCED_OPTIONS
     bool "Enable advanced options"
 
-if LORAMAC_ADVANCED_OPTIONS
-
 config LORAMAC_DEFAULT_RETX
-    int "Uplink retransmissions"
+    int "Uplink retransmissions" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_GNRC_LORAWAN || USEMODULE_RN2XX3
     default 5
     range 0 255
@@ -329,7 +332,7 @@ config LORAMAC_DEFAULT_RETX
         the network.
 
 config LORAMAC_DEFAULT_ADR
-    bool "Enable ADR"
+    bool "Enable ADR" if LORAMAC_ADVANCED_OPTIONS
     depends on USEPKG_SEMTECH_LORAMAC || USEMODULE_RN2XX3
     help
         Enable or disable Adaptive Data Rate (ADR). If enabled the end node will
@@ -339,7 +342,7 @@ config LORAMAC_DEFAULT_ADR
         collected from the network.
 
 config LORAMAC_DEFAULT_LINKCHK
-    int "Link check interval (in seconds)"
+    int "Link check interval (in seconds)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_RN2XX3
     default 0
     help
@@ -350,7 +353,7 @@ config LORAMAC_DEFAULT_LINKCHK
         one or multiple gateways, it responds with a `LinkCheckAns` MAC command.
 
 config LORAMAC_DEFAULT_RX1_DELAY
-    int "RX1 window delay (in milliseconds)"
+    int "RX1 window delay (in milliseconds)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_GNRC_LORAWAN || USEMODULE_RN2XX3
     default 1000
     help
@@ -358,17 +361,8 @@ config LORAMAC_DEFAULT_RX1_DELAY
         specifies the delay in seconds to open the RX1 window after the end of
         uplink modulation on the end-node.
 
-config LORAMAC_DEFAULT_AR
-    bool "Enable automatic reply"
-    depends on USEMODULE_RN2XX3
-    help
-        Enable/disable Automatic Reply (AR) for rn2xx3 module. By enabling the
-        automatic reply, the module will transmit a packet without a payload
-        immediately after a confirmed downlink is received, or when the
-        Frame Pending bit has been set by the server.
-
 choice
-    bool "RX2 window datarate index"
+    bool "RX2 window datarate index" if LORAMAC_ADVANCED_OPTIONS
     depends on LORAMAC_DEFAULT_JOIN_PROCEDURE_ABP || USEMODULE_RN2XX3
     default LORAMAC_DEFAULT_RX2_DR_0 if LORAMAC_REGION_EU_868
     default LORAMAC_DEFAULT_RX2_DR_2 if LORAMAC_REGION_IN_865
@@ -431,7 +425,7 @@ endif # LORAMAC_REGION_US_915
 endchoice
 
 config LORAMAC_DEFAULT_RX2_FREQ
-    int "RX2 Frequency (in Hz)"
+    int "RX2 Frequency (in Hz)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_RN2XX3 || USEMODULE_GNRC_LORAWAN
     default 869525000 if LORAMAC_REGION_EU_868
     default 866550000 if LORAMAC_REGION_IN_865
@@ -439,7 +433,7 @@ config LORAMAC_DEFAULT_RX2_FREQ
         Configure the frequency of RX2 receive window.
 
 config LORAMAC_DEFAULT_JOIN_DELAY1
-    int "Join accept delay 1 (in seconds)"
+    int "Join accept delay 1 (in seconds)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_RN2XX3 || USEMODULE_GNRC_LORAWAN
     default 5
     help
@@ -448,7 +442,7 @@ config LORAMAC_DEFAULT_JOIN_DELAY1
         to the operation of RX1 window.
 
 config LORAMAC_DEFAULT_JOIN_DELAY2
-    int "Join accept delay 2 (in seconds)"
+    int "Join accept delay 2 (in seconds)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_RN2XX3
     default 6
     help
@@ -457,7 +451,7 @@ config LORAMAC_DEFAULT_JOIN_DELAY2
         similar to the operation of RX2 window.
 
 config LORAMAC_DEFAULT_MAX_FCNT_GAP
-    int "Max frame counter deviation"
+    int "Max frame counter deviation" if LORAMAC_ADVANCED_OPTIONS
     depends on USEMODULE_GNRC_LORAWAN
     default 16384
     help
@@ -466,7 +460,7 @@ config LORAMAC_DEFAULT_MAX_FCNT_GAP
         value stored in Network Server (NS).
 
 config LORAMAC_DEFAULT_SYSTEM_MAX_RX_ERROR
-    int "Max system timing error ( in milliseconds)"
+    int "Max system timing error ( in milliseconds)" if LORAMAC_ADVANCED_OPTIONS
     depends on USEPKG_SEMTECH_LORAMAC
     default 50
     help
@@ -476,7 +470,7 @@ config LORAMAC_DEFAULT_SYSTEM_MAX_RX_ERROR
         TCXO.
 
 config LORAMAC_DEFAULT_MIN_RX_SYMBOLS
-    int "Min RX symbols to detect frame"
+    int "Min RX symbols to detect frame" if LORAMAC_ADVANCED_OPTIONS
     depends on USEPKG_SEMTECH_LORAMAC
     default 12
     help
@@ -485,7 +479,5 @@ config LORAMAC_DEFAULT_MIN_RX_SYMBOLS
         window calculation. This may be increased to account for inaccuracies in
         system timer. Refer SX1276_settings_for_LoRaWAN_v2p2.pdf
         (AN1200.24) from Semtech for more information.
-
-endif # LORAMAC_ADVANCED_OPTIONS
 
 endif # KCONFIG_USEMODULE_LORAWAN
