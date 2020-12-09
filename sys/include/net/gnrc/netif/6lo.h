@@ -40,7 +40,7 @@ extern "C" {
  * @{
  */
 /**
- * @brief   Selective Fragment Recovery
+ * @brief   Selective Fragment Recovery enabled
  * @see     [RFC 8931](https://tools.ietf.org/html/rfc8931)
  */
 #define GNRC_NETIF_6LO_LOCAL_FLAGS_SFR  (0x01)
