@@ -21,6 +21,7 @@
 #ifdef MODULE_GNRC_IPV6
 #include "net/ipv6/hdr.h"
 #endif
+#include "net/gnrc/neterr.h"
 #include "net/gnrc/netif/internal.h"
 #include "net/gnrc/pkt.h"
 #include "net/gnrc/sixlowpan.h"
@@ -30,6 +31,7 @@
 #include "net/gnrc/sixlowpan/frag/vrb.h"
 #include "net/sixlowpan/sfr.h"
 #include "thread.h"
+#include "unaligned.h"
 #include "xtimer.h"
 
 #include "net/gnrc/sixlowpan/frag/sfr.h"
@@ -97,15 +99,6 @@ static const gnrc_sixlowpan_frag_sfr_bitmap_t _null_bitmap = { .u32 = 0U };
 static gnrc_sixlowpan_frag_sfr_stats_t _stats;
 
 /**
- * @brief   Converts bitmap to a numerical integer
- *
- * @param[in] bitmap    A 32 bit long bitmap
- *
- * @return  a 32-bit integer
- */
-static inline uint32_t _bitmap_to_u32(uint8_t *bitmap);
-
-/**
  * @brief   Converts a @ref sys_bitmap based bitmap to a
  *          gnrc_sixlowpan_frag_sfr_bitmap_t
  *
@@ -137,8 +130,10 @@ static inline uint16_t _frag_size(_frag_desc_t *frag);
  *          datagram.
  *
  * @param[in] fbuf  A fragmentation buffer entry
+ * @param[in] error An errno to provide to an upper layer as the reason for why
+ *                  gnrc_sixlowpan_frag_fb_t::pkt of @p fbuf was released.
  */
-static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf);
+static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf, int error);
 
 /**
  * @brief   Send first fragment.
@@ -307,6 +302,7 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
 {
     gnrc_sixlowpan_frag_fb_t *fbuf = ctx;
     gnrc_netif_t *netif;
+    int error_no = GNRC_NETERR_SUCCESS;
     uint16_t res;
 
     assert((fbuf != NULL) && ((fbuf->pkt == pkt) || (pkt == NULL)));
@@ -321,6 +317,8 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
         res = _send_1st_fragment(netif, fbuf, page);
         if (res == 0) {
             DEBUG("6lo sfr: error sending first fragment\n");
+            /* _send_1st_fragment only returns 0 if there is a memory problem */
+            error_no = ENOMEM;
             goto error;
         }
     }
@@ -334,10 +332,15 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
         if (res == 0) {
             DEBUG("6lo sfr: error sending subsequent fragment (offset = %u)\n",
                   fbuf->offset);
+            /* _send_nth_fragment only returns 0 if there is a memory problem */
+            error_no = ENOMEM;
             goto error;
         }
     }
     else {
+        /* offset is greater or equal to datagram size
+         * => we are done sending fragments (not an error, but we can release
+         * the fragmentation buffer now) */
         goto error;
     }
     fbuf->offset += res;
@@ -345,6 +348,8 @@ void gnrc_sixlowpan_frag_sfr_send(gnrc_pktsnip_t *pkt, void *ctx,
     if ((fbuf->sfr.frags_sent < fbuf->sfr.window_size) &&
         (fbuf->offset < fbuf->datagram_size) &&
         !gnrc_sixlowpan_frag_fb_send(fbuf)) {
+        /* the queue of the 6LoWPAN thread is full */
+        error_no = ENOMEM;
         /* go back offset to not send abort on first fragment */
         fbuf->offset -= res;
         goto error;
@@ -374,7 +379,7 @@ error:
         _sched_abort_timeout(fbuf);
     }
     else {
-        _clean_up_fbuf(fbuf);
+        _clean_up_fbuf(fbuf, error_no);
     }
 }
 
@@ -446,10 +451,11 @@ void gnrc_sixlowpan_frag_sfr_arq_timeout(gnrc_sixlowpan_frag_fb_t *fbuf)
     _frag_desc_t *frag_desc = head;
     uint32_t next_arq_offset = fbuf->sfr.arq_timeout;
     bool reschedule_arq_timeout = false;
+    int error_no = ETIMEDOUT;   /* assume time out for fbuf->pkt */
 
     DEBUG("6lo sfr: ARQ timeout for datagram %u\n", fbuf->tag);
     fbuf->sfr.arq_timeout_event.msg.content.ptr = NULL;
-    /* copying clist_foreach because we can't work just in function context*/
+    /* copying clist_foreach because we can't work just in function context */
     if (frag_desc) {
         do {
             uint32_t diff;
@@ -469,10 +475,16 @@ void gnrc_sixlowpan_frag_sfr_arq_timeout(gnrc_sixlowpan_frag_fb_t *fbuf)
                     DEBUG("         (next ARQ timeout in %lu)\n",
                           (long unsigned)next_arq_offset);
                 }
+                /* this fragment is still waiting for its ACK,
+                 * reschedule the next ACK timeout to the difference
+                 * of the ACK timeout and the time of its last send */
                 reschedule_arq_timeout = true;
             }
             else if (_frag_ack_req(frag_desc)) {
+                /* for this fragment we requested an ACK which was not received
+                 * yet. Try to resend it */
                 if ((frag_desc->retries++) < CONFIG_GNRC_SIXLOWPAN_SFR_FRAG_RETRIES) {
+                    /* we have retries left for this fragment */
                     DEBUG("6lo sfr: %u retries left for fragment (tag: %u, "
                           "X: %i, seq: %u, frag_size: %u, offset: %u)\n",
                           CONFIG_GNRC_SIXLOWPAN_SFR_FRAG_RETRIES -
@@ -480,28 +492,50 @@ void gnrc_sixlowpan_frag_sfr_arq_timeout(gnrc_sixlowpan_frag_fb_t *fbuf)
                           _frag_ack_req(frag_desc), _frag_seq(frag_desc),
                           _frag_size(frag_desc), frag_desc->offset);
                     if (_resend_frag(&frag_desc->super, fbuf) != 0) {
+                        /* _resend_frag failed due to a memory resource
+                         * problem */
+                        error_no = ENOMEM;
                         goto error;
                     }
                     else if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_STATS)) {
+                        /* fragment was resent successfully, note this done in
+                         * the statistics */
                         _stats.fragment_resends.by_timeout++;
                     }
+                    /* fragment was resent successfully, schedule next ACK
+                     * timeout */
                     reschedule_arq_timeout = true;
                 }
                 else {
-                    DEBUG("6lo sfr: resending fragment (tag: %u, X: %i, seq: %u, "
-                          "frag_size: %u, offset: %u)\n",
+                    /* out of retries */
+                    DEBUG("6lo sfr: no retries left for fragment "
+                          "(tag: %u, X: %i, seq: %u, frag_size: %u, "
+                          "offset: %u)\n",
                           (uint8_t)fbuf->tag, _frag_ack_req(frag_desc),
                           _frag_seq(frag_desc), _frag_size(frag_desc),
                           frag_desc->offset);
+                    /* we are out of retries on the fragment level, but we
+                     * might be able to retry the datagram if retries for the
+                     * datagram are configured. */
                     _retry_datagram(fbuf);
                     return;
                 }
             }
             else {
+                /* Do not resend fragments that were not explicitly asking for
+                 * an ACK from the reassembling endpoint on ACK timeout.
+                 * If this is true for all fragments remaining in the fragment
+                 * buffer, the datagram is to be considered timed out, so
+                 * error_no should remain ETIMEDOUT */
                 DEBUG("6lo sfr: nothing to do for fragment %u\n",
                       _frag_seq(frag_desc));
             }
         } while (frag_desc != head);
+    }
+    else {
+        /* No fragments to resend, we can assume the packet was delivered
+         * successfully */
+        error_no = GNRC_NETERR_SUCCESS;
     }
     assert(fbuf->sfr.frags_sent == clist_count(&fbuf->sfr.window));
     if (reschedule_arq_timeout) {
@@ -511,7 +545,7 @@ void gnrc_sixlowpan_frag_sfr_arq_timeout(gnrc_sixlowpan_frag_fb_t *fbuf)
 error:
     /* don't check return value, as we don't want to wait for an ACK again ;-) */
     _send_abort_frag(fbuf->pkt, (uint8_t)fbuf->tag, false, 0);
-    _clean_up_fbuf(fbuf);
+    _clean_up_fbuf(fbuf, error_no);
 }
 
 void gnrc_sixlowpan_frag_sfr_inter_frame_gap(void)
@@ -547,9 +581,23 @@ static inline uint16_t _min(uint16_t a, size_t b)
 
 static inline kernel_pid_t _getpid(void)
 {
+    /* in production, only the 6LoWPAN thread is supposed to call the API
+     * functions, so just get the current thread's PID for sending messages.
+     * When testing, those functions might however be called by the testing
+     * thread (usually the main thread), so indirect over the 6LoWPAN thread in
+     * that case */
     return IS_ACTIVE(TEST_SUITES) ? gnrc_sixlowpan_get_pid() : thread_getpid();
 }
 
+/*
+ * @brief   Returns the datagram in @p fbuf to its original state
+ *
+ * This function can be both used to clean up the fragmentation buffer on
+ * failure without releasing @p fbuf's gnrc_sixlowpan_frag_fb_t::pkt and to
+ * reset a datagram for a datagram retry.
+ *
+ * @param[in]   fbuf    The fragmentation buffer entry to clean up
+ */
 static void _clean_slate_datagram(gnrc_sixlowpan_frag_fb_t *fbuf)
 {
     clist_node_t new_queue = { .next = NULL };
@@ -638,8 +686,7 @@ static gnrc_pktsnip_t *_build_frag_pkt(gnrc_netif_hdr_t *old_netif_hdr,
         gnrc_pktbuf_release(netif);
         return NULL;
     }
-    LL_PREPEND(res, netif);
-    return res;
+    return gnrc_pkt_prepend(res, netif);
 }
 
 static gnrc_pktsnip_t *_build_frag_from_fbuf(gnrc_pktsnip_t *pkt,
@@ -983,6 +1030,9 @@ static void _handle_1st_rfrag(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
     uint8_t *payload;
 
     if ((datagram_size == 0) && (fragment_size == 0)) {
+        /* the received fragment is a pseudo-fragment that signals an abort
+         * condition by the fragmenting end-point, release state on the
+         * datagram */
         bool release_pkt = true;
 
         DEBUG("6lo sfr: Abort for datagram (%s, %u) received\n",
@@ -992,6 +1042,7 @@ static void _handle_1st_rfrag(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
         if ((entry->entry.vrb = gnrc_sixlowpan_frag_vrb_get(
                 gnrc_netif_hdr_get_src_addr(netif_hdr),
                 netif_hdr->src_l2addr_len, hdr->base.tag)) != NULL) {
+            /* we have a VRB on the aborted datagram. Release it */
             entry->type = _VRB;
             _forward_rfrag(pkt, entry, 0, page);
             gnrc_sixlowpan_frag_vrb_rm(entry->entry.vrb);
@@ -999,13 +1050,16 @@ static void _handle_1st_rfrag(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
         }
         if ((entry->entry.rb = gnrc_sixlowpan_frag_rb_get_by_datagram(
                 netif_hdr, hdr->base.tag)) != NULL) {
+            /* we have a reassembly buffer entry on the aborted datagram.
+             * Release it */
             entry->type = _RB;
             _abort_rb(pkt, entry, netif_hdr, sixlowpan_sfr_rfrag_ack_req(hdr));
             release_pkt = false;
         }
         if (release_pkt) {
             DEBUG("6lo sfr: received abort for unknown datagram\n");
-            /* neither VRB or RB exists => release packet */
+            /* neither VRB or RB exists so we don't have any state on the
+             * aborted datagram left. Just release the abort pseudo fragment */
             gnrc_pktbuf_release(pkt);
         }
         return;
@@ -1120,7 +1174,7 @@ static void _check_failed_frags(sixlowpan_sfr_ack_t *ack,
     if ((clist_lpeek(&not_received) == NULL) &&
         (fbuf->offset == fbuf->datagram_size)) {
         /* release fragmentation buffer */
-        _clean_up_fbuf(fbuf);
+        _clean_up_fbuf(fbuf, GNRC_NETERR_SUCCESS);
     }
     /* at least one fragment was not received */
     else {
@@ -1138,7 +1192,10 @@ static void _check_failed_frags(sixlowpan_sfr_ack_t *ack,
                 _sched_abort_timeout(fbuf);
             }
             else {
-                _clean_up_fbuf(fbuf);
+                /* we have no memory resources left to send neither the
+                 * resent fragment nor the abort ACK to signalize that fact to
+                 * the reassembling endpoint */
+                _clean_up_fbuf(fbuf, ENOMEM);
             }
         }
         if ((fbuf->sfr.frags_sent < fbuf->sfr.window_size) &&
@@ -1152,12 +1209,6 @@ static void _check_failed_frags(sixlowpan_sfr_ack_t *ack,
 
 /* ====== INTERNAL FUNCTIONS USED BY PUBLIC FUNCTIONS ======
  * ====== AND TO MANIPULATE INTERNAL DATA STRUCTURES  ====== */
-static inline uint32_t _bitmap_to_u32(uint8_t *bitmap)
-{
-    return (((uint32_t)bitmap[0]) << 24) | (((uint32_t)bitmap[1]) << 16) |
-           (((uint32_t)bitmap[2]) << 8) | bitmap[3];
-}
-
 static inline gnrc_sixlowpan_frag_sfr_bitmap_t *_to_bitmap(uint8_t *bitmap)
 {
     return (gnrc_sixlowpan_frag_sfr_bitmap_t *)bitmap;
@@ -1180,12 +1231,12 @@ static inline uint16_t _frag_size(_frag_desc_t *frag)
     return (frag->ar_seq_fs & SIXLOWPAN_SFR_FRAG_SIZE_MASK);
 }
 
-static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf)
+static void _clean_up_fbuf(gnrc_sixlowpan_frag_fb_t *fbuf, int error)
 {
     DEBUG("6lo sfr: removing fragmentation buffer entry for datagram %u\n",
           fbuf->tag);
     _clean_slate_datagram(fbuf);
-    gnrc_pktbuf_release(fbuf->pkt);
+    gnrc_pktbuf_release_error(fbuf->pkt, error);
     fbuf->pkt = NULL;
 }
 
@@ -1366,7 +1417,7 @@ static void _retry_datagram(gnrc_sixlowpan_frag_fb_t *fbuf)
         (fbuf->sfr.retrans == 0)) {
         DEBUG("6lo sfr: giving up to send datagram %u\n",
               fbuf->tag);
-        _clean_up_fbuf(fbuf);
+        _clean_up_fbuf(fbuf, ETIMEDOUT);
     }
     else {
         DEBUG("6lo sfr: Retrying to send datagram %u completely\n", fbuf->tag);
@@ -1374,6 +1425,8 @@ static void _retry_datagram(gnrc_sixlowpan_frag_fb_t *fbuf)
             _stats.datagram_resends++;
         }
         fbuf->sfr.retrans--;
+        /* return fragmentation buffer to its original state to resend the whole
+         * datagram again */
         _clean_slate_datagram(fbuf);
         gnrc_sixlowpan_frag_sfr_send(fbuf->pkt, fbuf, 0);
     }
@@ -1464,6 +1517,9 @@ static void _sched_arq_timeout(gnrc_sixlowpan_frag_fb_t *fbuf, uint32_t offset)
 
 static void _sched_abort_timeout(gnrc_sixlowpan_frag_fb_t *fbuf)
 {
+    /* no fragments to wait for anymore as we aborted fragmentation and just
+     * wait for an ACK by the reassembling end point that they know. As such,
+     * clean-out the fragmentation buffer. */
     _clean_slate_datagram(fbuf);
     fbuf->sfr.retrans = 0;
     _sched_arq_timeout(fbuf, fbuf->sfr.arq_timeout);
@@ -1510,8 +1566,8 @@ static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
         if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_STATS)) {
             _stats.acks.forwarded++;
         }
-        if ((_bitmap_to_u32(hdr->bitmap) == _full_bitmap.u32) ||
-            (_bitmap_to_u32(hdr->bitmap) == _null_bitmap.u32)) {
+        if ((unaligned_get_u32(hdr->bitmap) == _full_bitmap.u32) ||
+            (unaligned_get_u32(hdr->bitmap) == _null_bitmap.u32)) {
             if (CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER > 0) {
                 /* garbage-collect entry after CONFIG_GNRC_SIXLOWPAN_FRAG_RBUF_DEL_TIMER
                  * microseconds */
@@ -1536,7 +1592,7 @@ static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
             evtimer_del((evtimer_t *)(&_arq_timer),
                         &fbuf->sfr.arq_timeout_event.event);
             fbuf->sfr.arq_timeout_event.msg.content.ptr = NULL;
-            if ((_bitmap_to_u32(hdr->bitmap) == _null_bitmap.u32)) {
+            if ((unaligned_get_u32(hdr->bitmap) == _null_bitmap.u32)) {
                 DEBUG("6lo sfr: fragmentation canceled\n");
                 _retry_datagram(fbuf);
             }
