@@ -147,8 +147,9 @@ gnrc_sixlowpan_frag_rb_t *gnrc_sixlowpan_frag_rb_add(gnrc_netif_hdr_t *netif_hdr
  *          (https://tools.ietf.org/html/rfc8931) where this information only
  *          exists in the first fragment.
  *
- * @return  true, if an entry with the given tuple exist.
- * @return  false, if no entry with the given tuple exist.
+ * @return  The reassembly buffer entry identified by the source and destination
+ *          address in the @p netif_hdr and @p tag, if any such entry exist.
+ * @return  NULL, if no entry with the given identifying tuple exist.
  */
 gnrc_sixlowpan_frag_rb_t *gnrc_sixlowpan_frag_rb_get_by_datagram(
     const gnrc_netif_hdr_t *netif_hdr,
