@@ -205,8 +205,8 @@ extern "C" {
 /**
  * @brief   Indicates whether the sender should react to ECN (UseECN)
  *
- * When the sender reacts to ECN its window size will vary between @ref
- * CONFIG_GNRC_SIXLOWPAN_SFR_MIN_WIN_SIZE and @ref
+ * When the sender reacts to Explicit Congestion Notification (ECN) its window
+ * size will vary between @ref CONFIG_GNRC_SIXLOWPAN_SFR_MIN_WIN_SIZE and @ref
  * CONFIG_GNRC_SIXLOWPAN_SFR_MAX_WIN_SIZE.
  */
 #define CONFIG_GNRC_SIXLOWPAN_SFR_USE_ECN           0U
