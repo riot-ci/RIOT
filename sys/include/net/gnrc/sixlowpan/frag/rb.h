@@ -300,7 +300,9 @@ static inline void gnrc_sixlowpan_frag_rb_remove(gnrc_sixlowpan_frag_rb_t *rbuf)
  */
 bool gnrc_sixlowpan_frag_rb_ints_empty(void);
 #else   /* defined(TEST_SUITES) || defined(DOXYGEN) */
-/* always true without TEST_SUITES defined */
+/* always true without TEST_SUITES defined to optimize out when not testing,
+ * as checking the status of the fragment interval pool is unnecessary in
+ * production */
 static inline bool gnrc_sixlowpan_frag_rb_ints_empty(void)
 {
     return true;
