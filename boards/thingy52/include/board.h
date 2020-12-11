@@ -55,10 +55,41 @@ extern "C" {
 #define LPSXXX_PARAM_ADDR   (0x5c)
 /** @} */
 
+#ifdef MODULE_PWM_DAC
+/**
+ * @name    The emulated DAC channels
+ *
+ * The static value is actually the result of the @ref pwm_dac_init in
+ * board_init, and it is checked there whether the values are identical.
+ *
+ * @{
+ */
+#define DAC_NUMOF 1
+#undef DAC_LINE
+#define DAC_LINE(x) (0x600)
+/** @} */
+#endif /* MODULE_PWM_DAC */
+
 /**
  * @brief   Initialize board specific hardware
  */
 void board_init(void);
+
+/**
+ * @brief   Enable the speaker
+ *
+ * Before this is called, it's a good time to run
+ * `dac_poweron(DAC_LINE(0));`.
+ */
+void board_speaker_on(void);
+
+/**
+ * @brief   Disable the speaker
+ *
+ * After this is called, it's a good time to run
+ * `dac_poweroff(DAC_LINE(0));`.
+ */
+void board_speaker_off(void);
 
 #ifdef __cplusplus
 }
