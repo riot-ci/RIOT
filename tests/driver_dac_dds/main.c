@@ -187,7 +187,7 @@ static void play_function(uint16_t period, uint32_t samples, sample_gen_t fun)
     uint16_t len_aligned = DAC_BUF_SIZE - DAC_BUF_SIZE % period;
 
     /* One underrun indication is expected (for the first sample) */
-    int32_t underruns = -1;
+    int underruns = -1;
 
     /* 16 bit samples doubles data rate */
     if (res_16b) {
@@ -211,7 +211,7 @@ static void play_function(uint16_t period, uint32_t samples, sample_gen_t fun)
     }
 
     if (underruns != 0) {
-        printf("During playback, %ld underruns occurred.\n", underruns);
+        printf("During playback, %d underruns occurred.\n", underruns);
     }
 }
 
