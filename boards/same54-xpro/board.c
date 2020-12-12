@@ -28,11 +28,11 @@
 static const mtd_spi_nor_params_t _same54_nor_params = {
     .opcode = &mtd_spi_nor_opcode_default,
     .wait_chip_erase = 240 * US_PER_SEC,
-    .wait_32k_erase = 700 * US_PER_MS,
+    .wait_64k_erase = 700 * US_PER_MS,
     .wait_sector_erase = 250 * US_PER_MS,
     .wait_chip_wake_up = 1 * US_PER_MS,
     .clk  = MHZ(54),
-    .flag = (SPI_NOR_F_SECT_4K | SPI_NOR_F_SECT_64K),
+    .flag = SPI_NOR_F_SECT_4K | SPI_NOR_F_SECT_64K,
     .spi  = SPI_DEV(2),
     .mode = SPI_MODE_0,
     .cs   = SAM0_QSPI_PIN_CS,
