@@ -285,6 +285,8 @@ static void _print_info(mtd_dev_t *dev)
 static int cmd_info(int argc, char **argv)
 {
     if (argc < 2) {
+        printf("mtd devices: %u\n", MTD_NUMOF);
+
         for (int i = 0; i < MTD_NUMOF; ++i) {
             printf(" -=[ MTD_%d ]=-\n", i);
             _print_info(_get_mtd_dev(i));
