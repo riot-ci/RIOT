@@ -128,6 +128,12 @@ int8_t dac_init(dac_t line)
     DAC->CTRLA.bit.ENABLE = 1;
     _sync();
 
+#ifdef DAC_STATUS_READY
+    /* wait for DAC startup */
+    const uint32_t mask = DAC_STATUS_READY0 << line;
+    while (!(DAC->STATUS.reg & mask)) {}
+#endif
+
     return DAC_OK;
 }
 
