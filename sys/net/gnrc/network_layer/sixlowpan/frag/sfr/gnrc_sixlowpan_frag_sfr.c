@@ -1530,7 +1530,6 @@ static void _handle_rfrag(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 {
     _generic_rb_entry_t entry = { .type = _UNDEF };
 
-    (void)page;
     if (sixlowpan_sfr_rfrag_get_seq(pkt->data) == 0U) {
         _handle_1st_rfrag(netif_hdr, pkt, page, &entry);
     }
@@ -1555,9 +1554,9 @@ static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
             gnrc_netif_hdr_get_netif(netif_hdr),
             gnrc_netif_hdr_get_src_addr(netif_hdr),
             netif_hdr->src_l2addr_len, hdr->base.tag)) != NULL) {
+        /* we found a VRB entry by reverse lookup, forward ACK further down. */
         sixlowpan_sfr_t mock_base = { .disp_ecn = hdr->base.disp_ecn,
                                       .tag = vrbe->super.tag };
-        /* send ACK further down */
         DEBUG("6lo sfr: forward ACK to (%s, %02x)\n",
               gnrc_netif_addr_to_str(vrbe->super.src, vrbe->super.src_len,
                                      addr_str), vrbe->super.tag);
@@ -1587,16 +1586,22 @@ static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
         gnrc_sixlowpan_frag_fb_t *fbuf;
 
         if ((fbuf = gnrc_sixlowpan_frag_fb_get_by_tag(hdr->base.tag)) != NULL) {
-            /* removing ACK timeout */
+            /* ACK for pending ACK timeout received. removing ACK timeout */
             DEBUG("6lo sfr: cancelling ARQ timeout\n");
             evtimer_del((evtimer_t *)(&_arq_timer),
                         &fbuf->sfr.arq_timeout_event.event);
             fbuf->sfr.arq_timeout_event.msg.content.ptr = NULL;
             if ((unaligned_get_u32(hdr->bitmap) == _null_bitmap.u32)) {
+                /* ACK indicates the reassembling endpoint canceled reassembly
+                 */
                 DEBUG("6lo sfr: fragmentation canceled\n");
+                /* Retry to send whole datagram if configured, otherwise 
+                 * cancel fragmentation */
                 _retry_datagram(fbuf);
             }
             else {
+                /* Check and resent failed fragments within the current window
+                 */
                _check_failed_frags(hdr, fbuf);
             }
         }
@@ -1610,10 +1615,11 @@ static void _handle_ack(gnrc_netif_hdr_t *netif_hdr, gnrc_pktsnip_t *pkt,
 static int _forward_rfrag(gnrc_pktsnip_t *pkt, _generic_rb_entry_t *entry,
                           uint16_t offset, unsigned page)
 {
-    gnrc_pktsnip_t *new = gnrc_netif_hdr_build(
+    gnrc_pktsnip_t *old, *new = gnrc_netif_hdr_build(
             NULL, 0,
             entry->entry.base->dst, entry->entry.base->dst_len
         );
+    sixlowpan_sfr_rfrag_t *hdr;
 
     assert(entry->type == _VRB);
     /* restrict out_tag to value space of SFR, so that later RFRAG ACK can find
@@ -1629,27 +1635,25 @@ static int _forward_rfrag(gnrc_pktsnip_t *pkt, _generic_rb_entry_t *entry,
         gnrc_pktbuf_release(pkt);
         return -ENOMEM;
     }
-    else {
-        sixlowpan_sfr_rfrag_t *hdr = pkt->data;
-        gnrc_pktsnip_t *old = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_NETIF);
 
-        if (old != NULL) {
-            /* remove original netif header */
-            gnrc_pktbuf_remove_snip(pkt, old);
-        }
-        if (offset > 0) {
-            offset += entry->entry.vrb->offset_diff;
-        }
-        sixlowpan_sfr_rfrag_set_offset(hdr, offset);
-        hdr->base.tag = entry->entry.vrb->out_tag;
-        gnrc_netif_hdr_set_netif(new->data, entry->entry.vrb->out_netif);
-        new->next = pkt;
-        _send_frame(new, NULL, page);
-        if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_STATS)) {
-            _stats.fragments_sent.forwarded++;
-        }
-        return 0;
+    hdr = pkt->data;
+    old = gnrc_pktsnip_search_type(pkt, GNRC_NETTYPE_NETIF);
+    if (old != NULL) {
+        /* remove original netif header */
+        gnrc_pktbuf_remove_snip(pkt, old);
     }
+    if (offset > 0) {
+        offset += entry->entry.vrb->offset_diff;
+    }
+    sixlowpan_sfr_rfrag_set_offset(hdr, offset);
+    hdr->base.tag = entry->entry.vrb->out_tag;
+    gnrc_netif_hdr_set_netif(new->data, entry->entry.vrb->out_netif);
+    new->next = pkt;
+    _send_frame(new, NULL, page);
+    if (IS_USED(MODULE_GNRC_SIXLOWPAN_FRAG_SFR_STATS)) {
+        _stats.fragments_sent.forwarded++;
+    }
+    return 0;
 }
 
 /** @} */
