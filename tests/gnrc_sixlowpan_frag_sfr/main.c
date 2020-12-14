@@ -76,6 +76,7 @@
 #define TEST_1ST_FRAG_COMP_PREV_HOP_UDP_PAYLOAD_POS (45U)
 #define TEST_NTH_FRAG_SIZE                          (32U)
 #define TEST_NTH_FRAG_PAYLOAD_POS                   (6U)
+#define TEST_FRAG_TAG                               (0xADU)
 #define TEST_SEND_COMP_DATAGRAM_SIZE                (193U)
 #define TEST_SEND_DATAGRAM_TAG                      (0x25U)
 #define TEST_SEND_FRAG1_PAYLOAD_POS                 (6U)
@@ -84,8 +85,8 @@
 #define TEST_OFFSET_DIFF                            (6U)
 
 static const uint8_t _test_1st_frag_uncomp[] = {
-        0xe8,       /* RFRAG | no ECN */
-        0xad,       /* tag: 0xad */
+        0xe8,           /* RFRAG | no ECN */
+        TEST_FRAG_TAG,  /* tag: TEST_FRAG_TAG */
         0x00, 0x51, /* no ACK REQ | sequence: 0 | fragment_size: 81 */
         0x04, 0xd1, /* compressed datagram size: 1233 */
         0x41,       /* uncompressed IPv6 */
@@ -108,8 +109,8 @@ static const uint8_t _test_1st_frag_uncomp[] = {
         0xd5, 0x2f, 0x08, 0x85, 0xb8, 0xc1, 0x1a, 0x31,
     };
 static const uint8_t _test_1st_frag_comp[] = {
-        0xe8,       /* RFRAG | no ECN */
-        0xad,       /* tag: 0xad */
+        0xe8,           /* RFRAG | no ECN */
+        TEST_FRAG_TAG,  /* tag: TEST_FRAG_TAG */
         0x00, 0x46, /* no ACK REQ | sequence: 0 | fragment_size: 70 */
         0x04, 0xc6, /* compressed datagram size: 1222 */
         /* IPHC: TF: 0b11, NH: 0b1 (NHC), HLIM: 0b10 (64), CID: 0b0,
@@ -131,8 +132,8 @@ static const uint8_t _test_1st_frag_comp[] = {
         0xd5, 0x2f, 0x08, 0x85, 0xb8, 0xc1, 0x1a, 0x31,
     };
 static const uint8_t _test_1st_frag_comp_prev_hop[] = {
-        0xe8,       /* RFRAG | no ECN */
-        0xad,       /* tag: 0xad */
+        0xe8,           /* RFRAG | no ECN */
+        TEST_FRAG_TAG,  /* tag: TEST_FRAG_TAG */
         0x00, 0x47, /* no ACK REQ | sequence: 0 | fragment_size: 71 */
         0x04, 0xc7, /* compressed datagram size: 1223 */
         /* IPHC: TF: 0b11, NH: 0b1 (NHC), HLIM: 0b00 (inline), CID: 0b0,
@@ -156,14 +157,14 @@ static const uint8_t _test_1st_frag_comp_prev_hop[] = {
         0xd5, 0x2f, 0x08, 0x85, 0xb8, 0xc1, 0x1a, 0x31,
     };
 static const uint8_t _test_abort_frag[] = {
-        0xe8,       /* RFRAG | no ECN */
-        0xad,       /* tag: 0xad */
+        0xe8,           /* RFRAG | no ECN */
+        TEST_FRAG_TAG,  /* tag: TEST_FRAG_TAG */
         0x00, 0x00, /* no ACK REQ | sequence: 0 | fragment_size: 0 */
         0x00, 0x00, /* offset: 0 */
     };
 static const uint8_t _test_nth_frag[] = {
-        0xe8,       /* RFRAG | no ECN */
-        0xad,       /* tag: 0xad */
+        0xe8,           /* RFRAG | no ECN */
+        TEST_FRAG_TAG,  /* tag: TEST_FRAG_TAG */
         0x06, 0x20, /* no ACK REQ | sequence: 6 | fragment_size: 32 */
         0x04, 0xb0, /* offset: 1200 */
         /* payload of length 32 */
@@ -293,7 +294,7 @@ static const gnrc_sixlowpan_frag_rb_base_t _vrbe_base = {
         .src_len = IEEE802154_LONG_ADDRESS_LEN,
         .dst = LOC_L2,
         .dst_len = sizeof(_loc_l2),
-        .tag = _test_1st_frag_uncomp[1],
+        .tag = TEST_FRAG_TAG,
         .datagram_size = 1232U,
         .current_size = 0U,
     };
