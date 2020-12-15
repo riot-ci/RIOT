@@ -17,11 +17,17 @@ steps:
     - wget https://raw.githubusercontent.com/kaspar030/git-cache/master/git-cache -O /usr/bin/git-cache
     - chmod a+x /usr/bin/git-cache
     - git-cache init
-    - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
-    - git branch -a
-    - git tag -l
-    - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
-    - git merge-base --fork-point $${CI_BASE_BRANCH}
+    - git-cache clone https://github.com/RIOT-OS/murdock-scripts
+    - cd murdock-scripts
+    - pwd
+    - ls
+
+
+    # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
+    # - git branch -a
+    # - git tag -l
+    # - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    # - git merge-base --fork-point $${CI_BASE_BRANCH}
 
   - name: run_tests
     image: riot/riotbuild:latest
