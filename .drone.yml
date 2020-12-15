@@ -30,8 +30,10 @@ steps:
     - export CI_PULL_NR=$${DRONE_PULL_REQUEST}
     # clone RIOT PR branch
     - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
-    - printenv | sort
+    - printenv
+
     - cd RIOT
+    - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
     - ../murdock-scripts/build.sh build
 
     # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
@@ -44,7 +46,6 @@ steps:
     image: riot/riotbuild:latest
     commands:
         - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
-        - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
         - printenv | sort
         - git status
         - git remote -v
