@@ -283,6 +283,10 @@ static void _send(gnrc_pktsnip_t *pkt)
     /* datagram_size: pure IPv6 packet without 6LoWPAN dispatches or compression */
     size_t datagram_size;
 
+    if (tmp == NULL) {
+        /* foobar */
+        return;
+    }
     if ((pkt == NULL) || (pkt->size < sizeof(gnrc_netif_hdr_t))) {
         DEBUG("6lo: Sending packet has no netif header\n");
         gnrc_pktbuf_release(pkt);

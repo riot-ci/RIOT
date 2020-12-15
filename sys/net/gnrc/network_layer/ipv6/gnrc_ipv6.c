@@ -376,6 +376,7 @@ static int _fill_ipv6_hdr(gnrc_netif_t *netif, gnrc_pktsnip_t *ipv6)
         }
     }
     else {
+        void *foobar;
         bool invalid_src;
         int idx;
 
