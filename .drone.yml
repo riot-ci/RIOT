@@ -22,10 +22,15 @@ steps:
     # clone murdock scripts
     - git-cache clone https://github.com/RIOT-OS/murdock-scripts
 
-    # clone RIOT PR branch
-    - git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} RIOT
     - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    - export CI_PULL_REPO=$${DRONE_GIT_HTTP_URL}
+    - export CI_PULL_BRANCH=$${CI_COMMIT_BRANCH}
+    - export CI_PULL_COMMIT=$${CI_COMMIT_SHA}
+    # clone RIOT PR branch
+    - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
     - printenv | sort
+    - cd RIOT
+    - git log -n 1
     - "false"
 
 
