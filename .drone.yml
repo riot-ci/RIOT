@@ -11,6 +11,22 @@ clone:
   disable: true
 
 steps:
+  - name: prepare_ssh_key
+    image: ubuntu:focal
+    environment:
+      SSH_KEY:
+        from_secret: ssh_key
+    commands:
+      # write the ssh key to disk
+      - mkdir /root/.ssh
+      - echo -n "$SSH_KEY" > /root/.ssh/id_rsa
+      - chmod 600 /root/.ssh/id_rsa
+
+      # add github to known hosts
+      - touch /root/.ssh/known_hosts
+      - chmod 600 /root/.ssh/known_hosts
+      - ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
+
   - name: clone
     image: riot/riotbuild:latest
     commands:
@@ -39,9 +55,7 @@ steps:
     - cd RIOT
     - git branch -a
     - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
-    - echo "$SSH_KEY"
-    - mkdir -p ~/.ssh
-    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
     - ../murdock-scripts/build.sh build
 
     # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
