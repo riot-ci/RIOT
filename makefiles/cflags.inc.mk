@@ -25,6 +25,10 @@ endif
 OPTIONAL_CFLAGS += -Wstrict-prototypes
 OPTIONAL_CFLAGS += -Wold-style-definition
 
+# Earler clang allowed c99 array designators, newer don't (as dictated by standard).
+# So we allow this for the time being.
+CXXEXFLAGS += -Wno-c99-designator
+
 # Unwanted flags for c++
 CXXUWFLAGS += -std=%
 CXXUWFLAGS += -Wstrict-prototypes -Wold-style-definition
