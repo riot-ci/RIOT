@@ -39,6 +39,7 @@ steps:
     - cd RIOT
     - git branch -a
     - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
+    - echo "$SSH_KEY"
     - mkdir -p ~/.ssh
     - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
     - ../murdock-scripts/build.sh build
