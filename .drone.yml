@@ -30,4 +30,4 @@ steps:
         from_secret: ssh_key
     commands:
     - test -n "$${DRONE_PULL_REQUEST}"
-    - cat merge-commit
+    - cat merge_commit
