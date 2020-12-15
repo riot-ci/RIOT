@@ -30,10 +30,12 @@ steps:
     - export CI_PULL_NR=$${DRONE_PULL_REQUEST}
     # clone RIOT PR branch
     - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
-    - printenv
+    - git -CRIOT remote add origin https://github.com/kaspar030/RIOT
+    - git -CRIOT fetch origin
+
+    - printenv | sort
 
     - cd RIOT
-    - git fetch origin
     - git branch -a
     - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
     - ../murdock-scripts/build.sh build
