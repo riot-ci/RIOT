@@ -6,7 +6,7 @@
 #
 
 config MODULE_MALLOC_THREAD_SAFE
-    bool "Thread-safe wrappers for malloc and friends"
+    bool
     depends on TEST_KCONFIG
     help
         This module provides wrappers for malloc(), calloc(), realloc(), and
