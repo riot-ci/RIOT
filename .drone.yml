@@ -30,8 +30,8 @@ steps:
     - export CI_PULL_NR=$${DRONE_PULL_REQUEST}
     # clone RIOT PR branch
     - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
-    - git -CRIOT remote add origin https://github.com/kaspar030/RIOT
-    - git -CRIOT fetch origin
+    - git -C RIOT remote add origin https://github.com/kaspar030/RIOT
+    - git -C RIOT fetch origin
 
     - printenv | sort
 
