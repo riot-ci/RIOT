@@ -853,8 +853,8 @@ ATOMIC_STORE_IMPL(u64, uint64_t)
             (volatile type *dest, type val)                                    \
     {                                                                          \
         unsigned state = irq_disable();                                        \
-        type result = *dest;                                                   \
-        *dest = *dest op val;                                                  \
+        const type result = *dest;                                             \
+        *dest = result op val;                                                 \
         irq_restore(state);                                                    \
         return result;                                                         \
     }
