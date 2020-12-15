@@ -14,13 +14,20 @@ steps:
   - name: clone
     image: riot/riotbuild:latest
     commands:
+    # get git-cache
     - wget https://raw.githubusercontent.com/kaspar030/git-cache/master/git-cache -O /usr/bin/git-cache
     - chmod a+x /usr/bin/git-cache
     - git-cache init
+
+    # clone murdock scripts
     - git-cache clone https://github.com/RIOT-OS/murdock-scripts
-    - cd murdock-scripts
-    - pwd
-    - ls
+
+    # clone RIOT PR branch
+    - git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} RIOT
+    - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    - printenv | sort
+    - "false"
+
 
 
     # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
