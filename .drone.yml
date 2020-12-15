@@ -19,6 +19,7 @@ services:
         from_secret: ssh_key
     ports: [ 6379, 7711 ]
     commands:
+      - printenv
       - mkdir /root/.ssh
       - echo -n "${SSH_KEY}" > /root/.ssh/id_rsa
       - echo -n "${SSH_KEY}" | wc -l
