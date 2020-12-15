@@ -1,16 +1,74 @@
-pipeline:
-    run_tests:
-        image: riot/riotbuild:latest
-        environment:
-            - CLICOLOR_FORCE=1
-            - NPROC_MAX=4
-        commands:
-            - pwd
-            - printenv
-            - git status
-            - git remote -v
-            - ./dist/tools/ci/build_and_test.sh
-matrix:
-    BUILDTEST_MCU_GROUP:
-        - static-tests
-        - host
+kind: pipeline
+type: docker
+name: static_tests
+
+environment:
+  CLICOLOR_FORCE: 1
+  NPROC_MAX: 4
+  GIT_CACHE_DIR: /cache/git
+
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    image: riot/riotbuild:latest
+    environment:
+      SSH_KEY:
+        from_secret: ssh_key
+
+    commands:
+    - test -n "$${DRONE_PULL_REQUEST}"
+    # write the ssh key to disk
+    - mkdir /root/.ssh
+    - echo -n "$SSH_KEY" > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+
+    # add github to known hosts
+    - touch /root/.ssh/known_hosts
+    - chmod 600 /root/.ssh/known_hosts
+    - ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
+
+    # get git-cache
+    - wget https://raw.githubusercontent.com/kaspar030/git-cache/master/git-cache -O /usr/bin/git-cache
+    - chmod a+x /usr/bin/git-cache
+    - git-cache init
+
+    # clone murdock scripts
+    - git-cache clone https://github.com/kaspar030/murdock-scripts 57d42e7bdd95b4f2fa0192bd8a41c8f46a5f4deb
+    - echo "echo Using RIOT Drone settings" > murdock-scripts/local.sh
+    - echo "MERGE_COMMIT_REPO=\"riot-ci/RIOT\"" >> murdock-scripts/local.sh
+
+    - export CI_BASE_REPO=$${DRONE_REPO_LINK}
+    - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    - export CI_PULL_REPO=$${DRONE_GIT_HTTP_URL}
+    - export CI_PULL_BRANCH=$${CI_COMMIT_BRANCH}
+    - export CI_PULL_COMMIT=$${CI_COMMIT_SHA}
+    - export CI_PULL_NR=$${DRONE_PULL_REQUEST}
+    # clone RIOT PR branch
+    - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
+    - git -C RIOT remote add origin https://github.com/kaspar030/RIOT
+    - git -C RIOT fetch origin $${CI_BASE_BRANCH}:$${CI_BASE_BRANCH}
+
+    - printenv | sort
+
+    - cd RIOT
+    - git branch -a
+    - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
+
+    - ../murdock-scripts/build.sh build
+
+    # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
+    # - git branch -a
+    # - git tag -l
+    # - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+    # - git merge-base --fork-point $${CI_BASE_BRANCH}
+
+  - name: run_tests
+    image: riot/riotbuild:latest
+    commands:
+        - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
+        - printenv | sort
+        - git status
+        - git remote -v
+        - ./dist/tools/ci/static_tests.sh
