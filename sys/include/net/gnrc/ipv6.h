@@ -112,11 +112,6 @@
 #include "net/fib.h"
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 /**
  * @defgroup    net_gnrc_ipv6_conf  GNRC IPv6 compile configurations
  * @ingroup     net_gnrc_ipv6
