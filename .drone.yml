@@ -30,4 +30,5 @@ steps:
         from_secret: ssh_key
     commands:
     - test -n "$${DRONE_PULL_REQUEST}"
-    - cat merge_commit
+    - export MERGE_COMMIT="$$(cat merge_commit)"
+    - git-cache clone https://github.com/riot-ci/RIOT $${MERGE_COMMIT} build
