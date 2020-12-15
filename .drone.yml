@@ -56,6 +56,7 @@ steps:
     - git branch -a
     - export CI_BASE_COMMIT=$$(git merge-base --fork-point $${CI_BASE_BRANCH})
 
+    - ssh -vvvT git@github.com
     - ../murdock-scripts/build.sh build
 
     # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
