@@ -19,7 +19,7 @@ steps:
       base_repo: ${DRONE_REPO_LINK}
       base_branch: ${DRONE_REPO_BRANCH}
       build_repo: ${DRONE_GIT_HTTP_URL}
-      build_branch: ${CI_COMMIT_BRANCH}
+      build_branch: ${DRONE_SOURCE_BRANCH}
       build_commit: ${CI_COMMIT_SHA}
       merge_commit_repo: "riot-ci/RIOT"
 
