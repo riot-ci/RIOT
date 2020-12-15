@@ -10,6 +10,10 @@
 
 RIOTBASE="$(cd $(dirname $0)/../../..; pwd)"
 
+. ${RIOTBASE}/dist/tools/ci/github_annotate.sh
+
+github_annotate_setup
+
 if tput colors &> /dev/null && [ $(tput colors) -ge 8 ]; then
     CERROR="\e[1;31m"
     CWARN="\033[1;33m"
@@ -34,6 +38,14 @@ else
     if [ -n "${ERRORS}" ] ; then
         echo -e "${CERROR}ERROR: Doxygen generates the following warnings:${CRESET}"
         echo "${ERRORS}"
+        echo "${ERRORS}" | grep "^.\+:[0-9]\+: warning:" | while read error_line
+        do
+            FILENAME=$(echo "${error_line}" | cut -d: -f1)
+            LINENR=$(echo "${error_line}" | cut -d: -f2)
+            DETAILS=$(echo "${error_line}" | cut -d: -f4- |
+                      sed -e 's/^[ \t]*//' -e 's/[ \t]*$//')
+            github_annotate_error "${FILENAME}" "${LINENR}" "${DETAILS}"
+        done
         RESULT=2
     fi
 fi
@@ -44,8 +56,8 @@ exclude_filter() {
 
 # Check groups are correctly defined (e.g. no undefined groups and no group
 # defined multiple times)
-ALL_RAW_DEFGROUP=$(git grep @defgroup -- '*.h' '*.c' '*.txt' | exclude_filter)
-ALL_RAW_INGROUP=$(git grep '@ingroup' -- '*.h' '*.c' '*.txt' | exclude_filter)
+ALL_RAW_DEFGROUP=$(git grep -n @defgroup -- '*.h' '*.c' '*.txt' | exclude_filter)
+ALL_RAW_INGROUP=$(git grep -n '@ingroup' -- '*.h' '*.c' '*.txt' | exclude_filter)
 DEFINED_GROUPS=$(echo "${ALL_RAW_DEFGROUP}" | \
                     grep -oE '@defgroup[ ]+[^ ]+' | \
                     grep -oE '[^ ]+$' | \
@@ -68,9 +80,14 @@ then
     echo -e "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups:"
     for group in ${UNDEFINED_GROUPS};
     do
+        INGROUPS=$(echo "${ALL_RAW_INGROUP}" | grep "\<${group}\>$" | sort -u)
         echo -e "\n${CWARN}${group}${CRESET} found in:";
-        echo "${ALL_RAW_INGROUP}" | grep "\<${group}\>$" | sort -u |
-                awk -F: '{ print "\t" $1 }';
+        echo "${INGROUPS}" | awk -F: '{ print "\t" $1 }';
+        echo "${INGROUPS}" | while read ingroup;
+        do
+            github_annotate_error $(echo ${ingroup} | awk -F: '{ print $1,$2 }') \
+                "Undefined doxygen group '${group}'"
+        done
     done
     RESULT=2
 fi
@@ -85,11 +102,17 @@ then
     echo -e "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times:"
     for group in ${MULTIPLE_DEFINED_GROUPS};
     do
-        echo -e "\n${CWARN}${group}${CRESET} defined in:";
-        echo "${ALL_RAW_DEFGROUP}" | \
+        DEFGROUPS=$(echo "${ALL_RAW_DEFGROUP}" |
             awk -F@ '{ split($2, end, " "); printf("%s%s\n",$1,end[2]) }' |
-            grep "\<${group}\>$" | sort -u |
-            awk -F: '{ print "\t" $1 }';
+            grep "\<${group}\>$" | sort -u)
+        DEFGROUPFILES=$(echo "${DEFGROUPS}" | awk -F: '{ print "\t" $1 }')
+        echo -e "\n${CWARN}${group}${CRESET} defined in:";
+        echo "${DEFGROUPFILES}"
+        echo "${DEFGROUPS}" | while read defgroup;
+        do
+            github_annotate_error $(echo ${defgroup} | awk -F: '{ print $1,$2 }') \
+                "Multiple doxygen group define of '${group}' in\n${DEFGROUPFILES}"
+        done
     done
     RESULT=2
 fi
