@@ -22,8 +22,7 @@ services:
       - printenv
       - mkdir /root/.ssh
       - echo -n "$${SSH_KEY}" > /root/.ssh/id_rsa
-      - echo -n "$${SSH_KEY}" | wc -l
-      - cat /root/.ssh/id_rsa | hexdump -C
+      - ssh-keygen -y -f /root/.ssh/id_rsa > /root/.ssh/id_rsa.pub
       - chmod 600 /root/.ssh/id_rsa
       - ssh-keyscan -H ci.riot-os.org >> /etc/ssh/ssh_known_hosts 2> /dev/null
       - exec autossh -M 0 -C -N -L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379 -o ServerAliveInterval=60 -o ServerAliveCountMax=2 -v murdock-slave@ci.riot-os.org
