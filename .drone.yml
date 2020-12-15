@@ -23,6 +23,7 @@ steps:
     # clone murdock scripts
     - git-cache clone https://github.com/kaspar030/murdock-scripts c86f2325bfbbf7d638ea01d76e224a37a0ba6453
 
+    - export CI_BASE_REPO=$${DRONE_REPO_LINK}
     - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
     - export CI_PULL_REPO=$${DRONE_GIT_HTTP_URL}
     - export CI_PULL_BRANCH=$${CI_COMMIT_BRANCH}
