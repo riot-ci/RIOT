@@ -31,7 +31,7 @@ steps:
     # clone RIOT PR branch
     - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
     - git -C RIOT remote add origin https://github.com/kaspar030/RIOT
-    - git -C RIOT fetch origin $${CI_BASE_BRANCH}}:$${CI_BASE_BRANCH}}
+    - git -C RIOT fetch origin $${CI_BASE_BRANCH}:$${CI_BASE_BRANCH}
 
     - printenv | sort
 
