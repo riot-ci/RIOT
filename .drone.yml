@@ -36,6 +36,8 @@ steps:
 
     # clone murdock scripts
     - git-cache clone https://github.com/kaspar030/murdock-scripts 57d42e7bdd95b4f2fa0192bd8a41c8f46a5f4deb
+    - echo "echo Using RIOT Drone settings" > murdock-scripts/local.sh
+    - echo "MERGE_COMMIT_REPO=\"riot-ci/RIOT\"" >> murdock-scripts/local.sh
 
     - export CI_BASE_REPO=$${DRONE_REPO_LINK}
     - export CI_BASE_BRANCH=$${DRONE_REPO_BRANCH}
