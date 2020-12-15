@@ -31,10 +31,7 @@ steps:
     - git-cache clone $${CI_PULL_REPO} $${CI_PULL_COMMIT} RIOT
     - printenv | sort
     - cd RIOT
-    - git log -n 1
-    - "false"
-
-
+    - ../murdock-scripts/build.sh
 
     # - GIT_CACHE_VERBOSE=1 git-cache clone $${DRONE_GIT_HTTP_URL} $${DRONE_COMMIT} .
     # - git branch -a
