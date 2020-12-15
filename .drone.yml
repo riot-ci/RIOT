@@ -19,7 +19,8 @@ services:
         from_secret: ssh_key
     ports: [ 6379, 7711 ]
     commands:
-      - autossh -M 0 -C -N -L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379 -o ServerAliveInterval=60 -o ServerAliveCountMax=2 murdock-slave@ci.riot-os.org
+      - ssh-keyscan -H ci.riot-os.org >> /etc/ssh/ssh_known_hosts 2> /dev/null
+      - exec autossh -M 0 -C -N -L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379 -o ServerAliveInterval=60 -o ServerAliveCountMax=2 murdock-slave@ci.riot-os.org
 
 steps:
   - name: clone
