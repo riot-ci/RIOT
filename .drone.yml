@@ -17,7 +17,7 @@ services:
     environment:
       SSH_KEY:
         from_secret: ssh_key
-    ports: [ 6379, 7711
+    ports: [ 6379, 7711 ]
     commands:
       - autossh -M 0 -C -N -L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379 \
         -o ServerAliveInterval=60 -o ServerAliveCountMax=2 \
