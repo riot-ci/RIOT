@@ -73,6 +73,7 @@ steps:
     - dwqc -q drone-breeze hostname
     - dwqm control --shutdown drone-breeze
 
+---
 kind: pipeline
 type: docker
 name: dwq-worker-breeze
