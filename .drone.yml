@@ -120,5 +120,3 @@ steps:
     - pip3 install --upgrade dwq
     - dwqw --name drone-breeze --jobs 16 --queues drone-breeze
 
-matrix:
-  many: [ 1, 2 ]
