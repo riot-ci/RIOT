@@ -105,6 +105,7 @@ services:
       ssh_args: "-L0.0.0.0:7711:localhost:7711 -L0.0.0.0:6379:localhost:6379"
     ports: [ 6379, 7711 ]
 
+steps:
   # This build step launches the distributed build.
   - name: build
     image: kaspar030/riotdocker:latest
