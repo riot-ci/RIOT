@@ -106,7 +106,7 @@ extern "C" {
 #endif
 #endif
 #ifndef CONFIG_CLOCK_PLL_MUL
-#ifdef CPU_FAM_F0
+#ifdef CPU_FAM_STM32F0
 #if defined(CPU_LINE_STM32F031x6) || defined(CPU_LINE_STM32F042x6)
 #define CONFIG_CLOCK_PLL_MUL            (12)
 #else
@@ -118,7 +118,7 @@ extern "C" {
 #else
 #define CONFIG_CLOCK_PLL_MUL            (9)
 #endif
-#endif /* CPU_FAM_F0 */
+#endif /* CPU_FAM_STM32F0 */
 #endif /* CONFIG_CLOCK_PLL_MUL */
 
 #if IS_ACTIVE(CONFIG_USE_CLOCK_HSI)
@@ -146,7 +146,7 @@ extern "C" {
  * CORECLOCK        -> 48MHz Max on F0, 72MHz MAX on F1/F3!
  */
 #define CLOCK_CORECLOCK                 ((CLOCK_PLL_SRC / CONFIG_CLOCK_PLL_PREDIV) * CONFIG_CLOCK_PLL_MUL)
-#ifdef CPU_FAM_F0
+#ifdef CPU_FAM_STM32F0
 #if CLOCK_CORECLOCK > MHZ(48)
 #error "SYSCLK cannot exceed 48MHz"
 #endif
@@ -160,14 +160,14 @@ extern "C" {
 #define CLOCK_AHB                       CLOCK_CORECLOCK  /* HCLK, max: 48MHz (F0), 72MHz (F1/F3)*/
 
 #ifndef CONFIG_CLOCK_APB1_DIV
-#ifdef CPU_FAM_F0
+#ifdef CPU_FAM_STM32F0
 #define CONFIG_CLOCK_APB1_DIV           (1)
 #else
 #define CONFIG_CLOCK_APB1_DIV           (2)
 #endif
 #endif
 #define CLOCK_APB1                      (CLOCK_AHB / CONFIG_CLOCK_APB1_DIV)   /* PCLK1, max: 48MHz (F0), 36MHz (F1/F3)*/
-#ifdef CPU_FAM_F0
+#ifdef CPU_FAM_STM32F0
 /* APB2 and APB1 are the same bus but configuration registers still follows the
  * split between APB1 and APB2. Since it's the same bus, APB2 clock is equal to APB1 clock.
  */
