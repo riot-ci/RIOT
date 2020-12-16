@@ -19,7 +19,7 @@ services:
         from_secret: ssh_key_murdock
       user: murdock-slave
       host: ci.riot-os.org
-      ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379"
+      ssh_args: "-L0.0.0.0:7711:localhost:7711 -L0.0.0.0:6379:localhost:6379"
     ports: [ 6379, 7711 ]
     when:
       event:
@@ -47,7 +47,7 @@ steps:
     commands:
     - test -n "$${DRONE_PULL_REQUEST}"
 
-    - export DWQ_DISQUE_URL=disque:7711
+    - export DWQ_DISQUE_URL="disque:7711"
     - export DWQ_COMMIT="$$(cat merge_commit)"
     - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
     - dwqc "echo foo"
