@@ -53,6 +53,7 @@ steps:
   - name: build
     image: kaspar030/drone-dwq
     commands:
+    - false
 
     # setting disque parameters
     - export DWQ_DISQUE_URL="disque:7711"
@@ -113,6 +114,7 @@ steps:
       CCACHE: ccache
       CCACHE_DIR: /cache/ccache
     commands:
+    - false
     # setting disque parameters
     - export DWQ_DISQUE_URL="disque:7711"
     - mkdir -p $${CCACHE_DIR}
