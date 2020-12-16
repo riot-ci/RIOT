@@ -117,6 +117,6 @@ steps:
     - export DWQ_DISQUE_URL="disque:7711"
     - mkdir -p $${CCACHE_DIR}
     - git-cache init
-    - sleep 10
+    - pip3 install --upgrade dwq
     - dwqw --name drone-breeze --jobs 16 --queues drone-breeze
 
