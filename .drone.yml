@@ -21,6 +21,9 @@ services:
       host: ci.riot-os.org
       ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379"
     ports: [ 6379, 7711 ]
+    when:
+      event:
+      - pull_request
 
 steps:
   - name: clone
@@ -37,7 +40,7 @@ steps:
       merge_commit_repo: riot-ci/RIOT
     when:
       event:
-      - push
+      - pull_request
 
   - name: build
     image: riot/riotbuild:latest
@@ -50,5 +53,5 @@ steps:
     - redis-cli -h disque ping
     when:
       event:
-      - push
+      - pull_request
 
