@@ -16,7 +16,7 @@ services:
     image: kaspar030/autossh
     settings:
       ssh_key:
-        from_secret: ssh_key
+        from_secret: ssh_key_murdock
       user: murdock-slave
       host: ci.riot-os.org
       ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379"
@@ -27,7 +27,7 @@ steps:
     image: kaspar030/drone-clone
     settings:
       SSH_KEY:
-        from_secret: ssh_key
+        from_secret: ssh_key_clone
       mode: clone
       base_repo: ${DRONE_REPO_LINK}
       base_branch: ${DRONE_REPO_BRANCH}
