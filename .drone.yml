@@ -47,6 +47,7 @@ steps:
     commands:
     - test -n "$${DRONE_PULL_REQUEST}"
 
+    - export DWQ_DISQUE_URL=disque:7711
     - export DWQ_COMMIT="$$(cat merge_commit)"
     - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
     - dwqc "echo foo"
