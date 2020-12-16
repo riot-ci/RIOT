@@ -60,7 +60,7 @@ steps:
     - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
 
     # running trivial "true" on default queue
-    - dwqc "true"
+    - dwqc -q drone-breeze "true"
 
     # ensuring redis is operational
     - redis-cli -h disque ping
