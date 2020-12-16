@@ -259,10 +259,12 @@ static void *_usbus_thread(void *args)
 #ifdef CONFIG_USB_SERIAL_STR
     usbus_add_string_descriptor(usbus, &usbus->serial, CONFIG_USB_SERIAL_STR);
 #else
+    static_assert(CONFIG_USB_SERIAL_BYTE_LENGTH <= UINT8_MAX/4,
+                  "USB serial byte length must be at most 63 due to protocol "
+                  "limitations");
     uint8_t luid_buf[CONFIG_USB_SERIAL_BYTE_LENGTH];
     luid_get(luid_buf, sizeof(luid_buf));
     fmt_bytes_hex(usbus->serial_str, luid_buf, sizeof(luid_buf));
-    usbus->serial_str[sizeof(usbus->serial_str) - 1] = '\0';
     usbus_add_string_descriptor(usbus, &usbus->serial, usbus->serial_str);
 #endif
 
