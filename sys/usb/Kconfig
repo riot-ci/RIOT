@@ -81,6 +81,31 @@ config USB_DEFAULT_LANGID
     help
         The default value is EN-US (0x0409).
 
+config USB_SERIAL_STR_KCONFIG_ENTRY
+    string "Serial string"
+    default ""
+    help
+        USB peripheral serial string
+
+        Compile-time value to override the serial string with. An LUID-based hex
+        string is generated when this value is not used.
+
+        This string does not have to be a number, but it must be unique between
+        devices with identical VID:PID combination.
+
+config USB_SERIAL_STR
+    string
+    default USB_SERIAL_STR_KCONFIG_ENTRY
+    depends on USB_SERIAL_STR_KCONFIG_ENTRY != ""
+
+config USB_SERIAL_BYTE_LENGTH
+    int "USB peripheral serial string length"
+    range 0 63
+    depends on USB_SERIAL_STR_KCONFIG_ENTRY = ""
+    default 8
+    help
+        The length here is in bytes. The generated hex string is twice as many chars
+        in length due to conversion from bytes to hex chars.
 
 rsource "usbus/Kconfig"
 endif # KCONFIG_USB
