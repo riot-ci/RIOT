@@ -68,4 +68,4 @@ steps:
     # launch the actual build
     - dwqc -E APPS=examples/hello-world -E BOARDS=native \
         './.murdock get_jobs' \
-        | dwqc --quiet --progress --outfile result.json
+        | dwqc --quiet -P --outfile result.json
