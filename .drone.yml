@@ -43,7 +43,7 @@ steps:
       - pull_request
 
   - name: build
-    image: riot/riotbuild:latest
+    image: kaspar030/drone-dwq
     commands:
     - test -n "$${DRONE_PULL_REQUEST}"
 
