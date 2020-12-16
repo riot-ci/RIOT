@@ -1,16 +1,54 @@
-pipeline:
-    run_tests:
-        image: riot/riotbuild:latest
-        environment:
-            - CLICOLOR_FORCE=1
-            - NPROC_MAX=4
-        commands:
-            - pwd
-            - printenv
-            - git status
-            - git remote -v
-            - ./dist/tools/ci/build_and_test.sh
-matrix:
-    BUILDTEST_MCU_GROUP:
-        - static-tests
-        - host
+kind: pipeline
+type: docker
+name: static_tests
+
+environment:
+  DRONE_CLONE_REPO: riot-ci/RIOT
+  CLICOLOR_FORCE: 1
+  NPROC_MAX: 4
+  GIT_CACHE_DIR: /cache/git
+
+clone:
+  disable: true
+
+services:
+  - name: disque
+    image: kaspar030/autossh
+    settings:
+      SSH_KEY:
+        from_secret: ssh_key
+      user: murdock-slave
+      host: ci.riot-os.org
+      ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379"
+    ports: [ 6379, 7711 ]
+
+steps:
+  - name: clone
+    image: kaspar030/drone-clone
+    settings:
+      SSH_KEY:
+        from_secret: ssh_key
+      mode: clone
+      base_repo: ${DRONE_REPO_LINK}
+      base_branch: ${DRONE_REPO_BRANCH}
+      build_repo: ${DRONE_GIT_HTTP_URL}
+      build_branch: ${DRONE_SOURCE_BRANCH}
+      build_commit: ${CI_COMMIT_SHA}
+      merge_commit_repo: riot-ci/RIOT
+    when:
+      event:
+      - push
+
+  - name: build
+    image: riot/riotbuild:latest
+    commands:
+    - test -n "$${DRONE_PULL_REQUEST}"
+
+    - export DWQ_COMMIT="$$(cat merge_commit)"
+    - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
+    - dwqc "echo foo"
+    - redis-cli -h disque ping
+    when:
+      event:
+      - push
+
