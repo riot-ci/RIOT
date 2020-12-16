@@ -66,6 +66,6 @@ steps:
     - redis-cli -h disque ping
 
     # launch the actual build
-    - dwqc -E APPS=examples/hello-world -E BOARDS=native \
-        './.murdock get_jobs' \
-        | dwqc --quiet -P --outfile result.json
+    - >
+      dwqc -E APPS=examples/hello-world -E BOARDS=native './.murdock get_jobs'
+      | dwqc --quiet -P --outfile result.json
