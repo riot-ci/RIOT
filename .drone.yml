@@ -108,8 +108,8 @@ services:
   - name: build
     image: kaspar030/riotdocker:latest
     environment:
-      - CCACHE=ccache
-      - CCACHE_DIR=/cache/ccache
+      CCACHE: ccache
+      CCACHE_DIR: /cache/ccache
     commands:
     # setting disque parameters
     - export DWQ_DISQUE_URL="disque:7711"
