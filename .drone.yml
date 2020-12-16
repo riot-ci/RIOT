@@ -15,7 +15,7 @@ services:
   - name: disque
     image: kaspar030/autossh
     settings:
-      SSH_KEY:
+      ssh_key:
         from_secret: ssh_key
       user: murdock-slave
       host: ci.riot-os.org
