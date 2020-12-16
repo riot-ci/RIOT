@@ -19,7 +19,7 @@ services:
         from_secret: ssh_key
       user: murdock-slave
       host: ci.riot-os.org
-      ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379"
+      ssh_args: "-L7711:0.0.0.0:7711 -L6379:0.0.0.0:6379 -v"
     ports: [ 6379, 7711 ]
 
 steps:
