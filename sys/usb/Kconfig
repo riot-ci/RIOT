@@ -100,7 +100,7 @@ config USB_SERIAL_STR
 
 config USB_SERIAL_BYTE_LENGTH
     int "USB peripheral serial string length"
-    range 0 128
+    range 0 63
     depends on USB_SERIAL_STR_KCONFIG_ENTRY = ""
     default 8
     help

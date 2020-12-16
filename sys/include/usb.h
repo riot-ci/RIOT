@@ -112,6 +112,9 @@ extern "C" {
 /**
  * @brief USB peripheral serial string length
  *
+ * Maximum value is 63. Sensible values are between 8 to 32 depending on the
+ * number of expected devices.
+ *
  * The length here is in bytes. The generated hex string is twice as many chars
  * in length due to conversion from bytes to hex chars.
  */
