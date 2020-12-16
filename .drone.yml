@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: static_tests
+name: build
 trigger:
   event:
     - pull_request
@@ -15,6 +15,10 @@ clone:
   disable: true
 
 services:
+  # this service launches a container running an autossh session that
+  # connects to murdock-slave@ci.riot-os.org, creating port forwards to the
+  # disque and redis instances there. It will be automatically killed at the end
+  # of this pipeline.
   - name: disque
     image: kaspar030/autossh
     settings:
@@ -26,6 +30,12 @@ services:
     ports: [ 6379, 7711 ]
 
 steps:
+  # As we're building distributed, we need to make sure that every worker is using the exact same commit.
+  # We also want to test the PR branch *merged into current master*.
+  # This step creates that merge commit and pushes it to riot-ci/RIOT.
+  # The resulting commit hash will be stored in "merge_commit" in the working
+  # directory (which is shared with the subsequent steps by drone via a docker
+  # volume).
   - name: clone
     image: kaspar030/drone-clone
     settings:
@@ -39,6 +49,7 @@ steps:
       build_commit: ${CI_COMMIT_SHA}
       merge_commit_repo: riot-ci/RIOT
 
+  # This build step launches the distributed build.
   - name: build
     image: kaspar030/drone-dwq
     commands:
@@ -53,3 +64,8 @@ steps:
 
     # ensuring redis is operational
     - redis-cli -h disque ping
+
+    # launch the actual build
+    - dwqc -E APPS=examples/hello-world -E BOARDS=native \
+        './.murdock get_jobs' \
+        | dwqc --quiet --progress --outfile result.json
