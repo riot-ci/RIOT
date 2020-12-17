@@ -58,28 +58,27 @@ steps:
   - name: build
     image: kaspar030/drone-dwq
     commands:
-    # setting disque parameters
-    - export DWQ_DISQUE_URL="services:7711"
-    - export DWQ_COMMIT="$$(cat merge_commit)"
-    - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
-
     # build a global build id (unique over all repositories)
     # this is also used as queue for dwq
     - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
 
+    # setting disque parameters
+    - export DWQ_DISQUE_URL="services:7711"
+    - export DWQ_QUEUE=$${DRONE_BUILD_ID}
+    - export DWQ_COMMIT="$$(cat merge_commit)"
+    - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
+
+
     # running trivial "true" on default queue
-    - dwqc -q $${DRONE_BUILD_ID} "true"
+    - dwqc "true"
 
     # ensuring redis is operational
     - redis-cli -h services ping
 
     # launch the actual build
-    #- >
-    #  dwqc -E APPS=examples/hello-world -E BOARDS=native './.murdock get_jobs'
-    #  | dwqc --quiet -P --outfile result.json
-
-    - dwqc -q $${DRONE_BUILD_ID} hostname
-    - dwqc -q $${DRONE_BUILD_ID} hostname
+    - >
+      dwqc -E APPS=examples/hello-world -E BOARDS=native './.murdock get_jobs'
+      | dwqc --quiet -P --outfile result.json
 
   # This step sends a shutdown signal to all build workers.
   # It needs to be executed by all workers.
