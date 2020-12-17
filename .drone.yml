@@ -103,6 +103,9 @@ type: docker
 name: build-worker
 parallelism: 8
 
+node:
+  type: build-worker
+
 trigger:
   event:
     - pull_request
