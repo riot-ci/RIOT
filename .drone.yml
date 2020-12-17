@@ -1,6 +1,7 @@
 kind: pipeline
 type: docker
 name: build
+
 trigger:
   event:
     - pull_request
@@ -86,7 +87,8 @@ steps:
 
     # send shutdown command to workers. NUMBER (8) MUST MATCH parallelism: parameter
     # in next pipeline!
-    - dwqm control --shutdown $$(for i in $$(seq 8); do echo $${DRONE_BUILD_ID); done)
+    - dwqm control --shutdown $$(for i in $$(seq 8); do echo $${DRONE_BUILD_ID}; done)
+
     when:
      status:
      - success
