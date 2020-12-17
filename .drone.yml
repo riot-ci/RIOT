@@ -77,7 +77,7 @@ steps:
 kind: pipeline
 type: docker
 name: dwq-worker-breeze
-parallelism: 2
+parallelism: 8
 
 trigger:
   event:
