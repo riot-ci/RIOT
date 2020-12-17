@@ -2,6 +2,9 @@ kind: pipeline
 type: docker
 name: build
 
+node:
+  type: build-manager
+
 trigger:
   event:
     - pull_request
