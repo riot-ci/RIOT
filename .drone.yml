@@ -77,7 +77,7 @@ steps:
 
     # launch the actual build
     - >
-      dwqc -E APPS=examples/hello-world -E BOARDS=native './.murdock get_jobs'
+      dwqc -E BOARDS=native './.murdock get_jobs'
       | dwqc --quiet -P --outfile result.json
 
   # This step sends a shutdown signal to all build workers.
