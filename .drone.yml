@@ -60,14 +60,15 @@ steps:
     - export DWQ_COMMIT="$$(cat merge_commit)"
     - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
 
+    # build a global build id (unique over all repositories)
+    # this is also used as queue for dwq
+    - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
+
     # running trivial "true" on default queue
-    - dwqc -q drone-breeze "true"
+    - dwqc -q $${DRONE_BUILD_ID} "true"
 
     # ensuring redis is operational
-    - redis-cli -h disque ping
-
-    # build a global build id (unique over all repositories)
-    - export DRONE_BUILD_ID=drone-${DRONE_REPO}-{DRONE_BUILD_NUMBER}
+    - redis-cli -h services ping
 
     # launch the actual build
     #- >
@@ -83,17 +84,19 @@ steps:
     image: kaspar030/drone-dwq
     commands:
     # setting disque parameters
-    - export DWQ_DISQUE_URL="disque:7711"
+    - export DWQ_DISQUE_URL="services:7711"
 
     # send shutdown command to workers. NUMBER (8) MUST MATCH parallelism: parameter
     # in next pipeline!
-    - dwqm control --shutdown $$(for i in $$(seq 8); do echo $${DRONE_BUILD_ID}; done)
+    #- dwqm control --shutdown $$(for i in $$(seq 8); do echo $${DRONE_BUILD_ID}; done)
 
     when:
      status:
      - success
      - failure
+
 ---
+
 kind: pipeline
 type: docker
 name: build-worker
@@ -142,5 +145,5 @@ steps:
     # get latest dwq version (TODO: rely on container or pin)
     - pip3 install --upgrade dwq
     # launch dwq worker
-    - export DRONE_BUILD_ID=drone-${DRONE_REPO}-{DRONE_BUILD_NUMBER}
+    - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
     - dwqw --name $${DRONE_BUILD_ID} --jobs 4 --queues $${DRONE_BUILD_ID}
