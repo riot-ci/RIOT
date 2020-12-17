@@ -115,6 +115,7 @@ steps:
       CCACHE: ccache
       CCACHE_DIR: /cache/ccache
     commands:
+    - printenv | sort
     # setting disque parameters
     - export DWQ_DISQUE_URL="disque:7711"
     - mkdir -p $${CCACHE_DIR}
