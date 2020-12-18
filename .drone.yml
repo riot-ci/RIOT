@@ -87,7 +87,7 @@ steps:
     # this is also used as queue for dwq
     - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
     - >
-      for script in /scripts/post-build.d; do
+      for script in /scripts/post-build.d/*; do
          $script
       done
 
