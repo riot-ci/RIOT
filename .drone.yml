@@ -162,6 +162,7 @@ steps:
       CLICOLOR_FORCE: 1
 
     commands:
+    - \# Running on runner ${DRONE_STAGE_MACHINE}
     # setting disque parameters
     - export DWQ_DISQUE_URL="services:7711"
     # ensure ccache folder exists
