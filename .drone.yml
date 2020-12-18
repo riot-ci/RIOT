@@ -71,7 +71,7 @@ steps:
     - "# ensuring redis is operational"
     - redis-cli -h services ping
 
-    - "# running trivial "true" on default queue"
+    - "# ensuring disque is operational"
     - dwqc "true"
 
     - "# launch the distributed build"
