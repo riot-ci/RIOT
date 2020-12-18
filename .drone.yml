@@ -171,7 +171,7 @@ steps:
     - export DWQ_DISQUE_URL="services:7711"
     # ensure ccache folder exists
     - mkdir -p $${CCACHE_DIR}
-    # ensure git cache is initialized
+    - "# ensure git cache is initialized"
     - git-cache init
     # get latest dwq version (TODO: rely on container or pin)
     - pip3 install --upgrade dwq
