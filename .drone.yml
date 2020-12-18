@@ -79,8 +79,8 @@ steps:
       dwqc -E BOARDS=native './.murdock get_jobs'
       | dwqc --quiet -P --outfile result.json
 
-  # This build step processes the build results
-  - name: build
+  # This step processes the build results
+  - name: process-results
     image: kaspar030/drone-postbuild
     commands:
     # build a global build id (unique over all repositories)
