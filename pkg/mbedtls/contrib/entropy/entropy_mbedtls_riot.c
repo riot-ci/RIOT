@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     pkg_mbedtls
+ * @ingroup     pkg_mbedtls_entropy
  *
  * @{
  * @file
@@ -32,7 +32,7 @@ int entropy_mbedtls_riot_init(void)
 
     mbedtls_entropy_init(&ctx);
 
-    ret = riot_add_src_avail(&ctx);
+    ret = riot_add_entropy_src_avail(&ctx);
 
     return ret;
 }

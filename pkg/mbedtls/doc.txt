@@ -25,7 +25,7 @@
  * to be used by the library.
  * A porting guide can be found [here](https://tls.mbed.org/kb/how-to/how-do-i-port-mbed-tls-to-a-new-environment-OS).
  * The configuration and enablement of alternative implementations has to be defined in
- * the [configuration file](include/riot_config.h) of this package.
+ * the [configuration file](include/riot_mbedtls_config.h) of this package.
  *
  *
  * # Tested Submodules
@@ -71,7 +71,7 @@
  *
  * ```
  * FEATURES_PROVIDED += periph_hwrng
- * FEATURES_PROVIDED += entropy_source_adc_noise
+ * FEATURES_PROVIDED += periph_adc
  * ```
  *
  * All sources will be enabled by default, if available. Furthermore, a single source
