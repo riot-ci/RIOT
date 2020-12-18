@@ -46,7 +46,7 @@ typedef struct {
  * @return             0 if successful
  * @return             MBEDTLS_ERR_ENTROPY_MAX_SOURCES on failure
  */
-int riot_add_src_avail(mbedtls_entropy_context *ctx);
+int riot_add_entropy_src_avail(mbedtls_entropy_context *ctx);
 
 /**
  * @brief   Wrapper around RIOTs HWRNG API.
@@ -60,8 +60,8 @@ int riot_add_src_avail(mbedtls_entropy_context *ctx);
  *
  * @return             0 always
  */
-int riot_hwrng_poll( void *data, unsigned char *output, size_t len,
-                        size_t *olen );
+int riot_hwrng_poll(void *data, unsigned char *output, size_t len,
+                        size_t *olen);
 
 /**
  * @brief   Wrapper around RIOTs ADC entropy API.
@@ -76,8 +76,8 @@ int riot_hwrng_poll( void *data, unsigned char *output, size_t len,
  * @return             0 if no critical failures occurred,
  *                     MBEDTLS_ERR_ENTROPY_SOURCE_FAILED otherwise.
  */
-int riot_adc_poll( void *data, unsigned char *output, size_t len,
-                    size_t *olen );
+int riot_adc_poll(void *data, unsigned char *output, size_t len,
+                    size_t *olen);
 
 #if !defined(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG) && \
     !defined(MODULE_ENTROPY_SOURCE_ADC_NOISE)

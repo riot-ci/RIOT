@@ -20,39 +20,37 @@
 #include <assert.h>
 #include <string.h>
 
-#include "riot_config.h"
+#include "sha256_alt.h"
 
-#if defined(MBEDTLS_SHA256_ALT)
+#if IS_ACTIVE(MBEDTLS_SHA256_ALT)
 #include "mbedtls/sha256.h"
 #include "mbedtls/platform.h"
 
-#include "sha256_alt.h"
-
-void mbedtls_sha256_init( mbedtls_sha256_context *ctx )
+void mbedtls_sha256_init(mbedtls_sha256_context *ctx)
 {
     assert(ctx != NULL);
 
-    memset( ctx, 0, sizeof( mbedtls_sha256_context ) );
+    memset(ctx, 0, sizeof(mbedtls_sha256_context));
 }
 
-void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
+void mbedtls_sha256_free(mbedtls_sha256_context *ctx)
 {
-    if ( ctx == NULL ) {
+    if (ctx == NULL ) {
         return;
     }
-    memset( ctx, 0, sizeof( mbedtls_sha256_context ) );
+    memset(ctx, 0, sizeof(mbedtls_sha256_context));
 }
 
-void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
-                           const mbedtls_sha256_context *src )
+void mbedtls_sha256_clone(mbedtls_sha256_context *dst,
+                           const mbedtls_sha256_context *src)
 {
-    if ( dst == NULL || src == NULL) {
+    if (dst == NULL || src == NULL) {
         return;
     }
-    memcpy( dst, src, sizeof( mbedtls_sha256_context ) );
+    memcpy(dst, src, sizeof(mbedtls_sha256_context));
 }
 
-int mbedtls_sha256_starts_ret( mbedtls_sha256_context *ctx, int is224 )
+int mbedtls_sha256_starts_ret(mbedtls_sha256_context *ctx, int is224)
 {
     assert(ctx != NULL);
 
@@ -66,8 +64,8 @@ int mbedtls_sha256_starts_ret( mbedtls_sha256_context *ctx, int is224 )
     return 0;
 }
 
-int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx,
-                                     const unsigned char data[64] )
+int mbedtls_internal_sha256_process(mbedtls_sha256_context *ctx,
+                                     const unsigned char data[64])
 {
     (void)ctx;
     (void)data;
@@ -75,9 +73,9 @@ int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx,
     return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
 }
 
-int mbedtls_sha256_update_ret( mbedtls_sha256_context *ctx,
+int mbedtls_sha256_update_ret(mbedtls_sha256_context *ctx,
                                const unsigned char *input,
-                               size_t ilen )
+                               size_t ilen)
 {
     assert(ctx != NULL && input != NULL);
 
@@ -85,8 +83,8 @@ int mbedtls_sha256_update_ret( mbedtls_sha256_context *ctx,
     return 0;
 }
 
-int mbedtls_sha256_finish_ret( mbedtls_sha256_context *ctx,
-                               unsigned char output[32] )
+int mbedtls_sha256_finish_ret(mbedtls_sha256_context *ctx,
+                               unsigned char output[32])
 {
     assert(ctx != NULL);
 

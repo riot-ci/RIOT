@@ -24,7 +24,10 @@
 extern "C" {
 #endif
 
-#if defined (MBEDTLS_SHA256_ALT)
+#include "kernel_defines.h"
+#include "riot_mbedtls_config.h"
+
+#if IS_ACTIVE(MBEDTLS_SHA256_ALT)
 #include "hashes/sha256.h"
 #include "hashes/sha224.h"
 
