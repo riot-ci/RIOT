@@ -162,11 +162,10 @@ static int _get_psk_info(struct dtls_context_t *ctx, const session_t *session,
     (void)ctx;
     (void)desc;
     (void)desc_len;
+    (void)session;
     int ret;
-    sock_udp_ep_t ep;
 
-    sock_dtls_t *sock = (sock_dtls_t *)dtls_get_app_data(ctx);
-    _session_to_ep(session, &ep);
+    sock_dtls_t *sock = dtls_get_app_data(ctx);
 
     credman_credential_t credential;
     ret = credman_get(&credential, sock->tag, CREDMAN_TYPE_PSK);
@@ -324,7 +323,6 @@ int sock_dtls_session_init(sock_dtls_t *sock, const sock_udp_ep_t *ep,
     }
 
     /* prepare the remote party to connect to */
-    memcpy(&remote->dtls_session.addr, &ep->addr.ipv6, sizeof(ipv6_addr_t));
     _ep_to_session(ep, &remote->dtls_session);
 
     /* start the handshake */
@@ -517,7 +515,7 @@ ssize_t sock_dtls_recv_aux(sock_dtls_t *sock, sock_dtls_session_t *remote,
     assert(remote);
 
     sock_udp_ep_t ep;
-    _session_to_ep(&remote->dtls_session, &ep);
+
     /* loop breaks when timeout or application data read */
     while (1) {
         ssize_t res;
