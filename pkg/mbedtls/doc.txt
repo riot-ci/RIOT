@@ -71,7 +71,7 @@
  *
  * ```
  * FEATURES_PROVIDED += periph_hwrng
- * FEATURES_PROVIDED += entropy_source_adc_noise
+ * FEATURES_PROVIDED += periph_adc
  * ```
  *
  * All sources will be enabled by default, if available. Furthermore, a single source

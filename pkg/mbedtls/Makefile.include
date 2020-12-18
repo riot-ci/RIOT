@@ -10,9 +10,9 @@ PSEUDOMODULES += mbedtls_entropy_source_hwrng
 PSEUDOMODULES += mbedtls_entropy_source_adc
 
 ifneq (,$(filter mbedtls_contrib,$(USEMODULE)))
-    DIRS += $(RIOTPKG)/mbedtls/contrib
+  DIRS += $(RIOTPKG)/mbedtls/contrib
 endif
 
 ifneq (,$(filter mbedtls_entropy,$(USEMODULE)))
-    DIRS += $(RIOTPKG)/mbedtls/contrib/entropy
+  DIRS += $(RIOTPKG)/mbedtls/contrib/entropy
 endif

@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     pkg_mbedtls
+ * @ingroup     pkg_mbedtls_entropy
  *
  * @{
  * @file

@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     pkg_mbedtls
+ * @ingroup     pkg_mbedtls_entropy
  *
  * @{
  * @file
@@ -25,11 +25,11 @@
 #include "entropy_sources_mbedtls_riot.h"
 
 #include "kernel_defines.h"
-#if defined(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG)
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG)
 #include "periph/hwrng.h"
 #endif
 
-#if defined(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
 #include "entropy_source/adc_noise.h"
 #endif
 
@@ -49,10 +49,10 @@
  * @{
  */
 const entropy_source_mbedtls_riot_t entropy_funcs[] = {
-#ifdef MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG)
 { .func = riot_hwrng_poll, .strong = MBEDTLS_ENTROPY_SOURCE_STRONG },
 #endif
-#ifdef MODULE_MBEDTLS_ENTROPY_SOURCE_ADC
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
 { .func = riot_adc_poll, .strong = MBEDTLS_ENTROPY_SOURCE_WEAK },
 #endif
     /* Additional sources need to be added here */
@@ -77,7 +77,7 @@ int riot_add_src_avail(mbedtls_entropy_context *ctx)
 {
     int ret = 0;
 
-#if defined(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
     entropy_source_adc_init();
 #endif
 
@@ -89,10 +89,11 @@ int riot_add_src_avail(mbedtls_entropy_context *ctx)
     return ret;
 }
 
-#if defined(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG)
-int riot_hwrng_poll( void *data, unsigned char *output, size_t len,
-                        size_t *olen )
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_HWRNG)
+int riot_hwrng_poll(void *data, unsigned char *output, size_t len,
+                        size_t *olen)
 {
+
     assert(output != NULL && olen!= NULL);
 
     (void)data;
@@ -104,9 +105,9 @@ int riot_hwrng_poll( void *data, unsigned char *output, size_t len,
 }
 #endif
 
-#if defined(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
-int riot_adc_poll( void *data, unsigned char *output, size_t len,
-                    size_t *olen )
+#if IS_USED(MODULE_MBEDTLS_ENTROPY_SOURCE_ADC)
+int riot_adc_poll(void *data, unsigned char *output, size_t len,
+                    size_t *olen)
 {
     assert(output != NULL && olen!= NULL);
 

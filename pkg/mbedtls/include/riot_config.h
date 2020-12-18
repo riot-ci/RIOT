@@ -391,7 +391,7 @@
 //#define MBEDTLS_RIPEMD160_ALT
 //#define MBEDTLS_RSA_ALT
 //#define MBEDTLS_SHA1_ALT
-#define MBEDTLS_SHA256_ALT /* enabled for RIOT*/
+#define MBEDTLS_SHA256_ALT 1/* enabled for RIOT*/
 //#define MBEDTLS_SHA512_ALT
 //#define MBEDTLS_XTEA_ALT
 
