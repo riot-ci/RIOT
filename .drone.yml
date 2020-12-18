@@ -127,8 +127,8 @@ type: docker
 name: build-worker
 parallelism: 4
 
-node:
-  type: build-worker
+#node:
+#  type: build-worker
 
 trigger:
   event:
