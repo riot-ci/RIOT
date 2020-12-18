@@ -91,7 +91,7 @@ steps:
          $script
       done
 
-    - /scripts/parse_result.py
+    - /scripts/parse_result.py result.json
 
     when:
      status:
