@@ -62,19 +62,19 @@ steps:
     # this is also used as queue for dwq
     - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
 
-    # setting disque parameters
+    - "# setting disque parameters"
     - export DWQ_DISQUE_URL="services:7711"
     - export DWQ_QUEUE=$${DRONE_BUILD_ID}
     - export DWQ_COMMIT="$$(cat merge_commit)"
     - export DWQ_REPO="https://github.com/$${DRONE_CLONE_REPO}"
 
-    # ensuring redis is operational
+    - "# ensuring redis is operational"
     - redis-cli -h services ping
 
-    # running trivial "true" on default queue
+    - "# running trivial "true" on default queue"
     - dwqc "true"
 
-    # launch the actual build
+    - "# launch the distributed build"
     - >
       dwqc -E BOARDS=native './.murdock get_jobs'
       | dwqc --quiet -P --outfile result.json
@@ -86,11 +86,13 @@ steps:
     # build a global build id (unique over all repositories)
     # this is also used as queue for dwq
     - export DRONE_BUILD_ID=drone-${DRONE_REPO}-${DRONE_BUILD_NUMBER}
+    - "# running post build scripts"
     - >
       for script in /scripts/post-build.d/*; do
+         echo "  running $script"
          $script
       done
-
+    - "# parsing build results"
     - /scripts/parse_result.py result.json
 
     when:
@@ -162,7 +164,9 @@ steps:
       CLICOLOR_FORCE: 1
 
     commands:
+    - "#"
     - "# Running on runner ${DRONE_STAGE_MACHINE}"
+    - "#"
     # setting disque parameters
     - export DWQ_DISQUE_URL="services:7711"
     # ensure ccache folder exists
