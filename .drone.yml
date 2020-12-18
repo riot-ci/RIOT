@@ -121,7 +121,6 @@ steps:
      - failure
 
 ---
-
 kind: pipeline
 type: docker
 name: build-worker
@@ -153,7 +152,8 @@ services:
     ports: [ 6379, 7711 ]
 
 steps:
-  # This step
+  # This step runs the dwq worker, which will execute build jobs sent by the
+  # "build" step from above
   - name: handle-build-jobs
     image: kaspar030/riotdocker:latest
     environment:
