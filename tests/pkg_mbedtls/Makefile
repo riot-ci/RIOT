@@ -1,6 +1,7 @@
 include ../Makefile.tests_common
 
 USEPKG += mbedtls
+USEMODULE += mbedtls_entropy
 
 # You can disable single entropy source to be used with the entropy module
 # DISABLE_MODULE += mbedtls_entropy_source_hwrng
