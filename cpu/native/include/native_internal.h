@@ -181,7 +181,10 @@ int register_interrupt(int sig, _native_callback_t handler);
  */
 int unregister_interrupt(int sig);
 
-//#include <sys/param.h>
+/**
+ * parse a string as an EUI-64 and add it to the list of EUI-64s
+ */
+void native_add_eui64(const char *string);
 
 #ifdef __cplusplus
 }
