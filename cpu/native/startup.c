@@ -84,6 +84,9 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #ifdef MODULE_PERIPH_GPIO_LINUX
 #include "gpiodev_linux.h"
 #endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+#include "native_eui_provider_cli.h"
+#endif
 #ifdef MODULE_SOCKET_ZEP
 #include "socket_zep_params.h"
 
@@ -106,6 +109,7 @@ static const char short_opts[] = ":hi:s:deEoc:"
 #endif
 #ifdef MODULE_SOCKET_ZEP
     "z:"
+    "Z:"
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     "p:"
@@ -132,6 +136,9 @@ static const struct option long_opts[] = {
 #endif
 #ifdef MODULE_SOCKET_ZEP
     { "zep", required_argument, NULL, 'z' },
+#endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+    { "eui64", required_argument, NULL, 'Z' },
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     { "spi", required_argument, NULL, 'p' },
@@ -268,23 +275,29 @@ void usage_exit(int status)
         real_printf(" <tap interface %d>", i + 1);
     }
 #endif
-    real_printf(" [-i <id>] [-d] [-e|-E] [-o] [-c <tty>]\n");
+    real_printf(" [-i <id>] [-d] [-e|-E] [-o] [-c <tty>]");
 #ifdef MODULE_PERIPH_GPIO_LINUX
-    real_printf(" [-g <gpiochip>]\n");
+    real_printf(" [-g <gpiochip>]");
 #endif
+    real_printf(" [-i <id>] [-d] [-e|-E] [-o] [-c <tty>]");
 #if defined(MODULE_SOCKET_ZEP) && (SOCKET_ZEP_MAX > 0)
-    real_printf(" -z [[<laddr>:<lport>,]<raddr>:<rport>]\n");
+    real_printf(" -z [[<laddr>:<lport>,]<raddr>:<rport>]");
     for (int i = 0; i < SOCKET_ZEP_MAX - 1; i++) {
         /* for further interfaces the local address must be different so we omit
          * the braces (marking them as optional) to be 100% clear on that */
-        real_printf(" -z <laddr>:<lport>,<raddr>:<rport>\n");
+        real_printf(" -z <laddr>:<lport>,<raddr>:<rport>");
     }
 #endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+    real_printf(" [--eui64 <eui64> …]");
+#endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
-    real_printf(" [-p <b>:<d>:<spidev>]\n");
+    real_printf(" [-p <b>:<d>:<spidev>]");
 #endif
 
-    real_printf(" help: %s -h\n\n", _progname);
+    real_printf("\n\n");
+
+    real_printf("help: %s -h\n", _progname);
 
     real_printf("\nOptions:\n"
 "    -h, --help\n"
@@ -320,6 +333,11 @@ void usage_exit(int status)
 "        The ZEP interface connects to the remote address and may listen\n"
 "        on a local address.\n"
 "        Required to be provided SOCKET_ZEP_MAX times\n"
+#endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+"    -Z <eui64>, --eui64=<eui64>\n"
+"        provide a ZEP interface with EUI-64 (MAC address)\n"
+"        This argument can be provided multiple times\n"
 #endif
     );
 #ifdef MODULE_MTD_NATIVE
@@ -411,6 +429,7 @@ static void _zep_params_setup(char *zep_str, int zep)
                       &socket_zep_params[zep].remote_port);
     }
 }
+
 #endif
 
 /** @brief Initialization function pointer type */
@@ -526,6 +545,11 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
 #ifdef MODULE_SOCKET_ZEP
             case 'z':
                 _zep_params_setup(optarg, zeps++);
+                break;
+#endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+            case 'Z':
+                native_cli_add_eui64(optarg);
                 break;
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
