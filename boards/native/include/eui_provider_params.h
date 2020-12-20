@@ -18,28 +18,18 @@
 #ifndef EUI_PROVIDER_PARAMS_H
 #define EUI_PROVIDER_PARAMS_H
 
-#include "net/eui64.h"
+#include "native_cli_eui_provider.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @name    Get a command-line provided EUI-64
- *
- * @param index     index of ZEP device
- * @param addr[out] user supplied EUI-64
- *
- * @return 0 on success, negatvie if no more EUIs are available.
- */
-int native_get_eui64(uint8_t index, eui64_t *addr);
-
-/**
  * @name    EUI sources on the board
  *          EUI-64 can be provided with the -Z command line argument
  * @{
  */
-#define EUI64_PROVIDER_FUNC   native_get_eui64
+#define EUI64_PROVIDER_FUNC   native_cli_get_eui64
 #define EUI64_PROVIDER_TYPE   NETDEV_ANY
 #define EUI64_PROVIDER_INDEX  NETDEV_INDEX_ANY
 /** @} */

@@ -84,6 +84,9 @@ netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #ifdef MODULE_PERIPH_GPIO_LINUX
 #include "gpiodev_linux.h"
 #endif
+#ifdef MODULE_NATIVE_EUI_PROVIDER
+#include "native_eui_provider_cli.h"
+#endif
 #ifdef MODULE_SOCKET_ZEP
 #include "socket_zep_params.h"
 
@@ -546,7 +549,7 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
 #endif
 #ifdef MODULE_NATIVE_EUI_PROVIDER
             case 'Z':
-                native_add_eui64(optarg);
+                native_cli_add_eui64(optarg);
                 break;
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
