@@ -22,7 +22,10 @@ ifneq (,$(filter periph_rtc,$(USEMODULE)))
 endif
 
 ifneq (,$(filter eui_provider,$(USEMODULE)))
-  USEMODULE += native_eui_provider
+  USEMODULE += native_cli_eui_provider
+endif
+
+ifneq (,$(filter native_cli_eui_provider,$(USEMODULE)))
   USEMODULE += l2util
 endif
 
