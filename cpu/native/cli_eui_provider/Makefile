@@ -1,3 +1,3 @@
-MODULE := native_eui_provider
+MODULE := native_cli_eui_provider
 
 include $(RIOTBASE)/Makefile.base
