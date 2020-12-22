@@ -73,7 +73,7 @@ static const adc_t arduino_analog_map[] = {
     ARDUINO_A1,
     ARDUINO_A2,
     ARDUINO_A3,
-    ADC_UNDEF,
+    ARDUINO_A4,
     ARDUINO_A5,
 };
 

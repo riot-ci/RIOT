@@ -39,7 +39,7 @@ extern "C" {
 #define ARDUINO_PIN_1           GPIO_PIN(PORT_A, 1) // UART0.TX
 #define ARDUINO_PIN_2           GPIO_PIN(PORT_D, 0) // I2C.INT
 #define ARDUINO_PIN_3           GPIO_PIN(PORT_C, 2) // I2C.SDA
-#define ARDUINO_PIN_4           GPIO_PIN(PORT_C, 3) // I2C.SDL
+#define ARDUINO_PIN_4           GPIO_PIN(PORT_C, 3) // I2C.SCL
 #define ARDUINO_PIN_5           GPIO_PIN(PORT_B, 4) // CC1200.GPIO0
 #define ARDUINO_PIN_6           GPIO_PIN(PORT_B, 0) // CC1200.GPIO2
 #define ARDUINO_PIN_7           GPIO_PIN(PORT_C, 1) // UART1.RX
@@ -63,11 +63,13 @@ extern "C" {
 #define ARDUINO_PIN_A1          ARDUINO_PIN_15
 #define ARDUINO_PIN_A2          ARDUINO_PIN_16
 #define ARDUINO_PIN_A3          ARDUINO_PIN_17
+#define ARDUINO_PIN_A4          ARDUINO_PIN_18
 #define ARDUINO_PIN_A5          ARDUINO_PIN_14
 
 #define ARDUINO_A1              ADC_LINE(1)
 #define ARDUINO_A2              ADC_LINE(2)
 #define ARDUINO_A3              ADC_LINE(3)
+#define ARDUINO_A4              ADC_LINE(4)
 #define ARDUINO_A5              ADC_LINE(5)
 /** @} */
 
