@@ -32,13 +32,13 @@ extern "C" {
 /**
  * @brief   The on-board LED is connected to pin 13 on this board
  */
-#define ARDUINO_LED         (22)
+#define ARDUINO_LED         (1)
 
 /**
  * @brief   Look-up table for the Arduino's digital pins
  */
 static const gpio_t arduino_pinmap[] = {
-    ARDUINO_PIN_0,
+    GPIO_UNDEF,
     ARDUINO_PIN_1,
     ARDUINO_PIN_2,
     ARDUINO_PIN_3,
@@ -47,22 +47,34 @@ static const gpio_t arduino_pinmap[] = {
     ARDUINO_PIN_6,
     ARDUINO_PIN_7,
     ARDUINO_PIN_8,
-    ARDUINO_PIN_9,
-    ARDUINO_PIN_10,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
     ARDUINO_PIN_11,
     ARDUINO_PIN_12,
     ARDUINO_PIN_13,
     ARDUINO_PIN_14,
-    ARDUINO_PIN_15,
-    ARDUINO_PIN_16,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
     ARDUINO_PIN_17,
-    ARDUINO_PIN_18,
-    ARDUINO_PIN_19,
-    ARDUINO_PIN_20,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
     ARDUINO_PIN_21,
     ARDUINO_PIN_22,
     ARDUINO_PIN_23,
     ARDUINO_PIN_24,
+    ARDUINO_PIN_25,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
+    ARDUINO_PIN_28,
+    ARDUINO_PIN_29,
+    GPIO_UNDEF,
+    GPIO_UNDEF,
+    ARDUINO_PIN_32,
+    ARDUINO_PIN_33,
+    ARDUINO_PIN_34,
+    ARDUINO_PIN_35,
+    ARDUINO_PIN_36,
 };
 
 /**
