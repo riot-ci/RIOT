@@ -256,11 +256,11 @@ Author(s):
 - Bas Stottelaar <basstottelaar@gmail.com>
 
 Reason for removal:
-- The old implementation of the SLWSTK6220A did not use the Gecko SDK, that
-  other EFM32-based boards do use
+- The old implementation of the SLWSTK6220A based on `cpu/ezr32wg` did not use
+  the Gecko SDK, that other EFM32-based boards do use
 - The old implementation had limited peripherals supported
-- New version (with the same name) that uses this SDK was added in commit
-  [fe941ac9fe3f81c0f08ff3b8564cf439639abcda]
+- New implementation (with the same name) that is based on `cpu/efm32` was
+  added in commit [fe941ac9fe3f81c0f08ff3b8564cf439639abcda]
 
 [cdc252ab7bd4161cc046bf93a3e55995704b24d4]: https://github.com/RIOT-OS/RIOT/commit/cdc252ab7bd4161cc046bf93a3e55995704b24d4
 [ed3887ac5c1e95308c2827bce3cdca8b0f146c22]: https://github.com/RIOT-OS/RIOT/commit/ed3887ac5c1e95308c2827bce3cdca8b0f146c22
