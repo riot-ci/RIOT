@@ -684,7 +684,7 @@ void sock_dtls_session_get_udp_ep(const sock_dtls_session_t *session,
  * @param[in]   ep        UDP endpoint
  *
  * @note Function should only be needed when doing a blocking handshake with
- *       @ref sock_dtls_send() to set the remote endpoint.
+ *       @ref sock_dtls_send() to set the remote UDP endpoint.
  */
 void sock_dtls_session_set_udp_ep(sock_dtls_session_t *session,
                                   const sock_udp_ep_t *ep);
