@@ -19,6 +19,7 @@
  */
 
 #include "board.h"
+#include "clock.h"
 #include "cpu.h"
 #include "irq.h"
 #include "periph/gpio.h"

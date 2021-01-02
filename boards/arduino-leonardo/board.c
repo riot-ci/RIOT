@@ -21,6 +21,7 @@
 #include "board.h"
 #include "cpu.h"
 #include "irq.h"
+#include "clock.h"
 #include "periph/gpio.h"
 
 #ifndef CPU_ATMEGA_CLK_SCALE_INIT
