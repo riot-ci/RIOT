@@ -6,6 +6,7 @@
 #
 
 menu "STM32 clock configuration"
+    depends on CPU_STM32
 
 choice
 bool "Clock source selection"
