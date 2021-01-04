@@ -436,7 +436,7 @@ static int _on_gap_master_evt(struct ble_gap_event *event, void *arg)
             struct os_mbuf *sdu_rx = os_msys_get_pkthdr(
                                             MYNEWT_VAL_BLE_L2CAP_COC_MPS, 0);
             /* in the rare case that we run out of buffers, we close the new
-             * connection right right away */
+             * connection right away */
             if (sdu_rx == NULL) {
                 ble_gap_terminate(handle, BLE_ERR_REM_USER_CONN_TERM);
                 break;
