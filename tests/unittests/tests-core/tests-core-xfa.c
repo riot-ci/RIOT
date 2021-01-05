@@ -44,7 +44,7 @@ static void test_xfa_data(void)
                 break;
         }
     }
-    TEST_ASSERT_EQUAL_INT(n, found);
+    TEST_ASSERT_EQUAL_INT((1U << (n + 1)) - 1, found);
 }
 
 static void test_xfa_const_data(void)
