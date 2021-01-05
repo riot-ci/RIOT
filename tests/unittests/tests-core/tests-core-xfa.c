@@ -31,7 +31,8 @@ static void test_xfa_data(void)
             case 12345:
                 /* tests-core-xfa-data1.c */
                 TEST_ASSERT_EQUAL_STRING("xfatest1", xfatest[k].text);
-                ++found;
+                TEST_ASSERT(!(found & BIT0));
+                found |= BIT0;
                 break;
             case 0xbeef:
                 /* tests-core-xfa-data2.c */
