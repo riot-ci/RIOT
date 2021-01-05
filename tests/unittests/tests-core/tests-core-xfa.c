@@ -37,7 +37,8 @@ static void test_xfa_data(void)
             case 0xbeef:
                 /* tests-core-xfa-data2.c */
                 TEST_ASSERT_EQUAL_STRING("another test string", xfatest[k].text);
-                ++found;
+                TEST_ASSERT(!(found & BIT1));
+                found |= BIT1;
                 break;
             default:
                 break;
