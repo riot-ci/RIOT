@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef CLOCK_H
-#define CLOCK_H
+#ifndef CPU_CLOCK_H
+#define CPU_CLOCK_H
 
 #include <stdint.h>
 
@@ -74,5 +74,5 @@ static inline void atmega_set_prescaler(uint8_t clk_scale)
 }
 #endif
 
-#endif /* CLOCK_H */
+#endif /* CPU_CLOCK_H */
 /** @} */

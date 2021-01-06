@@ -37,6 +37,7 @@
 
 #include <avr/interrupt.h>
 #include "cpu_conf.h"
+#include "cpu_clock.h"
 #include "sched.h"
 #include "thread.h"
 
