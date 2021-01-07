@@ -29,6 +29,7 @@
 #include "mtd.h"
 #include "shell.h"
 #include "board.h"
+#include "macros/units.h"
 
 #ifndef MTD_NUMOF
 #ifdef MTD_0
@@ -58,11 +59,10 @@ static mtd_dev_t *_get_mtd_dev(unsigned idx)
     return NULL;
 }
 
-static mtd_dev_t *_get_dev(int argc, char **argv, bool *oob)
+static mtd_dev_t *_get_dev(int argc, char **argv)
 {
     if (argc < 2) {
         printf("%s: please specify the MTD device\n", argv[0]);
-        *oob = true;
         return NULL;
     }
 
@@ -70,31 +70,26 @@ static mtd_dev_t *_get_dev(int argc, char **argv, bool *oob)
 
     if (idx > MTD_NUMOF) {
         printf("%s: invalid device: %s\n", argv[0], argv[1]);
-        *oob = true;
         return NULL;
     }
 
-    *oob = false;
     return _get_mtd_dev(idx);
 }
 
 static uint64_t _get_size(mtd_dev_t *dev)
 {
-    return dev->sector_count * dev->pages_per_sector * dev->page_size;
+    return (uint64_t)dev->sector_count
+         * dev->pages_per_sector
+         * dev->page_size;
 }
 
 static int cmd_read(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t addr, len;
 
-    if (argc < 4) {
+    if (argc < 4 || dev == NULL) {
         printf("usage: %s <dev> <addr> <len>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -125,16 +120,11 @@ static int cmd_read(int argc, char **argv)
 
 static int cmd_read_page(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t page, offset, len;
 
-    if (argc < 5) {
+    if (argc < 5 || dev == NULL) {
         printf("usage: %s <dev> <page> <offset> <len>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -163,16 +153,11 @@ static int cmd_read_page(int argc, char **argv)
 
 static int cmd_write(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t addr, len;
 
-    if (argc < 4) {
+    if (argc < 4 || dev == NULL) {
         printf("usage: %s <dev> <addr> <data>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -190,16 +175,11 @@ static int cmd_write(int argc, char **argv)
 
 static int cmd_write_page(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t page, offset, len;
 
-    if (argc < 5) {
+    if (argc < 5 || dev == NULL) {
         printf("usage: %s <dev> <page> <offset> <len>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -218,17 +198,12 @@ static int cmd_write_page(int argc, char **argv)
 
 static int cmd_erase(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t addr;
     uint32_t len;
 
-    if (argc < 4) {
+    if (argc < 4 || dev == NULL) {
         printf("usage: %s <dev> <addr> <len>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -246,16 +221,11 @@ static int cmd_erase(int argc, char **argv)
 
 static int cmd_erase_sector(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t sector, count = 1;
 
-    if (argc < 3) {
+    if (argc < 3 || dev == NULL) {
         printf("usage: %s <dev> <sector> [count]\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
@@ -274,12 +244,39 @@ static int cmd_erase_sector(int argc, char **argv)
     return res;
 }
 
+static void _print_size(uint64_t size)
+{
+    unsigned long len;
+    const char *prefix;
+
+    if (size == 0) {
+        len = 0;
+        prefix = "byte";
+    } else if ((size & (GiB(1) - 1)) == 0) {
+        len = size / GiB(1);
+        prefix = "GiB";
+    }
+    else if ((size & (MiB(1) - 1)) == 0) {
+        len = size / MiB(1);
+        prefix = "MiB";
+    }
+    else if ((size & (KiB(1) - 1)) == 0) {
+        len = size / KiB(1);
+        prefix = "kiB";
+    } else {
+        len = size;
+        prefix = "byte";
+    }
+
+    printf("total: %lu %s\n", len, prefix);
+}
+
 static void _print_info(mtd_dev_t *dev)
 {
     printf("sectors: %"PRIu32"\n", dev->sector_count);
     printf("pages per sector: %"PRIu32"\n", dev->pages_per_sector);
     printf("page size: %"PRIu32"\n", dev->page_size);
-    printf("total: %lu\n", (unsigned long)_get_size(dev));
+    _print_size(_get_size(dev));
 }
 
 static int cmd_info(int argc, char **argv)
@@ -294,10 +291,9 @@ static int cmd_info(int argc, char **argv)
         return 0;
     }
 
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
 
-    if (oob) {
+    if (dev == NULL) {
         return -1;
     }
 
@@ -308,16 +304,11 @@ static int cmd_info(int argc, char **argv)
 
 static int cmd_power(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     enum mtd_power_state state;
 
-    if (argc < 3) {
+    if (argc < 3 || dev == NULL) {
         goto error;
-    }
-
-    if (oob) {
-        return -1;
     }
 
     if (strcmp(argv[2], "off") == 0) {
@@ -350,16 +341,11 @@ static bool mem_is_all_set(const uint8_t *buf, uint8_t c, size_t n)
 
 static int cmd_test(int argc, char **argv)
 {
-    bool oob;
-    mtd_dev_t *dev = _get_dev(argc, argv, &oob);
+    mtd_dev_t *dev = _get_dev(argc, argv);
     uint32_t sector;
 
-    if (argc < 2) {
+    if (argc < 2 || dev == NULL) {
         printf("usage: %s <dev>\n", argv[0]);
-        return -1;
-    }
-
-    if (oob) {
         return -1;
     }
 
