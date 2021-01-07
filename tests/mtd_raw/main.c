@@ -247,28 +247,28 @@ static int cmd_erase_sector(int argc, char **argv)
 static void _print_size(uint64_t size)
 {
     unsigned long len;
-    const char *prefix;
+    const char *unit;
 
     if (size == 0) {
         len = 0;
-        prefix = "byte";
+        unit = "byte";
     } else if ((size & (GiB(1) - 1)) == 0) {
         len = size / GiB(1);
-        prefix = "GiB";
+        unit = "GiB";
     }
     else if ((size & (MiB(1) - 1)) == 0) {
         len = size / MiB(1);
-        prefix = "MiB";
+        unit = "MiB";
     }
     else if ((size & (KiB(1) - 1)) == 0) {
         len = size / KiB(1);
-        prefix = "kiB";
+        unit = "kiB";
     } else {
         len = size;
-        prefix = "byte";
+        unit = "byte";
     }
 
-    printf("total: %lu %s\n", len, prefix);
+    printf("total: %lu %s\n", len, unit);
 }
 
 static void _print_info(mtd_dev_t *dev)
@@ -302,13 +302,19 @@ static int cmd_info(int argc, char **argv)
     return 0;
 }
 
+static inline int _print_power_usage(const char *progname)
+{
+    printf("usage: %s <dev> <on|off>\n", progname);
+    return -1;
+}
+
 static int cmd_power(int argc, char **argv)
 {
     mtd_dev_t *dev = _get_dev(argc, argv);
     enum mtd_power_state state;
 
     if (argc < 3 || dev == NULL) {
-        goto error;
+        return _print_power_usage(argv[0]);
     }
 
     if (strcmp(argv[2], "off") == 0) {
@@ -316,16 +322,12 @@ static int cmd_power(int argc, char **argv)
     } else if (strcmp(argv[2], "on") == 0) {
         state = MTD_POWER_UP;
     } else {
-        goto error;
+        return _print_power_usage(argv[0]);
     }
 
     mtd_power(dev, state);
 
     return 0;
-
-error:
-    printf("usage: %s <dev> <on|off>\n", argv[0]);
-    return -1;
 }
 
 static bool mem_is_all_set(const uint8_t *buf, uint8_t c, size_t n)
