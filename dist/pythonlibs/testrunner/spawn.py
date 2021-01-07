@@ -56,8 +56,8 @@ def _reset_board(env):
         pass
 
 
-def list_until(l, cond):
-    return l[:([i for i, e in enumerate(l) if cond(e)][0])]
+def list_until(trace_list, cond):
+    return trace_list[:([i for i, e in enumerate(trace_list) if cond(e)][0])]
 
 
 def find_exc_origin(exc_info):
