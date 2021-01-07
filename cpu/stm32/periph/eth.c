@@ -32,6 +32,7 @@
 #include "net/eui_provider.h"
 #include "net/netdev/eth.h"
 #include "periph/gpio.h"
+#include "timex.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -586,9 +587,9 @@ static void handle_lost_rx_irqs(void)
 }
 
 static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
-                          void *info)
+                          void *_info)
 {
-    (void)info;
+    netdev_eth_rx_info_t *info = _info;
     (void)netdev;
     char *data = buf;
     /* Determine the size of received frame. The frame might span multiple
@@ -623,6 +624,11 @@ static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
         memcpy(data, rx_curr->buffer_addr, chunk);
         data += chunk;
         remain -= chunk;
+        if (IS_USED(MODULE_PERIPH_PTP) && !remain) {
+            info->timestamp = rx_curr->ts_low;
+            info->timestamp += (uint64_t)rx_curr->ts_high * NS_PER_SEC;
+            info->flags |= NETDEV_ETH_RX_INFO_FLAG_TIMESTAMP;
+        }
         /* Hand over descriptor to DMA */
         rx_curr->status = RX_DESC_STAT_OWN;
         rx_curr = rx_curr->desc_next;
