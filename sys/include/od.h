@@ -44,7 +44,7 @@ extern "C" {
  * @param[in] width     Number of bytes per line. If *width* is 0,
  *                      @ref OD_WIDTH_DEFAULT is assumed as a default value.
  * @param[in] offset    Adds an offset to the printed memory addresses.
- * @param[in] offset    If the origin of the data is an address in memory,
+ *                      If the origin of the data is an address in memory,
  *                      this can be used to print the real addresses together
  *                      with the data.
  */
