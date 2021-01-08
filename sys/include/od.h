@@ -36,8 +36,9 @@ extern "C" {
 /**
  * @brief Dumps memory stored at *data* byte-wise up to *data_len* in
  *        hexadecimal representation to stdout. If the pseudomodlue `od_string`
-          is used (`USEMODULE += od_string`) the ASCII representation of *data* is
-          also displayed.
+ *        is used (`USEMODULE += od_string`) the ASCII representation of *data* is
+ *        also displayed.
+ *        The displayed start address of *data* can be given as *offset*.
  *
  * @param[in] data      Data to dump.
  * @param[in] data_len  Length in bytes of *data* to output.
@@ -53,8 +54,8 @@ void od_hex_dump_ext(const void *data, size_t data_len, uint8_t width, uint32_t 
 /**
  * @brief Dumps memory stored at *data* byte-wise up to *data_len* in
  *        hexadecimal representation to stdout. If the pseudomodlue `od_string`
-          is used (`USEMODULE += od_string`) the ASCII representation of *data* is
-          also displayed.
+ *        is used (`USEMODULE += od_string`) the ASCII representation of *data* is
+ *        also displayed.
  *
  * @param[in] data      Data to dump.
  * @param[in] data_len  Length in bytes of *data* to output.
