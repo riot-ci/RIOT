@@ -2,4 +2,5 @@
 # application configuration. This is only needed during migration.
 CONFIG_MODULE_PERIPH_I2C=y
 CONFIG_MODULE_SHELL=y
+CONFIG_MODULE_SHELL_COMMANDS=y
 CONFIG_MODULE_XTIMER=y
