@@ -112,6 +112,7 @@ then
         DEFGROUPS=$(echo "${ALL_RAW_DEFGROUP}" |
             awk -F@ '{ split($2, end, " "); printf("%s%s\n",$1,end[2]) }' |
             grep "\<${group}\>$" | sort -u)
+        DEFGROUPFILES=$(echo "${DEFGROUPS}" | awk -F: '{ print "\t" $1 }')
         if github_annotate_is_on; then
             echo "${DEFGROUPS}" | while read defgroup;
             do
@@ -119,7 +120,6 @@ then
                     "Multiple doxygen group definitions of '${group}' in\n${DEFGROUPFILES}"
             done
         else
-            DEFGROUPFILES=$(echo "${DEFGROUPS}" | awk -F: '{ print "\t" $1 }')
             echo -e "\n${CWARN}${group}${CRESET} defined in:";
             echo "${DEFGROUPFILES}"
         fi
