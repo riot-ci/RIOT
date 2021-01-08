@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright 2017 Kaspar Schleiser <kaspar@schleiser.de>
 # Copyright 2014 Ludwig Knüpfer <ludwig.knuepfer@fu-berlin.de>
@@ -62,7 +62,7 @@ cppcheck --std=c99 --enable=style --force --error-exitcode=2 --quiet -j 1 \
          --inline-suppr ${DEFAULT_SUPPRESSIONS} ${CPPCHECK_OPTIONS} ${@}  \
          ${FILES} 2>&1 | ${LOG} 1>&2
 
-RESULT=$?
+RESULT=${PIPESTATUS[0]}
 
 if github_annotate_is_on; then
     grep "^.\+:[0-9]\+: [a-z]\+ (.*):" ${LOGFILE} | while read error_line; do
