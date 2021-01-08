@@ -36,16 +36,19 @@ if [ "${DOXY_ERRCODE}" -ne 0 ] ; then
 else
     ERRORS=$(echo "${DOXY_OUTPUT}" | grep '.*warning' | sed "s#${PWD}/\([^:]*\)#\1#g")
     if [ -n "${ERRORS}" ] ; then
-        echo -e "${CERROR}ERROR: Doxygen generates the following warnings:${CRESET}"
-        echo "${ERRORS}"
-        echo "${ERRORS}" | grep "^.\+:[0-9]\+: warning:" | while read error_line
-        do
-            FILENAME=$(echo "${error_line}" | cut -d: -f1)
-            LINENR=$(echo "${error_line}" | cut -d: -f2)
-            DETAILS=$(echo "${error_line}" | cut -d: -f4- |
-                      sed -e 's/^[ \t]*//' -e 's/[ \t]*$//')
-            github_annotate_error "${FILENAME}" "${LINENR}" "${DETAILS}"
-        done
+        if github_annotate_is_on; then
+            echo "${ERRORS}" | grep "^.\+:[0-9]\+: warning:" | while read error_line
+            do
+                FILENAME=$(echo "${error_line}" | cut -d: -f1)
+                LINENR=$(echo "${error_line}" | cut -d: -f2)
+                DETAILS=$(echo "${error_line}" | cut -d: -f4- |
+                          sed -e 's/^[ \t]*//' -e 's/[ \t]*$//')
+                github_annotate_error "${FILENAME}" "${LINENR}" "${DETAILS}"
+            done
+        else
+            echo -e "${CERROR}ERROR: Doxygen generates the following warnings:${CRESET}"
+            echo "${ERRORS}"
+        fi
         RESULT=2
     fi
 fi
