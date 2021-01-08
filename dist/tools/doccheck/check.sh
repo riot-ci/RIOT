@@ -111,7 +111,7 @@ then
         echo "${DEFGROUPS}" | while read defgroup;
         do
             github_annotate_error $(echo ${defgroup} | awk -F: '{ print $1,$2 }') \
-                "Multiple doxygen group define of '${group}' in\n${DEFGROUPFILES}"
+                "Multiple doxygen group definitions of '${group}' in\n${DEFGROUPFILES}"
         done
     done
     RESULT=2
