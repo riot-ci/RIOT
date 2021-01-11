@@ -9,11 +9,13 @@ LOGFILE=
 OUTFILE=github_annotate_outfile.log
 ECHO_ESC=echo
 
+set -x
 if [ -n "${BASH_VERSION}" ]; then
     # workaround when included in bash to escape newlines and carriage returns
     # properly in _escape
     ECHO_ESC='echo -e'
 fi
+set +x
 
 github_annotate_setup() {
     if [ -n "${GITHUB_RUN_ID}" ]; then
