@@ -7,11 +7,11 @@
  */
 
 /**
- * @defgroup    net_gnrc_ipv6 IPv6
- * @ingroup     net_gnrc
+ * @defgroup    net_gnrc_sixlowpan IPv6
+ * @ingroup     net_gnr
  * @brief       GNRC's IPv6 implementation
  *
- * This module is for usage with the @ref net_gnrc_netapi
+ * This module is for usage with the @ref net_gnrc_netap
  *
  * # Supported NETAPI commands
  *
