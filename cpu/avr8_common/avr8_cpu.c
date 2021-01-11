@@ -100,6 +100,13 @@ void cpu_init(void)
     /* rtc_init */
     /* hwrng_init */
     periph_init();
+
+#ifdef CPU_ATXMEGA
+    /* Enable Multilevel Interrupt Controller */
+    PMIC.CTRL |= PMIC_HILVLEN_bm
+              |  PMIC_MEDLVLEN_bm
+              |  PMIC_LOLVLEN_bm;
+#endif
 }
 
 struct __freelist {
