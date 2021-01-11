@@ -24,7 +24,7 @@ else
     CRESET=
 fi
 
-DOXY_OUTPUT=$(make -C "${RIOTBASE}" doc 2>&1)
+# DOXY_OUTPUT=$(make -C "${RIOTBASE}" doc 2>&1)
 DOXY_ERRCODE=$?
 RESULT=0
 
