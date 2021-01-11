@@ -80,7 +80,12 @@ if [ -n "${UNDEFINED_GROUPS}" ]
 then
     COUNT=$(echo "${UNDEFINED_GROUPS}" | wc -l)
     echo -ne "\n\n${CERROR}ERROR${CRESET} "
-    echo -e "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups:"
+    echo -ne "There are ${CWARN}${COUNT}${CRESET} undefined Doxygen groups"
+    if github_annotate_is_on; then
+        echo ""
+    else
+        echo ":"
+    fi
     for group in ${UNDEFINED_GROUPS};
     do
         INGROUPS=$(echo "${ALL_RAW_INGROUP}" | grep "\<${group}\>$" | sort -u)
@@ -106,7 +111,12 @@ if [ -n "${MULTIPLE_DEFINED_GROUPS}" ]
 then
     COUNT=$(echo "${MULTIPLE_DEFINED_GROUPS}" | wc -l)
     echo -ne "\n\n${CERROR}ERROR${CRESET} "
-    echo -e "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times:"
+    echo -ne "There are ${CWARN}${COUNT}${CRESET} Doxygen groups defined multiple times"
+    if github_annotate_is_on; then
+        echo ""
+    else
+        echo ":"
+    fi
     for group in ${MULTIPLE_DEFINED_GROUPS};
     do
         DEFGROUPS=$(echo "${ALL_RAW_DEFGROUP}" |
@@ -126,4 +136,5 @@ then
     done
     RESULT=2
 fi
+github_annotate_teardown
 exit ${RESULT}
