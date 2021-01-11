@@ -126,8 +126,10 @@ then
         if github_annotate_is_on; then
             echo "${DEFGROUPS}" | while read defgroup;
             do
+                set -x
                 github_annotate_error $(echo ${defgroup} | awk -F: '{ print $1,$2 }') \
                     "Multiple doxygen group definitions of '${group}' in\n${DEFGROUPFILES}"
+                set +x
             done
         else
             echo -e "\n${CWARN}${group}${CRESET} defined in:";
