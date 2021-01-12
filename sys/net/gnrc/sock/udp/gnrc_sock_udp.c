@@ -251,22 +251,17 @@ ssize_t sock_udp_recv_buf_aux(sock_udp_t *sock, void **data, void **buf_ctx,
         gnrc_pktbuf_release(pkt);
         return -EPROTO;
     }
-#if IS_USED(MODULE_SOCK_AUX_LOCAL)
     if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_LOCAL)) {
+#if IS_USED(MODULE_SOCK_AUX_LOCAL)
         aux->flags &= ~SOCK_AUX_GET_LOCAL;
         aux->local.port = sock->local.port;
     }
 #endif
+    if (aux != NULL) {
 #if IS_USED(MODULE_SOCK_AUX_TIMESTAMP)
-    if ((aux != NULL) && (aux->flags & SOCK_AUX_GET_TIMESTAMP)) {
-        /* check if network interface did provide a timestamp; this depends on
-         * hardware support. A timestamp of zero is used to indicate a missing
-         * timestamp */
-        if (_aux.flags & GNRC_SOCK_RECV_AUX_FLAG_TIMESTAMP) {
-            aux->flags &= ~SOCK_AUX_GET_TIMESTAMP;
-        }
-    }
+        aux->flags &= ~SOCK_AUX_GET_TIMESTAMP;
 #endif
+    }
     *data = pkt->data;
     *buf_ctx = pkt;
     res = (int)pkt->size;
