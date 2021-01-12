@@ -96,8 +96,8 @@
  */
 
 
-#ifndef NET_GNRC_IPV6_H
-#define NET_GNRC_IPV6_H
+#ifndef GNRC_IPV6_H
+#define GNRC_IPV6_H
 
 #include "sched.h"
 #include "net/gnrc.h"
@@ -236,7 +236,7 @@ ipv6_hdr_t *gnrc_ipv6_get_header(gnrc_pktsnip_t *pkt);
 }
 #endif
 
-#endif /* NET_GNRC_IPV6_H */
+#endif
 /**
  * @}
  */
