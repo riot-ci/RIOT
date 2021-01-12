@@ -348,7 +348,7 @@ void rtc_tamper_enable(void)
     if (RTC->MODE0.TAMPCTRL.reg & RTC_TAMPCTRL_TAMLVL_Msk) {
 
         /* If an RTC alarm happened before, the spurious tamper
-         * event is sometimes generated.
+         * event is sometimes not generated.
          * Tamper event must happen within one RTC clock period. */
         unsigned timeout = CLOCK_CORECLOCK / 32768;
 
