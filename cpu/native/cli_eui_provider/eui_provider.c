@@ -20,6 +20,8 @@
 #include "net/l2util.h"
 #include "native_cli_eui_provider.h"
 
+#include "native_internal.h"
+
 /* list of user supplied EUI-64s */
 struct _native_eui64_list;
 static struct _native_eui64_list {
@@ -30,7 +32,9 @@ static struct _native_eui64_list {
 /* parse EUI-64 from command line */
 void native_cli_add_eui64(const char *s)
 {
-    struct _native_eui64_list *e = malloc(sizeof(*_eui64_head));
+    _native_syscall_enter();
+    struct _native_eui64_list *e = real_malloc(sizeof(*_eui64_head));
+    _native_syscall_leave();
 
     size_t res = l2util_addr_from_str(s, e->addr.uint8);
     assert(res <= sizeof(eui64_t));
