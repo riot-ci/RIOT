@@ -96,8 +96,8 @@ bool sema_inv_post_mask(sema_inv_t *s, uint32_t mask);
  */
 static inline void sema_inv_init(sema_inv_t *s, uint32_t value)
 {
-    mutex_init(&s->lock);
-    mutex_lock(&s->lock);
+    const mutex_t locked = MUTEX_INIT_LOCKED;
+    s->lock = locked;
     s->value = value;
 }
 
