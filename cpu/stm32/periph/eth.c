@@ -32,6 +32,7 @@
 #include "net/eui_provider.h"
 #include "net/netdev/eth.h"
 #include "periph/gpio.h"
+#include "timex.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -585,12 +586,23 @@ static void handle_lost_rx_irqs(void)
     }
 }
 
-static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
-                          void *info)
+static void copy_from_dma_desc(void *buf, size_t size, edma_desc_t *desc)
 {
-    (void)info;
-    (void)netdev;
     char *data = buf;
+    while (size) {
+        size_t chunk = MIN(size, ETH_RX_BUFFER_SIZE);
+        memcpy(data, desc->buffer_addr, chunk);
+        data += chunk;
+        size -= chunk;
+        desc = desc->desc_next;
+    }
+}
+
+static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
+                          void *_info)
+{
+    netdev_eth_rx_info_t *info = _info;
+    (void)netdev;
     /* Determine the size of received frame. The frame might span multiple
      * DMA buffers */
     int size = get_rx_frame_size();
@@ -615,22 +627,23 @@ static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
         DEBUG("[stm32_eth] Buffer provided by upper layer is too small\n");
         drop_frame_and_update_rx_curr();
         return -ENOBUFS;
-    }
+   }
 
-    size_t remain = size;
-    while (remain) {
-        size_t chunk = MIN(remain, ETH_RX_BUFFER_SIZE);
-        memcpy(data, rx_curr->buffer_addr, chunk);
-        data += chunk;
-        remain -= chunk;
-        /* Hand over descriptor to DMA */
-        rx_curr->status = RX_DESC_STAT_OWN;
-        rx_curr = rx_curr->desc_next;
-    }
+    copy_from_dma_desc(buf, size, rx_curr);
 
-    if ((size + ETHERNET_FCS_LEN - 1) % ETH_RX_BUFFER_SIZE < ETHERNET_FCS_LEN) {
-        /* one additional rx descriptor was needed only for the FCS, hand that
-         * back to the DMA as well */
+    /* Hand over DMA descriptors back to DMA, collect RX timestamp from last
+     * descriptor if module periph_ptp is used */
+    while (1) {
+        if (rx_curr->status & RX_DESC_STAT_LS) {
+            if (IS_USED(MODULE_PERIPH_PTP)) {
+                info->timestamp = rx_curr->ts_low;
+                info->timestamp += (uint64_t)rx_curr->ts_high * NS_PER_SEC;
+                info->flags |= NETDEV_ETH_RX_INFO_FLAG_TIMESTAMP;
+            }
+            rx_curr->status = RX_DESC_STAT_OWN;
+            rx_curr = rx_curr->desc_next;
+            break;
+        }
         rx_curr->status = RX_DESC_STAT_OWN;
         rx_curr = rx_curr->desc_next;
     }
