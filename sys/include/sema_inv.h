@@ -83,8 +83,8 @@ bool sema_inv_post(sema_inv_t *s);
  * @param   s       an inverse semaphore
  * @param   mask    bit mask to clear from the semaphore value
  *
- * @return  `true` if the value of the semaphore
- *          has reached zero and the waiting thread has been woken
+ * @retval  `true`  the value of the semaphore has reached zero and the waiting thread has been woken
+ * @retval  `false` the semaphore has not reached zero yet
  */
 bool sema_inv_post_mask(sema_inv_t *s, uint32_t mask);
 
