@@ -69,8 +69,8 @@ typedef struct {
  *
  * @param   s       an inverse semaphore
  *
- * @return  `true` if the value of the semaphore
- *          has reached zero and the waiting thread has been woken
+ * @retval  `true`  the value of the semaphore has reached zero and the waiting thread has been woken
+ * @retval  `false` the semaphore has not reached zero yet
  */
 bool sema_inv_post(sema_inv_t *s);
 
