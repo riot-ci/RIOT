@@ -117,3 +117,12 @@ The expected behavior is verified with the test in `tests/test_tools`.
 Tests cannot rely on having on all boards and terminal programs:
 * unbuffered input
 * allowing sending special characters like `ctrl+c/ctrl+d`
+
+
+Running manual tests
+--------------------
+
+Some tests need active monitoring or manual setup steps but still have some
+automated scripts. The test automation scripts are defined in the
+`<test_application>/tests-manual/` folder.
+For running them, follow the setup or analysis documentation.
