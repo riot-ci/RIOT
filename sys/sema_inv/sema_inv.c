@@ -28,9 +28,7 @@ bool sema_inv_post(sema_inv_t *s)
 
 bool sema_inv_post_mask(sema_inv_t *s, uint32_t mask)
 {
-    atomic_fetch_and_u32(&s->value, ~mask);
-
-    if (s->value == 0) {
+    if (atomic_fetch_and_u32(&s->value, ~mask) == mask) {
         mutex_unlock(&s->lock);
         return true;
     }
