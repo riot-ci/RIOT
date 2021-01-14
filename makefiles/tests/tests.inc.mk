@@ -19,16 +19,6 @@ test: $(TEST_DEPS)
 test/available:
 	$(Q)test -n "$(strip $(TESTS))"
 
-# this target only makes sense if an ELFFILE is actually created, thus guard by
-# RIOTNOLINK="".
-ifeq (,$(RIOTNOLINK))
-test-input-hash: $(TESTS) $(ELFFILE) $(TEST_EXTRA_FILES)
-	sha1sum $^ > $(BINDIR)/test-input-hash.sha1
-else
-test-input-hash:
-	true
-endif
-
 # Tests that require root privileges
 .PHONY: test-as-root test-as-root/available
 TESTS_AS_ROOT ?= $(foreach file,$(wildcard $(APPDIR)/tests-as-root/*[^~]),\
@@ -54,3 +44,13 @@ test-with-config: $(TEST_DEPS)
 
 test-with-config/available:
 	$(Q)test -n "$(strip $(TESTS_WITH_CONFIG))"
+
+# this target only makes sense if an ELFFILE is actually created, thus guard by
+# RIOTNOLINK="".
+ifeq (,$(RIOTNOLINK))
+test-input-hash: $(TESTS) $(TESTS_WITH_CONFIG) $(ELFFILE) $(TEST_EXTRA_FILES)
+	sha1sum $^ > $(BINDIR)/test-input-hash.sha1
+else
+test-input-hash:
+	true
+endif
