@@ -5,21 +5,26 @@
 # directory for more details.
 #
 
-config MODULE_BQ2429X
-    bool "BQ2429x"
+menuconfig MODULE_BQ2429X
+    bool "BQ2429x single-cell USB charger"
     depends on HAS_PERIPH_I2C
     depends on HAS_PERIPH_GPIO
     depends on TEST_KCONFIG
     select MODULE_PERIPH_I2C
     select MODULE_PERIPH_GPIO
     default y if HAVE_BQ2429X
+    help
+        The driver can be used with Texas Instruments USB charger ICs: BQ24295,
+        BQ24296, BQ24297, BQ24298, BQ24292I, BQ24296M.
 
 config MODULE_BQ2429X_INT
-    bool "BQ2429x with interrupt functionality"
+    bool "Interrupt handling"
     depends on HAS_PERIPH_GPIO_IRQ
+    depends on MODULE_BQ2429X
     select MODULE_PERIPH_GPIO_IRQ
-    select MODULE_BQ2429X
     default y if HAVE_BQ2429X_INT
+    help
+        Say y to include interrupt handling functionality.
 
 config HAVE_BQ2429X
     bool
