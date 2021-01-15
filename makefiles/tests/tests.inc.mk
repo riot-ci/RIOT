@@ -48,7 +48,7 @@ test-with-config/available:
 # this target only makes sense if an ELFFILE is actually created, thus guard by
 # RIOTNOLINK="".
 ifeq (,$(RIOTNOLINK))
-test-input-hash: $(TESTS) $(TESTS_WITH_CONFIG) $(ELFFILE) $(TEST_EXTRA_FILES)
+test-input-hash: $(TESTS) $(TESTS_WITH_CONFIG) $(TESTS_AS_ROOT) $(ELFFILE) $(TEST_EXTRA_FILES)
 	sha1sum $^ > $(BINDIR)/test-input-hash.sha1
 else
 test-input-hash:
