@@ -24,6 +24,8 @@ tests/mtd_mapper tests/driver_o* tests/driver_p* tests/driver_q*
 tests/driver_r*"}
 : ${TEST_KCONFIG_native:="examples/hello-world tests/periph_*"}
 
+: ${TEST_WITH_CONFIG_SUPPORTED:="examples/suit_update tests/driver_at86rf2xx_aes tests/gnrc_sock_dns"}
+
 export RIOT_CI_BUILD=1
 export CC_NOCOLOR=1
 export STATIC_TESTS=0
@@ -379,8 +381,10 @@ run_test() {
     BOARD=$board TOOLCHAIN=${toolchain} make -C$appdir flash-only termdeps -j2
 
     # now run the actual test
-    if [ -d ${appdir}/tests-as-root ]; then
+    if [ -d "${appdir}/tests-as-root" ]; then
         BOARD=${board} TOOLCHAIN=${toolchain} make -C${appdir} test-as-root
+    elif is_in_list "${appdir}" "${TEST_WITH_CONFIG_SUPPORTED}"; then
+        BOARD=${board} TOOLCHAIN=${toolchain} make -C${appdir} test-with-config
     else
         BOARD=$board TOOLCHAIN=${toolchain} make -C$appdir test
     fi
