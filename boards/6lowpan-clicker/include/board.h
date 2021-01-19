@@ -22,6 +22,9 @@
  *
  * @author      Neil Jones <Neil.Jones@imgtec.com>
  */
+/*                            Warning length                                                            */
+
+/*                            Max length                                                                                        */
 
 #ifndef BOARD_H
 #define BOARD_H
