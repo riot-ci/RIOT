@@ -330,6 +330,9 @@ int bq2429x_get_fault(const bq2429x_t *dev, bq2429x_fault_t *fault);
 /**
  * @brief   Enable OTG.
  *
+ * This allows powering USB devices from the same port, i.e. to provide power
+ * or charge other devices.
+ *
  * @pre @p dev != NULL
  *
  * @param[in]   dev Device descriptor.
@@ -378,6 +381,11 @@ int bq2429x_disable_charge(const bq2429x_t *dev);
 /**
  * @brief   Set Input Voltage Limit.
  *
+ * @note This is a limit on the lower bound of the voltage, for example,
+ * if the VLIM is set to @ref BQ2429X_VLIM_5000 (5.0V) and the supply
+ * voltage is lower than it (4.8V), it will result in a fault and no
+ * power will be delivered through the output pin (SYS pin).
+ *
  * @pre @p dev != NULL
  *
  * @param[in]   dev     Device descriptor.
@@ -403,6 +411,9 @@ int bq2429x_get_vlim(const bq2429x_t *dev, bq2429x_input_voltage_limit_t *vlim);
 
 /**
  * @brief   Set Input Current Limit.
+ *
+ * Sets the maximum current limit, this limit is also limited by hardware by
+ * setting a resistor to the VLIM pin which sets (by hardware) the upper limit.
  *
  * @pre @p dev != NULL
  *
