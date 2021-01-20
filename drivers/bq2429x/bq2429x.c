@@ -79,6 +79,22 @@ static int _update_bits(const bq2429x_t *dev, uint8_t reg, uint8_t mask,
     return _write_reg(dev, reg, tmp);
 }
 
+static int _update_charge_params(const bq2429x_t *dev)
+{
+    assert(dev);
+
+    DEBUG_DEV("", dev);
+    EXEC_RET(_update_bits(dev, BQ2429X_REG00, BQ2429X_REG00_VINDPM_m,
+                          dev->params.vlim << BQ2429X_REG00_VINDPM_s));
+    EXEC_RET(_update_bits(dev, BQ2429X_REG00, BQ2429X_REG00_IINLIM_m,
+                          dev->params.ilim << BQ2429X_REG00_IINLIM_s));
+    EXEC_RET(_update_bits(dev, BQ2429X_REG02, BQ2429X_REG02_ICHG_m,
+                          dev->params.ichg << BQ2429X_REG02_ICHG_s));
+    EXEC_RET(_update_bits(dev, BQ2429X_REG04, BQ2429X_REG04_VREG_m,
+                          dev->params.vreg << BQ2429X_REG04_VREG_s));
+    return BQ2429X_OK;
+}
+
 int bq2429x_init(bq2429x_t *dev, const bq2429x_params_t *params)
 {
     assert(dev && params);
@@ -104,7 +120,7 @@ int bq2429x_init(bq2429x_t *dev, const bq2429x_params_t *params)
     }
 
     /* update parameters on the device */
-    EXEC_RET(bq2429x_update_charge_params(dev));
+    EXEC_RET(_update_charge_params(dev));
 
     return BQ2429X_OK;
 }
@@ -318,21 +334,5 @@ int bq2429x_get_vreg(const bq2429x_t *dev, bq2429x_charge_voltage_limit_t *vreg)
     EXEC_RET(_read_reg(dev, BQ2429X_REG04, &val));
     *vreg = (val & BQ2429X_REG04_VREG_m) >> BQ2429X_REG04_VREG_s;
 
-    return BQ2429X_OK;
-}
-
-int bq2429x_update_charge_params(const bq2429x_t *dev)
-{
-    assert(dev);
-
-    DEBUG_DEV("", dev);
-    EXEC_RET(_update_bits(dev, BQ2429X_REG00, BQ2429X_REG00_VINDPM_m,
-                          dev->params.vlim << BQ2429X_REG00_VINDPM_s));
-    EXEC_RET(_update_bits(dev, BQ2429X_REG00, BQ2429X_REG00_IINLIM_m,
-                          dev->params.ilim << BQ2429X_REG00_IINLIM_s));
-    EXEC_RET(_update_bits(dev, BQ2429X_REG02, BQ2429X_REG02_ICHG_m,
-                          dev->params.ichg << BQ2429X_REG02_ICHG_s));
-    EXEC_RET(_update_bits(dev, BQ2429X_REG04, BQ2429X_REG04_VREG_m,
-                          dev->params.vreg << BQ2429X_REG04_VREG_s));
     return BQ2429X_OK;
 }

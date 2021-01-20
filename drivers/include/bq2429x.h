@@ -491,18 +491,6 @@ int bq2429x_set_vreg(bq2429x_t *dev, bq2429x_charge_voltage_limit_t vreg);
 int bq2429x_get_vreg(const bq2429x_t *dev,
                      bq2429x_charge_voltage_limit_t *vreg);
 
-/**
- * @brief   Update charge parameters on the device.
- *
- * @pre @p dev != NULL
- *
- * @param[in]   dev Device descriptor.
- *
- * @return BQ2429X_OK on success.
- * @return BQ2429X_ERR_I2C on I2C failure.
- */
-int bq2429x_update_charge_params(const bq2429x_t *dev);
-
 #ifdef __cplusplus
 }
 #endif
