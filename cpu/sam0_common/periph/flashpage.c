@@ -233,22 +233,23 @@ static void _write_page(void* dst, const void *data, size_t len, void (*cmd_writ
     if (len_unaligned_start) {
         *dst32++ = unaligned_pad_start(data, len_unaligned_start,
                 offset_unaligned_start);
-        data = (uint8_t*)data + len_unaligned_start;
+        data = (void *)((uintptr_t)data + len_unaligned_start);
     }
 
     /* copy whole words */
-    const uint32_t *data32 = data;
     while (len) {
         /* due to unknown input data alignment and the conditional
-         * shift applied above, data32 might be unaligned at this point
+         * shift applied above, data might not be aligned to a 4 byte
+         * boundary at this point
          */
-        *dst32++ = unaligned_get_u32(data32++);
+        *dst32++ = unaligned_get_u32(data);
+        data = (void *)((uintptr_t)data + sizeof(uint32_t));
         len -= sizeof(uint32_t);
     }
 
     /* write the last, unaligned bytes */
     if (len_unaligned_end) {
-        *dst32 = unaligned_pad_end(data32, len_unaligned_end);
+        *dst32 = unaligned_pad_end(data, len_unaligned_end);
     }
 
     cmd_write();
