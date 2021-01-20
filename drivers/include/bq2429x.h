@@ -333,6 +333,10 @@ int bq2429x_get_fault(const bq2429x_t *dev, bq2429x_fault_t *fault);
  * This allows powering USB devices from the same port, i.e. to provide power
  * or charge other devices.
  *
+ * @note This will disable charging of the battery, if previously
+ *       @ref bq2429x_enable_charge was called, to enable charge
+ *       again only disable OTG mode with @ref bq2429x_disable_otg.
+ *
  * @pre @p dev != NULL
  *
  * @param[in]   dev Device descriptor.
