@@ -144,7 +144,6 @@ CLEAN = $(filter clean, $(MAKECMDGOALS))
 include $(RIOTMAKE)/utils/variables.mk
 include $(RIOTMAKE)/utils/strings.mk
 
-
 # UNAME is always needed so use simple variable expansion so only evaluated once
 UNAME := $(shell uname -m -s)
 OS = $(word 1, $(UNAME))
@@ -172,6 +171,27 @@ include $(RIOTMAKE)/boards.inc.mk
 
 # Debug targets for build system migration
 include $(RIOTMAKE)/dependencies_debug.inc.mk
+
+# Use TOOLCHAIN environment variable to select the toolchain to use.
+# If native, TOOLCHAIN for OSX is llvm
+ifeq ($(BOARD),native)
+  ifeq ($(OS),Darwin)
+    TOOLCHAIN ?= llvm
+  endif
+endif
+# Use override so that we can redefine a variable set on the command line (as
+# opposed to one set in the environment)
+ifeq (clang,$(TOOLCHAIN))
+  # TOOLCHAIN = clang is an alias for TOOLCHAIN = llvm
+  override TOOLCHAIN := llvm
+endif
+ifeq (gcc,$(TOOLCHAIN))
+  # TOOLCHAIN = gcc is an alias for TOOLCHAIN = gnu
+  override TOOLCHAIN := gnu
+endif
+ifeq (,$(TOOLCHAIN))
+  override TOOLCHAIN := gnu
+endif
 
 GLOBAL_GOALS += buildtest \
                 buildtest-indocker \
@@ -319,33 +339,6 @@ LAZYSPONGE_FLAGS ?= $(if $(filter 1,$(QUIET)),,--verbose)
 ifeq (, $(APPLICATION))
     $(error An application name must be specified as APPLICATION.)
 endif
-
-# Use TOOLCHAIN environment variable to select the toolchain to use.
-# Default for macOS: llvm; for other OS: gnu
-ifeq ($(BOARD),native)
-ifeq ($(OS),Darwin)
-TOOLCHAIN ?= llvm
-endif
-endif
-TOOLCHAIN ?= gnu
-
-# TOOLCHAIN = clang is an alias for TOOLCHAIN = llvm
-ifeq (clang,$(TOOLCHAIN))
-# use override so that we can redefine a variable set on the command line (as
-# opposed to one set in the environment)
-override TOOLCHAIN := llvm
-endif
-# TOOLCHAIN = gcc is an alias for TOOLCHAIN = gnu
-ifeq (gcc,$(TOOLCHAIN))
-# use override so that we can redefine a variable set on the command line (as
-# opposed to one set in the environment)
-override TOOLCHAIN := gnu
-endif
-
-ifeq (,$(TOOLCHAIN))
-override TOOLCHAIN := gnu
-endif
-
 
 # default toolchain prefix, defaults to target triple followed by a dash, you
 # will most likely not need to touch this.
