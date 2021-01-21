@@ -368,8 +368,10 @@ static void _tcc_set(Tcc *tcc, uint8_t chan, uint16_t value)
     /* TODO: use OTMX for pin remapping */
     chan %= _tcc_get_cc_numof(tcc);
     tcc->CC[chan].reg = value;
-#ifdef REV_TCC
+#ifdef TCC_SYNCBUSY_MASK
     while (tcc->SYNCBUSY.reg & (TCC_SYNCBUSY_CC0 << chan)) {}
+#else
+    while (tcc->STATUS.bit.SYNCBUSY) {}
 #endif
 }
 
