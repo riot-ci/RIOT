@@ -1365,6 +1365,19 @@ static inline size_t coap_opt_put_uri_query(uint8_t *buf, uint16_t lastonum,
 }
 
 /**
+ * @brief   Convenience function for inserting an entire URI into buffer
+ *          This function will automatically split path and query parameters.
+ *
+ * @param[out]  buf         buffer to write to
+ * @param[in,out] lastonum  number of previous option (for delta calculation),
+ *                          or 0 if first option
+ * @param[in]   uri         ptr to source URI
+ *
+ * @returns     amount of bytes written to @p buf
+ */
+size_t coap_opt_put_uri(uint8_t *buf, uint16_t *lastonum, const char *uri);
+
+/**
  * @brief   Convenience function for inserting PROXY_URI option into buffer
  *
  * @param[out]  buf         buffer to write to
