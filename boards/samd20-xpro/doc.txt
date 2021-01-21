@@ -17,19 +17,19 @@ memory.
 
 ### MCU
 | MCU            | ATSAMD20J18A      |
-|:-------------- |:--------------------- |
-| Family         | ARM Cortex-M0+    |
-| Vendor         | Atmel |
-| RAM            | 32Kb |
-| Flash          | 256Kb             |
-| Frequency      | up to 48MHz |
-| FPU            | no                |
-| Timers         | 8 (16-bit)    |
+|:-------------- |:--------------------------------- |
+| Family         | ARM Cortex-M0+                    |
+| Vendor         | Atmel                             |
+| RAM            | 32 KiB                            |
+| Flash          | 256 KiB                           |
+| Frequency      | up to 48MHz                       |
+| FPU            | no                                |
+| Timers         | 8 (16-bit)                        |
 | ADCs           | 1x 12-bit (20 channels)           |
-| UARTs          | max 6 (shared with SPI and I2C)               |
+| UARTs          | max 6 (shared with SPI and I2C)   |
 | SPIs           | max 6 (see UART)                  |
-| I2Cs           | max 6 (see UART)              |
-| Vcc            | 1.62V - 3.63V         |
+| I2Cs           | max 6 (see UART)                  |
+| Vcc            | 1.62V - 3.63V                     |
 | Datasheet      | [Datasheet](http://ww1.microchip.com/downloads/en/DeviceDoc/SAM_D20_%20Family_Datasheet_DS60001504C.pdf) |
 | Board Manual   | [Board Manual](http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42102-SAMD20-Xplained-Pro_User-Guide.pdf)|
 
