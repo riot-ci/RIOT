@@ -37,10 +37,10 @@ memory.
 
 1 User button and 1 LED:
 
-| Device | PIN |
-|:------ |:--- |
-| LED0   | PA14 |
-| SW0 (button) | PA15 |
+| Device        | PIN   |
+|:------------- |:----- |
+| LED0          | PA14  |
+| SW0 (button)  | PA15  |
 
 ## Flashing the device
 
