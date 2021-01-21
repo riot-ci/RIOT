@@ -41,7 +41,11 @@
 #ifndef REV_TCC
 typedef TcCount8 Tcc;
 #define TCC_CTRLA_ENABLE TC_CTRLA_ENABLE
+#define TCC_SYNCBUSY_CC0 TC_SYNCBUSY_CC0
+#ifdef TC_SYNCBUSY_MASK
+#define TCC_SYNCBUSY_MASK TC_SYNCBUSY_MASK
 #endif
+#endif /* !REV_TCC */
 
 static inline Tc *_tc(pwm_t dev)
 {
