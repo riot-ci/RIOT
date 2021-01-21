@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @name    Clock common configuration (F0/F1/F2/F4/F7/G0/G4/MP1)
+ * @name    Clock common configuration (F0/F1/F2/F3/F4/F7/G0/G4/MP1)
  * @{
  */
 /* Select the desired system clock source between PLL, HSE or HSI */

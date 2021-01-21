@@ -27,10 +27,10 @@
     defined(CPU_FAM_STM32F4) || defined(CPU_FAM_STM32F7) || \
     defined(CPU_FAM_STM32G0) || defined(CPU_FAM_STM32G4) || \
     defined(CPU_FAM_STM32MP1)
-#include "cfg_clock_common1.h"
+#include "cfg_clock_common_fx_gx_mp1.h"
 #else /* CPU_FAM_STM32L0 || CPU_FAM_STM32L1 || CPU_FAM_STM32L4 ||
        * CPU_FAM_STM32L5 || CPU_FAM_STM32WB */
-#include "cfg_clock_common2.h"
+#include "cfg_clock_common_lx_wb.h"
 #endif
 
 #if defined(CPU_FAM_STM32F0) || defined(CPU_FAM_STM32F1) || \
