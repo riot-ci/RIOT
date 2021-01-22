@@ -4,3 +4,6 @@ DEFAULT_MODULE += auto_init
 
 # Initialize all used peripherals by default
 DEFAULT_MODULE += periph_init
+
+# Include potentially added default modules by the board
+-include $(BOARDDIR)/Makefile.default
