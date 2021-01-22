@@ -26,6 +26,7 @@
 #include "mutex.h"
 #include "lis2dh12.h"
 #include "lis2dh12_params.h"
+#include "lis2dh12_registers.h"
 
  /* delay between sensor data reads */
 #define DELAY       (100UL * US_PER_MS)
