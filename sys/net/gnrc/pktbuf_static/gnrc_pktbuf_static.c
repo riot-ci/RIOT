@@ -313,7 +313,7 @@ void gnrc_pktbuf_stats(void)
 #ifdef TEST_SUITES
 bool gnrc_pktbuf_is_empty(void)
 {
-    return (_first_unused == (_unused_t *)_pktbuf) &&
+    return (_first_unused == (_unused_t *)gnrc_pktbuf_static_buf) &&
            (_first_unused->size == sizeof(_pktbuf_buf));
 }
 
@@ -324,22 +324,25 @@ bool gnrc_pktbuf_is_sane(void)
     /* Invariants of this implementation:
      *  - the head of _unused_t list is _first_unused
      *  - if _unused_t list is empty the packet buffer is full and _first_unused is NULL
-     *  - forall ptr_in _unused_t list: &_pktbuf[0] < ptr < &_pktbuf[CONFIG_GNRC_PKTBUF_SIZE]
+     *  - forall ptr_in _unused_t list: &gnrc_pktbuf_static_buf[0] < ptr
+     *                                  && ptr < &gnrc_pktbuf_static_buf[CONFIG_GNRC_PKTBUF_SIZE]
      *  - forall ptr in _unused_t list: ptr->next == NULL || ptr < ptr->next
      *  - forall ptr in _unused_t list: (ptr->next != NULL && ptr->size <= (ptr->next - ptr)) ||
-     *                                  (ptr->next == NULL && ptr->size == (CONFIG_GNRC_PKTBUF_SIZE - (ptr - &_pktbuf[0])))
+     *                                  (ptr->next == NULL
+     *                                  && ptr->size == (CONFIG_GNRC_PKTBUF_SIZE - pos_in_buf))
      */
 
     while (ptr) {
-        if (&_pktbuf[0] >= (uint8_t *)ptr && (uint8_t *)ptr >= &_pktbuf[CONFIG_GNRC_PKTBUF_SIZE]) {
+        if ((&gnrc_pktbuf_static_buf[0] >= (uint8_t *)ptr)
+            && ((uint8_t *)ptr >= &gnrc_pktbuf_static_buf[CONFIG_GNRC_PKTBUF_SIZE])) {
             return false;
         }
         if ((ptr->next != NULL) && (ptr >= ptr->next)) {
             return false;
         }
-        if (((ptr->next == NULL) || (ptr->size > (size_t)((uint8_t *)(ptr->next) - (uint8_t *)ptr))) &&
-            ((ptr->next != NULL) ||
-             (ptr->size != (size_t)(CONFIG_GNRC_PKTBUF_SIZE - ((uint8_t *)ptr - &_pktbuf[0]))))) {
+        size_t pos_in_buf = (uint8_t *)ptr - &gnrc_pktbuf_static_buf[0];
+        if (((ptr->next == NULL) || (ptr->size > (size_t)((uint8_t *)(ptr->next) - (uint8_t *)ptr)))
+            && ((ptr->next != NULL) || (ptr->size != CONFIG_GNRC_PKTBUF_SIZE - pos_in_buf))) {
             return false;
         }
         ptr = ptr->next;

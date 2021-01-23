@@ -20,8 +20,8 @@
  * @author  Martine Lenders <mlenders@inf.fu-berlin.de>
  * @author  Hauke Petersen <hauke.petersen@fu-berlin.de>
  */
-#ifndef NET_GNRC_PKTBUF_INTERNAL_H
-#define NET_GNRC_PKTBUF_INTERNAL_H
+#ifndef PKTBUF_INTERNAL_H
+#define PKTBUF_INTERNAL_H
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -66,6 +66,7 @@ static inline bool gnrc_pktbuf_contains(void *ptr)
 #if IS_USED(MODULE_GNRC_PKTBUF_STATIC)
     return (unsigned)((uint8_t *)ptr - gnrc_pktbuf_static_buf) < CONFIG_GNRC_PKTBUF_SIZE;
 #else
+    (void)ptr;
     return true;
 #endif
 }
@@ -112,5 +113,5 @@ bool gnrc_pktbuf_is_sane(void);
 }
 #endif
 
-#endif /* NET_GNRC_PKTBUF_INTERNAL_H */
+#endif /* PKTBUF_INTERNAL_H */
 /** @} */
