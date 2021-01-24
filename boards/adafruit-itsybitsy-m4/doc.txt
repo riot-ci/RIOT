@@ -19,7 +19,7 @@ The board features one red LED (LD1), one DotStar / APA102 RGB LED, a reset butt
 
 ### Flash the board
 
-The board is flashed using its on-board [boot loader](https://github.com/adafruit/Adafruit_nRF52_Bootloader).
+The board is flashed using its on-board [boot loader](https://github.com/adafruit/uf2-samdx1).
 
 The process is automated in the usual `make flash` target.
 
