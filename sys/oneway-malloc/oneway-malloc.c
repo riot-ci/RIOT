@@ -20,15 +20,25 @@
 
 #include <string.h>
 
+#include "architecture.h"
 #include "malloc.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+#ifndef ARCHITECTURE_WORD_MASK
+#define ARCHITECTURE_WORD_MASK (ARCHITECTURE_WORD_BYTES - 1)
+#endif
+
 extern void *sbrk(int incr);
 
 void __attribute__((weak)) *malloc(size_t size)
 {
+    /* ensure we always allocate word-aligned blocks */
+    if (size & ARCHITECTURE_WORD_MASK) {
+        size += ARCHITECTURE_WORD_BYTES - (size & ARCHITECTURE_WORD_MASK);
+    }
+
     if (size != 0) {
         void *ptr = sbrk(size);
 
