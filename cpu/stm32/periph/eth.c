@@ -619,23 +619,12 @@ static void handle_lost_rx_irqs(void)
     }
 }
 
-static void copy_from_dma_desc(void *buf, size_t size, edma_desc_t *desc)
-{
-    char *data = buf;
-    while (size) {
-        size_t chunk = MIN(size, ETH_RX_BUFFER_SIZE);
-        memcpy(data, desc->buffer_addr, chunk);
-        data += chunk;
-        size -= chunk;
-        desc = desc->desc_next;
-    }
-}
-
-static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
+static int stm32_eth_recv(netdev_t *netdev, void *_buf, size_t max_len,
                           void *_info)
 {
-    netdev_eth_rx_info_t *info = _info;
     (void)netdev;
+    netdev_eth_rx_info_t *info = _info;
+    char *buf = _buf;
     /* Determine the size of received frame. The frame might span multiple
      * DMA buffers */
     int size = get_rx_frame_size();
@@ -660,13 +649,20 @@ static int stm32_eth_recv(netdev_t *netdev, void *buf, size_t max_len,
         DEBUG("[stm32_eth] Buffer provided by upper layer is too small\n");
         drop_frame_and_update_rx_curr();
         return -ENOBUFS;
-   }
+    }
 
-    copy_from_dma_desc(buf, size, rx_curr);
-
-    /* Hand over DMA descriptors back to DMA, collect RX timestamp from last
-     * descriptor if module periph_ptp is used */
+    /* Fetch payload, collect RX timestamp from last descriptor if module periph_ptp is used, and
+     * hand DMA descriptors back to the DMA */
+    size_t remain = size;
     while (1) {
+        /* there can be more DMA descriptors than needed for holding the Ethernet
+         * payload, as the 4 byte FCS will also be stored by DMA */
+        if (remain) {
+            size_t chunk = MIN(remain, ETH_RX_BUFFER_SIZE);
+            memcpy(buf, rx_curr->buffer_addr, chunk);
+            buf += chunk;
+            remain -= chunk;
+        }
         if (rx_curr->status & RX_DESC_STAT_LS) {
             if (IS_USED(MODULE_PERIPH_PTP)) {
                 info->timestamp = rx_curr->ts_low;
