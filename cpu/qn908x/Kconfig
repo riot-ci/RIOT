@@ -50,4 +50,13 @@ config HAS_CPU_QN908X
 # Other cpu configuration
 rsource "Kconfig.clk"
 
+# ADC configuration
+config BOARD_HAS_ADC_PA06_CAP
+    bool
+    help
+         Indicates that the board has an external capacitor connected to PA06
+         which shold be used to stabilize the ADC reference voltage.
+         This external capacitor is optional but it can reduce the noise of the
+         ADC sampling.
+
 source "$(RIOTCPU)/cortexm_common/Kconfig"
