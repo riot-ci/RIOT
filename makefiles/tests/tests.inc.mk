@@ -1,3 +1,10 @@
+# Export TESTRUNNER_RESET_AFTER_TERM only for the test target. This allows for
+# it to be accessed through the environment from python test script.
+# This is currently needed only by `examples/%/tests` and should be removed in
+# the future since `make reset` after `term` is not a valid synch method across
+# all platforms.
+$(call target-export-variables,test test-as-root test-with-config,TESTRUNNER_RESET_AFTER_TERM)
+
 .PHONY: test test/available
 TESTS ?= $(foreach file,$(wildcard $(APPDIR)/tests/*[^~]),\
                         $(shell test -f $(file) -a -x $(file) && echo $(file)))
