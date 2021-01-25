@@ -27,7 +27,8 @@ RIOT_TERMINAL ?= miniterm
 FEATURES_OPTIONAL += periph_adc
 FEATURES_OPTIONAL += periph_spi
 
-# Enable test_utils_interactive_sync, only used when running automatic test
-DEFAULT_MODULE += test_utils_interactive_sync
+# For now `examples/%/tests" still rely on the test applicaton being reset after
+# a terminal is opened to synchronize.
+TESTRUNNER_RESET_AFTER_TERM ?= 1
 
 include $(RIOTBASE)/Makefile.include
