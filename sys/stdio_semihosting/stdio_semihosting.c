@@ -57,7 +57,7 @@
 #define STDIO_SEMIHOSTING_SYS_READ      (0x06) /**< Read command  */
 /** @} */
 
-#ifdef CPU_ARCH_RISCV
+#if defined(CPU_FE310)
 static bool _semihosting_connected(void) {
     return true;
 }
