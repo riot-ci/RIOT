@@ -168,7 +168,7 @@ int mtd_write_page(mtd_dev_t *mtd, const void *data, uint32_t page,
     }
 
     /* modify sector in RAM */
-    memcpy(work + (page - sector_page) * mtd->pages_per_sector + offset, data, len);
+    memcpy(work + (page - sector_page) * mtd->page_size + offset, data, len);
 
     /* write back modified sector copy */
     return mtd_write_page_raw(mtd, work, sector_page, 0, sector_size);
