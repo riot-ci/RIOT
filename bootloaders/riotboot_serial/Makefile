@@ -32,6 +32,5 @@ RIOTBASE ?= $(CURDIR)/../../
 include $(RIOTBASE)/Makefile.include
 
 # limit riotboot bootloader size
-# TODO: Manage to set this variable for boards which already embed a
-# bootloader, currently it will be overwritten
-ROM_LEN := $(RIOTBOOT_LEN)
+RIOTBOOT_SERIAL_LEN ?= $(RIOTBOOT_LEN)
+ROM_LEN := $(RIOTBOOT_SERIAL_LEN)
