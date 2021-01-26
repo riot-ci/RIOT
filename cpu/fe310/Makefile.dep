@@ -1,6 +1,4 @@
-ifneq (,$(filter picolibc,$(FEATURES_USED)))
-  USEMODULE += picolibc
-else
+ifneq (,$(filter newlib,$(USEMODULE)))
   USEMODULE += newlib_nano
   USEMODULE += newlib_syscalls_fe310
 endif
