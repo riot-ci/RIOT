@@ -183,16 +183,14 @@ def _check_iface(child):
         child.expect(r"Iface\s+(\d+)\s+.*")
         match = re.search(r"HWaddr:\s+([0-9A-F:]{17})\s+",
                           child.match.group(0))
-        if match:
+        if match is not None:
             # interface has a hardware address
             ethos_id = int(child.match.group(1))
             hwaddr = match.group(1)
-            # consume MTU for later calls of `ifconfig {mock_id}`
-            child.expect(r"MTU:(\d+)")
         else:
             mock_id = int(child.match.group(1))
-            # consume MTU for later calls of `ifconfig {mock_id}`
-            child.expect(r"MTU:(\d+)")
+        # consume MTU for later calls of `ifconfig {mock_id}`
+        child.expect(r"MTU:(\d+)")
     # check if interface is configured properly
     assert ethos_id is not None
     assert mock_id is not None
