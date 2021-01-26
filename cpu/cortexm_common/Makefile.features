@@ -11,6 +11,9 @@ FEATURES_PROVIDED += puf_sram
 FEATURES_PROVIDED += picolibc
 FEATURES_PROVIDED += ssp
 
+FEATURES_CONFLICT += picolibc:newlib
+FEATURES_CONFLICT_MSG += "Only one standard C library can be used"
+
 # cortex-m4f and cortex-m7 provide FPU support
 ifneq (,$(filter $(CPU_CORE),cortex-m4f cortex-m7))
   FEATURES_PROVIDED += cortexm_fpu

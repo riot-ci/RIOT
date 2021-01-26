@@ -11,3 +11,6 @@ FEATURES_PROVIDED += periph_pm
 FEATURES_PROVIDED += picolibc
 FEATURES_PROVIDED += puf_sram
 FEATURES_PROVIDED += ssp
+
+FEATURES_CONFLICT += picolibc:newlib
+FEATURES_CONFLICT_MSG += "Only one standard C library can be used"

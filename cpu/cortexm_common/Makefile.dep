@@ -10,7 +10,6 @@ ifneq (,$(filter newlib,$(USEMODULE)))
   USEMODULE += newlib_nano
 endif
 
-
 # Export the peripheral drivers to be linked into the final binary:
 USEMODULE += periph
 
