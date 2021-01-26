@@ -13,8 +13,8 @@
  * @file
  * @brief       STDIO over ARM and RISC-V Semihosting implementation
  *
- * RISC-V semihosting closely mimics ARM semihosting, only the break sequence is
- * different.
+ * RISC-V semihosting closely mimics ARM semihosting. Only the break sequence is
+ * different, but all defined values are also used with RISC-V
  *
  * @author      Koen Zandberg <koen@bergzand.net>
  *
@@ -38,17 +38,19 @@
 #define STDIO_SEMIHOSTING_POLL_RATE     (10 * US_PER_MS)
 
 /**
- * @brief ARM Semihosting STDIN file descriptor
+ * @brief ARM Semihosting STDIN file descriptor. Also used with RISC-V
  */
 #define STDIO_SEMIHOSTING_F_STDIN       (1)
 
 /**
- * @brief ARM Semihosting STDOUT file descriptor
+ * @brief ARM Semihosting STDOUT file descriptor. Also used with RISC-V
  */
 #define STDIO_SEMIHOSTING_F_STDOUT      (1)
 
 /**
- * @name ARM Semihosting commands
+ * @name ARM Semihosting commands.
+ *
+ * RISC-V copied over these command names and values
  *
  * Extend when required
  * @{
