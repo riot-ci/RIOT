@@ -13,6 +13,6 @@ ifneq (,$(filter periph_uart_nonblocking,$(USEMODULE)))
   USEMODULE += tsrb
 endif
 
-USEMODULE += pm_layered
+DEFAULT_MODULE += pm_layered
 
 include $(RIOTCPU)/cortexm_common/Makefile.dep
