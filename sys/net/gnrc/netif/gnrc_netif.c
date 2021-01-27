@@ -87,7 +87,7 @@ int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
 bool gnrc_netif_dev_is_6lo(const gnrc_netif_t *netif)
 {
     switch (netif->device_type) {
-#ifdef MODULE_GNRC_SIXLOENC
+#if IS_USED(MODULE_GNRC_SIXLOENC)
         case NETDEV_TYPE_ETHERNET:
             return (netif->flags & GNRC_NETIF_FLAGS_6LO);
 #endif
@@ -97,6 +97,9 @@ bool gnrc_netif_dev_is_6lo(const gnrc_netif_t *netif)
         case NETDEV_TYPE_NRFMIN:
         case NETDEV_TYPE_NRF24L01P_NG:
         case NETDEV_TYPE_ESP_NOW:
+#if IS_USED(MODULE_NETDEV_TEST)
+        case NETDEV_TYPE_TEST_6LO:
+#endif
             return true;
         default:
             return false;
@@ -1296,6 +1299,7 @@ static void _test_options(gnrc_netif_t *netif)
     switch (netif->device_type) {
 #ifdef TEST_SUITES
         case NETDEV_TYPE_TEST:
+        case NETDEV_TYPE_TEST_6LO:
             /* make no assumptions about test devices */
             break;
 #endif
