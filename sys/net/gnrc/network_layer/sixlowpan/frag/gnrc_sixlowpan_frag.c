@@ -19,13 +19,14 @@
 #include <assert.h>
 #include <inttypes.h>
 
-#include "net/gnrc/pktbuf.h"
 #include "net/gnrc/netapi.h"
+#include "net/gnrc/netif.h"
 #include "net/gnrc/netif/hdr.h"
+#include "net/gnrc/pktbuf.h"
 #include "net/gnrc/sixlowpan/frag.h"
 #include "net/gnrc/sixlowpan/frag/rb.h"
 #include "net/gnrc/sixlowpan/internal.h"
-#include "net/gnrc/netif.h"
+#include "net/gnrc/tx_sync.h"
 #include "net/sixlowpan.h"
 #include "utlist.h"
 
@@ -70,11 +71,12 @@ static inline int _payload_diff(gnrc_sixlowpan_frag_fb_t *fbuf,
 
 static gnrc_pktsnip_t *_build_frag_pkt(gnrc_pktsnip_t *pkt,
                                        gnrc_sixlowpan_frag_fb_t *fbuf,
-                                       size_t payload_len, size_t size)
+                                       size_t payload_len, size_t size,
+                                       gnrc_tx_sync_t *tx_sync)
 {
     sixlowpan_frag_t *frag_hdr;
     gnrc_netif_hdr_t *netif_hdr = pkt->data, *new_netif_hdr;
-    gnrc_pktsnip_t *netif, *frag;
+    gnrc_pktsnip_t *netif, *frag, *tx_sync_snip = NULL;
 #ifdef MODULE_GNRC_SIXLOWPAN_FRAG_HINT
     size_t fragment_size = ((fbuf->hint.fragsz > 0) &&
                             (fbuf->offset == 0))
@@ -99,18 +101,29 @@ static gnrc_pktsnip_t *_build_frag_pkt(gnrc_pktsnip_t *pkt,
     /* src_l2addr_len and dst_l2addr_len are already the same, now copy the rest */
     *new_netif_hdr = *netif_hdr;
 
-    frag = gnrc_pktbuf_add(NULL, NULL, fragment_size, GNRC_NETTYPE_SIXLOWPAN);
+    if (IS_USED(MODULE_GNRC_TX_SYNC)) {
+        tx_sync_snip = gnrc_tx_sync_build(tx_sync);
+        if (!tx_sync_snip) {
+            DEBUG("6lo frag: error allocating TX sync snip\n");
+            gnrc_pktbuf_release(netif);
+            return NULL;
+        }
+    }
+
+    frag = gnrc_pktbuf_add(tx_sync_snip, NULL, fragment_size, GNRC_NETTYPE_SIXLOWPAN);
 
     if (frag == NULL) {
         DEBUG("6lo frag: error allocating first fragment\n");
         gnrc_pktbuf_release(netif);
+        if (IS_USED(MODULE_GNRC_TX_SYNC)) {
+            gnrc_pktbuf_release(tx_sync_snip);
+        }
         return NULL;
     }
     frag_hdr = frag->data;
     /* XXX: truncation of datagram_size > 4095 may happen here */
     frag_hdr->disp_size = byteorder_htons(fbuf->datagram_size);
     frag_hdr->tag = byteorder_htons(fbuf->tag);
-
 
     return gnrc_pkt_prepend(frag, netif);
 }
@@ -133,7 +146,8 @@ static uint16_t _copy_pkt_to_frag(uint8_t *data, const gnrc_pktsnip_t *pkt,
 
 static uint16_t _send_1st_fragment(gnrc_netif_t *iface,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
-                                   size_t payload_len)
+                                   size_t payload_len,
+                                   gnrc_tx_sync_t *tx_sync)
 {
     gnrc_pktsnip_t *frag, *pkt = fbuf->pkt;
     sixlowpan_frag_t *hdr;
@@ -151,7 +165,7 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *iface,
     DEBUG("6lo frag: determined max_frag_size = %" PRIu16 "\n", max_frag_size);
 
     frag = _build_frag_pkt(pkt, fbuf, payload_len,
-                           max_frag_size + sizeof(sixlowpan_frag_t));
+                           max_frag_size + sizeof(sixlowpan_frag_t), tx_sync);
 
     if (frag == NULL) {
         return 0;
@@ -177,7 +191,8 @@ static uint16_t _send_1st_fragment(gnrc_netif_t *iface,
 
 static uint16_t _send_nth_fragment(gnrc_netif_t *iface,
                                    gnrc_sixlowpan_frag_fb_t *fbuf,
-                                   size_t payload_len)
+                                   size_t payload_len,
+                                   gnrc_tx_sync_t *tx_sync)
 {
     gnrc_pktsnip_t *frag, *pkt = fbuf->pkt;
     sixlowpan_frag_n_t *hdr;
@@ -192,7 +207,7 @@ static uint16_t _send_nth_fragment(gnrc_netif_t *iface,
 
     frag = _build_frag_pkt(pkt, fbuf,
                            payload_len - offset + sizeof(sixlowpan_frag_n_t),
-                           max_frag_size + sizeof(sixlowpan_frag_n_t));
+                           max_frag_size + sizeof(sixlowpan_frag_n_t), tx_sync);
 
     if (frag == NULL) {
         return 0;
@@ -242,6 +257,12 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     assert(ctx != NULL);
     gnrc_sixlowpan_frag_fb_t *fbuf = ctx;
     gnrc_netif_t *iface;
+    gnrc_pktsnip_t *tx_sync_all_fragments = NULL;
+    gnrc_tx_sync_t *tx_sync = NULL;
+#if IS_USED(MODULE_GNRC_TX_SYNC)
+    gnrc_tx_sync_t _tx_sync;
+    tx_sync = &_tx_sync;
+#endif
     uint16_t res;
     /* payload_len: actual size of the packet vs
      * datagram_size: size of the uncompressed IPv6 packet */
@@ -262,9 +283,13 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     }
 #endif
 
+    if (IS_USED(MODULE_GNRC_TX_SYNC)) {
+        tx_sync_all_fragments = gnrc_tx_sync_split(pkt);
+    }
+
     /* Check whether to send the first or an Nth fragment */
     if (fbuf->offset == 0) {
-        if ((res = _send_1st_fragment(iface, fbuf, payload_len)) == 0) {
+        if ((res = _send_1st_fragment(iface, fbuf, payload_len, tx_sync)) == 0) {
             /* error sending first fragment */
             DEBUG("6lo frag: error sending 1st fragment\n");
             goto error;
@@ -272,7 +297,7 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
     }
     /* (offset + (datagram_size - payload_len) < datagram_size) simplified */
     else if (fbuf->offset < payload_len) {
-        if ((res = _send_nth_fragment(iface, fbuf, payload_len)) == 0) {
+        if ((res = _send_nth_fragment(iface, fbuf, payload_len, tx_sync)) == 0) {
             /* error sending subsequent fragment */
             DEBUG("6lo frag: error sending subsequent fragment"
                   "(offset = %u)\n", fbuf->offset);
@@ -283,6 +308,13 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
         goto error;
     }
     fbuf->offset += res;
+    if (IS_USED(MODULE_GNRC_TX_SYNC)) {
+        /* await end of transmission of current fragment */
+        gnrc_tx_sync(tx_sync);
+        /* re-attach tx_sync_all_fragments to allow releasing it at end
+         * of transmission, or transmission failure */
+        gnrc_pkt_append(pkt, tx_sync_all_fragments);
+    }
     if (!gnrc_sixlowpan_frag_fb_send(fbuf)) {
         DEBUG("6lo frag: message queue full, can't issue next fragment "
               "sending\n");
@@ -293,6 +325,9 @@ void gnrc_sixlowpan_frag_send(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
 error:
     gnrc_pktbuf_release(fbuf->pkt);
     fbuf->pkt = NULL;
+    if (IS_USED(MODULE_GNRC_TX_SYNC)) {
+        gnrc_pktbuf_release(tx_sync_all_fragments);
+    }
 }
 
 void gnrc_sixlowpan_frag_recv(gnrc_pktsnip_t *pkt, void *ctx, unsigned page)
