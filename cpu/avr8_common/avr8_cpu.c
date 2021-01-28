@@ -38,12 +38,17 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+#ifdef RST
+/* In ATxmega there is a special register to get reset cause */
+#define MCUSR RST.STATUS
+#else
 #ifndef MCUSR
 /* In older ATmegas the MCUSR register was still named MCUCSR. Current avrlibc
  * versions provide the MCUSR macro for those as well, but adding a fallback
  * here doesn't hurt*/
 #define MCUSR MCUCSR
 #endif /* !MCUSR */
+#endif /* RST */
 
 /*
 * Since atmega MCUs do not feature a software reset, the watchdog timer
@@ -95,6 +100,13 @@ void cpu_init(void)
     /* rtc_init */
     /* hwrng_init */
     periph_init();
+
+#ifdef CPU_ATXMEGA
+    /* Enable Multilevel Interrupt Controller */
+    PMIC.CTRL |= PMIC_HILVLEN_bm
+              |  PMIC_MEDLVLEN_bm
+              |  PMIC_LOLVLEN_bm;
+#endif
 }
 
 struct __freelist {
