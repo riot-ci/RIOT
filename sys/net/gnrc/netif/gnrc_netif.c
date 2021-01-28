@@ -47,6 +47,7 @@
 
 #include "net/gnrc/netif.h"
 #include "net/gnrc/netif/internal.h"
+#include "net/gnrc/tx_sync.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -87,7 +88,7 @@ int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
 bool gnrc_netif_dev_is_6lo(const gnrc_netif_t *netif)
 {
     switch (netif->device_type) {
-#ifdef MODULE_GNRC_SIXLOENC
+#if IS_USED(MODULE_GNRC_SIXLOENC)
         case NETDEV_TYPE_ETHERNET:
             return (netif->flags & GNRC_NETIF_FLAGS_6LO);
 #endif
@@ -97,6 +98,9 @@ bool gnrc_netif_dev_is_6lo(const gnrc_netif_t *netif)
         case NETDEV_TYPE_NRFMIN:
         case NETDEV_TYPE_NRF24L01P_NG:
         case NETDEV_TYPE_ESP_NOW:
+#if IS_USED(MODULE_NETDEV_TEST)
+        case NETDEV_TYPE_TEST_6LO:
+#endif
             return true;
         default:
             return false;
@@ -1296,6 +1300,7 @@ static void _test_options(gnrc_netif_t *netif)
     switch (netif->device_type) {
 #ifdef TEST_SUITES
         case NETDEV_TYPE_TEST:
+        case NETDEV_TYPE_TEST_6LO:
             /* make no assumptions about test devices */
             break;
 #endif
@@ -1534,7 +1539,13 @@ static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool push_back)
      * layer implementations in case `gnrc_netif_pktq` is included */
     gnrc_pktbuf_hold(pkt, 1);
 #endif /* IS_USED(MODULE_GNRC_NETIF_PKTQ) */
+    gnrc_pktsnip_t *tx_sync = IS_USED(MODULE_GNRC_TX_SYNC)
+                            ? gnrc_tx_sync_split(pkt) : NULL;
     res = netif->ops->send(netif, pkt);
+    if (tx_sync != NULL) {
+        uint32_t err = (res < 0) ? -res : GNRC_NETERR_SUCCESS;
+        gnrc_pktbuf_release_error(tx_sync, err);
+    }
 #if IS_USED(MODULE_GNRC_NETIF_PKTQ)
     if (res == -EBUSY) {
         int put_res;
