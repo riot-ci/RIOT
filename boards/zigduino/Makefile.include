@@ -1,0 +1,9 @@
+# configure the terminal program
+PORT_LINUX  ?= /dev/ttyUSB0
+PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
+BAUD        ?= 57600
+
+ZIGDUINO_BOOTLOADER ?= atmegaboot
+BOOTLOADER ?= $(ZIGDUINO_BOOTLOADER)
+
+include $(RIOTBOARD)/common/atmega/Makefile.include
