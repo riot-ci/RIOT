@@ -33,3 +33,7 @@ endif
 USEMODULE += xtimer
 USEMODULE += ieee802154
 USEMODULE += netdev_ieee802154
+
+# this driver only provides the netdev legacy interface so far, remove when
+# IEEE 802.15.4 radio HAL is implemented
+USEMODULE += netdev_ieee802154_legacy
