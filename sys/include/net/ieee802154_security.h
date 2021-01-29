@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-#if IS_USED(MODULE_IEEE802154_RADIO_HAL)
+#if !IS_USED(MODULE_NETDEV_IEEE802154_LEGACY)
 #include "net/ieee802154/radio.h"
 #else
 /**
