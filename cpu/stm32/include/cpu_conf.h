@@ -141,10 +141,30 @@ extern "C" {
 #define FLASHPAGE_DUAL_BANK             0
 #endif
 
-/* stm32f7 uses single bank with 32KB to 256KB sectors on 2MB devices */
-#if defined(CPU_FAM_STM32F7) && (STM32_FLASHSIZE == (2048 * 2024))
+/* stm32f7 uses single bank with 32KB to 256KB sectors on a number of devices */
+#if defined(CPU_FAM_STM32F7)
+#if defined(CPU_LINE_STM32F745xx) || \
+    defined(CPU_LINE_STM32F746xx) || \
+    defined(CPU_LINE_STM32F750xx) || \
+    defined(CPU_LINE_STM32F756xx) || \
+    defined(CPU_LINE_STM32F765xx) || \
+    defined(CPU_LINE_STM32F767xx) || \
+    defined(CPU_LINE_STM32F769xx) || \
+    defined(CPU_LINE_STM32F777xx) || \
+    defined(CPU_LINE_STM32F779xx)
 #define FLASHPAGE_MIN_SECTOR_SIZE       (32 * 1024)
+#elif defined(CPU_LINE_STM32F722xx) || \
+      defined(CPU_LINE_STM32F723xx) || \
+      defined(CPU_LINE_STM32F730xx) || \
+      defined(CPU_LINE_STM32F732xx) || \
+      defined(CPU_LINE_STM32F733xx)
+#define FLASHPAGE_MIN_SECTOR_SIZE       (16 * 1024)
 #else
+/* Intentionally error on an unknown line to prevent flashpage errors */
+#error Unknown STM32F7 Line, unable to determine FLASHPAGE_MIN_SECTOR_SIZE
+#endif
+
+#else /* CPU_FAM_STM32F7 */
 #define FLASHPAGE_MIN_SECTOR_SIZE       (16 * 1024)
 #endif
 

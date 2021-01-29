@@ -126,8 +126,8 @@ static void _erase_page(void *page_addr)
     pn = (uint8_t)page;
 #endif
     CNTRL_REG &= ~FLASH_CR_PNB;
-#ifdef FLASHPAGE_DUAL_BANK
-    if (FLASHPAGE_DUAL_BANK && (pn > (FLASHPAGE_NUMOF / 2 - 1))) {
+#if FLASHPAGE_DUAL_BANK
+    if (pn > (FLASHPAGE_NUMOF / 2 - 1)) {
         pn = pn - (FLASHPAGE_NUMOF / 2);
         CNTRL_REG |= FLASH_CR_SNB_4 | (uint32_t)(pn << FLASH_CR_PNB_Pos);
     }
@@ -259,6 +259,9 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     for (size_t i = 0; i < (len / sizeof(stm32_flashpage_block_t)); i++) {
         DEBUG("[flashpage_raw] writing %c to %p\n", (char)data_addr[i], dst);
         *dst++ = data_addr[i];
+#if defined(CPU_FAM_STM32F7)
+        __DMB();
+#endif
         /* wait as long as device is busy */
         _wait_for_pending_operations();
     }
