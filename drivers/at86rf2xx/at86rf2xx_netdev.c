@@ -89,7 +89,7 @@ static int _init(netdev_t *netdev)
 
     /* Intentionally check if bus can be acquired, if assertions are on */
     if (!IS_ACTIVE(NDEBUG)) {
-        getbus(dev);
+        spi_acquire(dev->params.spi, dev->params.cs_pin, SPI_MODE_0, dev->params.spi_clk);
         spi_release(dev->params.spi);
     }
 #endif
