@@ -340,9 +340,6 @@ int spi_init_with_gpio_mode(spi_t bus, spi_gpio_mode_t mode);
  * is active when this function is called, this function will block until the
  * other transaction is complete (spi_relase was called).
  *
- * @note    This function expects the @p bus and the @p cs parameters to be
- *          valid (they are checked in spi_init and spi_init_cs before)
- *
  * @param[in]   bus     SPI device to access
  * @param[in]   cs      chip select pin/line to use, set to SPI_CS_UNDEF if chip
  *                      select should not be handled by the SPI driver
