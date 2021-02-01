@@ -22,10 +22,6 @@
 #include "cpu.h"
 #include "assert.h"
 
-/* guard this file, must be done before including periph/flashpage.h
- * TODO: remove as soon as periph drivers can be build selectively */
-#if defined(FLASHPAGE_NUMOF) && defined(FLASHPAGE_SIZE)
-
 #include "periph/flashpage.h"
 
 #ifdef MODULE_PERIPH_FLASHPAGE_PAGEWISE
@@ -101,7 +97,5 @@ int flashpage_rwwee_write_and_verify(unsigned page, const void *data)
     flashpage_rwwee_write_page(page, data);
     return flashpage_rwwee_verify(page, data);
 }
-
-#endif
 
 #endif
