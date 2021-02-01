@@ -349,13 +349,10 @@ int spi_init_with_gpio_mode(spi_t bus, spi_gpio_mode_t mode);
  * @param[in]   mode    mode to use for the new transaction
  * @param[in]   clk     bus clock speed to use for the transaction
  *
- * @retval  0           success
- * @return  -EINVAL     Invalid mode in @p mode
- * @return  -EINVAL     Invalid clock in @p clock
- * @return  -ENOTSUP    Unsupported but valid mode in @p mode
- * @return  -ENOTSUP    Unsupported but valid clock in @p clock
+ * @pre     All parameters are valid and supported, otherwise an assertion blows
+ *          up (if assertions are enabled).
  */
-int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk);
+void spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk);
 
 /**
  * @brief   Finish an ongoing SPI transaction by releasing the given SPI bus
