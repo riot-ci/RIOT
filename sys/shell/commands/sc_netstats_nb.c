@@ -25,8 +25,9 @@
 #include "net/netstats.h"
 #include "net/netstats/neighbor.h"
 
-static void _print_neighbors(netstats_nb_t *stats)
+static void _print_neighbors(netif_t *dev)
 {
+    netstats_nb_t *stats = &dev->neighbors.pstats[0];
     unsigned header_len = 0;
     char l2addr_str[3 * CONFIG_L2ADDR_MAX_LEN];
     puts("Neighbor link layer stats:");
@@ -62,7 +63,7 @@ static void _print_neighbors(netstats_nb_t *stats)
 
         printf("%-24s ",
                gnrc_netif_addr_to_str(entry->l2_addr, entry->l2_addr_len, l2addr_str));
-        if (netstats_nb_isfresh(entry)) {
+        if (netstats_nb_isfresh(dev, entry)) {
             printf("%5u", (unsigned)entry->freshness);
         } else {
             printf("STALE");
@@ -94,7 +95,7 @@ int _netstats_nb(int argc, char **argv)
 
     gnrc_netif_t *netif = NULL;
     while ((netif = gnrc_netif_iter(netif))) {
-        _print_neighbors(&netif->netif.neighbors.pstats[0]);
+        _print_neighbors(&netif->netif);
     }
 
     return 0;
