@@ -134,10 +134,6 @@ ifneq (,$(filter sntp,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-ifneq (,$(filter ieee802154_radio_hal,$(USEMODULE)))
-  USEMODULE += ieee802154
-endif
-
 ifneq (,$(filter gnrc_netdev_default,$(USEMODULE)))
   USEMODULE += netdev_default
   USEMODULE += gnrc_netif
@@ -149,7 +145,8 @@ ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
 endif
 
 ifneq (,$(filter netdev_ieee802154_submac,$(USEMODULE)))
-  USEMODULE += ieee802154_radio_hal
+  USEMODULE += netdev_ieee802154
+  USEMODULE += ieee802154
   USEMODULE += ieee802154_submac
 endif
 
