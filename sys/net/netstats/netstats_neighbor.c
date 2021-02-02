@@ -19,6 +19,7 @@
 
 #include <errno.h>
 
+#include "net/l2util.h"
 #include "net/netdev.h"
 #include "net/netstats/neighbor.h"
 
@@ -49,15 +50,6 @@ static inline netstats_nb_t *netstats_nb_comp(const netstats_nb_t *a,
                                               uint16_t now)
 {
     return (netstats_nb_t *)((now - a->last_updated > now - b->last_updated) ? a : b);
-}
-
-static bool l2_addr_equal(const uint8_t *a, uint8_t a_len, const uint8_t *b, uint8_t b_len)
-{
-    if (a_len != b_len) {
-        return false;
-    }
-
-    return memcmp(a, b, a_len) == 0;
 }
 
 static void half_freshness(netstats_nb_t *stats, uint16_t now_sec)
@@ -136,7 +128,7 @@ bool netstats_nb_get(netif_t *dev, const uint8_t *l2_addr, uint8_t len, netstats
     for (int i = 0; i < NETSTATS_NB_SIZE; i++) {
 
         /* Check if this is the matching entry */
-        if (l2_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
+        if (l2util_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
             *out = stats[i];
             found = true;
             break;
@@ -157,7 +149,7 @@ static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_
     for (int i = 0; i < NETSTATS_NB_SIZE; i++) {
 
         /* Check if this is the matching entry */
-        if (l2_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
+        if (l2util_addr_equal(stats[i].l2_addr, stats[i].l2_addr_len, l2_addr, len)) {
             return &stats[i];
         }
 
