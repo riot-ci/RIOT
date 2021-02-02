@@ -103,8 +103,11 @@ bool netstats_nb_isfresh(netif_t *dev, netstats_nb_t *stats)
 void netstats_nb_init(netif_t *dev)
 {
     mutex_init(&dev->neighbors.lock);
+
+    _lock(dev);
     memset(dev->neighbors.pstats, 0, sizeof(netstats_nb_t) * NETSTATS_NB_SIZE);
     cib_init(&dev->neighbors.stats_idx, NETSTATS_NB_QUEUE_SIZE);
+    _unlock(dev);
 }
 
 static void netstats_nb_create(netstats_nb_t *entry, const uint8_t *l2_addr, uint8_t l2_len)

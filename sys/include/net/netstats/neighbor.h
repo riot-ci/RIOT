@@ -43,35 +43,70 @@ typedef enum {
  * @name @ref EWMA parameters
  * @{
  */
-#define NETSTATS_NB_EWMA_SCALE            100   /**< Multiplication factor of the EWMA */
-#define NETSTATS_NB_EWMA_ALPHA             15   /**< Alpha factor of the EWMA */
-#define NETSTATS_NB_EWMA_ALPHA_RAMP        30   /**< Alpha factor of the EWMA when stats are not fresh */
+/**
+ * @brief Multiplication factor of the EWMA
+ */
+#define NETSTATS_NB_EWMA_SCALE            100
+
+/**
+ * @brief Alpha factor of the EWMA
+ */
+#define NETSTATS_NB_EWMA_ALPHA             15
+
+/**
+ * @brief Alpha factor of the EWMA when stats are not fresh
+ */
+#define NETSTATS_NB_EWMA_ALPHA_RAMP        30
 /** @} */
 
 /**
  * @name @ref ETX parameters
  * @{
  */
-#define NETSTATS_NB_ETX_NOACK_PENALTY       6   /**< ETX penalty for not receiving any ACK */
-#define NETSTATS_NB_ETX_DIVISOR           128   /**< ETX fixed point divisor (rfc 6551) */
-#define NETSTATS_NB_ETX_INIT                2   /**< Initial ETX, assume a mediocre link */
+/**
+ * @brief ETX penalty for not receiving any ACK
+ */
+#define NETSTATS_NB_ETX_NOACK_PENALTY       6
+/**
+ * @brief ETX fixed point divisor (rfc 6551)
+ */
+#define NETSTATS_NB_ETX_DIVISOR           128
+/**
+ * @brief Initial ETX, assume a mediocre link
+ */
+#define NETSTATS_NB_ETX_INIT                2
 /** @} */
 
 /**
  * @name @ref Freshness parameters
  * @{
  */
-#define NETSTATS_NB_FRESHNESS_HALF        600   /**< seconds after the freshness counter is halved */
-#define NETSTATS_NB_FRESHNESS_TARGET        4   /**< freshness count needed before considering the statistics fresh */
-#define NETSTATS_NB_FRESHNESS_MAX          16   /**< Maximum freshness */
-#define NETSTATS_NB_FRESHNESS_EXPIRATION 1200   /**< seconds after statistics have expired */
+/**
+ * @brief seconds after the freshness counter is halved
+ */
+#define NETSTATS_NB_FRESHNESS_HALF        600
+/**
+ * @brief freshness count needed before considering the statistics fresh
+ */
+#define NETSTATS_NB_FRESHNESS_TARGET        4
+/**
+ * @brief Maximum freshness
+ */
+#define NETSTATS_NB_FRESHNESS_MAX          16
+/**
+ * @brief seconds after statistics have expired
+ */
+#define NETSTATS_NB_FRESHNESS_EXPIRATION 1200
 /** @} */
 /**
  * @name @ref Timeout Parameters
  * @{
  */
-#define NETSTATS_NB_TX_TIMEOUT_MS         100   /**< milliseconds without TX done notification after which
-                                                     a TX event is discarded */
+/**
+ * @brief milliseconds without TX done notification after which
+ *        a TX event is discarded
+ */
+#define NETSTATS_NB_TX_TIMEOUT_MS         100
 /** @} */
 
 /**
@@ -122,7 +157,8 @@ void netstats_nb_record(netif_t *netif, const uint8_t *l2_addr, uint8_t len);
  *
  * @return pointer to the record
  */
-netstats_nb_t *netstats_nb_update_tx(netif_t *netif, netstats_nb_result_t result, uint8_t transmissions);
+netstats_nb_t *netstats_nb_update_tx(netif_t *netif, netstats_nb_result_t result,
+                                     uint8_t transmissions);
 
 /**
  * @brief Record rx stats for the l2_addr

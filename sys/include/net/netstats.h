@@ -107,11 +107,16 @@ typedef struct {
  * @brief       L2 Peer Info struct
  */
 typedef struct {
-    cib_t stats_idx;                                        /**< CIB for the tx correlation     */
-    netstats_nb_t *stats_queue[NETSTATS_NB_QUEUE_SIZE];     /**< send/callback mac association array */
-    uint32_t stats_queue_time_tx[NETSTATS_NB_QUEUE_SIZE];   /**< TX timestamp of stats_queue entries */
-    netstats_nb_t pstats[NETSTATS_NB_SIZE];                 /**< Per neighbor statistics array  */
-    mutex_t lock;                                           /**< Neighbor Table access lock     */
+    /** @brief CIB for the tx correlation */
+    cib_t stats_idx;
+    /** @brief send/callback mac association array */
+    netstats_nb_t *stats_queue[NETSTATS_NB_QUEUE_SIZE];
+    /** @brief TX timestamp of stats_queue entries */
+    uint32_t stats_queue_time_tx[NETSTATS_NB_QUEUE_SIZE];
+    /** @brief Per neighbor statistics array */
+    netstats_nb_t pstats[NETSTATS_NB_SIZE];
+    /** @brief Neighbor Table access lock */
+    mutex_t lock;
 } netstats_nb_table_t;
 
 #ifdef __cplusplus
