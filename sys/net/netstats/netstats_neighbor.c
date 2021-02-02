@@ -60,42 +60,38 @@ static bool l2_addr_equal(const uint8_t *a, uint8_t a_len, const uint8_t *b, uin
     return memcmp(a, b, a_len) == 0;
 }
 
-static void netstats_nb_half_freshness(netstats_nb_t *stats, timex_t *cur)
+static void netstats_nb_half_freshness(netstats_nb_t *stats, uint16_t now_sec)
 {
-    uint16_t now = cur->seconds;
-    uint8_t diff = (now - stats->last_halved) / NETSTATS_NB_FRESHNESS_HALF;
+    uint8_t diff = (now_sec - stats->last_halved) / NETSTATS_NB_FRESHNESS_HALF;
     stats->freshness >>= diff;
 
     if (diff) {
         /* Set to the last time point where this should have been halved */
-        stats->last_halved = now - diff;
+        stats->last_halved = now_sec - diff;
     }
 }
 
 static void netstats_nb_incr_freshness(netstats_nb_t *stats)
 {
-    timex_t cur;
-    xtimer_now_timex(&cur);
+    uint16_t now = xtimer_now_usec() / US_PER_SEC;;
 
     /* First halve the freshness if applicable */
-    netstats_nb_half_freshness(stats, &cur);
+    netstats_nb_half_freshness(stats, now);
 
     /* Increment the freshness capped at FRESHNESS_MAX */
     if (stats->freshness < NETSTATS_NB_FRESHNESS_MAX) {
         stats->freshness++;
     }
 
-    stats->last_updated = cur.seconds;
+    stats->last_updated = now;
 }
 
 bool netstats_nb_isfresh(netstats_nb_t *stats)
 {
-    timex_t cur;
-    xtimer_now_timex(&cur);
-    uint16_t now = cur.seconds;
+    uint16_t now = xtimer_now_usec() / US_PER_SEC;;
 
     /* Half freshness if applicable to update to current freshness */
-    netstats_nb_half_freshness(stats, &cur);
+    netstats_nb_half_freshness(stats, now);
 
     return (stats->freshness >= NETSTATS_NB_FRESHNESS_TARGET) &&
            (now - stats->last_updated < NETSTATS_NB_FRESHNESS_EXPIRATION);
@@ -145,9 +141,7 @@ static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_
 {
     netstats_nb_t *old_entry = NULL;
     netstats_nb_t *stats = dev->neighbors.pstats;
-
-    timex_t cur;
-    xtimer_now_timex(&cur);
+    uint16_t now = xtimer_now_usec() / US_PER_SEC;
 
     for (int i = 0; i < NETSTATS_NB_SIZE; i++) {
 
@@ -179,7 +173,7 @@ static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_
         }
 
         /* Check if current entry is older than current oldest entry */
-        old_entry = netstats_nb_comp(old_entry, &stats[i], cur.seconds);
+        old_entry = netstats_nb_comp(old_entry, &stats[i], now);
     }
 
     /* if there is no matching entry,
