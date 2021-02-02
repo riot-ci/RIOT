@@ -43,7 +43,6 @@ extern "C" {
  */
 #define FLASHPAGE_SIZE                  (FLASH_PAGE_SIZE)
 #define FLASHPAGE_NUMOF                 (FLASH_SIZE / FLASH_PAGE_SIZE)
-#define FLASHPAGE_ERASE_STATE           (0xFFU)
 /* The minimum block size which can be written is 4B. However, the erase
  * block is always FLASHPAGE_SIZE.
  */

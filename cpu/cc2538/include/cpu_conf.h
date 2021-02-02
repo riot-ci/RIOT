@@ -48,7 +48,6 @@ extern "C" {
  * @brief   Flash page configuration
  * @{
  */
-#define FLASHPAGE_ERASE_STATE   (0xFFU)
 #define FLASHPAGE_SIZE          (2048U)
 /* Last page holds the Customer Configuration Area (CCA), this holds
    the Bootloader Backdoor Configuration, Application Entry Point,
