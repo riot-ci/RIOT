@@ -31,7 +31,8 @@ extern "C" {
  * @name   Configure the internal flash memory
  * @{
  */
-#define FLASHPAGE_SIZE      (512U)
+#define FLASHPAGE_SIZE          (512U)
+#define FLASHPAGE_ERASE_STATE   (0xFFU)
 
 #if defined (CPU_MODEL_MSP430F1611)
 #define CPU_FLASH_BASE      (0x4000)

@@ -140,8 +140,9 @@
  * @name   Flashpage configuration
  * @{
  */
-#define FLASHPAGE_SIZE      (4096U)
-#define FLASHPAGE_NUMOF     ((KINETIS_ROMSIZE * 1024) / FLASHPAGE_SIZE)
+#define FLASHPAGE_ERASE_STATE   (0xFFU)
+#define FLASHPAGE_SIZE          (4096U)
+#define FLASHPAGE_NUMOF         ((KINETIS_ROMSIZE * 1024) / FLASHPAGE_SIZE)
 
 /* The minimum block size which can be written is 8B (Phrase). However, the
  * erase block is always FLASHPAGE_SIZE.

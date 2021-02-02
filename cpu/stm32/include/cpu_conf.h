@@ -116,6 +116,13 @@ extern "C" {
 #define FLASHPAGE_SIZE                  (128U)
 #endif
 
+#if defined(CPU_FAM_STM32L0) || defined(CPU_FAM_STM32L1) || \
+    defined(CPU_FAM_STM32L4)
+#define FLASHPAGE_ERASE_STATE           (0x00U)
+#else
+#define FLASHPAGE_ERASE_STATE           (0xFFU)
+#endif
+
 #ifdef FLASHPAGE_SIZE
 #define FLASHPAGE_NUMOF                 (STM32_FLASHSIZE / FLASHPAGE_SIZE)
 #endif

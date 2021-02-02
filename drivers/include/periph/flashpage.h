@@ -86,6 +86,15 @@ extern "C" {
 #endif
 
 /**
+ * @def FLASHPAGE_ERASE_STATE
+ *
+ * @brief   State of an erased byte in memory
+ */
+#ifdef DOXYGEN
+#define FLASHPAGE_ERASE_STATE
+#endif
+
+/**
  * @def     PERIPH_FLASHPAGE_CUSTOM_PAGESIZES
  *
  * @brief   Defined to signal that the peripheral has non-uniform flash page
