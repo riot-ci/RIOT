@@ -60,7 +60,7 @@ static bool l2_addr_equal(const uint8_t *a, uint8_t a_len, const uint8_t *b, uin
     return memcmp(a, b, a_len) == 0;
 }
 
-static void netstats_nb_half_freshness(netstats_nb_t *stats, uint16_t now_sec)
+static void half_freshness(netstats_nb_t *stats, uint16_t now_sec)
 {
     uint8_t diff = (now_sec - stats->last_halved) / NETSTATS_NB_FRESHNESS_HALF;
     stats->freshness >>= diff;
@@ -71,12 +71,12 @@ static void netstats_nb_half_freshness(netstats_nb_t *stats, uint16_t now_sec)
     }
 }
 
-static void netstats_nb_incr_freshness(netstats_nb_t *stats)
+static void incr_freshness(netstats_nb_t *stats)
 {
     uint16_t now = xtimer_now_usec() / US_PER_SEC;;
 
     /* First halve the freshness if applicable */
-    netstats_nb_half_freshness(stats, now);
+    half_freshness(stats, now);
 
     /* Increment the freshness capped at FRESHNESS_MAX */
     if (stats->freshness < NETSTATS_NB_FRESHNESS_MAX) {
@@ -86,15 +86,26 @@ static void netstats_nb_incr_freshness(netstats_nb_t *stats)
     stats->last_updated = now;
 }
 
-bool netstats_nb_isfresh(netstats_nb_t *stats)
+static bool isfresh(netstats_nb_t *stats)
 {
     uint16_t now = xtimer_now_usec() / US_PER_SEC;;
 
     /* Half freshness if applicable to update to current freshness */
-    netstats_nb_half_freshness(stats, now);
+    half_freshness(stats, now);
 
     return (stats->freshness >= NETSTATS_NB_FRESHNESS_TARGET) &&
            (now - stats->last_updated < NETSTATS_NB_FRESHNESS_EXPIRATION);
+}
+
+bool netstats_nb_isfresh(netif_t *dev, netstats_nb_t *stats)
+{
+    bool ret;
+
+    _lock(dev);
+    ret = isfresh(stats);
+    _unlock(dev);
+
+    return ret;
 }
 
 void netstats_nb_init(netif_t *dev)
@@ -157,7 +168,7 @@ static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_
         }
 
         /* Check if the entry is expired */
-        if ((netstats_nb_isfresh(&stats[i]))) {
+        if ((isfresh(&stats[i]))) {
             continue;
         }
 
@@ -377,13 +388,13 @@ netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, 
         goto out;
     }
 
-    bool fresh = netstats_nb_isfresh(stats);
+    bool fresh = isfresh(stats);
 
     netstats_nb_update_time(stats, result, now - time_tx, fresh);
     netstats_nb_update_etx(stats, result, transmissions, fresh);
     netstats_nb_incr_count_tx(stats, result);
 
-    netstats_nb_incr_freshness(stats);
+    incr_freshness(stats);
 
 out:
     _unlock(dev);
@@ -401,13 +412,13 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *dev, const uint8_t *l2_addr,
         goto out;
     }
 
-    bool fresh = netstats_nb_isfresh(stats);
+    bool fresh = isfresh(stats);
 
     netstats_nb_update_rssi(stats, rssi, fresh);
     netstats_nb_update_lqi(stats, lqi, fresh);
     netstats_nb_incr_count_rx(stats);
 
-    netstats_nb_incr_freshness(stats);
+    incr_freshness(stats);
 
 out:
     _unlock(dev);

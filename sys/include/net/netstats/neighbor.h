@@ -143,9 +143,10 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *netif, const uint8_t *l2_addr,
  *
  * Freshness half time is checked and updated before verifying freshness.
  *
+ * @param[in] netif  network interface the statistic belongs to
  * @param[in] stats  pointer to the statistic
  */
-bool netstats_nb_isfresh(netstats_nb_t *stats);
+bool netstats_nb_isfresh(netif_t *netif, netstats_nb_t *stats);
 
 #ifdef __cplusplus
 }
