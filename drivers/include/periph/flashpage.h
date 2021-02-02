@@ -90,8 +90,8 @@ extern "C" {
  *
  * @brief   State of an erased byte in memory
  */
-#ifdef DOXYGEN
-#define FLASHPAGE_ERASE_STATE
+#if defined(DOXYGEN) || !defined(FLASHPAGE_ERASE_STATE)
+#define FLASHPAGE_ERASE_STATE           (0xFFU)
 #endif
 
 /**

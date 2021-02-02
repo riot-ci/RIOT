@@ -108,8 +108,6 @@ as shown in the NVM Row Organization figure. */
 #error "Unsupported Device"
 #endif
 
-/* all 1s when erase */
-#define FLASHPAGE_ERASE_STATE           (0xFFU)
 /* one SAM0 row contains 4 SAM0 pages, so 4 SAM0 pages contain
  * the amount of a RIOT flashpage
  */
