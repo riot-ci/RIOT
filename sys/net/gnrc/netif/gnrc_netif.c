@@ -1813,7 +1813,8 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
                 }
                 break;
 #endif  /* IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ) */
-#if IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ) || IS_USED(MODULE_NETSTATS_NEIGHBOR)
+#if IS_USED(MODULE_NETSTATS_L2) || IS_USED(MODULE_GNRC_NETIF_PKTQ) || \
+    IS_USED(MODULE_NETSTATS_NEIGHBOR)
             case NETDEV_EVENT_TX_MEDIUM_BUSY:
             case NETDEV_EVENT_TX_NOACK:
                 /* update neighbor statistics */
