@@ -30,11 +30,6 @@
 #define LOG_PREFIX "riotboot_flashwrite: "
 #include "log.h"
 
-/**
- * @brief Magic number used to invalidate a slot
- */
-#define INVALIDATE_HDR                  0xAA
-
 static inline size_t min(size_t a, size_t b)
 {
     return a <= b ? a : b;
@@ -178,10 +173,14 @@ int riotboot_flashwrite_invalidate(int slot)
         return -2;
     }
 
-    uint8_t data_flash[4];
-    memset(data_flash, INVALIDATE_HDR, sizeof(data_flash));
+    /* invalidate header and checksum, write the whole header to avoid
+       running in memory alignment issues with FLASHPAGE_WRITE_BLOCK_SIZE */
+    riotboot_hdr_t tmp_hdr;
+    memcpy(&tmp_hdr, riotboot_slot_get_hdr(slot), sizeof(riotboot_hdr_t));
+    memset(&tmp_hdr.magic_number, (~FLASHPAGE_ERASE_STATE), sizeof(tmp_hdr.magic_number));
+    memset(&tmp_hdr.chksum, (~FLASHPAGE_ERASE_STATE), sizeof(tmp_hdr.chksum));
 
-    flashpage_write((void *)riotboot_slot_get_hdr(slot), data_flash, sizeof(data_flash));
+    flashpage_write((void *)riotboot_slot_get_hdr(slot), &tmp_hdr, sizeof(riotboot_hdr_t));
 
     return 0;
 }
