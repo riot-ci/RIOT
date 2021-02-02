@@ -111,6 +111,11 @@ void ztimer_init(void)
                              CONFIG_ZTIMER_USEC_BASE_FREQ,
                              WIDTH_TO_MAXVAL(CONFIG_ZTIMER_USEC_WIDTH));
 #  endif
+#  ifdef MODULE_PM_LAYERED
+    LOG_DEBUG("ztimer_init(): ZTIMER_USEC setting required_pm_mode to %i\n",
+              CONFIG_ZTIMER_USEC_REQUIRED_PM_MODE);
+    ZTIMER_USEC_BASE->required_pm_mode = CONFIG_ZTIMER_USEC_REQUIRED_PM_MODE;
+#  endif
 #  if CONFIG_ZTIMER_USEC_BASE_FREQ != FREQ_1MHZ
 #    if CONFIG_ZTIMER_USEC_BASE_FREQ == FREQ_250KHZ
     LOG_DEBUG("ztimer_init(): ZTIMER_USEC convert_shift %lu to 1000000\n",
@@ -135,11 +140,6 @@ void ztimer_init(void)
               CONFIG_ZTIMER_USEC_ADJUST_SLEEP );
     ZTIMER_USEC->adjust_sleep = CONFIG_ZTIMER_USEC_ADJUST_SLEEP;
 #  endif
-#  ifdef MODULE_PM_LAYERED
-    LOG_DEBUG("ztimer_init(): ZTIMER_USEC setting required_pm_mode to %i\n",
-              CONFIG_ZTIMER_USEC_REQUIRED_PM_MODE);
-    ZTIMER_USEC->required_pm_mode = CONFIG_ZTIMER_USEC_REQUIRED_PM_MODE;
-#  endif
 #endif
 
 #ifdef ZTIMER_RTT_INIT
@@ -148,6 +148,11 @@ void ztimer_init(void)
 #endif
 
 #if MODULE_ZTIMER_MSEC
+#  ifdef MODULE_PM_LAYERED
+    LOG_DEBUG("ztimer_init(): ZTIMER_MSEC setting required_pm_mode to %i\n",
+              CONFIG_ZTIMER_MSEC_REQUIRED_PM_MODE);
+    ZTIMER_MSEC_BASE->required_pm_mode = CONFIG_ZTIMER_MSEC_REQUIRED_PM_MODE;
+#  endif
 #  if ZTIMER_MSEC_CONVERT_LOWER_FREQ
     LOG_DEBUG("ztimer_init(): ZTIMER_MSEC convert_frac from %lu to 1000\n",
               (long unsigned)ZTIMER_MSEC_CONVERT_LOWER_FREQ);
@@ -155,15 +160,15 @@ void ztimer_init(void)
                              ZTIMER_MSEC_CONVERT_LOWER,
                              FREQ_1KHZ, ZTIMER_MSEC_CONVERT_LOWER_FREQ);
 #  endif
-#  ifdef CONFIG_ZTIMER_MSEC_ADJUST
-    LOG_DEBUG("ztimer_init(): ZTIMER_MSEC setting adjust value to %i\n",
+#  ifdef CONFIG_ZTIMER_MSEC_ADJUST_SET
+    LOG_DEBUG("ztimer_init(): ZTIMER_MSEC setting adjust_set value to %i\n",
               CONFIG_ZTIMER_MSEC_ADJUST);
-    ZTIMER_MSEC->adjust = CONFIG_ZTIMER_MSEC_ADJUST;
+    ZTIMER_MSEC->adjust_set = CONFIG_ZTIMER_MSEC_ADJUST;
 #  endif
-#  ifdef MODULE_PM_LAYERED
-    LOG_DEBUG("ztimer_init(): ZTIMER_MSEC setting required_pm_mode to %i\n",
-              CONFIG_ZTIMER_MSEC_REQUIRED_PM_MODE);
-    ZTIMER_MSEC->required_pm_mode = CONFIG_ZTIMER_MSEC_REQUIRED_PM_MODE;
+#  ifdef CONFIG_ZTIMER_MSEC_ADJUST_SLEEP
+    LOG_DEBUG("ztimer_init(): ZTIMER_MSEC setting adjust_sleep value to %i\n",
+              CONFIG_ZTIMER_USEC_ADJUST_SLEEP );
+    ZTIMER_MSEC->adjust_sleep = CONFIG_ZTIMER_MSEC_ADJUST_SLEEP;
 #  endif
 #endif
 }
