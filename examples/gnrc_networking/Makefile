@@ -31,6 +31,14 @@ USEMODULE += netstats_l2
 USEMODULE += netstats_ipv6
 USEMODULE += netstats_rpl
 
+# added for compile-testing only
+# remove this as it bloats the default networking example
+USEMODULE += netstats_neighbor_etx
+USEMODULE += netstats_neighbor_count
+USEMODULE += netstats_neighbor_rssi
+USEMODULE += netstats_neighbor_lqi
+USEMODULE += netstats_neighbor_tx_time
+
 # Optionally include DNS support. This includes resolution of names at an
 # upstream DNS server and the handling of RDNSS options in Router Advertisements
 # to auto-configure that upstream DNS server.
