@@ -2,7 +2,7 @@
 USEMODULE += riscv_common
 
 # include common periph code
-USEMODULE += riscv_periph_common
+USEMODULE += riscv_common_periph
 
 # Make calls to malloc and friends thread-safe
 USEMODULE += malloc_thread_safe
