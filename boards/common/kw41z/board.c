@@ -23,6 +23,11 @@
 
 static void led_init(void)
 {
+    /* skip LED init for riotboot */
+    if (IS_ACTIVE(RIOTBOOT)) {
+        return;
+    }
+
     /* initialize and turn off LEDs */
 #ifdef LED0_PIN
     gpio_init(LED0_PIN, GPIO_OUT);
