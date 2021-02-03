@@ -18,7 +18,6 @@
  */
 
 #include "cpu.h"
-#include "nanostubs.h"
 #include "periph/init.h"
 #include "periph_conf.h"
 
