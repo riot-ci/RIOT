@@ -45,8 +45,10 @@ extern "C" {
  * Instead terminate RIOT, which is also the behavior a user would
  * expect from a CLI application.
  */
-#  ifdef CPU_NATIVE
+#  if defined(CPU_NATIVE) && !IS_ACTIVE(KCONFIG_MODULE_SHELL)
 #    define CONFIG_SHELL_SHUTDOWN_ON_EXIT 1
+#  else
+#    define CONFIG_SHELL_SHUTDOWN_ON_EXIT 0
 #  endif
 #endif
 
@@ -70,7 +72,7 @@ extern "C" {
  *             removed after release 2021.07.
  */
 #ifndef SHELL_NO_ECHO
-#define SHELL_NO_ECHO 0
+#define SHELL_NO_ECHO CONFIG_SHELL_NO_ECHO
 #endif
 
 /**
@@ -79,7 +81,7 @@ extern "C" {
  *             removed after release 2021.07.
  */
 #ifndef SHELL_NO_PROMPT
-#define SHELL_NO_PROMPT 0
+#define SHELL_NO_PROMPT CONFIG_SHELL_NO_PROMPT
 #endif
 
 /** @} */
