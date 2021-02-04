@@ -204,11 +204,17 @@ void gpio_irq_enable(gpio_t pin)
     PORT_t *port = (PORT_t *)_port_addr(pin);
 
     if (port->INT1MASK & pin_mask) {
+        port->INTFLAGS = PORT_INT1IF_bm;
         port->INTCTRL |= config_irq[port_num + PORT_MAX];
     }
     if (port->INT0MASK & pin_mask) {
+        port->INTFLAGS = PORT_INT0IF_bm;
         port->INTCTRL |= config_irq[port_num];
     }
+
+#if ENABLE_DEBUG
+    _print_config(pin);
+#endif
 }
 
 void gpio_irq_disable(gpio_t pin)
@@ -225,6 +231,9 @@ void gpio_irq_disable(gpio_t pin)
         port->INTCTRL &= ~PORT_INT0LVL_gm;
     }
 
+#if ENABLE_DEBUG
+    _print_config(pin);
+#endif
 }
 
 int gpio_read(gpio_t pin)
@@ -247,16 +256,24 @@ void gpio_set(gpio_t pin)
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTSET = pin_mask;
+
+#if ENABLE_DEBUG
+    _print_config(pin);
+#endif
 }
 
 void gpio_clear(gpio_t pin)
 {
-    DEBUG("gpio_set pin = 0x%04x \n", pin);
+    DEBUG("gpio_clear pin = 0x%04x \n", pin);
 
     PORT_t *port = (PORT_t *)_port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTCLR = pin_mask;
+
+#if ENABLE_DEBUG
+    _print_config(pin);
+#endif
 }
 
 void gpio_toggle(gpio_t pin)
@@ -267,6 +284,10 @@ void gpio_toggle(gpio_t pin)
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTTGL = pin_mask;
+
+#if ENABLE_DEBUG
+    _print_config(pin);
+#endif
 }
 
 void gpio_write(gpio_t pin, int value)

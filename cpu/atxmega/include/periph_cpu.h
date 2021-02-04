@@ -128,9 +128,11 @@ typedef enum GPIO_MODE {
     GPIO_IN                 = (0 << 0),     /**< select GPIO MASK as input */
     GPIO_OUT                = (1 << 0),     /**< select GPIO MASK as output */
 
-    /* Compatibility Mode SAUL */
-    GPIO_IN_PU              = GPIO_IN,
-    GPIO_IN_PD              = GPIO_IN,
+    /* Compatibility Mode */
+    GPIO_IN_PU              = GPIO_IN  | GPIO_OPC_PU,
+    GPIO_IN_PD              = GPIO_IN  | GPIO_OPC_PD,
+    GPIO_OD                 = GPIO_OUT | GPIO_OPC_WRD_OR,
+    GPIO_OD_PU              = GPIO_OUT | GPIO_OPC_WRD_OR_PULL,
 } gpio_mode_t;
 /** @} */
 
@@ -156,9 +158,9 @@ typedef enum {
     GPIO_LVL_HIGH           = (3 << 0),     /**< interrupt higher */
 
     /* Compatibility Mode */
-    GPIO_FALLING            = GPIO_ISC_FALLING,
-    GPIO_RISING             = GPIO_ISC_RISING,
-    GPIO_BOTH               = GPIO_ISC_BOTH,
+    GPIO_FALLING            = GPIO_ISC_FALLING | GPIO_LVL_LOW,
+    GPIO_RISING             = GPIO_ISC_RISING  | GPIO_LVL_LOW,
+    GPIO_BOTH               = GPIO_ISC_BOTH    | GPIO_LVL_LOW,
 } gpio_flank_t;
 /** @} */
 

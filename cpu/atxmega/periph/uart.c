@@ -224,12 +224,12 @@ static inline int16_t _xmega_calculate_bsel_bscale(uint32_t fcpu, uint32_t baud,
 static inline void _configure_pins(uart_t uart)
 {
     /* configure RX pin */
-    if (uart_config[uart].rx_pin != GPIO_UNDEF) {
+    if (gpio_is_valid(uart_config[uart].rx_pin)) {
         gpio_init(uart_config[uart].rx_pin, GPIO_IN);
     }
 
     /* configure TX pin */
-    if (uart_config[uart].tx_pin != GPIO_UNDEF) {
+    if (gpio_is_valid(uart_config[uart].tx_pin)) {
         gpio_set(uart_config[uart].tx_pin);
         gpio_init(uart_config[uart].tx_pin, GPIO_OUT);
     }
