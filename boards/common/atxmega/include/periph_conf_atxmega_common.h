@@ -1,12 +1,5 @@
 /*
- * Copyright (C) 2014 Freie Universität Berlin, Hinnerk van Bruinehsen
- *               2016 Laurent Navet <laurent.navet@gmail.com>
- *               2016 RWTH Aachen, Josua Arndt
- *               2016 INRIA, Francisco Acosta
- *               2017 HAW Hamburg, Dimitri Nahm
- *               2018 Matthew Blue <matthew.blue.neuro@gmail.com>
- *               2019 Otto-von-Guericke-Universität Magdeburg
- *               2021 Gerson Fernando Budke <nandojve@gmail.com>
+ * Copyright (C) 2021 Gerson Fernando Budke <nandojve@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -20,15 +13,6 @@
  * @file
  * @brief       Common configuration of MCU periphery for ATxmega boards
  *
- * @author      Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
- * @author      Laurent Navet <laurent.navet@gmail.com>
- * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author      Dimitri Nahm <dimitri.nahm@haw-hamburg.de>
- * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
- * @author      Steffen Robertz <steffen.robertz@rwth-aachen.de>
- * @author      Matthew Blue <matthew.blue.neuro@gmail.com>
- * @author      Francisco Acosta <francisco.acosta@inria.fr>
- * @author      Marian Buschsieweke <marian.buschsieweke@ovgu.de>
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  */
 
@@ -46,7 +30,7 @@ extern "C" {
  * @{
  */
 #ifndef CLOCK_CORECLOCK
-#define CLOCK_CORECLOCK     (32000000UL)
+#define CLOCK_CORECLOCK     MHZ(32)
 #endif /* CLOCK_CORECLOCK */
 /** @} */
 
