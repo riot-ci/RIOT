@@ -12,6 +12,7 @@ config CPU_FAM_FE310
     select HAS_PERIPH_CPUID
     select HAS_PERIPH_GPIO
     select HAS_PERIPH_GPIO_IRQ
+    select HAS_PERIPH_PM
     select HAS_PERIPH_WDT
 
 config CPU_MODEL_FE310_G000
@@ -39,3 +40,5 @@ config CPU
     default "fe310" if CPU_FAM_FE310
 
 rsource "Kconfig.clk"
+
+source "$(RIOTCPU)/riscv_common/Kconfig"
