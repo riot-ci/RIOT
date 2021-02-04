@@ -35,6 +35,7 @@
 #include "cpu_clock.h"
 #endif
 #include "board.h"
+#include "irq.h"
 #include "periph/init.h"
 #include "panic.h"
 #include "kernel_defines.h"
@@ -115,6 +116,8 @@ void cpu_init(void)
               |  PMIC_MEDLVLEN_bm
               |  PMIC_LOLVLEN_bm;
 #endif
+
+    irq_enable();
 }
 
 struct __freelist {
