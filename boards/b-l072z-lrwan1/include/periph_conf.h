@@ -147,6 +147,35 @@ static const spi_conf_t spi_config[] = {
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
 /** @} */
 
+/**
+ * @name   ADC configuration
+ *
+ * Note that we do not configure all ADC channels,
+ * we just define 6 ADC channels, for the Nucleo
+ * Arduino header pins A0-A5
+ *
+ * @{
+ */
+static const adc_conf_t adc_config[] = {
+    {GPIO_PIN(PORT_A, 0), 0},
+<<<<<<< HEAD
+    {GPIO_PIN(PORT_A, 0), 0},
+    {GPIO_PIN(PORT_A, 4), 4},
+    {GPIO_PIN(PORT_A, 4), 4},
+    {GPIO_PIN(PORT_B, 9), 1},
+    {GPIO_PIN(PORT_B, 8), 8},
+=======
+    {GPIO_PIN(PORT_A, 1), 1},
+    {GPIO_PIN(PORT_A, 4), 4},
+    {GPIO_PIN(PORT_B, 0), 0},
+    {GPIO_PIN(PORT_C, 1), 1},
+    {GPIO_PIN(PORT_C, 0), 0},
+>>>>>>> abf148135e285138c4ec02e5f7262243a62bd7f1
+};
+
+#define ADC_NUMOF           ARRAY_SIZE(adc_config)
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
