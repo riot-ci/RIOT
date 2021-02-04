@@ -31,9 +31,13 @@
 #include <avr/pgmspace.h>
 
 #include "cpu.h"
+#ifdef CPU_AVR8_HAS_CLOCK_INIT
+#include "cpu_clock.h"
+#endif
 #include "board.h"
 #include "periph/init.h"
 #include "panic.h"
+#include "kernel_defines.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -90,6 +94,10 @@ void cpu_init(void)
 
     wdt_reset();   /* should not be nececessary as done in bootloader */
     wdt_disable(); /* but when used without bootloader this is needed */
+
+    if (IS_ACTIVE(CPU_AVR8_HAS_CLOCK_INIT)) {
+        clk_init();
+    }
 
     /* Initialize stdio before periph_init() to allow use of DEBUG() there */
 #ifdef MODULE_AVR_LIBC_EXTRA
