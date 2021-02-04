@@ -20,6 +20,7 @@
 #define BOARD_H
 
 #include "cpu.h"
+#include "macros/units.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +30,7 @@ extern "C" {
  * @brief   Clock configuration
  * @{
  */
-#define CLOCK_CORECLOCK     (32000000ul)
+#define CLOCK_CORECLOCK     MHZ(32)
 
 /**
  * @name   Baudrate for STDIO terminal
@@ -90,7 +91,7 @@ extern "C" {
 #define XTIMER_DEV          TIMER_DEV(0)
 #define XTIMER_CHAN         (0)
 #define XTIMER_WIDTH        (16)
-#define XTIMER_HZ           (4000000UL)
+#define XTIMER_HZ           (500000UL)
 #define XTIMER_BACKOFF      (150)
 /** @} */
 /** @} */
