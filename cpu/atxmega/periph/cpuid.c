@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include "periph_cpu.h"
-#include "nvm.h"
+#include "cpu_nvm.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"

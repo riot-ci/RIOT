@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2018 RWTH Aachen, Josua Arndt <jarndt@ias.rwth-aachen.de>
- *               2021 Gerson Fernando Budke <nandojve@gmail.com>
+ * Copyright (C) 2021 Gerson Fernando Budke <nandojve@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -15,7 +14,6 @@
  * @file
  * @brief       Low-level UART driver implementation
  *
- * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  *
  *
@@ -181,8 +179,8 @@ static inline int16_t _xmega_bsel_bscale(uint32_t *fper, uint32_t *baud,
         locBsel = (uint16_t)(num & 0xFFF);
 
         /* Omit division by 16 get higher accuracy at small baudrates */
-        calcbaud = ((*fper) << (-locBscale)) /
-                   ((locBsel + (1 << (-locBscale))) << (4 - clk2x));
+        calcbaud = ((*fper) << (-locBscale))
+                 / ((locBsel + (1 << (-locBscale))) << (4 - clk2x));
 
         if (_check_bsel( baud, &calcbaud, &precision)) {
             *bsel = locBsel;
@@ -252,6 +250,9 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         return UART_NODEV;
     }
 
+    uint16_t count = UINT16_MAX;
+    while (avr8_is_uart_tx_pending() && count--) {}
+
     /* register interrupt context */
     isr_ctx[uart].rx_cb = rx_cb;
     isr_ctx[uart].arg = arg;
@@ -265,8 +266,8 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     /* configure UART to 8N1 mode */
     dev(uart)->CTRLC = USART_CMODE_ASYNCHRONOUS_gc
-                       | USART_PMODE_DISABLED_gc
-                       | USART_CHSIZE_8BIT_gc;
+                     | USART_PMODE_DISABLED_gc
+                     | USART_CHSIZE_8BIT_gc;
 
     /* set clock divider */
     _xmega_calculate_bsel_bscale(CLOCK_CORECLOCK, baudrate, &clk2x,
@@ -274,7 +275,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     dev(uart)->BAUDCTRLA = (uint8_t)(bsel & 0x00ff);
     dev(uart)->BAUDCTRLB = (bscale << USART_BSCALE_gp)
-                           | ((uint8_t)((bsel & 0x0fff) >> 8));
+                         | ((uint8_t)((bsel & 0x0fff) >> 8));
     if (clk2x == 1) {
         dev(uart)->CTRLB |= USART_CLK2X_bm;
     }
@@ -282,13 +283,13 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
     /* enable RX and TX Interrupts and set level*/
     if (rx_cb) {
         dev(uart)->CTRLA = (uart_config[uart].rx_int_lvl << USART_RXCINTLVL_gp)
-                           | (uart_config[uart].tx_int_lvl << USART_TXCINTLVL_gp)
-                           | (uart_config[uart].dre_int_lvl << USART_DREINTLVL_gp);
+                         | (uart_config[uart].tx_int_lvl << USART_TXCINTLVL_gp)
+                         | (uart_config[uart].dre_int_lvl << USART_DREINTLVL_gp);
         dev(uart)->CTRLB = USART_RXEN_bm | USART_TXEN_bm;
     }
     else {
         /* only transmit */
-        dev(uart)->CTRLB =  USART_TXEN_bm;
+        dev(uart)->CTRLB = USART_TXEN_bm;
     }
 
     DEBUG("Set clk2x %" PRIu8 " bsel %" PRIu16 "bscale %" PRIi8 "\n",
@@ -301,23 +302,35 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
     for (size_t i = 0; i < len; i++) {
         while (!(dev(uart)->STATUS & USART_DREIF_bm)) {}
+
+        /* start of TX won't finish until no data in DATAn and transmit shift
+           register is empty */
+        uint8_t irq_state = irq_disable();
+        avr8_state |= AVR8_STATE_FLAG_UART_TX(uart);
+        irq_restore(irq_state);
+
         dev(uart)->DATA = data[i];
     }
 }
 
-static inline void isr_handler(int num)
+static inline void _rx_isr_handler(int num)
 {
-    if ((dev(num)->STATUS & USART_RXCIF_bm) == 0) {
-        return;
-    }
-
     avr8_enter_isr();
 
-    isr_ctx[num].rx_cb(isr_ctx[num].arg, dev(num)->DATA);
-
-    if (sched_context_switch_request) {
-        thread_yield();
+    if (isr_ctx[num].rx_cb) {
+        isr_ctx[num].rx_cb(isr_ctx[num].arg, dev(num)->DATA);
     }
+
+    avr8_exit_isr();
+}
+
+static inline void _tx_isr_handler(int num)
+{
+    avr8_enter_isr();
+
+    /* entire frame in the Transmit Shift Register has been shifted out and
+       there are no new data currently present in the transmit buffer */
+    avr8_state &= ~AVR8_STATE_FLAG_UART_TX(num);
 
     avr8_exit_isr();
 }
@@ -325,55 +338,76 @@ static inline void isr_handler(int num)
 #ifdef UART_0_RXC_ISR
 ISR(UART_0_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(0);
+    _rx_isr_handler(0);
 }
-#endif /* UART_0_RXC_ISR */
+ISR(UART_0_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(0);
+}
+#endif /* UART_0_ISR */
 
 #ifdef UART_1_RXC_ISR
 ISR(UART_1_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(1);
+    _rx_isr_handler(1);
 }
-#endif /* UART_1_RXC_ISR */
+ISR(UART_1_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(1);
+}
+#endif /* UART_1_ISR */
 
 #ifdef UART_2_RXC_ISR
 ISR(UART_2_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(2);
+    _rx_isr_handler(2);
 }
-#endif /* UART_2_RXC_ISR */
+ISR(UART_2_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(2);
+}
+#endif /* UART_2_ISR */
 
 #ifdef UART_3_RXC_ISR
 ISR(UART_3_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(3);
+    _rx_isr_handler(3);
+}
+ISR(UART_3_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(3);
 }
 #endif /* UART_3_ISR */
 
 #ifdef UART_4_RXC_ISR
 ISR(UART_4_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(4);
+    _rx_isr_handler(4);
+}
+ISR(UART_4_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(4);
 }
 #endif /* UART_4_ISR */
 
 #ifdef UART_5_RXC_ISR
 ISR(UART_5_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(5);
+    _rx_isr_handler(5);
+}
+ISR(UART_5_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(5);
 }
 #endif /* UART_5_ISR */
 
 #ifdef UART_6_RXC_ISR
 ISR(UART_6_RXC_ISR, ISR_BLOCK)
 {
-    isr_handler(6);
+    _rx_isr_handler(6);
 }
-#endif /* UART_7_ISR */
-
-#ifdef UART_7_RXC_ISR
-ISR(UART_7_RXC_ISR, ISR_BLOCK)
+ISR(UART_6_TXC_ISR, ISR_BLOCK)
 {
-    isr_handler(7);
+    _tx_isr_handler(6);
 }
-#endif /* UART_7_ISR */
+#endif /* UART_6_ISR */

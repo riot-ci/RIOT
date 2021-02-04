@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2018 RWTH Aachen, Josua Arndt <jarndt@ias.rwth-aachen.de>
- *               2021 Gerson Fernando Budke <nandojve@gmail.com>
+ * Copyright (C) 2021 Gerson Fernando Budke <nandojve@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -15,7 +14,6 @@
  * @file
  * @brief       Low-level PM driver implementation
  *
- * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  *
  * @}

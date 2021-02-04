@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2018 RWTH Aachen, Josua Arndt <jarndt@ias.rwth-aachen.de>
- *               2021 Gerson Fernando Budke <nandojve@gmail.com>
+ * Copyright (C) 2021 Gerson Fernando Budke <nandojve@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -15,7 +14,6 @@
  * @file
  * @brief       Low-level GPIO driver implementation
  *
- * @author      Josua Arndt <jarndt@ias.rwth-aachen.de>
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  *
  * @}
@@ -285,19 +283,21 @@ void gpio_write(gpio_t pin, int value)
 
 static inline void irq_handler(uint8_t port_num, uint8_t isr_vct_num)
 {
+    avr8_enter_isr();
+
     DEBUG("irq_handler port = 0x%02x, vct_num = %d \n", port_num, isr_vct_num);
 
     if (isr_vct_num) {
         port_num += PORT_MAX;
     }
 
-    if (config_ctx[port_num].cb == NULL) {
+    if (config_ctx[port_num].cb) {
+        config_ctx[port_num].cb(config_ctx[port_num].arg);
+    }
+    else {
         DEBUG("WARNING! irq_handler without callback\n");
-        return;
     }
 
-    avr8_enter_isr();
-    config_ctx[port_num].cb(config_ctx[port_num].arg);
     avr8_exit_isr();
 }
 

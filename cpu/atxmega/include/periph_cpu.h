@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2017 RWTH Aachen, Josua Arndt <jarndt@ias.rwth-aachen.de>
- *               2017 RWTH Aachen, Steffen Robertz <steffen.robertz@rwth-aachen.de>
- *               2021 Gerson Fernando Budke <nandojve@gmail.com>
+ * Copyright (C) 2021 Gerson Fernando Budke <nandojve@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -15,8 +13,6 @@
  * @file
  * @brief           CPU specific definitions for internal peripheral handling
  *
- * @author          Josua Arndt <jarndt@ias.rwth-aachen.de>
- * @author          Steffen Robertz <steffen.robertz@rwth-aachen.de>
  * @author          Gerson Fernando Budke <nandojve@gmail.com>
  */
 
@@ -167,6 +163,11 @@ typedef enum {
 /** @} */
 
 /**
+ * @brief   Max number of available UARTs
+ */
+#define UART_MAX_NUMOF      (7)
+
+/**
  * @brief   Size of the UART TX buffer for non-blocking mode.
  */
 #ifndef UART_TXBUF_SIZE
@@ -188,6 +189,34 @@ typedef struct {
     int_lvl_t tx_int_lvl;           /**< TX Complete Interrupt Level */
     int_lvl_t dre_int_lvl;          /**< Data Registry Empty Interrupt Level */
 } uart_conf_t;
+
+/**
+ * @brief   Max number of available timer channels
+ */
+#define TIMER_CH_MAX_NUMOF  (4)
+
+/**
+ * @brief   Timer Type
+ */
+typedef enum {
+    TC_TYPE_0 = 0,
+    TC_TYPE_1 = 1,
+    TC_TYPE_2 = 2,
+    TC_TYPE_4 = 4,
+    TC_TYPE_5 = 5,
+} timer_type_t;
+
+/**
+ * @brief   Timer device configuration
+ *
+ * All timers can be derived from TC0_t struct. Need check at runtime the
+ * type and number of channels to perform all operations.
+ */
+typedef struct {
+    TC0_t *dev;                            /**< Pointer to the used as Timer device */
+    timer_type_t type;                     /**< Timer Type */
+    int_lvl_t int_lvl[TIMER_CH_MAX_NUMOF]; /**< Interrupt channels level */
+} timer_conf_t;
 
 #ifdef __cplusplus
 }

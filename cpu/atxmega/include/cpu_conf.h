@@ -1,8 +1,5 @@
 /*
- * Copyright (C) 2014 Freie Universität Berlin, Hinnerk van Bruinehsen
- *               2017 RWTH Aachen, Josua Arndt
- *               2018 Matthew Blue
- *               2021 Gerson Fernando Budke
+ * Copyright (C) 2021 Gerson Fernando Budke
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -16,11 +13,6 @@
  * @file
  * @brief           Implementation specific CPU configuration options
  *
- * @author          Hauke Petersen <hauke.petersen@fu-berlin.de>
- * @author          Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
- * @author          Josua Arndt <jarndt@ias.rwth-aachen.de>
- * @author          Steffen Robertz <steffen.robertz@rwth-aachen.de>
- * @author          Matthew Blue <matthew.blue.neuro@gmail.com>
  * @author          Gerson Fernando Budke <nandojve@gmail.com>
  */
 
@@ -70,6 +62,11 @@ extern "C" {
  * @brief   This arch uses the inlined IRQ API.
  */
 #define IRQ_API_INLINED                 (1)
+
+/**
+ * @brief   This arch require special clock initialization.
+ */
+#define CPU_AVR8_HAS_CLOCK_INIT          1
 
 #ifdef __cplusplus
 }
