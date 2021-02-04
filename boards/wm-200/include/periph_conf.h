@@ -30,22 +30,36 @@ extern "C" {
 #include "periph_cpu.h"
 
 /**
- * @brief   Timer configuration
- *
- * ATTETION Timer 0 is used for Xtimer which is system Timer
- *
- * RIOT Timer 0 is Timer Counter A1
+ * @name    Timer peripheral configuration
  * @{
  */
-#define TIMER_NUMOF         (1U)
+static const timer_conf_t timer_config[] = {
+    {
+        .dev            = (void *) &TCC1,
+	.type           = TC_TYPE_1,
+	.int_lvl        = { INT_LVL_LOW,
+	                    INT_LVL_OFF,
+			    INT_LVL_OFF,
+			    INT_LVL_OFF },
+    },
+    {
+        .dev            = (void *) &TCC0,
+	.type           = TC_TYPE_0,
+	.int_lvl        = { INT_LVL_LOW,
+	                    INT_LVL_LOW,
+			    INT_LVL_LOW,
+			    INT_LVL_LOW },
+    }
+};
 
-#define TIMER_0             (&TCC1)
-#define TIMER_0_MASK        ()
-#define TIMER_0_FLAG        ()
-#define TIMER_0_INT_LVL     (INT_LVL_LOW)
-#define TIMER_0_OVF         TCC1_OVF_vect
 #define TIMER_0_ISRA        TCC1_CCA_vect
-#define TIMER_0_ISRB        TCC1_CCB_vect
+
+#define TIMER_1_ISRA        TCC0_CCA_vect
+#define TIMER_1_ISRB        TCC0_CCB_vect
+#define TIMER_1_ISRC        TCC0_CCC_vect
+#define TIMER_1_ISRD        TCC0_CCD_vect
+
+#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
 /** @} */
 
 /**
@@ -62,7 +76,7 @@ static const uart_conf_t uart_config[] = {
         .cts_pin = GPIO_UNDEF,
 #endif
         .rx_int_lvl = INT_LVL_LOW,
-        .tx_int_lvl = INT_LVL_OFF,
+        .tx_int_lvl = INT_LVL_LOW,
         .dre_int_lvl = INT_LVL_OFF,
     },
     {   /* SIDE-B */
@@ -74,7 +88,7 @@ static const uart_conf_t uart_config[] = {
         .cts_pin = GPIO_UNDEF,
 #endif
         .rx_int_lvl = INT_LVL_LOW,
-        .tx_int_lvl = INT_LVL_OFF,
+        .tx_int_lvl = INT_LVL_LOW,
         .dre_int_lvl = INT_LVL_OFF,
     },
 };
