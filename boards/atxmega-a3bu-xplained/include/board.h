@@ -20,6 +20,7 @@
 #define BOARD_H
 
 #include "cpu.h"
+#include "macros/units.h"
 
 #ifdef __cplusplus
 extern "C" {

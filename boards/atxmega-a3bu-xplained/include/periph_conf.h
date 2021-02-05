@@ -36,19 +36,19 @@ extern "C" {
 static const timer_conf_t timer_config[] = {
     {
         .dev            = (void *) &TCC1,
-	.type           = TC_TYPE_1,
-	.int_lvl        = { INT_LVL_LOW,
-	                    INT_LVL_OFF,
-			    INT_LVL_OFF,
-			    INT_LVL_OFF },
+        .type           = TC_TYPE_1,
+        .int_lvl        = { INT_LVL_LOW,
+                            INT_LVL_OFF,
+                            INT_LVL_OFF,
+                            INT_LVL_OFF },
     },
     {
         .dev            = (void *) &TCC0,
-	.type           = TC_TYPE_0,
-	.int_lvl        = { INT_LVL_LOW,
-	                    INT_LVL_LOW,
-			    INT_LVL_LOW,
-			    INT_LVL_LOW },
+        .type           = TC_TYPE_0,
+        .int_lvl        = { INT_LVL_LOW,
+                            INT_LVL_LOW,
+                            INT_LVL_LOW,
+                            INT_LVL_LOW },
     }
 };
 
