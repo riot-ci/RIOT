@@ -10,10 +10,6 @@ config CPU_ARCH_AVR8
     select HAS_ARCH_8BIT
     select HAS_ARCH_AVR8
 
-config CPU_CORE_AVR
-    bool
-    select CPU_ARCH_AVR8
-
 ## Common CPU symbols
 config CPU_ARCH
     default "avr8" if CPU_ARCH_AVR8

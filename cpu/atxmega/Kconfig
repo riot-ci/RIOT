@@ -5,10 +5,13 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 #
+config CPU_CORE_AVR_XMEGA
+    bool
+    select CPU_ARCH_AVR8
 
 config CPU_COMMON_ATXMEGA
     bool
-    select CPU_CORE_AVR
+    select CPU_CORE_AVR_XMEGA
     select HAS_CPP
     select HAS_PERIPH_CPUID
     select HAS_PERIPH_GPIO
