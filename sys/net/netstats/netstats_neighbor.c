@@ -243,6 +243,10 @@ static uint32_t _ewma(bool fresh, uint32_t old_val, uint32_t new_val)
 {
     uint8_t ewma_alpha;
 
+    if (old_val == 0) {
+        return new_val;
+    }
+
     /* If the stats are not fresh, use a larger alpha to average aggressive */
     if (fresh) {
         ewma_alpha = NETSTATS_NB_EWMA_ALPHA;
@@ -280,18 +284,13 @@ static void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t re
 static void netstats_nb_update_time(netstats_nb_t *stats, netstats_nb_result_t result,
                                     uint32_t duration, bool fresh)
 {
-#if MODULE_NETSTATS_NEIGHBOR_TX_TIME
-
     /* TX time already got a penalty due to retransmissions */
     if (result != NETSTATS_NB_SUCCESS) {
         duration *= 2;
     }
 
-    if (stats->time_tx_avg == 0) {
-        stats->time_tx_avg = duration;
-    } else {
-        stats->time_tx_avg = _ewma(fresh, stats->time_tx_avg, duration);
-    }
+#if MODULE_NETSTATS_NEIGHBOR_TX_TIME
+    stats->time_tx_avg = _ewma(fresh, stats->time_tx_avg, duration);
 #else
     (void)stats;
     (void)result;
@@ -303,11 +302,7 @@ static void netstats_nb_update_time(netstats_nb_t *stats, netstats_nb_result_t r
 static void netstats_nb_update_rssi(netstats_nb_t *stats, uint8_t rssi, bool fresh)
 {
 #ifdef MODULE_NETSTATS_NEIGHBOR_RSSI
-    if (stats->rssi == 0) {
-        stats->rssi = rssi;
-    } else {
-        stats->rssi = _ewma(fresh, stats->rssi, rssi);
-    }
+    stats->rssi = _ewma(fresh, stats->rssi, rssi);
 #else
     (void)stats;
     (void)rssi;
@@ -318,11 +313,7 @@ static void netstats_nb_update_rssi(netstats_nb_t *stats, uint8_t rssi, bool fre
 static void netstats_nb_update_lqi(netstats_nb_t *stats, uint8_t lqi, bool fresh)
 {
 #ifdef MODULE_NETSTATS_NEIGHBOR_LQI
-    if (stats->lqi == 0) {
-        stats->lqi = lqi;
-    } else {
-        stats->lqi = _ewma(fresh, stats->lqi, lqi);
-    }
+    stats->lqi = _ewma(fresh, stats->lqi, lqi);
 #else
     (void)stats;
     (void)lqi;
