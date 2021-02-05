@@ -72,7 +72,7 @@ static inline void dbgpin_toggle(unsigned pin)
 }
 
 /**
- * @brief   Output a pulse (2 time toggle) on the given debug pin
+ * @brief   Output a pulse on the given debug pin (toggles the pin twice)
  *
  * @param[in] pin       pin to set, pin number is offset to the list of defined
  *                      debug pins in DBGPIN_PINS
