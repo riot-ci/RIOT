@@ -20,6 +20,7 @@
 #define PERIPH_CONF_ATXMEGA_COMMON_H
 
 #include "periph_cpu.h"
+#include "macros/units.h"
 
 #ifdef __cplusplus
 extern "C" {
