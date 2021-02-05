@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include "net/l2util.h"
 #include "mutex.h"
 
 #ifndef NET_NETSTATS_H
@@ -26,13 +27,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/**
- * @brief Max length of a L2 address
- */
-#ifndef CONFIG_L2ADDR_MAX_LEN
-#define CONFIG_L2ADDR_MAX_LEN   (8)
 #endif
 
 /**
@@ -79,7 +73,7 @@ typedef struct {
  * @brief       Stats per peer struct
  */
 typedef struct {
-    uint8_t  l2_addr[CONFIG_L2ADDR_MAX_LEN]; /**< Link layer address of the neighbor */
+    uint8_t  l2_addr[L2UTIL_ADDR_MAX_LEN]; /**< Link layer address of the neighbor */
     uint8_t  l2_addr_len;   /**< Length of netstats_nb::l2_addr */
     uint8_t  freshness;     /**< Freshness counter */
 #ifdef MODULE_NETSTATS_NEIGHBOR_ETX
