@@ -124,13 +124,13 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     for (ch = 0; ch < 4; ch++) {
         if (timer_config[tim].int_lvl[ch] != INT_LVL_OFF) {
             ctx[tim].channels++;
-	}
+        }
     }
 
     if (timer_config[tim].type != TC_TYPE_0
         && timer_config[tim].type != TC_TYPE_4) {
         if (ctx[tim].channels > 2) {
-            DEBUG("timer.c: worng number of channels. max value is 2.\n");
+            DEBUG("timer.c: wrong number of channels. max value is 2.\n");
             return -1;
         }
     }
@@ -139,7 +139,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
         || timer_config[tim].type == TC_TYPE_4
         || timer_config[tim].type == TC_TYPE_5) {
         DEBUG("timer.c: Timer version %d is current not supported.\n",
-	      timer_config[tim].type);
+            timer_config[tim].type);
         return -1;
     }
 

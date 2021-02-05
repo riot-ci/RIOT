@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef NVM_H
-#define NVM_H
+#ifndef CPU_NVM_H
+#define CPU_NVM_H
 
 #ifdef __cplusplus
 extern "C"
@@ -52,5 +52,5 @@ uint8_t nvm_read_production_signature_row(uint8_t address);
 }
 #endif
 
-#endif /* NVM_H */
+#endif /* CPU_NVM_H */
 /** @} */
