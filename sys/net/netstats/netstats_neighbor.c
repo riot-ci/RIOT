@@ -258,8 +258,6 @@ static uint32_t _ewma(bool fresh, uint32_t old_val, uint32_t new_val)
 static void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t result,
                                    uint8_t transmissions, bool fresh)
 {
-#ifdef MODULE_NETSTATS_NEIGHBOR_ETX
-
     /* don't do anything if driver does not report ETX */
     if (transmissions == 0) {
         return;
@@ -269,8 +267,8 @@ static void netstats_nb_update_etx(netstats_nb_t *stats, netstats_nb_result_t re
         transmissions = NETSTATS_NB_ETX_NOACK_PENALTY;
     }
 
+#ifdef MODULE_NETSTATS_NEIGHBOR_ETX
     stats->etx = _ewma(fresh, stats->etx, transmissions * NETSTATS_NB_ETX_DIVISOR);
-
 #else
     (void)stats;
     (void)result;
