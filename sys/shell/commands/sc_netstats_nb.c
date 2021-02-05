@@ -29,7 +29,7 @@ static void _print_neighbors(netif_t *dev)
 {
     netstats_nb_t *stats = &dev->neighbors.pstats[0];
     unsigned header_len = 0;
-    char l2addr_str[3 * CONFIG_L2ADDR_MAX_LEN];
+    char l2addr_str[3 * L2UTIL_ADDR_MAX_LEN];
     puts("Neighbor link layer stats:");
     header_len += printf("L2 address               fresh");
 #ifdef MODULE_NETSTATS_NEIGHBOR_ETX
