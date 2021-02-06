@@ -255,10 +255,12 @@ static inline size_t _compose_elapsed_time_opt(dhcpv6_opt_elapsed_time_t *time)
     return len + sizeof(dhcpv6_opt_t);
 }
 
-#ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
 static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
                                           size_t len_max)
 {
+#ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
+    return 0;
+#endif /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
     uint16_t len = strlen(mud_url);
 
     if (len > len_max) {
@@ -271,7 +273,6 @@ static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
     strncpy(mud_url_opt->mudString, mud_url, len_max);
     return len + sizeof(dhcpv6_opt_mud_url_t);
 }
-#endif /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
 
 static inline size_t _compose_oro_opt(dhcpv6_opt_oro_t *oro, uint16_t *opts,
                                         unsigned opts_num)
@@ -842,10 +843,8 @@ static void _request_renew_rebind(uint8_t type)
     if (type != DHCPV6_REBIND) {
         msg_len += _compose_sid_opt((dhcpv6_opt_duid_t *)&send_buf[msg_len]);
     }
-    #ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
     msg_len += _compose_mud_url_opt((dhcpv6_opt_mud_url_t *)&send_buf[msg_len],
                                      sizeof(send_buf) - msg_len);
-    #endif
     transaction_start = _now_cs();
     time = (dhcpv6_opt_elapsed_time_t *)&send_buf[msg_len];
     msg_len += _compose_elapsed_time_opt(time);
