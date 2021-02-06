@@ -134,7 +134,7 @@ void dhcpv6_client_init(event_queue_t *eq, uint16_t netif)
 #ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
     assert(strlen(mud_url) <= MAX_MUD_URL_LENGTH);
     assert(strncmp(mud_url, "https://", 8) == 0);
-    #endif  /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
+#endif  /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
     event_queue = eq;
     local.netif = netif;
     remote.netif = netif;
