@@ -10,7 +10,7 @@
  * @ingroup     sys_crypto
  * @{
  *
- * @file        helper.h
+ * @file        sys/include/crypto/helper.h
  * @brief       helper functions for sys_crypto_modes
  *
  * @author      Freie Universitaet Berlin, Computer Systems & Telematics
@@ -36,7 +36,6 @@ extern "C" {
  * @param L         length of counter
  */
 void crypto_block_inc_ctr(uint8_t block[16], int L);
-
 
 /**
  * @brief   Compares two blocks of same size in deterministic time.
