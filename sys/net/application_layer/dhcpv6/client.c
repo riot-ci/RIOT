@@ -85,9 +85,7 @@ static uint32_t transaction_start;
 static uint32_t transaction_id;
 static uint8_t duid_len = sizeof(dhcpv6_duid_l2_t);
 
-#ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
 static const char mud_url[] = CONFIG_DHCPV6_CLIENT_MUD_URL;
-#endif /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
 
 static void _post_solicit_servers(void *args);
 static void _solicit_servers(event_t *event);
@@ -258,9 +256,9 @@ static inline size_t _compose_elapsed_time_opt(dhcpv6_opt_elapsed_time_t *time)
 static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
                                           size_t len_max)
 {
-#ifndef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
-    return 0;
-#endif /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
+    if (!IS_USED(MODULE_GNRC_DHCPV6_CLIENT_MUD_URL)) {
+        return 0;
+    }
     uint16_t len = strlen(mud_url);
 
     if (len > len_max) {
