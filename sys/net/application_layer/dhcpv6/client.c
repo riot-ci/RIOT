@@ -258,7 +258,7 @@ static inline size_t _compose_elapsed_time_opt(dhcpv6_opt_elapsed_time_t *time)
 static inline size_t _compose_mud_url_opt(dhcpv6_opt_mud_url_t *mud_url_opt,
                                           size_t len_max)
 {
-#ifdef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
+#ifndef MODULE_GNRC_DHCPV6_CLIENT_MUD_URL
     return 0;
 #endif /* MODULE_GNRC_DHCPV6_CLIENT_MUD_URL */
     uint16_t len = strlen(mud_url);
