@@ -698,6 +698,7 @@ endif
 
 ifneq (,$(filter netstats_neighbor_%, $(USEMODULE)))
   USEMODULE += netstats_neighbor
+  USEMODULE += xtimer
 endif
 
 ifneq (,$(filter gnrc_lwmac,$(USEMODULE)))
