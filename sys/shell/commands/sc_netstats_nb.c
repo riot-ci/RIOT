@@ -32,21 +32,21 @@ static void _print_neighbors(netif_t *dev)
     char l2addr_str[3 * L2UTIL_ADDR_MAX_LEN];
     puts("Neighbor link layer stats:");
     header_len += printf("L2 address               fresh");
-#ifdef MODULE_NETSTATS_NEIGHBOR_ETX
-    header_len += printf("  etx");
-#endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_COUNT
-    header_len += printf(" sent received");
-#endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_RSSI
-    header_len += printf("   rssi ");
-#endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_LQI
-    header_len += printf(" lqi");
-#endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_TX_TIME
-    header_len += printf(" avg tx time");
-#endif
+    if (IS_USED(MODULE_NETSTATS_NEIGHBOR_ETX)) {
+        header_len += printf("  etx");
+    }
+    if (IS_USED(MODULE_NETSTATS_NEIGHBOR_COUNT)) {
+        header_len += printf(" sent received");
+    }
+    if (IS_USED(MODULE_NETSTATS_NEIGHBOR_RSSI)) {
+     header_len += printf("   rssi ");
+    }
+    if (IS_USED(MODULE_NETSTATS_NEIGHBOR_LQI)) {
+        header_len += printf(" lqi");
+    }
+    if (IS_USED(MODULE_NETSTATS_NEIGHBOR_TX_TIME)) {
+        header_len += printf(" avg tx time");
+    }
     printf("\n");
 
     while (header_len--) {
@@ -69,19 +69,19 @@ static void _print_neighbors(netif_t *dev)
             printf("STALE");
         }
 
-#ifdef MODULE_NETSTATS_NEIGHBOR_ETX
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_ETX)
         printf(" %3u%%", (100 * entry->etx) / NETSTATS_NB_ETX_DIVISOR);
 #endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_COUNT
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_COUNT)
         printf(" %4"PRIu16" %8"PRIu16, entry->tx_count, entry->rx_count);
 #endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_RSSI
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_RSSI)
         printf(" %4i dBm", (int8_t) entry->rssi);
 #endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_LQI
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_LQI)
         printf(" %u", entry->lqi);
 #endif
-#ifdef MODULE_NETSTATS_NEIGHBOR_TX_TIME
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_TX_TIME)
         printf(" %7"PRIu32" µs", entry->time_tx_avg);
 #endif
         printf("\n");
