@@ -159,27 +159,19 @@ static netstats_nb_t *netstats_nb_get_or_create(netif_t *dev, const uint8_t *l2_
         /* Entry is oldest if it is empty */
         if (stats[i].l2_addr_len == 0) {
             old_entry = &stats[i];
-            continue;
         }
-
         /* Check if the entry is expired */
-        if ((isfresh(&stats[i]))) {
-            continue;
+        else if (!isfresh(&stats[i])) {
+            /* Entry is oldest if it is expired */
+            if (old_entry == NULL) {
+                old_entry = &stats[i];
+            }
+            /* don't replace old entry if there are still empty ones */
+            else if (old_entry->l2_addr_len > 0) {
+                /* Check if current entry is older than current oldest entry */
+                old_entry = netstats_nb_comp(old_entry, &stats[i], now);
+            }
         }
-
-        /* Entry is oldest if it is expired */
-        if (old_entry == NULL) {
-            old_entry = &stats[i];
-            continue;
-        }
-
-        /* don't replace old entry if there are still empty ones */
-        if (old_entry->l2_addr_len == 0) {
-            continue;
-        }
-
-        /* Check if current entry is older than current oldest entry */
-        old_entry = netstats_nb_comp(old_entry, &stats[i], now);
     }
 
     /* if there is no matching entry,
