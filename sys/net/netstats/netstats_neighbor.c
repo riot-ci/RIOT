@@ -23,7 +23,7 @@
 #include "net/netdev.h"
 #include "net/netstats/neighbor.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG 0
 #include "debug.h"
 
 static inline void _lock(netif_t *dev)
@@ -49,7 +49,7 @@ static inline netstats_nb_t *netstats_nb_comp(const netstats_nb_t *a,
                                               const netstats_nb_t *b,
                                               uint16_t now)
 {
-    return (netstats_nb_t *)((now - a->last_updated > now - b->last_updated) ? a : b);
+    return (netstats_nb_t *)(((now - a->last_updated) > now - b->last_updated) ? a : b);
 }
 
 static void half_freshness(netstats_nb_t *stats, uint16_t now_sec)
@@ -80,7 +80,7 @@ static void incr_freshness(netstats_nb_t *stats)
 
 static bool isfresh(netstats_nb_t *stats)
 {
-    uint16_t now = xtimer_now_usec() / US_PER_SEC;;
+    uint16_t now = xtimer_now_usec() / US_PER_SEC;
 
     /* Half freshness if applicable to update to current freshness */
     half_freshness(stats, now);
@@ -351,7 +351,8 @@ static void netstats_nb_incr_count_rx(netstats_nb_t *stats)
 #endif
 }
 
-netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result, uint8_t transmissions)
+netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result,
+                                     uint8_t transmissions)
 {
     uint32_t now = xtimer_now_usec();
     netstats_nb_t *stats;
@@ -392,19 +393,16 @@ netstats_nb_t *netstats_nb_update_rx(netif_t *dev, const uint8_t *l2_addr,
 
     netstats_nb_t *stats = netstats_nb_get_or_create(dev, l2_addr, l2_addr_len);
 
-    if (stats == NULL) {
-        goto out;
+    if (stats != NULL) {
+        bool fresh = isfresh(stats);
+
+        netstats_nb_update_rssi(stats, rssi, fresh);
+        netstats_nb_update_lqi(stats, lqi, fresh);
+        netstats_nb_incr_count_rx(stats);
+
+        incr_freshness(stats);
     }
 
-    bool fresh = isfresh(stats);
-
-    netstats_nb_update_rssi(stats, rssi, fresh);
-    netstats_nb_update_lqi(stats, lqi, fresh);
-    netstats_nb_incr_count_rx(stats);
-
-    incr_freshness(stats);
-
-out:
     _unlock(dev);
     return stats;
 }
