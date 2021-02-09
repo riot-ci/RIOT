@@ -33,7 +33,7 @@ port.
 
 Then provide the device and test:
 
-    $ USEMODULE=gnrc_netdev_default BOARD=<board> make flash test-with-config
+    $ USE_ETHOS=0 BOARD=<board> make flash test-with-config
 
 ### Manual test
 
