@@ -12,17 +12,17 @@ set up a network for testing.
 
 This test uses libcoap to send the firmware to the device over coap.
 
-# How to test over Ethos
+### How to test over Ethos
 
 First set up the network:
 
     $ sudo dist/tools/ethos/setup_network.sh riot0 2001:db8::/64
 
-Then provide de device:
+Then provide de device and test:
 
-    $ BOARD=<board> make flash test
+    $ BOARD=<board> make flash test-with-config
 
-# How to test over the air (802.15.4)
+### How to test over the air (802.15.4)
 
 On another device setup a BR and start `start_network.sh` on that device serial
 port.
@@ -31,6 +31,25 @@ port.
 
     $ sudo dist/tools/ethos/start_network.sh /dev/ttyACMx riot0 2001:db8::/64
 
-Then provide de device to test:
+Then provide the device and test:
 
-    $ BOARD=<board> make flash test
+    $ USEMODULE=gnrc_netdev_default BOARD=<board> make flash test-with-config
+
+### Manual test
+
+First, compile and flash with riotboot enabled:
+
+    $ BOARD=<board> make flash
+
+Confirm it booted from slot 0 (it should print "Current slot=0"), then
+recompile in order to get an image for the second slot with a newer version
+number:
+
+    $ BOARD=<board> make riotboot
+
+Then send via CoAP, for example, with libcoap's coap_client:
+
+    $ coap-client -m post coap://[<ip address of node>]/flashwrite \
+       -f bin/<board>/tests_riotboot_flashwrite-slot1.riot.bin -b 64
+
+Then reboot the node manually, confirming that it booted from slot 1.

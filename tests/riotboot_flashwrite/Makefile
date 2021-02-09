@@ -3,32 +3,16 @@ BOARD ?= samr21-xpro
 
 include ../Makefile.tests_common
 
-# DEVELHELP ?= 0 to reduce firmware size
-DEVELHELP ?= 0
-
+# Use a terminal that does not introduce extra characters into the stream.
 RIOT_TERMINAL ?= socat
 
-BOARD_INSUFFICIENT_MEMORY := arduino-duemilanove arduino-leonardo \
-                             arduino-mega2560 arduino-uno \
-                             chronos i-nucleo-lrwan1 \
-                             msb-430 msb-430h nucleo-f031k6 \
-                             nucleo-f042k6 nucleo-l031k6 nucleo-f030r8 \
-                             nucleo-f302r8 nucleo-f303k8 nucleo-f334r8 \
-                             nucleo-l053r8 saml10-xpro saml11-xpro \
-                             stm32f0discovery telosb waspmote-pro \
-                             wsn430-v1_3b wsn430-v1_4 z1
-
-# Use different settings when compiling for one of the following (low-memory)
-# boards
-LOW_MEMORY_BOARDS := nucleo-f334r8
-
 # Include packages that pull up and auto-init the link layer.
-# NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
-USEMODULE += gnrc_netdev_default
+# NOTE: if uncommented 6LoWPAN will be included if IEEE802.15.4
+# devices are present
+# USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
 USEMODULE += gnrc_ipv6_default
-USEMODULE += gnrc_ipv6_router_default
 USEMODULE += sock_udp
 # Additional networking modules that can be dropped if not needed
 USEMODULE += gnrc_icmpv6_echo
@@ -48,14 +32,14 @@ FEATURES_REQUIRED += riotboot
 USE_ETHOS ?= 1
 
 ifeq (1,$(USE_ETHOS))
-  GNRC_NETIF_NUMOF := 2
   USEMODULE += stdio_ethos
   USEMODULE += gnrc_uhcpc
+
   # ethos baudrate can be configured from make command
   ETHOS_BAUDRATE ?= 115200
   CFLAGS += -DETHOS_BAUDRATE=$(ETHOS_BAUDRATE)
 
- # make sure ethos and uhcpd are built
+  # make sure ethos and uhcpd are built
   TERMDEPS += host-tools
 
   # For local testing, run
@@ -66,12 +50,6 @@ ifeq (1,$(USE_ETHOS))
   export TAP ?= riot0
   TERMPROG = $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS = $(TAP) $(PORT)
-endif
-
-ifneq (,$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
-  $(info Using low-memory configuration for microcoap_server.)
-  ## low-memory tuning values
-  USEMODULE += prng_minstd
 endif
 
 # Ensure both slot bin files are always generated and linked to avoid compiling
@@ -85,20 +63,15 @@ BUILD_FILES += $(SLOT_RIOT_ELFS:%.elf=%.bin)
 # submitted along with the test jobs.
 TEST_EXTRA_FILES += $(SLOT_RIOT_ELFS)
 
-# Change this to 0 show compiler invocation lines by default:
-QUIET ?= 1
-
 # Currently no libcoap is available on the Pi-fleet
 TEST_ON_CI_BLACKLIST = all
 
 include $(RIOTBASE)/Makefile.include
 
-ifneq (,$(filter $(BOARD),$(LOW_MEMORY_BOARDS)))
-  # lower pktbuf buffer size
-  # Set GNRC_PKTBUF_SIZE via CFLAGS if not being set via Kconfig.
-  ifndef CONFIG_GNRC_PKTBUF_SIZE
-    CFLAGS += -DCONFIG_GNRC_PKTBUF_SIZE=1000
-  endif
+# lower pktbuf size to something sufficient for this application
+# Set GNRC_PKTBUF_SIZE via CFLAGS if not being set via Kconfig.
+ifndef CONFIG_GNRC_PKTBUF_SIZE
+  CFLAGS += -DCONFIG_GNRC_PKTBUF_SIZE=2000
 endif
 
 # Set a custom channel if needed
