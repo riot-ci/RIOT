@@ -73,27 +73,27 @@ typedef struct {
  * @brief       Stats per peer struct
  */
 typedef struct {
-    uint8_t  l2_addr[L2UTIL_ADDR_MAX_LEN]; /**< Link layer address of the neighbor */
-    uint8_t  l2_addr_len;   /**< Length of netstats_nb::l2_addr */
-    uint8_t  freshness;     /**< Freshness counter */
-    uint16_t last_updated;  /**< seconds timestamp of last update */
-    uint16_t last_halved;   /**< seconds timestamp of last halving */
-#if IS_USED(MODULE_NETSTATS_NEIGHBOR_ETX) || DOXYGEN
-    uint16_t etx;           /**< ETX of this peer */
-#endif
 #if IS_USED(MODULE_NETSTATS_NEIGHBOR_TX_TIME) || DOXYGEN
     uint32_t time_tx_avg;   /**< Average frame TX time in µs */
 #endif
-#if IS_USED(MODULE_NETSTATS_NEIGHBOR_RSSI) || DOXYGEN
-    uint8_t  rssi;          /**< Average RSSI of received frames in abs([dBm]) */
-#endif
-#if IS_USED(MODULE_NETSTATS_NEIGHBOR_LQI) || DOXYGEN
-    uint8_t  lqi;           /**< Average LQI of received frames */
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_ETX) || DOXYGEN
+    uint16_t etx;           /**< ETX of this peer */
 #endif
 #if IS_USED(MODULE_NETSTATS_NEIGHBOR_COUNT) || DOXYGEN
     uint16_t tx_count;      /**< Number of sent frames to this peer */
     uint16_t tx_fail;       /**< Number of sent frames that did not get ACKed */
     uint16_t rx_count;      /**< Number of received frames */
+#endif
+    uint16_t last_updated;  /**< seconds timestamp of last update */
+    uint16_t last_halved;   /**< seconds timestamp of last halving */
+    uint8_t  l2_addr[L2UTIL_ADDR_MAX_LEN]; /**< Link layer address of the neighbor */
+    uint8_t  l2_addr_len;   /**< Length of netstats_nb::l2_addr */
+    uint8_t  freshness;     /**< Freshness counter */
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_RSSI) || DOXYGEN
+    uint8_t  rssi;          /**< Average RSSI of received frames in abs([dBm]) */
+#endif
+#if IS_USED(MODULE_NETSTATS_NEIGHBOR_LQI) || DOXYGEN
+    uint8_t  lqi;           /**< Average LQI of received frames */
 #endif
 } netstats_nb_t;
 
