@@ -3,9 +3,6 @@ BOARD ?= samr21-xpro
 
 include ../Makefile.tests_common
 
-# Use a terminal that does not introduce extra characters into the stream.
-RIOT_TERMINAL ?= socat
-
 # Include packages that pull up and auto-init the link layer.
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
