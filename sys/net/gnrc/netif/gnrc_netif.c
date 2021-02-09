@@ -20,6 +20,7 @@
 #include <string.h>
 #include <kernel_defines.h>
 
+#include "bitarithm.h"
 #include "bitfield.h"
 #include "event.h"
 #include "net/ethernet.h"
@@ -52,9 +53,9 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-#define THREAD_FLAG_IRQ     (1u << 0)
-#define THREAD_FLAG_RX_DONE (1u << 1)
-#define THREAD_FLAG_TX_DONE (1u << 2)
+#define THREAD_FLAG_IRQ         BIT0
+#define THREAD_FLAG_RX_DONE     BIT1
+#define THREAD_FLAG_TX_DONE     BIT2
 
 static void _update_l2addr_from_dev(gnrc_netif_t *netif);
 static void _configure_netdev(netdev_t *dev);
@@ -1539,7 +1540,6 @@ static gnrc_pktsnip_t * _tx_succeeded(gnrc_netif_t *netif, uint32_t bytes_send)
 static gnrc_pktsnip_t * _process_events_await_msg(gnrc_netif_t *netif, netdev_t *dev, msg_t *msg,
                                                   gnrc_pktsnip_t *tx_pkt)
 {
-    /* Only messages used for event handling */
     DEBUG("gnrc_netif: waiting for incoming events or messages\n");
     const thread_flags_t flags_mask = THREAD_FLAG_IRQ | THREAD_FLAG_RX_DONE | THREAD_FLAG_TX_DONE
                                     | THREAD_FLAG_MSG_WAITING;
