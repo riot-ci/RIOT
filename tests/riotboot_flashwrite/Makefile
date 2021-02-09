@@ -7,9 +7,6 @@ include ../Makefile.tests_common
 RIOT_TERMINAL ?= socat
 
 # Include packages that pull up and auto-init the link layer.
-# NOTE: if uncommented 6LoWPAN will be included if IEEE802.15.4
-# devices are present
-# USEMODULE += gnrc_netdev_default
 USEMODULE += auto_init_gnrc_netif
 # Specify the mandatory networking modules for IPv6 and UDP
 USEMODULE += gnrc_ipv6_default
@@ -28,7 +25,8 @@ USEMODULE += shell_commands
 USEMODULE += riotboot_flashwrite
 FEATURES_REQUIRED += riotboot
 
-# Change this to 0 to not use ethos
+# Change this to 0 to not use ethos and instead include 6LoWPAN if
+# IEEE802.15.4 devices are present
 USE_ETHOS ?= 1
 
 ifeq (1,$(USE_ETHOS))
@@ -50,6 +48,8 @@ ifeq (1,$(USE_ETHOS))
   export TAP ?= riot0
   TERMPROG = $(RIOTTOOLS)/ethos/ethos
   TERMFLAGS = $(TAP) $(PORT)
+else
+  USEMODULE += gnrc_netdev_default
 endif
 
 # Ensure both slot bin files are always generated and linked to avoid compiling
