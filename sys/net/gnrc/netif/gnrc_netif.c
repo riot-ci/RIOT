@@ -1481,7 +1481,7 @@ static void _tx_failed(gnrc_netif_t *netif, int error_code, gnrc_pktsnip_t *pkt,
         LOG_ERROR("gnrc_netif: can't queue packet for sending\n");
         /* If we got here, it means the device was busy and the pkt queue
          * was full. The packet should be dropped here anyway */
-        -error_code = ENOMEM;
+        error_code = -ENOMEM;
     }
 #endif /* IS_USED(MODULE_GNRC_NETIF_PKTQ) */
     /* remove previously held packet */
