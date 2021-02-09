@@ -79,6 +79,7 @@ int congure_test_call_init(int argc, char **argv)
 {
     congure_test_snd_t *c = congure_test_get_state();
     uint32_t ctx;
+    size_t arglen;
 
     if (!_check_driver(c)) {
         return 1;
@@ -87,11 +88,12 @@ int congure_test_call_init(int argc, char **argv)
         print_str("{\"error\":\"`ctx` argument expected\"}\n");
         return 1;
     }
-    if ((argv[1][0] != '0') && (argv[1][1] != 'x')) {
+    arglen = strlen(argv[1]);
+    if ((arglen < 3) || ((argv[1][0] != '0') && (argv[1][1] != 'x'))) {
         print_str("{\"error\":\"`ctx` expected to be hex\"}\n");
         return 1;
     }
-    ctx = scn_u32_hex(&argv[1][2], strlen(argv[1]) - 2);
+    ctx = scn_u32_hex(&argv[1][2], arglen - 2);
     c->super.driver->init(&c->super, (void *)((intptr_t)ctx));
     return 0;
 }
