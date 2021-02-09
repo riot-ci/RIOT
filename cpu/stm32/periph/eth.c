@@ -502,12 +502,10 @@ static int stm32_eth_send(netdev_t *netdev, const struct iolist *iolist)
 
     /* start TX */
     ETH->DMATPDR = 0;
-    /* await completion */
     if (IS_ACTIVE(ENABLE_DEBUG_VERBOSE)) {
         DEBUG("[stm32_eth] Started to send %u B via DMA\n", bytes_to_send);
     }
 
-    DEBUG("[stm32_eth] Started to send %u B via DMA\n", bytes_to_send);
     return 0;
 }
 
