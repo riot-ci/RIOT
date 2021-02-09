@@ -357,8 +357,8 @@ netstats_nb_t *netstats_nb_update_tx(netif_t *dev, netstats_nb_result_t result,
      * from getting out of sync. */
     do {
         stats = netstats_nb_get_recorded(dev, &time_tx);
-    } while (cib_avail(&dev->neighbors.stats_idx) &&
-            ((now - time_tx) > NETSTATS_NB_TX_TIMEOUT_MS * US_PER_MS));
+    } while (cib_avail(&dev->neighbors.stats_idx)
+             && ((now - time_tx) > NETSTATS_NB_TX_TIMEOUT_MS * US_PER_MS));
 
     /* Nothing to do for multicast or if packet was not sent */
     if (result == NETSTATS_NB_BUSY || stats == NULL) {
