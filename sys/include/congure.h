@@ -98,8 +98,8 @@ typedef struct {
      */
     bool clean;
     /**
-     * @brief   the peer-reported window size in caller defined units. Set to
-     *          TODO if not supplied by the protocol.
+     * @brief   the peer-reported window size in caller defined units. Leave
+     *          0 if not supplied by the protocol.
      */
     congure_wnd_size_t wnd;
     /**
