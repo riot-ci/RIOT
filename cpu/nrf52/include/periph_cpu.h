@@ -83,6 +83,7 @@ enum {
     NRF52_AIN6 = 6,         /**< Analog Input 6 */
     NRF52_AIN7 = 7,         /**< Analog Input 7 */
     NRF52_VDD  = 8,         /**< VDD, not useful if VDD is reference... */
+    NRF52_VDDHDIV5 = 0x0c,  /**< VDDH divided by 5 */
 };
 
 #ifndef DOXYGEN
