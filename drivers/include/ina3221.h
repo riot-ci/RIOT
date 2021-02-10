@@ -317,7 +317,7 @@ typedef struct {
  *
  * @return      0, on success
  * @return      -EIO, if I2C bus acquirement failed
- * @return      -ENOTRECOVERABLE, if device could not be reset
+ * @return      -ENODEV, if device could not be reset
  * @return      @see i2c_read_regs
  * @return      @see i2c_write_regs
  */
@@ -332,9 +332,8 @@ int ina3221_reset(ina3221_t *dev);
  * @return      0, on success
  * @return      -EFAULT, if NULL pointer was passed
  * @return      -EIO, if I2C bus acquirement failed
- * @return      -ENXIO, if manufacturer ID does not match
- * @return      -ENODEV, if DIE ID does not match
- * @return      -ENOTRECOVERABLE, if reset failed
+ * @return      -ENXIO, if manufacturer ID or DIE ID does not match
+ * @return      -ENODEV, if reset failed
  * @return      -EINVAL, if configuration could not be applied
  * @return      @see i2c_read_regs
  * @return      @see i2c_write_regs

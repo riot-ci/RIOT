@@ -112,7 +112,7 @@ int ina3221_reset(ina3221_t *dev)
         return status;
     }
     if (config != INA3221_DEFCONFIG) {
-        return -ENOTRECOVERABLE;
+        return -ENODEV;
     }
     dev->params.config = INA3221_DEFCONFIG;
     return 0;
@@ -138,10 +138,10 @@ int ina3221_init(ina3221_t *dev, const ina3221_params_t *params)
         return status;
     }
     if (id != INA3221_DIE_ID) {
-        return -ENODEV;
+        return -ENXIO;
     }
     if (ina3221_reset(dev) != 0) {
-        return -ENOTRECOVERABLE;
+        return -ENODEV;
     }
     uint16_t cfg;
     if ((ina3221_set_config(dev, params->config) != 0) ||
