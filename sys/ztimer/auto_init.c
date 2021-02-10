@@ -60,8 +60,8 @@
 
 /* #if CONFIG_ZTIMER_USEC_TYPE_PERIPH_TIMER
  * replaces #if MODULE_ZTIMER_PERIPH_TIMER
- * the ztimer_periph_timer is allways available
- * haveing an (1) config defined in ztimer/config.h
+ * the ztimer_periph_timer is always available
+ * having an (1) config defined in ztimer/config.h
  */
 
 #if CONFIG_ZTIMER_USEC_TYPE_PERIPH_TIMER
