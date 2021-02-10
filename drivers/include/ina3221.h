@@ -673,7 +673,12 @@ int ina3221_set_enable_channel(ina3221_t *dev, ina3221_ch_t ch);
  *
  * @return      0
  */
-int ina3221_get_enable_channel(const ina3221_t *dev, ina3221_ch_t *ch);
+static inline int ina3221_get_enable_channel(const ina3221_t *dev,
+                                             ina3221_ch_t *ch)
+{
+    *ch = ina3221_config_get_enabled_channels(dev->params.config);
+    return 0;
+}
 
 /**
  * @brief Update number of samples and write to configuration register
@@ -696,7 +701,12 @@ int ina3221_set_num_samples(ina3221_t *dev, ina3221_num_samples_t ns);
  *
  * @return      0
  */
-int ina3221_get_num_samples(const ina3221_t *dev, ina3221_num_samples_t *ns);
+static inline int ina3221_get_num_samples(const ina3221_t *dev,
+                                          ina3221_num_samples_t *ns)
+{
+    *ns = ina3221_config_get_num_samples(dev->params.config);
+    return 0;
+}
 
 /**
  * @brief Update conversion time of bus voltage ADC and write to configuration register
@@ -720,8 +730,12 @@ int ina3221_set_conv_time_bus_adc(ina3221_t *dev,
  *
  * @return      0
  */
-int ina3221_get_conv_time_bus_adc(const ina3221_t *dev,
-                                  ina3221_conv_time_bus_adc_t *ctb);
+static inline int ina3221_get_conv_time_bus_adc(const ina3221_t *dev,
+                                                ina3221_conv_time_bus_adc_t *ctb)
+{
+    *ctb = ina3221_config_get_conv_time_bus(dev->params.config);
+    return 0;
+}
 
 /**
  * @brief Update conversion time of shunt voltage ADC and write to configuration register
@@ -745,8 +759,12 @@ int ina3221_set_conv_time_shunt_adc(ina3221_t *dev,
  *
  * @return      0
  */
-int ina3221_get_conv_time_shunt_adc(const ina3221_t *dev,
-                                    ina3221_conv_time_shunt_adc_t *cts);
+static inline int ina3221_get_conv_time_shunt_adc(const ina3221_t *dev,
+                                                  ina3221_conv_time_shunt_adc_t *cts)
+{
+    *cts = ina3221_config_get_conv_time_shunt(dev->params.config);
+    return 0;
+}
 
 /**
  * @brief Update device operation mode
@@ -769,7 +787,11 @@ int ina3221_set_mode(ina3221_t *dev, ina3221_mode_t mode);
  *
  * @return      0
  */
-int ina3221_get_mode(const ina3221_t *dev, ina3221_mode_t *mode);
+static inline int ina3221_get_mode(const ina3221_t *dev, ina3221_mode_t *mode)
+{
+    *mode = ina3221_config_get_mode(dev->params.config);
+    return 0;
+}
 
 /**
  * @brief Enable channels for shunt voltage sum calculation
