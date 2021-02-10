@@ -212,7 +212,7 @@ typedef enum ina3221_enable_latch {
 /**
  * @brief Flags @see ina3221_channel_t
  */
-typedef int ina3221_ch_t;
+typedef unsigned ina3221_ch_t;
 
 /**
  * @brief INA3221 device parameters
