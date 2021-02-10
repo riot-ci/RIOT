@@ -30,10 +30,10 @@ static int read_bus_voltage(const void *dev, phydat_t *res)
 {
     ina3221_ch_t ch = 0;
     int32_t values[INA3221_NUM_CH] = { 0 };
-    ina3221_get_enable_channel((const ina3221_t *)dev, &ch);
+    ina3221_get_enable_channel(dev, &ch);
     if (ch) {
         int16_t voltage[INA3221_NUM_CH];
-        ch &= ina3221_read_bus_mv((const ina3221_t *)dev, voltage, NULL);
+        ch &= ina3221_read_bus_mv(dev, voltage, NULL);
         res->scale = -3; /* mV to V*/
         res->unit = UNIT_V;
         for (int i = 0; i < INA3221_NUM_CH; i++) {
@@ -48,10 +48,10 @@ static int read_current(const void *dev, phydat_t *res)
 {
     ina3221_ch_t ch = 0;
     int32_t current[INA3221_NUM_CH] = { 0 };
-    ina3221_get_enable_channel((const ina3221_t *)dev, &ch);
+    ina3221_get_enable_channel(dev, &ch);
     if (ch) {
         int32_t shunt_uv[INA3221_NUM_CH];
-        ch &= ina3221_read_shunt_uv((const ina3221_t *)dev, shunt_uv, NULL);
+        ch &= ina3221_read_shunt_uv(dev, shunt_uv, NULL);
         ina3221_calculate_current_ua(ch, ((const ina3221_t *)dev)->params.rshunt_mohm,
                                      shunt_uv, current);
         res->scale = -6; /* uA to A*/
@@ -65,13 +65,13 @@ static int read_power(const void *dev, phydat_t *res)
 {
     ina3221_ch_t ch = 0;
     int32_t power[INA3221_NUM_CH] = { 0 };
-    ina3221_get_enable_channel((const ina3221_t *)dev, &ch);
+    ina3221_get_enable_channel(dev, &ch);
     if (ch) {
         int32_t shunt_uv[INA3221_NUM_CH];
         int32_t current_ua[INA3221_NUM_CH];
         int16_t bus_mv[INA3221_NUM_CH];
-        ch &= ina3221_read_shunt_uv((const ina3221_t *)dev, shunt_uv, NULL);
-        ch &= ina3221_read_bus_mv((const ina3221_t *)dev, bus_mv, NULL);
+        ch &= ina3221_read_shunt_uv(dev, shunt_uv, NULL);
+        ch &= ina3221_read_bus_mv(dev, bus_mv, NULL);
         ina3221_calculate_current_ua(ch, ((const ina3221_t *)dev)->params.rshunt_mohm,
                                      shunt_uv, current_ua);
         ina3221_calculate_power_uw(ch, bus_mv, current_ua, power);
@@ -86,9 +86,9 @@ static int read_shunt_voltage_sum(const void *dev, phydat_t *res)
 {
     ina3221_ch_t ch = 0;
     int32_t shunt_voltage_sum = 0;
-    ina3221_get_enable_channel((const ina3221_t *)dev, &ch);
+    ina3221_get_enable_channel(dev, &ch);
     if (ch) {
-        ina3221_read_shunt_sum_uv((const ina3221_t *)dev, &shunt_voltage_sum, NULL);
+        ina3221_read_shunt_sum_uv(dev, &shunt_voltage_sum, NULL);
         res->scale = -6; /* uV to V*/
         res->unit = UNIT_V;
     }
@@ -113,7 +113,7 @@ static int configure_channel_sum(const void *dev, phydat_t *data)
                       (data->val[1] ? INA3221_CH2 : 0) |
                       (data->val[2] ? INA3221_CH3 : 0);
 
-    if (ina3221_set_enable_sum_channel((const ina3221_t *)dev, ch) != 0) {
+    if (ina3221_set_enable_sum_channel(dev, ch) != 0) {
         return -ECANCELED;
     }
     return INA3221_NUM_CH;
