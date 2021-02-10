@@ -30,7 +30,14 @@ TARGET_ARCH_RISCV ?= \
 TARGET_ARCH ?= $(TARGET_ARCH_RISCV)
 
 # define build specific options
-CFLAGS_CPU   = -march=rv32imac -mabi=ilp32 -mcmodel=medlow -msmall-data-limit=8
+CFLAGS_CPU   = -march=rv32imac -mabi=ilp32
+ifeq ($(TOOLCHAIN),llvm)
+  # Always use riscv32-none-elf as target triple for clang, as some
+  # autodetected gcc target triples are incompatible with clang
+  TARGET_ARCH := riscv32-none-elf
+else
+  CFLAGS_CPU += -mcmodel=medlow -msmall-data-limit=8
+endif
 CFLAGS_LINK  = -nostartfiles -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -g3
 CFLAGS_OPT  ?= -Os
