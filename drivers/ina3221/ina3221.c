@@ -30,7 +30,6 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-
 /* register addresses differ by 2 */
 #define INA3221_REG_CH_SHUNT_VOLTAGE(i) \
         (INA3221_REG_CH1_SHUNT_VOLTAGE + (i * 2))
