@@ -71,7 +71,7 @@ static inline void done(void)
 
 int adc_init(adc_t line)
 {
-    if (line >= ADC_NUMOF) {
+    if ((line >= ADC_NUMOF) && (line != NRF52_VDDHDIV5)) {
         return -1;
     }
 
@@ -107,7 +107,7 @@ int adc_init(adc_t line)
 
 int32_t adc_sample(adc_t line, adc_res_t res)
 {
-    assert(line < ADC_NUMOF);
+    assert((line < ADC_NUMOF) || (line == NRF52_VDDHDIV5));
 
     /* check if resolution is valid */
     if (res > 2) {
