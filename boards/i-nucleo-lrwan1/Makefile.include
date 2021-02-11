@@ -10,3 +10,6 @@ OPENOCD_RESET_USE_CONNECT_ASSERT_SRST ?= 1
 
 # this board uses openocd
 PROGRAMMER ?= openocd
+
+# Only openocd programmer is supported
+PROGRAMMERS_SUPPORTED ?= openocd

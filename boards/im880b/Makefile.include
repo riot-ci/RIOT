@@ -11,3 +11,6 @@ CFLAGS+=-DSX127X_RX_SWITCH
 # this board uses openocd
 PROGRAMMER ?= openocd
 OPENOCD_DEBUG_ADAPTER ?= stlink
+
+# Only openocd programmer is supported
+PROGRAMMERS_SUPPORTED ?= openocd
