@@ -38,7 +38,7 @@ ifeq ($(TOOLCHAIN),llvm)
 else
   CFLAGS_CPU += -mcmodel=medlow -msmall-data-limit=8
 endif
-CFLAGS_LINK  = -nostartfiles -ffunction-sections -fdata-sections
+CFLAGS_LINK  = -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -g3
 CFLAGS_OPT  ?= -Os
 
@@ -49,4 +49,4 @@ LINKFLAGS += -T$(LINKER_SCRIPT)
 CFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG) $(CFLAGS_OPT) $(CFLAGS_LINK)
 ASFLAGS += $(CFLAGS_CPU) $(CFLAGS_DBG)
 # export linker flags
-LINKFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT) -Wl,--gc-sections -static -lgcc
+LINKFLAGS += $(CFLAGS_CPU) $(CFLAGS_LINK) $(CFLAGS_DBG) $(CFLAGS_OPT) -nostartfiles -Wl,--gc-sections -static -lgcc
