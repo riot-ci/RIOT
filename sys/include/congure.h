@@ -159,11 +159,11 @@ struct congure_snd_driver {
     void (*report_msg_discarded)(congure_snd_t *c, unsigned msg_size);
 
     /**
-     * @brief   Report that the ACK for a message timed out.
+     * @brief   Report that the ACKs for a collection of messages timed out.
      *
      * @note    As many congestion control algorithms do not distinguish loss
      *          and ACK timeout, this method and
-     *          congure_snd_t::report_msg_lost need to have the same
+     *          congure_snd_t::report_msgs_lost need to have the same
      *          signature so the same function can be used here
      *
      * @param[in]   c           The CongURE state object.
@@ -171,25 +171,25 @@ struct congure_snd_driver {
      *                          timed out. The list may be changed by the
      *                          method.
      */
-    void (*report_msg_timeout)(congure_snd_t *c, congure_snd_msg_t *msgs);
+    void (*report_msgs_timeout)(congure_snd_t *c, congure_snd_msg_t *msgs);
 
     /**
-     * @brief   Report that a message is known to be lost.
+     * @brief   Report that a collection of messages that is known to be lost.
      *
      * One indicator for a lost message may e.g. be the reception of an ACK of a
      * later sent packet, but not a ACK timeout (see
-     * congure_snd_driver_t::report_msg_timeout() for that).
+     * congure_snd_driver_t::report_msgs_timeout() for that).
      *
      * @note    As many congestion control algorithms do not distinguish loss
      *          and ACK timeout, this method and
-     *          congure_snd_t::report_msg_timeout need to have the same
+     *          congure_snd_t::report_msgs_timeout need to have the same
      *          signature so the same function can be used here
      *
      * @param[in]   c           The CongURE state object.
      * @param[in]   msgs        A collection of messages that are known to
      *                          be lost. The list may be changed by the method.
      */
-    void (*report_msg_lost)(congure_snd_t *c, congure_snd_msg_t *msgs);
+    void (*report_msgs_lost)(congure_snd_t *c, congure_snd_msg_t *msgs);
 
     /**
      * @brief   Report that the ACK for a message was received.
