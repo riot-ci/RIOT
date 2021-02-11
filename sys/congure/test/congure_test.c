@@ -159,7 +159,7 @@ static int _call_report_msg_discarded(int argc, char **argv)
 }
 
 static int _call_report_msgs_timeout_lost(void (*method)(congure_snd_t *,
-                                                        congure_snd_msg_t *),
+                                                         congure_snd_msg_t *),
                                           int argc, char **argv)
 {
     static congure_snd_msg_t list_pool[CONFIG_CONGURE_TEST_LOST_MSG_POOL_SIZE];
@@ -356,6 +356,5 @@ int congure_test_call_report(int argc, char **argv)
     print_str("`\"}\n");
     return 1;
 }
-
 
 /** @} */
