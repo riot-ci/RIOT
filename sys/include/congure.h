@@ -66,18 +66,18 @@ typedef struct {
  * @brief   Object to represent a collection of sent messages.
  */
 typedef struct {
-    clist_node_t super;     /**< see @ref clist_node_t */
+    clist_node_t super;         /**< see @ref clist_node_t */
     /**
      * @brief   timestamp in milliseconds of when the message was sent.
      */
     ztimer_now_t send_time;
-    unsigned size;          /**< size in initiator-defined units */
+    congure_wnd_size_t size;    /**< size in initiator-defined units */
     /**
      * @brief   number of times the message has already been resent.
      *
      * This does not include the first send.
      */
-    unsigned resends;
+    uint8_t resends;
 } congure_snd_msg_t;
 
 /**
@@ -89,19 +89,22 @@ typedef struct {
      */
     ztimer_now_t recv_time;
     uint32_t id;            /**< ID of the message the ACK is for */
-    unsigned size;          /**< size of the ACK in initiator-defined units */
+    /**
+     * @brief size of the ACK in initiator-defined units
+     */
+    congure_wnd_size_t size;
+    /**
+     * @brief   the peer-reported window size in caller defined units. Leave
+     *          0 if not supplied by the protocol.
+     */
+    congure_wnd_size_t wnd;
     /**
      * @brief   true, if ACK only contains an ACK, false if not
      *
      * This e.g. can be used to tell the congestion control mechanism that the
      * SYN or FIN tag are cleared in the ACK with TCP.
      */
-    bool clean;
-    /**
-     * @brief   the peer-reported window size in caller defined units. Leave
-     *          0 if not supplied by the protocol.
-     */
-    congure_wnd_size_t wnd;
+    uint16_t clean;
     /**
      * @brief   the peer-reported time in milliseconds the ACK was delayed
      *          since message reception. Leave 0 if not supplied by the
