@@ -158,9 +158,9 @@ static int _call_report_msg_discarded(int argc, char **argv)
     return 0;
 }
 
-static int _call_report_msg_timeout_lost(void (*method)(congure_snd_t *,
+static int _call_report_msgs_timeout_lost(void (*method)(congure_snd_t *,
                                                         congure_snd_msg_t *),
-                                         int argc, char **argv)
+                                          int argc, char **argv)
 {
     static congure_snd_msg_t list_pool[CONFIG_CONGURE_TEST_LOST_MSG_POOL_SIZE];
     clist_node_t msgs = { .next = NULL };
@@ -212,20 +212,20 @@ static int _call_report_msg_timeout_lost(void (*method)(congure_snd_t *,
     return 0;
 }
 
-static int _call_report_msg_timeout(int argc, char **argv)
+static int _call_report_msgs_timeout(int argc, char **argv)
 {
     congure_test_snd_t *c = congure_test_get_state();
 
-    return _call_report_msg_timeout_lost(c->super.driver->report_msg_timeout,
-                                         argc, argv);
+    return _call_report_msgs_timeout_lost(c->super.driver->report_msgs_timeout,
+                                          argc, argv);
 }
 
-static int _call_report_msg_lost(int argc, char **argv)
+static int _call_report_msgs_lost(int argc, char **argv)
 {
     congure_test_snd_t *c = congure_test_get_state();
 
-    return _call_report_msg_timeout_lost(c->super.driver->report_msg_lost,
-                                         argc, argv);
+    return _call_report_msgs_timeout_lost(c->super.driver->report_msgs_lost,
+                                          argc, argv);
 }
 
 static int _call_report_msg_acked(int argc, char **argv)
@@ -339,11 +339,11 @@ int congure_test_call_report(int argc, char **argv)
     else if (strcmp(argv[1], "msg_discarded") == 0) {
         return _call_report_msg_discarded(argc - 1, &argv[1]);
     }
-    else if (strcmp(argv[1], "msg_timeout") == 0) {
-        return _call_report_msg_timeout(argc - 1, &argv[1]);
+    else if (strcmp(argv[1], "msgs_timeout") == 0) {
+        return _call_report_msgs_timeout(argc - 1, &argv[1]);
     }
-    else if (strcmp(argv[1], "msg_lost") == 0) {
-        return _call_report_msg_lost(argc - 1, &argv[1]);
+    else if (strcmp(argv[1], "msgs_lost") == 0) {
+        return _call_report_msgs_lost(argc - 1, &argv[1]);
     }
     else if (strcmp(argv[1], "msg_acked") == 0) {
         return _call_report_msg_acked(argc - 1, &argv[1]);
