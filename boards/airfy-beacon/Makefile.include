@@ -7,6 +7,7 @@ OPENOCD_DEBUG_ADAPTER ?= stlink
 STLINK_VERSION ?= 2
 
 PROGRAMMER = openocd
+PROGRAMMERS_SUPPORTED ?= openocd
 
 # include nrf51 boards common configuration
 include $(RIOTBOARD)/common/nrf51/Makefile.include
