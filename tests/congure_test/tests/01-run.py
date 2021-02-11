@@ -85,14 +85,14 @@ class TestCongUREWithoutSetup(TestCongUREBase):
                     'msg_size': 0,
                 },
             },
-            'report_msg_timeout': {
+            'report_msgs_timeout': {
                 'calls': 0,
                 'last_args': {
                     'c': '0x00000000',
                     'msgs': [],
                 },
             },
-            'report_msg_lost': {
+            'report_msgs_lost': {
                 'calls': 0,
                 'last_args': {
                     'c': '0x00000000',
@@ -244,7 +244,7 @@ class TestCongUREWithSetup(TestCongUREBase):
         self.assertEqual(res['report_msg_discarded']['last_args']['msg_size'],
                          msg_size)
 
-    def _report_msg_timeout_lost_acked_not_enough_args(self, cmd, exp_params):
+    def _report_msgs_timeout_lost_acked_not_enough_args(self, cmd, exp_params):
         args = ""
         # gradually append more arguments but never get full set
         for i in range(len(exp_params) - 1):
@@ -256,7 +256,7 @@ class TestCongUREWithSetup(TestCongUREBase):
                                  ', '.join(f'`{p}`' for p in exp_params))
             })
 
-    def _report_msg_timeout_lost_argc_not_mod_3(self, cmd):
+    def _report_msgs_timeout_lost_argc_not_mod_3(self, cmd):
         res = self.exec_cmd(f'cong_report {cmd} 1 2 3 4')
         self.assertEqual(res, {
             'error': 'Number of arguments must be divisible by 3'
@@ -266,7 +266,7 @@ class TestCongUREWithSetup(TestCongUREBase):
             'error': 'Number of arguments must be divisible by 3'
         })
 
-    def _report_msg_timeout_lost_acked_args_not_int(self, cmd, exp_params):
+    def _report_msgs_timeout_lost_acked_args_not_int(self, cmd, exp_params):
         # generate list of arguments that are exp_params string parameters and
         # exp_params integer parameters
         args = [f"arg{i}" for i in range(len(exp_params))] + \
@@ -285,7 +285,7 @@ class TestCongUREWithSetup(TestCongUREBase):
                 'error': f'`{exp_params[i + 1]}` expected to be integer'
             })
 
-    def _report_msg_timeout_lost_exceed_msg_pool_size(self, cmd):
+    def _report_msgs_timeout_lost_exceed_msg_pool_size(self, cmd):
         # expected to be set by Makefile
         pool_size = int(os.environ.get('LOST_MSG_POOL_SIZE', 4))
         args = ' '.join('1' for _ in range(3 * pool_size))
@@ -295,7 +295,7 @@ class TestCongUREWithSetup(TestCongUREBase):
             'error': 'List element pool depleted'
         })
 
-    def _report_msg_timeout_lost_success(self, cmd):
+    def _report_msgs_timeout_lost_success(self, cmd):
         msgs = [{'send_time': 76543, 'size': 1234, 'resends': 2},
                 {'send_time': 5432, 'size': 987, 'resends': 32}]
         res = self.exec_cmd(
@@ -312,46 +312,46 @@ class TestCongUREWithSetup(TestCongUREBase):
         self.assertEqual(res[f'report_{cmd}']['last_args']['msgs'],
                          msgs)
 
-    def test_report_msg_timeout_not_enough_args(self):
-        self._report_msg_timeout_lost_acked_not_enough_args(
-            'msg_timeout', ['msg_send_time', 'msg_size', 'msg_resends']
+    def test_report_msgs_timeout_not_enough_args(self):
+        self._report_msgs_timeout_lost_acked_not_enough_args(
+            'msgs_timeout', ['msg_send_time', 'msg_size', 'msg_resends']
         )
 
-    def test_report_msg_timeout_argc_not_mod_3(self):
-        self._report_msg_timeout_lost_argc_not_mod_3('msg_timeout')
+    def test_report_msgs_timeout_argc_not_mod_3(self):
+        self._report_msgs_timeout_lost_argc_not_mod_3('msgs_timeout')
 
-    def test_report_msg_timeout_args_not_int(self):
-        self._report_msg_timeout_lost_acked_args_not_int(
-            'msg_timeout', ['msg_send_time', 'msg_size', 'msg_resends']
+    def test_report_msgs_timeout_args_not_int(self):
+        self._report_msgs_timeout_lost_acked_args_not_int(
+            'msgs_timeout', ['msg_send_time', 'msg_size', 'msg_resends']
         )
 
-    def test_report_msg_timeout_exceed_msg_pool_size(self):
-        self._report_msg_timeout_lost_exceed_msg_pool_size('msg_timeout')
+    def test_report_msgs_timeout_exceed_msg_pool_size(self):
+        self._report_msgs_timeout_lost_exceed_msg_pool_size('msgs_timeout')
 
-    def test_report_msg_timeout_success(self):
-        self._report_msg_timeout_lost_success('msg_timeout')
+    def test_report_msgs_timeout_success(self):
+        self._report_msgs_timeout_lost_success('msgs_timeout')
 
-    def test_report_msg_lost_not_enough_args(self):
-        self._report_msg_timeout_lost_acked_not_enough_args(
-            'msg_lost', ['msg_send_time', 'msg_size', 'msg_resends']
+    def test_report_msgs_lost_not_enough_args(self):
+        self._report_msgs_timeout_lost_acked_not_enough_args(
+            'msgs_lost', ['msg_send_time', 'msg_size', 'msg_resends']
         )
 
-    def test_report_msg_lost_argc_not_mod_3(self):
-        self._report_msg_timeout_lost_argc_not_mod_3('msg_lost')
+    def test_report_msgs_lost_argc_not_mod_3(self):
+        self._report_msgs_timeout_lost_argc_not_mod_3('msgs_lost')
 
-    def test_report_msg_lost_msg_args_not_int(self):
-        self._report_msg_timeout_lost_acked_args_not_int(
-            'msg_lost', ['msg_send_time', 'msg_size', 'msg_resends']
+    def test_report_msgs_lost_msg_args_not_int(self):
+        self._report_msgs_timeout_lost_acked_args_not_int(
+            'msgs_lost', ['msg_send_time', 'msg_size', 'msg_resends']
         )
 
-    def test_report_msg_lost_exceed_msg_pool_size(self):
-        self._report_msg_timeout_lost_exceed_msg_pool_size('msg_lost')
+    def test_report_msgs_lost_exceed_msg_pool_size(self):
+        self._report_msgs_timeout_lost_exceed_msg_pool_size('msgs_lost')
 
-    def test_report_msg_lost_success(self):
-        self._report_msg_timeout_lost_success('msg_lost')
+    def test_report_msgs_lost_success(self):
+        self._report_msgs_timeout_lost_success('msgs_lost')
 
     def test_report_msg_acked_not_enough_args(self):
-        self._report_msg_timeout_lost_acked_not_enough_args(
+        self._report_msgs_timeout_lost_acked_not_enough_args(
             'msg_acked', [
                 'msg_send_time', 'msg_size', 'msg_resends', 'ack_recv_time',
                 'ack_id', 'ack_size', 'ack_clean', 'ack_wnd', 'ack_delay',
@@ -360,7 +360,7 @@ class TestCongUREWithSetup(TestCongUREBase):
         )
 
     def test_report_msg_acked_msg_args_not_int(self):
-        self._report_msg_timeout_lost_acked_args_not_int(
+        self._report_msgs_timeout_lost_acked_args_not_int(
             'msg_acked', [
                 'msg_send_time', 'msg_size', 'msg_resends', 'ack_recv_time',
                 'ack_id', 'ack_size', 'ack_clean', 'ack_wnd', 'ack_delay',

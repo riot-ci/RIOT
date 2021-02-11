@@ -190,22 +190,22 @@ static void _print_report_msg_discarded_state(void)
     print_str("},");
 }
 
-static void _print_report_msg_timeout_state(void)
+static void _print_report_msgs_timeout_state(void)
 {
-    print_str("\"report_msg_timeout\":{");
+    print_str("\"report_msgs_timeout\":{");
 
     print_str("\"calls\":");
-    print_u32_dec(_congure_state.report_msg_timeout_calls);
+    print_u32_dec(_congure_state.report_msgs_timeout_calls);
     print_str(",");
 
     print_str("\"last_args\":{");
 
     print_str("\"c\":\"0x");
-    print_u32_hex((intptr_t)_congure_state.report_msg_timeout_args.c);
+    print_u32_hex((intptr_t)_congure_state.report_msgs_timeout_args.c);
     print_str("\",");
 
     print_str("\"msgs\":[");
-    clist_foreach((clist_node_t *)&_congure_state.report_msg_timeout_args.msgs,
+    clist_foreach((clist_node_t *)&_congure_state.report_msgs_timeout_args.msgs,
                   _print_congure_snd_msg, NULL);
     print_str("]");
 
@@ -214,22 +214,22 @@ static void _print_report_msg_timeout_state(void)
     print_str("},");
 }
 
-static void _print_report_msg_lost_state(void)
+static void _print_report_msgs_lost_state(void)
 {
-    print_str("\"report_msg_lost\":{");
+    print_str("\"report_msgs_lost\":{");
 
     print_str("\"calls\":");
-    print_u32_dec(_congure_state.report_msg_lost_calls);
+    print_u32_dec(_congure_state.report_msgs_lost_calls);
     print_str(",");
 
     print_str("\"last_args\":{");
 
     print_str("\"c\":\"0x");
-    print_u32_hex((intptr_t)_congure_state.report_msg_lost_args.c);
+    print_u32_hex((intptr_t)_congure_state.report_msgs_lost_args.c);
     print_str("\",");
 
     print_str("\"msgs\":[");
-    clist_foreach((clist_node_t *)&_congure_state.report_msg_lost_args.msgs,
+    clist_foreach((clist_node_t *)&_congure_state.report_msgs_lost_args.msgs,
                   _print_congure_snd_msg, NULL);
     print_str("]");
 
@@ -321,8 +321,8 @@ static int _json_statham(int argc, char **argv)
     _print_inter_msg_interval_state();
     _print_report_msg_sent_state();
     _print_report_msg_discarded_state();
-    _print_report_msg_timeout_state();
-    _print_report_msg_lost_state();
+    _print_report_msgs_timeout_state();
+    _print_report_msgs_lost_state();
     _print_report_msg_acked_state();
     _print_report_ecn_ce_state();
 

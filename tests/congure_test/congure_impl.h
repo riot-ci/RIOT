@@ -28,8 +28,8 @@ typedef struct {
     uint8_t inter_msg_interval_calls;
     uint8_t report_msg_sent_calls;
     uint8_t report_msg_discarded_calls;
-    uint8_t report_msg_timeout_calls;
-    uint8_t report_msg_lost_calls;
+    uint8_t report_msgs_timeout_calls;
+    uint8_t report_msgs_lost_calls;
     uint8_t report_msg_acked_calls;
     uint8_t report_ecn_ce_calls;
     struct {
@@ -51,11 +51,11 @@ typedef struct {
     struct {
         congure_snd_t *c;
         congure_snd_msg_t *msgs;
-    } report_msg_timeout_args;
+    } report_msgs_timeout_args;
     struct {
         congure_snd_t *c;
         congure_snd_msg_t *msgs;
-    } report_msg_lost_args;
+    } report_msgs_lost_args;
     struct {
         congure_snd_t *c;
         congure_snd_msg_t *msg;

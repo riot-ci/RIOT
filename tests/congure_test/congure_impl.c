@@ -19,8 +19,9 @@ static void _snd_init(congure_snd_t *cong, void *ctx);
 static int32_t _snd_inter_msg_interval(congure_snd_t *cong, unsigned msg_size);
 static void _snd_report_msg_sent(congure_snd_t *cong, unsigned msg_size);
 static void _snd_report_msg_discarded(congure_snd_t *cong, unsigned msg_size);
-static void _snd_report_msg_lost(congure_snd_t *cong, congure_snd_msg_t *msgs);
-static void _snd_report_msg_timeout(congure_snd_t *cong, congure_snd_msg_t *msgs);
+static void _snd_report_msgs_lost(congure_snd_t *cong, congure_snd_msg_t *msgs);
+static void _snd_report_msgs_timeout(congure_snd_t *cong,
+                                     congure_snd_msg_t *msgs);
 static void _snd_report_msg_acked(congure_snd_t *cong, congure_snd_msg_t *msg,
                                   congure_snd_ack_t *ack);
 static void _snd_report_ecn_ce(congure_snd_t *cong, ztimer_now_t time);
@@ -30,8 +31,8 @@ static const congure_snd_driver_t _driver = {
     .inter_msg_interval = _snd_inter_msg_interval,
     .report_msg_sent = _snd_report_msg_sent,
     .report_msg_discarded = _snd_report_msg_discarded,
-    .report_msg_timeout = _snd_report_msg_timeout,
-    .report_msg_lost = _snd_report_msg_lost,
+    .report_msgs_timeout = _snd_report_msgs_timeout,
+    .report_msgs_lost = _snd_report_msgs_lost,
     .report_msg_acked = _snd_report_msg_acked,
     .report_ecn_ce = _snd_report_ecn_ce,
 };
@@ -82,22 +83,23 @@ static void _snd_report_msg_discarded(congure_snd_t *cong, unsigned msg_size)
     c->report_msg_discarded_args.msg_size = msg_size;
 }
 
-static void _snd_report_msg_lost(congure_snd_t *cong, congure_snd_msg_t *msgs)
+static void _snd_report_msgs_lost(congure_snd_t *cong, congure_snd_msg_t *msgs)
 {
     congure_test_snd_t *c = (congure_test_snd_t *)cong;
 
-    c->report_msg_lost_calls++;
-    c->report_msg_lost_args.c = &c->super;
-    c->report_msg_lost_args.msgs = msgs;
+    c->report_msgs_lost_calls++;
+    c->report_msgs_lost_args.c = &c->super;
+    c->report_msgs_lost_args.msgs = msgs;
 }
 
-static void _snd_report_msg_timeout(congure_snd_t *cong, congure_snd_msg_t *msgs)
+static void _snd_report_msgs_timeout(congure_snd_t *cong,
+                                     congure_snd_msg_t *msgs)
 {
     congure_test_snd_t *c = (congure_test_snd_t *)cong;
 
-    c->report_msg_timeout_calls++;
-    c->report_msg_timeout_args.c = &c->super;
-    c->report_msg_timeout_args.msgs = msgs;
+    c->report_msgs_timeout_calls++;
+    c->report_msgs_timeout_args.c = &c->super;
+    c->report_msgs_timeout_args.msgs = msgs;
 }
 
 static void _snd_report_msg_acked(congure_snd_t *cong, congure_snd_msg_t *msg,
