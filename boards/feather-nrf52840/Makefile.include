@@ -5,4 +5,6 @@ ifeq (,$(filter stdio_%,$(DISABLE_MODULE) $(USEMODULE)))
   RIOT_TERMINAL ?= jlink
 endif
 
+PROGRAMMERS_SUPPORTED ?= jlink
+
 include $(RIOTBOARD)/common/nrf52/Makefile.include

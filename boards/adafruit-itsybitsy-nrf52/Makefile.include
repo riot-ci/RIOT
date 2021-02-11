@@ -23,6 +23,8 @@ ifeq (nrfutil,$(PROGRAMMER))
   include $(RIOTMAKE)/tools/usb_board_reset.mk
 endif
 
+PROGRAMMERS_SUPPORTED ?= nrfutil
+
 %.hex.zip: %.hex
 	$(call check_cmd,$(FLASHER),Flash program and preparation tool)
 	$(FLASHER) dfu genpkg --dev-type 0x0052 --sd-req 0x00B6 --application $< $@

@@ -2,5 +2,8 @@
 OPENOCD_DEBUG_ADAPTER ?= dap
 PROGRAMMER ?= openocd
 
+# Only openocd programmer is supported
+PROGRAMMERS_SUPPORTED ?= openocd
+
 # use the common nrf52 config for the rest
 include $(RIOTBOARD)/common/nrf52/Makefile.include

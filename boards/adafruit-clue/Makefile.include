@@ -17,6 +17,8 @@ ifeq ($(PROGRAMMER),adafruit-nrfutil)
   endif
 endif
 
+PROGRAMMERS_SUPPORTED ?= adafruit-nrfutil
+
 term-delay:
 	sleep $(TERM_DELAY)
 

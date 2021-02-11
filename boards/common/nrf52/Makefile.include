@@ -23,3 +23,7 @@ ifneq (,$(filter $(BOARD),ruuvitag thingy52))
     $(error Cannot use OpenOCD with $(BOARD) board)
   endif
 endif
+
+# Remove blacklisted programmers from the default list of supported programmers
+PROGRAMMERS_SUPPORTED_DEFAULT ?= bmp jlink openocd $(PROGRAMMERS_SUPPORTED_EXTRA)
+PROGRAMMERS_SUPPORTED ?= $(filter-out $(PROGRAMMERS_BLACKLIST),$(PROGRAMMERS_SUPPORTED_DEFAULT))

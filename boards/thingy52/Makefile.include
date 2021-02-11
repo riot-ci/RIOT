@@ -5,5 +5,8 @@ ifeq (,$(filter stdio_%,$(DISABLE_MODULE) $(USEMODULE)))
   RIOT_TERMINAL ?= jlink
 endif
 
+# openocd doesn't fully work with this board
+PROGRAMMERS_BLACKLIST ?= openocd
+
 # use shared Makefile.include
 include $(RIOTBOARD)/common/nrf52/Makefile.include
