@@ -10,9 +10,11 @@ config CPU_ARCH_XTENSA
     select HAS_ARCH_ESP
 
 config CPU_ARCH_XTENSA_LX106
+    bool
     select CPU_ARCH_XTENSA
 
 config CPU_ARCH_XTENSA_LX6
+    bool
     select CPU_ARCH_XTENSA
 
 config CPU_COMMON_ESP
