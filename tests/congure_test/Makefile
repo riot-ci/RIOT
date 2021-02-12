@@ -1,5 +1,6 @@
 include ../Makefile.tests_common
 
+USEMODULE += congure_mock
 USEMODULE += congure_test
 USEMODULE += fmt
 USEMODULE += shell
