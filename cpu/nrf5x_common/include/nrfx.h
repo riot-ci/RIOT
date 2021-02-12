@@ -40,9 +40,9 @@ extern "C" {
  */
 static inline void nrfx_dcdc_init(void)
 {
-#ifdef NRF5X_ENABLE_DCDC
-    NRF_POWER->DCDCEN = 1;
-#endif
+    if (IS_ACTIVE(NRF5X_ENABLE_DCDC)) {
+        NRF_POWER->DCDCEN = 1;
+    }
 }
 
 #ifdef __cplusplus
