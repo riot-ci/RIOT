@@ -23,3 +23,6 @@ ifndef CONFIG_CONGURE_TEST_LOST_MSG_POOL_SIZE
 else
   export LOST_MSG_POOL_SIZE=$(CONFIG_CONGURE_TEST_LOST_MSG_POOL_SIZE)
 endif
+
+test:
+	pytest -v $(CURDIR)/tests/01-run.py
