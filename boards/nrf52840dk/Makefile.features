@@ -1,5 +1,7 @@
 CPU_MODEL = nrf52840xxaa
 
+FEATURES_PROVIDED += vdd_lc_filter_reg0
+
 include $(RIOTBOARD)/common/nrf52xxxdk/Makefile.features
 
 # Various other features (if any)
