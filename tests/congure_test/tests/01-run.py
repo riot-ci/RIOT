@@ -17,7 +17,7 @@ from riotctrl.shell.json import RapidJSONShellInteractionParser, rapidjson
 
 
 class TestCongUREBase(unittest.TestCase):
-    DEBUG = False
+    DEBUG = True
 
     @classmethod
     def setUpClass(cls):
