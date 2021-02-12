@@ -131,7 +131,7 @@ struct congure_snd_driver {
      * @brief   Get current interval between messages for pacing.
      *
      * @param[in]   c           The CongURE state object.
-     * @param[in]   msg_size    The size of the next message to sent in
+     * @param[in]   msg_size    The size of the next message to send in
      *                          caller-defined unit.
      *
      * @return  The current interval between sent messages in microseconds
