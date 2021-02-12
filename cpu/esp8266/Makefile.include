@@ -63,5 +63,3 @@ LINKFLAGS += -T$(RIOTCPU)/$(CPU)/ld/esp8266.peripherals.ld
 
 LINKFLAGS += -Wl,-wrap=pp_attach
 LINKFLAGS += -Wl,-wrap=pm_attach
-
-include $(RIOTMAKE)/arch/esp8266.inc.mk
