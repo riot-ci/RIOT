@@ -167,7 +167,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_init_success(self):
         ctx = 0x12345
-        res = self.exec_cmd(f'cong_init 0x{ctx:x}')
+        res = self.exec_cmd('cong_init 0x{ctx:x}'.format(ctx=ctx))
         self.assertIsNone(res)
         res = self.exec_cmd('state')
         self.assertEqual(res['init']['calls'], 1)
@@ -186,7 +186,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_inter_msg_interval_success(self):
         msg_size = 521
-        res = self.exec_cmd(f'cong_imi {msg_size}')
+        res = self.exec_cmd('cong_imi {msg_size}'.format(msg_size=msg_size))
         assert res == {'inter_msg_interval': -1}
         res = self.exec_cmd('state')
         self.assertEqual(res['inter_msg_interval']['calls'], 1)
@@ -214,7 +214,8 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_msg_sent_success(self):
         msg_size = 1234
-        res = self.exec_cmd(f'cong_report msg_sent {msg_size}')
+        res = self.exec_cmd('cong_report msg_sent {msg_size}'
+                            .format(msg_size=msg_size))
         self.assertIsNone(res)
         res = self.exec_cmd('state')
         self.assertEqual(res['report_msg_sent']['calls'], 1)
@@ -234,7 +235,8 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_msg_discarded_success(self):
         msg_size = 1234
-        res = self.exec_cmd(f'cong_report msg_discarded {msg_size}')
+        res = self.exec_cmd('cong_report msg_discarded {msg_size}'
+                            .format(msg_size=msg_size))
         self.assertIsNone(res)
         res = self.exec_cmd('state')
         self.assertEqual(res['report_msg_discarded']['calls'], 1)
@@ -248,20 +250,22 @@ class TestCongUREWithSetup(TestCongUREBase):
         args = ""
         # gradually append more arguments but never get full set
         for i in range(len(exp_params) - 1):
-            args += f' {i+1}'
-            res = self.exec_cmd(f'cong_report {cmd} {args}')
+            args += ' {}'.format(i + 1)
+            res = self.exec_cmd('cong_report {cmd} {args}'
+                                .format(cmd=cmd, args=args))
             self.assertEqual(res, {
                 'error': 'At least {} arguments {} expected'
                          .format(len(exp_params),
-                                 ', '.join(f'`{p}`' for p in exp_params))
+                                 ', '.join('`{}`'.format(p)
+                                           for p in exp_params))
             })
 
     def _report_msgs_timeout_lost_argc_not_mod_3(self, cmd):
-        res = self.exec_cmd(f'cong_report {cmd} 1 2 3 4')
+        res = self.exec_cmd('cong_report {cmd} 1 2 3 4'.format(cmd=cmd))
         self.assertEqual(res, {
             'error': 'Number of arguments must be divisible by 3'
         })
-        res = self.exec_cmd(f'cong_report {cmd} 1 2 3 4 5')
+        res = self.exec_cmd('cong_report {cmd} 1 2 3 4 5'.format(cmd=cmd))
         self.assertEqual(res, {
             'error': 'Number of arguments must be divisible by 3'
         })
@@ -269,11 +273,11 @@ class TestCongUREWithSetup(TestCongUREBase):
     def _report_msgs_timeout_lost_acked_args_not_int(self, cmd, exp_params):
         # generate list of arguments that are exp_params string parameters and
         # exp_params integer parameters
-        args = [f"arg{i}" for i in range(len(exp_params))] + \
+        args = ["arg{}".format(i) for i in range(len(exp_params))] + \
                [str(i + len(exp_params)) for i in range(len(exp_params))]
         res = self.exec_cmd('cong_report {} {}'.format(cmd, ' '.join(args)))
         self.assertEqual(res, {
-            'error': f'`{exp_params[0]}` expected to be integer'
+            'error': '`{}` expected to be integer'.format(exp_params[0])
         })
         # gradually transform all but the last string to integer and test again
         for i in range(len(exp_params) - 1):
@@ -282,7 +286,8 @@ class TestCongUREWithSetup(TestCongUREBase):
                 'cong_report {} {}'.format(cmd, ' '.join(args))
             )
             self.assertEqual(res, {
-                'error': f'`{exp_params[i + 1]}` expected to be integer'
+                'error': '`{}` expected to be integer'
+                         .format(exp_params[i + 1])
             })
 
     def _report_msgs_timeout_lost_exceed_msg_pool_size(self, cmd):
@@ -290,7 +295,8 @@ class TestCongUREWithSetup(TestCongUREBase):
         pool_size = int(os.environ.get('LOST_MSG_POOL_SIZE', 4))
         args = ' '.join('1' for _ in range(3 * pool_size))
         args += ' 1 1 1'
-        res = self.exec_cmd(f'cong_report {cmd} {args}')
+        res = self.exec_cmd('cong_report {cmd} {args}'
+                            .format(cmd=cmd, args=args))
         self.assertEqual(res, {
             'error': 'List element pool depleted'
         })
@@ -299,17 +305,18 @@ class TestCongUREWithSetup(TestCongUREBase):
         msgs = [{'send_time': 76543, 'size': 1234, 'resends': 2},
                 {'send_time': 5432, 'size': 987, 'resends': 32}]
         res = self.exec_cmd(
-            f'cong_report {cmd} '
-            f'{msgs[0]["send_time"]} {msgs[0]["size"]} {msgs[0]["resends"]} '
-            f'{msgs[1]["send_time"]} {msgs[1]["size"]} {msgs[1]["resends"]}'
+            'cong_report {cmd} '
+            '{msgs[0][send_time]} {msgs[0][size]} {msgs[0][resends]} '
+            '{msgs[1][send_time]} {msgs[1][size]} {msgs[1][resends]}'
+            .format(cmd=cmd, msgs=msgs)
         )
         self.assertIsNone(res)
         res = self.exec_cmd('state')
-        self.assertEqual(res[f'report_{cmd}']['calls'], 1)
-        self.assertEqual(int(res[f'report_{cmd}']['last_args']['c'],
+        self.assertEqual(res['report_{}'.format(cmd)]['calls'], 1)
+        self.assertEqual(int(res['report_{}'.format(cmd)]['last_args']['c'],
                              base=16),
                          self.congure_state_ptr)
-        self.assertEqual(res[f'report_{cmd}']['last_args']['msgs'],
+        self.assertEqual(res['report_{}'.format(cmd)]['last_args']['msgs'],
                          msgs)
 
     def test_report_msgs_timeout_not_enough_args(self):
@@ -372,10 +379,11 @@ class TestCongUREWithSetup(TestCongUREBase):
         ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
                'clean': 1, 'wnd': (1 << 16) + 7642, 'delay': 1235}
         res = self.exec_cmd(
-            f'cong_report msg_acked '
-            f'{msg["send_time"]} {msg["size"]} {msg["resends"]} '
-            f'{ack["recv_time"]} {ack["id"]} {ack["size"]} {ack["clean"]} '
-            f'{ack["wnd"]} {ack["delay"]}'
+            'cong_report msg_acked '
+            '{msg[send_time]} {msg[size]} {msg[resends]} '
+            '{ack[recv_time]} {ack[id]} {ack[size]} {ack[clean]} '
+            '{ack[wnd]} {ack[delay]}'
+            .format(msg=msg, ack=ack)
         )
         self.assertEqual(res, {
             'error': '`ack_wnd` not 16 bit wide'
@@ -386,10 +394,11 @@ class TestCongUREWithSetup(TestCongUREBase):
         ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
                'clean': 1, 'wnd': 7642, 'delay': (1 << 16) + 1235}
         res = self.exec_cmd(
-            f'cong_report msg_acked '
-            f'{msg["send_time"]} {msg["size"]} {msg["resends"]} '
-            f'{ack["recv_time"]} {ack["id"]} {ack["size"]} {ack["clean"]} '
-            f'{ack["wnd"]} {ack["delay"]}'
+            'cong_report msg_acked '
+            '{msg[send_time]} {msg[size]} {msg[resends]} '
+            '{ack[recv_time]} {ack[id]} {ack[size]} {ack[clean]} '
+            '{ack[wnd]} {ack[delay]}'
+            .format(msg=msg, ack=ack)
         )
         self.assertEqual(res, {
             'error': '`ack_delay` not 16 bit wide'
@@ -400,10 +409,11 @@ class TestCongUREWithSetup(TestCongUREBase):
         ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
                'clean': 1, 'wnd': 742, 'delay': 1235}
         res = self.exec_cmd(
-            f'cong_report msg_acked '
-            f'{msg["send_time"]} {msg["size"]} {msg["resends"]} '
-            f'{ack["recv_time"]} {ack["id"]} {ack["size"]} {ack["clean"]} '
-            f'{ack["wnd"]} {ack["delay"]}'
+            'cong_report msg_acked '
+            '{msg[send_time]} {msg[size]} {msg[resends]} '
+            '{ack[recv_time]} {ack[id]} {ack[size]} {ack[clean]} '
+            '{ack[wnd]} {ack[delay]}'
+            .format(msg=msg, ack=ack)
         )
         self.assertIsNone(res)
         res = self.exec_cmd('state')
@@ -424,7 +434,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_ecn_ce_success(self):
         time = 64352
-        res = self.exec_cmd(f'cong_report ecn_ce {time}')
+        res = self.exec_cmd('cong_report ecn_ce {time}'.format(time=time))
         self.assertIsNone(res)
         res = self.exec_cmd('state')
         self.assertEqual(res['report_ecn_ce']['calls'], 1)
