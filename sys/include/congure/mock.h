@@ -143,7 +143,7 @@ typedef struct {
     struct {
         congure_snd_t *c;       /**< The CongURE state object */
         /**
-         * @brief   Timestamp of the message the CE event occured for was sent
+         * @brief   Timestamp of the message the CE event occurred for was sent
          */
         ztimer_now_t time;
     } report_ecn_ce_args;
