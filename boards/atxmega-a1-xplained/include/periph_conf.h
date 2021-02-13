@@ -37,18 +37,18 @@ static const timer_conf_t timer_config[] = {
     {
         .dev            = (void *) &TCC1,
         .type           = TC_TYPE_1,
-        .int_lvl        = { INT_LVL_LOW,
-                            INT_LVL_OFF,
-                            INT_LVL_OFF,
-                            INT_LVL_OFF },
+        .int_lvl        = { CPU_INT_LVL_LOW,
+                            CPU_INT_LVL_OFF,
+                            CPU_INT_LVL_OFF,
+                            CPU_INT_LVL_OFF },
     },
     {
         .dev            = (void *) &TCC0,
         .type           = TC_TYPE_0,
-        .int_lvl        = { INT_LVL_LOW,
-                            INT_LVL_LOW,
-                            INT_LVL_LOW,
-                            INT_LVL_LOW },
+        .int_lvl        = { CPU_INT_LVL_LOW,
+                            CPU_INT_LVL_LOW,
+                            CPU_INT_LVL_LOW,
+                            CPU_INT_LVL_LOW },
     }
 };
 
@@ -75,9 +75,9 @@ static const uart_conf_t uart_config[] = {
         .rts_pin = GPIO_UNDEF,
         .cts_pin = GPIO_UNDEF,
 #endif
-        .rx_int_lvl = INT_LVL_LOW,
-        .tx_int_lvl = INT_LVL_LOW,
-        .dre_int_lvl = INT_LVL_OFF,
+        .rx_int_lvl = CPU_INT_LVL_LOW,
+        .tx_int_lvl = CPU_INT_LVL_LOW,
+        .dre_int_lvl = CPU_INT_LVL_OFF,
     },
     {   /* J3 - Shared with SAUL */
         .dev = &USARTD0,
@@ -87,9 +87,9 @@ static const uart_conf_t uart_config[] = {
         .rts_pin = GPIO_UNDEF,
         .cts_pin = GPIO_UNDEF,
 #endif
-        .rx_int_lvl = INT_LVL_LOW,
-        .tx_int_lvl = INT_LVL_LOW,
-        .dre_int_lvl = INT_LVL_OFF,
+        .rx_int_lvl = CPU_INT_LVL_LOW,
+        .tx_int_lvl = CPU_INT_LVL_LOW,
+        .dre_int_lvl = CPU_INT_LVL_OFF,
     },
     {   /* J4 */
         .dev = &USARTC0,
@@ -99,9 +99,9 @@ static const uart_conf_t uart_config[] = {
         .rts_pin = GPIO_UNDEF,
         .cts_pin = GPIO_UNDEF,
 #endif
-        .rx_int_lvl = INT_LVL_LOW,
-        .tx_int_lvl = INT_LVL_LOW,
-        .dre_int_lvl = INT_LVL_OFF,
+        .rx_int_lvl = CPU_INT_LVL_LOW,
+        .tx_int_lvl = CPU_INT_LVL_LOW,
+        .dre_int_lvl = CPU_INT_LVL_OFF,
     },
 };
 
