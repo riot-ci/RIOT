@@ -29,7 +29,19 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
+/**
+ * @brief     GPIO port base
+ *
+ * GPIO_PORT_BASE resides in the IO address space and must be 16 bits.
+ */
 #define GPIO_PORT_BASE      ((uint16_t)&PORTA)
+
+/**
+ * @brief     GPIO port structure offset
+ *
+ * The PORT_t struct it is not complete filled and it is necessary define the
+ * address offset manually.
+ */
 #define GPIO_PORT_OFFSET    (0x20)
 
 static gpio_isr_ctx_t config_ctx[GPIO_EXT_INT_NUMOF];
@@ -46,26 +58,26 @@ static inline uint8_t _pin_mask(gpio_t pin)
 /**
  * @brief     Extract the port number of the given pin
  */
-static inline uint16_t _port_num(gpio_t pin)
+static inline uint8_t _port_num(gpio_t pin)
 {
-    return (pin >> 8) & 0x00ff;
+    return (pin >> 8) & 0x0f;
 }
 
 /**
- * @brief     Generate the PORTx address of the give pin.
+ * @brief     Generate the PORTx address of the give pin in the IO address space
  */
-static inline uint16_t _port_addr(gpio_t pin)
+static inline PORT_t *_port_addr(gpio_t pin)
 {
-    uint16_t port_num = _port_num(pin);
+    uint8_t port_num = _port_num(pin);
     uint16_t port_addr = GPIO_PORT_BASE + (port_num * GPIO_PORT_OFFSET);
 
-    return port_addr;
+    return (PORT_t *) port_addr;
 }
 
 #if ENABLE_DEBUG
 static inline void _print_config(gpio_t pin)
 {
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
     volatile uint8_t *pin_ctrl = &port->PIN0CTRL;
 
@@ -85,10 +97,10 @@ static inline void _gpio_pinctrl_set(gpio_t pin, gpio_mode_t mode,
                                      void *arg)
 {
     uint8_t pin_mask = _pin_mask(pin);
-    uint16_t port_num = _port_num(pin);
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    uint8_t port_num = _port_num(pin);
+    PORT_t *port = _port_addr(pin);
     volatile uint8_t *pin_ctrl = &port->PIN0CTRL;
-    int irq_state;
+    uint8_t irq_state;
     uint8_t tmp;
 
     if (mode & GPIO_OUT) {
@@ -200,8 +212,8 @@ void gpio_irq_enable(gpio_t pin)
     DEBUG("gpio_irq_enable pin = 0x%04x \n", pin);
 
     uint8_t pin_mask = _pin_mask(pin);
-    uint16_t port_num = _port_num(pin);
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    uint8_t port_num = _port_num(pin);
+    PORT_t *port = _port_addr(pin);
 
     if (port->INT1MASK & pin_mask) {
         port->INTFLAGS = PORT_INT1IF_bm;
@@ -222,7 +234,7 @@ void gpio_irq_disable(gpio_t pin)
     DEBUG("gpio_irq_disable pin = 0x%04x \n", pin);
 
     uint8_t pin_mask = _pin_mask(pin);
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
 
     if (port->INT1MASK & pin_mask) {
         port->INTCTRL &= ~PORT_INT1LVL_gm;
@@ -238,7 +250,7 @@ void gpio_irq_disable(gpio_t pin)
 
 int gpio_read(gpio_t pin)
 {
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
 #if ENABLE_DEBUG
@@ -252,7 +264,7 @@ void gpio_set(gpio_t pin)
 {
     DEBUG("gpio_set pin = 0x%04x \n", pin);
 
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTSET = pin_mask;
@@ -266,7 +278,7 @@ void gpio_clear(gpio_t pin)
 {
     DEBUG("gpio_clear pin = 0x%04x \n", pin);
 
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTCLR = pin_mask;
@@ -280,7 +292,7 @@ void gpio_toggle(gpio_t pin)
 {
     DEBUG("gpio_toggle pin = 0x%04x \n", pin);
 
-    PORT_t *port = (PORT_t *)_port_addr(pin);
+    PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
     port->OUTTGL = pin_mask;

@@ -66,15 +66,7 @@ static inline void atxmega_set_prescaler(uint8_t clk_scale, uint8_t bus_scale)
      * Value and one value for and B and C Prescaler
      */
     _PROTECTED_WRITE(CLK.PSCTRL, clk_scale | bus_scale);
-
-    /*
-     * Previous instruction takes 3 clk cycles with -Os option
-     * we need another clk cycle before we can reuse it.
-     */
-    __asm__ __volatile__ ("nop");
 }
-
-void clk_init(void);
 
 #ifdef __cplusplus
 }

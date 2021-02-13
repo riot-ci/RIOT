@@ -49,7 +49,7 @@ void pm_reboot(void)
  */
 void pm_set(unsigned mode)
 {
-    int irq_state = irq_disable();
+    unsigned irq_state = irq_disable();
 
     switch (mode) {
     case 0:

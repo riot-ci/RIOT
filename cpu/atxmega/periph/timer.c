@@ -64,6 +64,10 @@ static ctx_t *ctx[] = { { NULL } };
 #endif
 /** @} */
 
+#if TIMER_CH_MAX_NUMOF * TIMER_NUMOF > 32
+#error "periph_timer: The current implementation supports at most 32 / TIMER_CH_MAX_NUMOF timers"
+#endif
+
 static uint32_t _oneshot;
 
 static inline void set_oneshot(tim_t tim, int chan)
@@ -122,7 +126,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     /* Check enabled channels */
     ctx[tim].channels = 0;
     for (ch = 0; ch < 4; ch++) {
-        if (timer_config[tim].int_lvl[ch] != INT_LVL_OFF) {
+        if (timer_config[tim].int_lvl[ch] != CPU_INT_LVL_OFF) {
             ctx[tim].channels++;
         }
     }

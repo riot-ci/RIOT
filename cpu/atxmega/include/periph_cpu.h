@@ -33,15 +33,15 @@ extern "C" {
 /** @} */
 
 /**
- * @name   Interrupt level
+ * @name   Interrupt level used to control nested interrupts
  * @{
  */
 typedef enum {
-    INT_LVL_OFF,    /* Interrupt Disabled     */
-    INT_LVL_LOW,    /* Interrupt Low Level    */
-    INT_LVL_MID,    /* Interrupt Medium Level */
-    INT_LVL_HIGH,   /* Interrupt High Level   */
-} int_lvl_t;
+    CPU_INT_LVL_OFF,    /**< Interrupt Disabled     */
+    CPU_INT_LVL_LOW,    /**< Interrupt Low Level    */
+    CPU_INT_LVL_MID,    /**< Interrupt Medium Level */
+    CPU_INT_LVL_HIGH,   /**< Interrupt High Level   */
+} cpu_int_lvl_t;
 /** @} */
 
 /**
@@ -187,9 +187,9 @@ typedef struct {
     gpio_t rts_pin;                 /**< RTS pin */
     gpio_t cts_pin;                 /**< CTS pin */
 #endif
-    int_lvl_t rx_int_lvl;           /**< RX Complete Interrupt Level */
-    int_lvl_t tx_int_lvl;           /**< TX Complete Interrupt Level */
-    int_lvl_t dre_int_lvl;          /**< Data Registry Empty Interrupt Level */
+    cpu_int_lvl_t rx_int_lvl;       /**< RX Complete Interrupt Level */
+    cpu_int_lvl_t tx_int_lvl;       /**< TX Complete Interrupt Level */
+    cpu_int_lvl_t dre_int_lvl;      /**< Data Registry Empty Interrupt Level */
 } uart_conf_t;
 
 /**
@@ -215,9 +215,9 @@ typedef enum {
  * type and number of channels to perform all operations.
  */
 typedef struct {
-    TC0_t *dev;                            /**< Pointer to the used as Timer device */
-    timer_type_t type;                     /**< Timer Type */
-    int_lvl_t int_lvl[TIMER_CH_MAX_NUMOF]; /**< Interrupt channels level */
+    TC0_t *dev;                                /**< Pointer to the used as Timer device */
+    timer_type_t type;                         /**< Timer Type */
+    cpu_int_lvl_t int_lvl[TIMER_CH_MAX_NUMOF]; /**< Interrupt channels level */
 } timer_conf_t;
 
 #ifdef __cplusplus

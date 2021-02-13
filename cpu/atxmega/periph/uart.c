@@ -38,16 +38,16 @@
 #include "debug.h"
 
 /**
- * @brief   Maximum baud tolerance percentage error in baud calculated,
- * as Error in percent multiplied by 100.
+ * @brief   UART Baudrate Tolerance
  *
- * Takes whole numbers from 0 to 100. For bigger tolerances the UART double
- * frequency can be avoided. Thus saving power.
+ * The tolerance is expressed as baud rate percentage multiplied by 100.
+ * For bigger tolerances UART double frequency can be avoided, thus saving
+ * power.
  *
- * default  2% = 2*100 = 200
+ * The default baud tolerance is 2%.
  */
 #ifndef BAUD_TOL
-#define BAUD_TOL 200
+#define BAUD_TOL 2 * 100
 #endif
 
 /**
@@ -81,10 +81,10 @@ static inline int8_t _check_bsel(uint32_t *baud, uint32_t *calcbaud,
     uint16_t pre;
 
     if (*baud < *calcbaud) {
-        pre = (uint16_t)((((uint64_t)(*calcbaud) * 10000) / (*baud)));
+        pre = (uint16_t)((*calcbaud * 10000ULL) / *baud);
     }
     else {
-        pre = (uint16_t)(((uint64_t)(*baud) * 10000) / (*calcbaud));
+        pre = (uint16_t)((*baud * 10000ULL) / *calcbaud);
     }
 
     if (pre < ((uint16_t)*precision)) {
@@ -100,10 +100,10 @@ static inline int16_t _xmega_bsel_bscale(uint32_t *fper, uint32_t *baud,
                                          int8_t *bscale)
 {
     uint32_t calcbaud = 0;
-    int16_t precision = UINT_MAX;
     uint32_t deno = 0;
-    uint16_t locBsel = 0;
-    int8_t locBscale;
+    int16_t precision = UINT_MAX;
+    uint16_t loc_bsel = 0;
+    int8_t loc_bscale;
 
     /* Some explanation for equation transformation
      * bsel =  ( (fper / (2^bscale*16*baud) ) - 1 )
@@ -125,28 +125,28 @@ static inline int16_t _xmega_bsel_bscale(uint32_t *fper, uint32_t *baud,
      *
      * baud = (fper*1/2^bscale) / ((bsel+1)*16)
      */
-    for (locBscale = 0; locBscale <= 7; locBscale++) {
+    for (loc_bscale = 0; loc_bscale <= 7; loc_bscale++) {
         int32_t sub = 0;
 
-        deno = ((*baud) << (4 - clk2x + locBscale));
-        sub = ((*fper) << 1) - (deno);
+        deno = (*baud << (4 - clk2x + loc_bscale));
+        sub = (*fper << 1) - (deno);
 
         if (sub <= 0) {
             break;
         }
 
-        locBsel = (sub / (deno << 1));
+        loc_bsel = (sub / (deno << 1));
 
-        if (locBsel >= 4095) {
+        if (loc_bsel >= 4095) {
             continue;
         }
 
         /* Omit division by 16 get higher accuracy at small baudrates*/
-        calcbaud = ((*fper) >> locBscale) / ((locBsel + 1) << (4 - clk2x));
+        calcbaud = (*fper >> loc_bscale) / ((loc_bsel + 1) << (4 - clk2x));
 
-        if (_check_bsel( baud, &calcbaud, &precision)) {
-            *bsel = locBsel;
-            *bscale = locBscale;
+        if (_check_bsel(baud, &calcbaud, &precision)) {
+            *bsel = loc_bsel;
+            *bscale = loc_bscale;
         }
     }
 
@@ -165,26 +165,26 @@ static inline int16_t _xmega_bsel_bscale(uint32_t *fper, uint32_t *baud,
      *
      * Baud = (fper*1/2^bscale)/ (16*(bsel+1/2^bscale))
      */
-    for (locBscale = -1; locBscale >= -7; locBscale--) {
+    for (loc_bscale = -1; loc_bscale >= -7; loc_bscale--) {
         uint32_t num = 0;
 
-        deno = ((*baud) << (3 - clk2x));
-        num = (((*fper) - (deno << 1)) << (-locBscale)) + deno;
+        deno = (*baud << (3 - clk2x));
+        num = ((*fper - (deno << 1)) << (-loc_bscale)) + deno;
         num = (num / (deno << 1));
 
         if (num >= 4095) {
             break;
         }
 
-        locBsel = (uint16_t)(num & 0xFFF);
+        loc_bsel = (uint16_t)(num & 0xFFF);
 
         /* Omit division by 16 get higher accuracy at small baudrates */
-        calcbaud = ((*fper) << (-locBscale))
-                 / ((locBsel + (1 << (-locBscale))) << (4 - clk2x));
+        calcbaud = (*fper << (-loc_bscale))
+                 / ((loc_bsel + (1 << (-loc_bscale))) << (4 - clk2x));
 
-        if (_check_bsel( baud, &calcbaud, &precision)) {
-            *bsel = locBsel;
-            *bscale = locBscale;
+        if (_check_bsel(baud, &calcbaud, &precision)) {
+            *bsel = loc_bsel;
+            *bscale = loc_bscale;
         }
     }
 

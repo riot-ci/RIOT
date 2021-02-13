@@ -19,8 +19,6 @@
  * @}
  */
 
-#include <string.h>
-
 #include "periph_cpu.h"
 #include "cpu_nvm.h"
 
@@ -29,7 +27,7 @@
 
 void cpuid_get(void *id)
 {
-    uint8_t addr[CPUID_LEN];
+    uint8_t *addr = id;
 
     addr[0x0] = nvm_read_production_signature_row(
         nvm_get_production_signature_row_offset(LOTNUM0));
@@ -56,12 +54,10 @@ void cpuid_get(void *id)
     addr[0xa] = nvm_read_production_signature_row(
         nvm_get_production_signature_row_offset(COORDY1));
 
-    memcpy(id, addr, CPUID_LEN);
-
 #if ENABLE_DEBUG
     DEBUG("CPUID: ");
     for (uint8_t i = 0; i < CPUID_LEN; i++) {
-        DEBUG("%02x ", cpuid[i]);
+        DEBUG("%02x ", addr[i]);
     }
     DEBUG("\n");
 #endif

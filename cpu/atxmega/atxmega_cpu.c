@@ -61,20 +61,19 @@ void avr8_reset_cause(void)
     }
 }
 
-void __attribute__((weak)) clk_init(void)
+void __attribute__((weak)) avr8_clk_init(void)
 {
-    uint8_t *reg = (uint8_t *)&PR.PRGEN;
+    volatile uint8_t *reg = (uint8_t *)&PR.PRGEN;
     uint8_t i;
 
     /* Turn off all peripheral clocks that can be turned off. */
     for (i = 0; i <= 7; i++) {
-        *(reg++) = 0xff;
+        reg[i] = 0xff;
     }
 
-    reg = (uint8_t *)&PR.PRGEN;
     /* Turn on all peripheral clocks that can be turned on. */
     for (i = 0; i <= 7; i++) {
-        *(reg++) = 0x00;
+        reg[i] = 0x00;
     }
 
     /* XMEGA A3U [DATASHEET] p.23 After reset, the device starts up running
@@ -94,11 +93,9 @@ void __attribute__((weak)) clk_init(void)
     /* Enable the internal PLL & 32MHz & 32KHz oscillators */
     OSC.CTRL |= OSC_PLLEN_bm | OSC_RC32MEN_bm | OSC_RC32KEN_bm;
 
-    /* Wait for 32Khz oscillator to stabilize */
-    while (!(OSC.STATUS & OSC_RC32KRDY_bm)) {}
-
-    /* Wait for 32MHz oscillator to stabilize */
-    while (!(OSC.STATUS & OSC_RC32MRDY_bm)) {}
+    /* Wait for 32Khz and 32MHz oscillator to stabilize */
+    while ((OSC.STATUS & (OSC_RC32KRDY_bm | OSC_RC32MRDY_bm))
+        != (OSC_RC32KRDY_bm | OSC_RC32MRDY_bm)) {}
 
     /* Enable DFLL - defaults to calibrate against internal 32Khz clock */
     DFLLRC32M.CTRL = DFLL_ENABLE_bm;
@@ -112,12 +109,6 @@ void __attribute__((weak)) clk_init(void)
     /* Disable CCP for Protected IO register and set new value*/
     /* Switch to 32MHz clock */
     _PROTECTED_WRITE(CLK.CTRL, CLK_SCLKSEL_RC32M_gc);
-
-    /*
-     * Previous instruction takes 3 clk cycles with -Os option
-     * we need another clk cycle before we can reuse it.
-     */
-    __asm__ __volatile__ ("nop");
 }
 
 /* This is a vector which is aliased to __vector_default,
