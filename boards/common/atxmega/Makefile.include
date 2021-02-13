@@ -3,8 +3,6 @@ INCLUDES += -I$(RIOTBOARD)/common/atxmega/include
 PORT_LINUX ?= /dev/ttyACM0
 PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.usbmodem*)))
 
-SIZEFLAGS = --format=avr --mcu=$(CONFIG_CPU_MODEL)
-
 # Use JTAG as default protocol for debugging
 DEBUGPROTO ?= -x
 FLASHFILE ?= $(ELFFILE)
