@@ -97,7 +97,7 @@ void cpu_init(void)
     wdt_disable(); /* but when used without bootloader this is needed */
 
 #ifdef CPU_AVR8_HAS_CLOCK_INIT
-    clk_init();
+    avr8_clk_init();
 #endif
 
     /* Initialize stdio before periph_init() to allow use of DEBUG() there */
