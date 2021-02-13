@@ -26,6 +26,12 @@ class TestCongUREBase(unittest.TestCase):
         if cls.DEBUG:
             cls.ctrl.term.logfile = sys.stdout
         cls.ctrl.reset()
+        cls.ctrl.term.sendline('')
+        cls.ctrl.term.sendline('')
+        cls.ctrl.term.sendline('')
+        cls.ctrl.term.sendline('')
+        cls.ctrl.term.sendline('help')
+        cls.ctrl.term.sendline('')
         cls.shell = ShellInteraction(cls.ctrl)
         cls.json_parser = RapidJSONShellInteractionParser()
         cls.json_parser.set_parser_args(
