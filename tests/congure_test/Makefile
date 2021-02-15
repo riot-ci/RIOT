@@ -12,7 +12,7 @@ INCLUDES += -I$(CURDIR)
 RIOT_TERMINAL ?= socat
 
 # Output of commands comes one command to late on this platform within the CI
-# See TODO
+# See https://github.com/RIOT-OS/RIOT/pull/16014
 TEST_ON_CI_BLACKLIST += esp32-wroom-32
 
 include $(RIOTBASE)/Makefile.include
