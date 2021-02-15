@@ -65,7 +65,9 @@ static const i2c_conf_t i2c_config[] = {
 /**
  * @brief Enable the internal DC/DC converter
  */
-#define NRF5X_ENABLE_DCDC
+#ifndef NRF5X_ENABLE_DCDC
+#define NRF5X_ENABLE_DCDC   1
+#endif
 
 #ifdef __cplusplus
 }
