@@ -53,13 +53,6 @@ static const uart_conf_t uart_config[] = {
 #define UART_NUMOF          ARRAY_SIZE(uart_config)
 /** @} */
 
-/**
- * @brief Enable the internal DC/DC converter
- */
-#ifndef NRF5X_ENABLE_DCDC
-#define NRF5X_ENABLE_DCDC   1
-#endif
-
 #ifdef __cplusplus
 }
 #endif
