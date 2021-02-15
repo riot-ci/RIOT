@@ -389,7 +389,7 @@ struct ieee802154_radio_ops {
      * This field contains bitflags of supported capabilities
      * (@ref ieee802154_rf_caps_t) by the device.
      */
-    uint16_t caps;
+    const uint16_t caps;
 
     /**
      * @brief Write a frame into the framebuffer.
@@ -1006,7 +1006,7 @@ static inline int ieee802154_radio_confirm_cca(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_irq_ack_timeout(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_IRQ_ACK_TIMEOUT) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_IRQ_ACK_TIMEOUT);
 }
 
 /**
@@ -1022,7 +1022,7 @@ static inline bool ieee802154_radio_has_irq_ack_timeout(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_frame_retrans(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_FRAME_RETRANS) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_FRAME_RETRANS);
 }
 
 /**
@@ -1038,14 +1038,14 @@ static inline bool ieee802154_radio_has_frame_retrans(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_auto_csma(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_AUTO_CSMA) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_AUTO_CSMA);
 }
 
 /**
  * @brief Check if the device supports the IEEE802.15.4 Sub-GHz band
  *
- * Internally this function reads ieee802154_radio_ops::caps with @ref
- * IEEE802154_CAP_SUB_GHZ.
+ * Internally this function reads ieee802154_radio_ops::caps and checks for
+ * @ref IEEE802154_CAP_SUB_GHZ.
  *
  * @param[in] dev IEEE802.15.4 device descriptor
  *
@@ -1054,7 +1054,7 @@ static inline bool ieee802154_radio_has_auto_csma(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_sub_ghz(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_SUB_GHZ) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_SUB_GHZ);
 }
 
 /**
@@ -1070,7 +1070,7 @@ static inline bool ieee802154_radio_has_sub_ghz(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_24_ghz(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_24_GHZ) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_24_GHZ);
 }
 
 /**
@@ -1086,7 +1086,7 @@ static inline bool ieee802154_radio_has_24_ghz(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_irq_tx_done(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_IRQ_TX_DONE) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_IRQ_TX_DONE);
 }
 
 /**
@@ -1102,7 +1102,7 @@ static inline bool ieee802154_radio_has_irq_tx_done(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_irq_rx_start(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_IRQ_RX_START) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_IRQ_RX_START);
 }
 
 /**
@@ -1118,7 +1118,7 @@ static inline bool ieee802154_radio_has_irq_rx_start(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_irq_tx_start(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_IRQ_TX_START) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_IRQ_TX_START);
 }
 
 /**
@@ -1134,7 +1134,7 @@ static inline bool ieee802154_radio_has_irq_tx_start(ieee802154_dev_t *dev)
  */
 static inline bool ieee802154_radio_has_irq_cca_done(ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_IRQ_CCA_DONE) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_IRQ_CCA_DONE);
 }
 
 /**
@@ -1152,7 +1152,7 @@ static inline bool ieee802154_radio_has_irq_cca_done(ieee802154_dev_t *dev)
 static inline bool ieee802154_radio_has_frame_retrans_info(
     ieee802154_dev_t *dev)
 {
-    return (dev->driver->caps & IEEE802154_CAP_FRAME_RETRANS_INFO) != 0;
+    return (dev->driver->caps & IEEE802154_CAP_FRAME_RETRANS_INFO);
 }
 
 /**
