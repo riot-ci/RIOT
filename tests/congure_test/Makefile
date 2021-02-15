@@ -11,6 +11,10 @@ INCLUDES += -I$(CURDIR)
 # Use a terminal that does not introduce extra characters into the stream.
 RIOT_TERMINAL ?= socat
 
+# Output of commands comes one command to late on this platform within the CI
+# See TODO
+TEST_ON_CI_BLACKLIST += esp32-wroom-32
+
 include $(RIOTBASE)/Makefile.include
 
 ifndef CONFIG_SHELL_NO_ECHO
