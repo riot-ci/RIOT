@@ -291,6 +291,7 @@ static int _call_report_msg_acked(int argc, char **argv)
     }
     if (tmp > CONGURE_WND_SIZE_MAX) {
         print_str("{\"error\":\"`ack_wnd` not 16 bit wide\"}\n");
+        return 1;
     }
     ack.wnd = (uint16_t)tmp;
 
@@ -300,6 +301,7 @@ static int _call_report_msg_acked(int argc, char **argv)
     }
     if (tmp > UINT16_MAX) {
         print_str("{\"error\":\"`ack_delay` not 16 bit wide\"}\n");
+        return 1;
     }
     ack.delay = (uint16_t)tmp;
 
