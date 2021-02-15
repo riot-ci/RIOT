@@ -126,15 +126,15 @@ class TestCongUREWithoutSetup(TestCongUREBase):
     def test_setup(self):
         self.test_no_setup()
         res = self.exec_cmd('cong_setup')
-        # res['setup'] is 32-bit hexadecimal number greater zero, representing
+        # res['success'] is 32-bit hexadecimal number greater zero, representing
         # the pointer to the congure state object
-        self.assertGreater(int(res['setup'], base=16), 0)
-        self.assertEqual(len(res['setup']), len('0x00000000'))
+        self.assertGreater(int(res['success'], base=16), 0)
+        self.assertEqual(len(res['success']), len('0x00000000'))
         res = self.exec_cmd('cong_setup 0')
-        # res['setup'] is 32-bit hexadecimal number greater zero, representing
+        # res['success'] is 32-bit hexadecimal number greater zero, representing
         # the pointer to the congure state object
-        self.assertGreater(int(res['setup'], base=16), 0)
-        self.assertEqual(len(res['setup']), len('0x00000000'))
+        self.assertGreater(int(res['success'], base=16), 0)
+        self.assertEqual(len(res['success']), len('0x00000000'))
 
     def test_init_wo_setup(self):
         res = self.exec_cmd('cong_init 0x12345')
@@ -153,7 +153,7 @@ class TestCongUREWithSetup(TestCongUREBase):
     def setUp(self):
         super().setUp()
         res = self.exec_cmd('cong_setup')
-        self.congure_state_ptr = int(res['setup'], base=16)
+        self.congure_state_ptr = int(res['success'], base=16)
 
     def test_init_no_args(self):
         res = self.exec_cmd('cong_init')
@@ -168,7 +168,7 @@ class TestCongUREWithSetup(TestCongUREBase):
     def test_init_success(self):
         ctx = 0x12345
         res = self.exec_cmd('cong_init 0x{ctx:x}'.format(ctx=ctx))
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['init']['calls'], 1)
         self.assertEqual(int(res['init']['last_args']['c'], base=16),
@@ -187,7 +187,7 @@ class TestCongUREWithSetup(TestCongUREBase):
     def test_inter_msg_interval_success(self):
         msg_size = 521
         res = self.exec_cmd('cong_imi {msg_size}'.format(msg_size=msg_size))
-        assert res == {'inter_msg_interval': -1}
+        assert res == {'success': -1}
         res = self.exec_cmd('state')
         self.assertEqual(res['inter_msg_interval']['calls'], 1)
         self.assertEqual(int(res['inter_msg_interval']['last_args']['c'],
@@ -216,7 +216,7 @@ class TestCongUREWithSetup(TestCongUREBase):
         msg_size = 1234
         res = self.exec_cmd('cong_report msg_sent {msg_size}'
                             .format(msg_size=msg_size))
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['report_msg_sent']['calls'], 1)
         self.assertEqual(int(res['report_msg_sent']['last_args']['c'],
@@ -237,7 +237,7 @@ class TestCongUREWithSetup(TestCongUREBase):
         msg_size = 1234
         res = self.exec_cmd('cong_report msg_discarded {msg_size}'
                             .format(msg_size=msg_size))
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['report_msg_discarded']['calls'], 1)
         self.assertEqual(int(res['report_msg_discarded']['last_args']['c'],
@@ -310,7 +310,7 @@ class TestCongUREWithSetup(TestCongUREBase):
             '{msgs[1][send_time]} {msgs[1][size]} {msgs[1][resends]}'
             .format(cmd=cmd, msgs=msgs)
         )
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['report_{}'.format(cmd)]['calls'], 1)
         self.assertEqual(int(res['report_{}'.format(cmd)]['last_args']['c'],
@@ -415,7 +415,7 @@ class TestCongUREWithSetup(TestCongUREBase):
             '{ack[wnd]} {ack[delay]}'
             .format(msg=msg, ack=ack)
         )
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['report_msg_acked']['calls'], 1)
         self.assertEqual(int(res['report_msg_acked']['last_args']['c'],
@@ -435,7 +435,7 @@ class TestCongUREWithSetup(TestCongUREBase):
     def test_report_ecn_ce_success(self):
         time = 64352
         res = self.exec_cmd('cong_report ecn_ce {time}'.format(time=time))
-        self.assertIsNone(res)
+        self.assertIsNone(res['success'])
         res = self.exec_cmd('state')
         self.assertEqual(res['report_ecn_ce']['calls'], 1)
         self.assertEqual(int(res['report_ecn_ce']['last_args']['c'],

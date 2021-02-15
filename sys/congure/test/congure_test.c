@@ -59,7 +59,7 @@ int congure_test_call_setup(int argc, char **argv)
 
     print_str("{");
 
-    print_str("\"setup\":\"0x");
+    print_str("\"success\":\"0x");
     print_u32_hex((intptr_t)c);
 
     print_str("\"}\n");
@@ -95,6 +95,7 @@ int congure_test_call_init(int argc, char **argv)
     }
     ctx = scn_u32_hex(&argv[1][2], arglen - 2);
     c->super.driver->init(&c->super, (void *)((intptr_t)ctx));
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
@@ -118,7 +119,7 @@ int congure_test_call_inter_msg_interval(int argc, char **argv)
         return 1;
     }
     res = c->super.driver->inter_msg_interval(&c->super, msg_size);
-    print_str("{\"inter_msg_interval\":");
+    print_str("{\"success\":");
     print_s32_dec(res);
     print_str("}\n");
     return 0;
@@ -138,6 +139,7 @@ static int _call_report_msg_sent(int argc, char **argv)
         return 1;
     }
     c->super.driver->report_msg_sent(&c->super, (unsigned)msg_size);
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
@@ -155,6 +157,7 @@ static int _call_report_msg_discarded(int argc, char **argv)
         return 1;
     }
     c->super.driver->report_msg_discarded(&c->super, (unsigned)msg_size);
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
@@ -209,6 +212,7 @@ static int _call_report_msgs_timeout_lost(void (*method)(congure_snd_t *,
         clist_rpush(&msgs, &list_pool[pool_idx].super);
     }
     method(&c->super, (congure_snd_msg_t *)msgs.next);
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
@@ -306,6 +310,7 @@ static int _call_report_msg_acked(int argc, char **argv)
     ack.delay = (uint16_t)tmp;
 
     c->super.driver->report_msg_acked(&c->super, &msg, &ack);
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
@@ -323,6 +328,7 @@ static int _call_report_ecn_ce(int argc, char **argv)
         return 1;
     }
     c->super.driver->report_ecn_ce(&c->super, time);
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
