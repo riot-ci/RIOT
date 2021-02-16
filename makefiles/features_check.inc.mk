@@ -7,7 +7,7 @@ _features_would_conflict := $(if $(findstring $1,$2),$(filter-out $1,$(subst :, 
 FEATURES_WOULD_CONFLICT := $(foreach features,$(FEATURES_USED_SO_FAR),\
                              $(call _features_would_conflict,$(features),$(FEATURES_CONFLICT)))
 
-# Features that are provided and not blacklisted
+# Features that are provided, not blacklisted, and do not conflict with any used feature
 FEATURES_USABLE := $(filter-out $(FEATURES_BLACKLIST) $(FEATURES_WOULD_CONFLICT),\
                      $(FEATURES_PROVIDED))
 
