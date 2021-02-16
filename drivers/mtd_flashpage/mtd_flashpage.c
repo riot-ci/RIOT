@@ -42,7 +42,7 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 
     (void)dev;
 
-    if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
+    if ((addr - CPU_FLASH_BASE) % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
 
@@ -64,7 +64,7 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
     if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
-    if ((uintptr_t)buf % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
+    if ((addr - CPU_FLASH_BASE) % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
     if (size % FLASHPAGE_WRITE_BLOCK_SIZE) {
@@ -95,7 +95,7 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
     if (addr + size > MTD_FLASHPAGE_END_ADDR) {
         return -EOVERFLOW;
     }
-    if (addr % sector_size) {
+    if ((addr - CPU_FLASH_BASE) % sector_size) {
         return -EOVERFLOW;
     }
 
