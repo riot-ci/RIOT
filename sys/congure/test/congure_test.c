@@ -38,6 +38,7 @@ int congure_test_clear_state(int argc, char **argv)
     (void)argc;
     (void)argv;
     memset(congure_test_get_state(), 0, sizeof(congure_test_snd_t));
+    print_str("{\"success\":null}\n");
     return 0;
 }
 
