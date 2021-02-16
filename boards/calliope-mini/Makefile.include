@@ -1,12 +1,11 @@
 # for this board we support flashing via openocd or pyocd
 PROGRAMMER ?= openocd
+PROGRAMMERS_SUPPORTED ?= openocd jlink pyocd
 
 OPENOCD_DEBUG_ADAPTER = dap
 # PyOCD doesn't recognize automatically the board ID, so target type has to
 # be passed explicitly
 PYOCD_FLASH_TARGET_TYPE ?= -t nrf51
-
-PROGRAMMERS_SUPPORTED_EXTRA ?= pyocd
 
 # include nrf51 boards common configuration
 include $(RIOTBOARD)/common/nrf51/Makefile.include
