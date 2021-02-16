@@ -21,11 +21,6 @@
  *
  * At any point, `trace_dump()` can be used to print the trace buffer.
  *
- * The buffer has a default size of 512 entries, which can be overridden by
- * defining CONFIG_TRACE_BUFSIZE. It can be cleared using `trace_reset()`.
- * The trace buffer works like a ring-buffer. If it is full, it will start
- * overwriting from the beginning.
- *
  * Tracing is made thread safe by disabling interrupts for critical sections.
  *
  * It does incur some overhead (at least a function call, getting the current
@@ -57,6 +52,18 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+/**
+ * @brief Amount of entries in the trace buffer.
+ *
+ * The buffer has a default size of 512 entries, which can be overridden by
+ * defining CONFIG_TRACE_BUFSIZE. It can be cleared using `trace_reset()`.
+ * The trace buffer works like a ring-buffer. If it is full, it will start
+ * overwriting from the beginning.
+ */
+#ifndef CONFIG_TRACE_BUFSIZE
+#define CONFIG_TRACE_BUFSIZE 512
 #endif
 
 /**
