@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "architecture.h"
 #include "cpu_conf.h"
 #include "mtd_flashpage.h"
 #include "periph/flashpage.h"
@@ -42,16 +43,7 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 
     (void)dev;
 
-    if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
-        return -EINVAL;
-    }
-
-#if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
-#else
-    uint32_t dst_addr = addr;
-#endif
-
+    uword_t dst_addr = addr;
     memcpy(buf, (void *)dst_addr, size);
 
     return 0;
@@ -61,10 +53,7 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     (void)dev;
 
-    if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
-        return -EINVAL;
-    }
-    if ((uintptr_t)buf % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
+    if ((addr - CPU_FLASH_BASE) % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
     if (size % FLASHPAGE_WRITE_BLOCK_SIZE) {
@@ -74,12 +63,7 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
         return -EOVERFLOW;
     }
 
-#if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
-#else
-    uint32_t dst_addr = addr;
-#endif
-
+    uword_t dst_addr = addr;
     flashpage_write((void *)dst_addr, buf, size);
 
     return 0;
@@ -95,15 +79,11 @@ int _erase(mtd_dev_t *dev, uint32_t addr, uint32_t size)
     if (addr + size > MTD_FLASHPAGE_END_ADDR) {
         return -EOVERFLOW;
     }
-    if (addr % sector_size) {
+    if ((addr - CPU_FLASH_BASE) % sector_size) {
         return -EOVERFLOW;
     }
 
-#if (__SIZEOF_POINTER__ == 2)
-    uint16_t dst_addr = addr;
-#else
-    uint32_t dst_addr = addr;
-#endif
+    uword_t dst_addr = addr;
 
     for (size_t i = 0; i < size; i += sector_size) {
         flashpage_erase(flashpage_page((void *)(dst_addr + i)));
