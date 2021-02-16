@@ -11,6 +11,8 @@ import os
 import sys
 import unittest
 
+import pexpect
+
 from riotctrl.ctrl import RIOTCtrl
 from riotctrl.shell import ShellInteraction
 from riotctrl.shell.json import RapidJSONShellInteractionParser, rapidjson
@@ -26,6 +28,9 @@ class TestCongUREBase(unittest.TestCase):
         if cls.DEBUG:
             cls.ctrl.term.logfile = sys.stdout
         cls.ctrl.reset()
+        cls.ctrl.term.expect_exact(["> ", pexpect.TIMEOUT],
+                                   timeout=1)
+        cls.ctrl.term.sendline('')
         cls.shell = ShellInteraction(cls.ctrl)
         cls.json_parser = RapidJSONShellInteractionParser()
         cls.json_parser.set_parser_args(
