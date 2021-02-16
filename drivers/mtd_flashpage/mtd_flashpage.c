@@ -42,10 +42,6 @@ static int _read(mtd_dev_t *dev, void *buf, uint32_t addr, uint32_t size)
 
     (void)dev;
 
-    if ((addr - CPU_FLASH_BASE) % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
-        return -EINVAL;
-    }
-
 #if (__SIZEOF_POINTER__ == 2)
     uint16_t dst_addr = addr;
 #else
@@ -61,9 +57,6 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     (void)dev;
 
-    if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
-        return -EINVAL;
-    }
     if ((addr - CPU_FLASH_BASE) % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
