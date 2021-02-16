@@ -43,7 +43,7 @@
  */
 #define REFRESH             (6000)      /* 6ms * 3 rows -> ~55Hz */
 
-#if defined(MODULE_BOARD_MICROBIT)
+#if defined(BOARD_MICROBIT)
 /**
  * @brief   The electrical number of rows and columns
  */
@@ -88,7 +88,7 @@ static const uint8_t pixmap[5][5] = {
     {  7,  6,  5,  4,  3 },
     { 20, 15, 18, 14, 19 }
 };
-#elif defined(MODULE_BOARD_MICROBIT_V2)
+#elif defined(BOARD_MICROBIT_V2)
 /**
  * @brief   The electrical number of rows and columns
  */
