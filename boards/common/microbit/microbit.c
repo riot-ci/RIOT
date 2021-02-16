@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_microbit
+ * @ingroup     boards_common_microbit
  * @{
  *
  * @file
@@ -37,17 +37,18 @@
 #define COLS                MICROBIT_MATRIX_COLS
 
 /**
- * @brief   The electrical number of rows and columns
- */
-#define ROWS_HW             (3U)
-#define COLS_HW             (9U)
-
-/**
  * @brief   The refresh rate used for drawing the contents
  *
  * We want a refresh rate of at least 50Hz (->20ms), so the LEDs do not flicker.
  */
 #define REFRESH             (6000)      /* 6ms * 3 rows -> ~55Hz */
+
+#if defined(BOARD_MICROBIT)
+/**
+ * @brief   The electrical number of rows and columns
+ */
+#define ROWS_HW             (3U)
+#define COLS_HW             (9U)
 
 /**
  * @brief   GPIO pins driving the rows
@@ -87,6 +88,48 @@ static const uint8_t pixmap[5][5] = {
     {  7,  6,  5,  4,  3 },
     { 20, 15, 18, 14, 19 }
 };
+#elif defined(BOARD_MICROBIT_V2)
+/**
+ * @brief   The electrical number of rows and columns
+ */
+#define ROWS_HW             (5U)
+#define COLS_HW             (5U)
+
+/**
+ * @brief   GPIO pins driving the rows
+ */
+static const gpio_t rows[ROWS_HW] = {
+    MICROBIT_LED_ROW1,
+    MICROBIT_LED_ROW2,
+    MICROBIT_LED_ROW3,
+    MICROBIT_LED_ROW4,
+    MICROBIT_LED_ROW5,
+};
+
+/**
+ * @brief   GPIO pins driving the columns
+ */
+static const gpio_t cols[COLS_HW] = {
+    MICROBIT_LED_COL1,
+    MICROBIT_LED_COL2,
+    MICROBIT_LED_COL3,
+    MICROBIT_LED_COL4,
+    MICROBIT_LED_COL5,
+};
+
+/**
+ * @brief   Map electrical layout to visible layout
+ */
+static const uint8_t pixmap[5][5] = {
+    {  0,  1,  2,  3,  4 },
+    {  5,  6,  7,  8,  9 },
+    { 10, 11, 12, 13, 14 },
+    { 15, 16, 17, 18, 19 },
+    { 20, 21, 22, 23, 24 }
+};
+#else
+#error "Module only compatible with microbit and microbit-v2 boards."
+#endif
 
 /**
  * @brief   Buffer holding the current 'image' that is displayed
