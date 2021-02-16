@@ -31,24 +31,40 @@ extern "C" {
 #include <board.h>
 
 
-/** Pin (typically button) checked by the riotboot_dfu bootloader to decide
- * whether to enter DFU mode even if a valid image is present.
+/** @brief Button pin for bootloader selection
+ *
+ * This pin (typically connected to a button) is checked by the riotboot_dfu
+ * bootloader to decide whether to enter DFU mode even if a valid image is
+ * present.
+ *
+ * The default value for all boards is BTN0, of one is defined.
  *
  * Boards that insist on not using any button even though they have some can
- * define BTN_BOOTLOADER_NONE in their `board.h`. */
-#if !defined(BTN_BOOTLOADER_PIN) && defined(BTN0_PIN) && !defined(BTN_BOOTLOADER_NONE)
+ * define BTN_BOOTLOADER_NONE in their `board.h`.
+ *
+ * */
+#if (!defined(BTN_BOOTLOADER_PIN) && defined(BTN0_PIN) && !defined(BTN_BOOTLOADER_NONE)) || DOXYGEN
 #define BTN_BOOTLOADER_PIN BTN0_PIN
 #endif
 
-/** Mode into which the riotboot_dfu bootloader will configure @ref
- * BTN_BOOTLOADER_PIN before reading it */
+/** @brief Pin mode for @ref BTN_BOOTLOADER_PIN
+ *
+ * Mode into which the riotboot_dfu bootloader will configure @ref
+ * BTN_BOOTLOADER_PIN before reading it.
+ *
+ * */
 #ifndef BTN_BOOTLOADER_MODE
 #define BTN_BOOTLOADER_MODE BTN0_MODE
 #endif
 
-/** Interpretation of @ref BTN_BOOTLOADER_PIN. Set to true for active-low
- * buttons (go to DFU if the pin is low), otherwise to false (go to DFU if the
- * pin is high). */
+/** @brief Interpretation of @ref BTN_BOOTLOADER_PIN.
+ *
+ * Set to true for active-low buttons (go to DFU if the pin is low), otherwise
+ * to false (go to DFU if the pin is high).
+ *
+ * The default value for all boards is inverted (active-low).
+ *
+ * */
 #ifndef BTN_BOOTLOADER_INVERTED
 #define BTN_BOOTLOADER_INVERTED true
 #endif
