@@ -1,4 +1,9 @@
 BOARD_INSUFFICIENT_MEMORY := \
+    arduino-duemilanove \
+    arduino-nano \
+    arduino-uno \
+    atmega328p \
+    atmega1281 \
     bluepill-stm32f030c8 \
     i-nucleo-lrwan1 \
     msb-430 \
