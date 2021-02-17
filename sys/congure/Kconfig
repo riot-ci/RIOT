@@ -10,3 +10,7 @@ menu "CongURE congestion control abstraction"
 rsource "test/Kconfig"
 
 endmenu # CongURE congestion control abstraction
+
+menuconfig MODULE_CONGURE
+    bool "CongURE congestion control abstraction"
+    depends on TEST_KCONFIG
