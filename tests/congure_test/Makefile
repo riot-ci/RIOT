@@ -11,6 +11,10 @@ INCLUDES += -I$(CURDIR)
 # Use a terminal that does not introduce extra characters into the stream.
 RIOT_TERMINAL ?= socat
 
+# As there is an 'app.config' we want to explicitly disable Kconfig by setting
+# the variable to empty
+SHOULD_RUN_KCONFIG ?=
+
 include $(RIOTBASE)/Makefile.include
 
 ifndef CONFIG_SHELL_NO_ECHO
