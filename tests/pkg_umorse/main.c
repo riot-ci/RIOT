@@ -18,17 +18,19 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "board.h"
 #include "led.h"
 #include "periph_conf.h"
-#include "xtimer.h"
-#define UMORSE_MSLEEP(m)    xtimer_msleep(m)
+
 
 #include "umorse.h"
 #include "print.h"
 
-#define CODE_LEN	(64U)
+
+#define UMORSE_MSLEEP(m)        usleep(m * 1000U)
+#define CODE_LEN	            (64U)
 
 void blink_dit(void *args, uint8_t flags)
 {
