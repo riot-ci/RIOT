@@ -14,3 +14,13 @@ endmenu # CongURE congestion control abstraction
 menuconfig MODULE_CONGURE
     bool "CongURE congestion control abstraction"
     depends on TEST_KCONFIG
+
+if MODULE_CONGURE
+
+config MODULE_CONGURE_MOCK
+    bool "CongURE mock implementation for testing"
+    depends on MODULE_CONGURE
+
+rsource "test/Kconfig"
+
+endif   # MODULE_CONGURE
