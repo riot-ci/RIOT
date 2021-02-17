@@ -18,4 +18,4 @@ config CONGURE_TEST_LOST_MSG_POOL_SIZE
         @see congure_snd_driver_t::report_msg_lost
         This defines the maximum number of 3-tuples you can use with
         @ref congure_test_call_report() when argv[1] is msg_lost.
-endif   # KCONFIG_USEMODULE_CONGURE_RENO
+endif   # KCONFIG_USEMODULE_CONGURE_TEST
