@@ -3,9 +3,17 @@
 # Features that are used without taking "one out of" dependencies into account
 FEATURES_USED_SO_FAR := $(sort $(FEATURES_REQUIRED) $(FEATURES_OPTIONAL_USED))
 
-_features_would_conflict := $(if $(findstring $1,$2),$(filter-out $1,$(subst :, ,$2)))
-FEATURES_WOULD_CONFLICT := $(foreach features,$(FEATURES_USED_SO_FAR),\
-                             $(call _features_would_conflict,$(features),$(FEATURES_CONFLICT)))
+# Get features which inclusion would cause a conflict
+# Parameter 1: Features currently used
+# Parameter 2: A set of features that would conflict (separated by spaces)
+# Algorithm: If interaction of the two lists is empty, return an empty set. Otherwise return
+#            the set of conflicting features without the feature in it that is already used
+_features_would_conflict := $(if $(filter $1,$2),$(filter-out $1,$($2)))
+# Adding any of the following features would result in a feature conflict with the already used
+# features:
+FEATURES_WOULD_CONFLICT := $(foreach conflict,$(FEATURES_CONFLICT),\
+                             $(call _features_would_conflict,\
+                               $(FEATURES_USED_SO_FAR),$(subst :, ,$(conflict))))
 
 # Features that are provided, not blacklisted, and do not conflict with any used feature
 FEATURES_USABLE := $(filter-out $(FEATURES_BLACKLIST) $(FEATURES_WOULD_CONFLICT),\
