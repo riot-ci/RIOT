@@ -8,7 +8,7 @@ FEATURES_USED_SO_FAR := $(sort $(FEATURES_REQUIRED) $(FEATURES_OPTIONAL_USED))
 # Parameter 2: A set of features that would conflict (separated by spaces)
 # Algorithm: If interaction of the two lists is empty, return an empty set. Otherwise return
 #            the set of conflicting features without the feature in it that is already used
-_features_would_conflict := $(if $(filter $1,$2),$(filter-out $1,$($2)))
+_features_would_conflict = $(if $(filter $1,$2),$(filter-out $1,$2))
 # Adding any of the following features would result in a feature conflict with the already used
 # features:
 FEATURES_WOULD_CONFLICT := $(foreach conflict,$(FEATURES_CONFLICT),\
