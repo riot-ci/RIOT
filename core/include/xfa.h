@@ -48,8 +48,8 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @internal
  */
 #define _XFA_CONST(name, \
-                   prio) __attribute__((used, \
-                                        section(".roxfa." #name "." #prio)))
+	           prio) __attribute__((used, \
+	                                section(".roxfa." #name "." #prio)))
 
 /**
  * @brief Define a read-only cross-file array
@@ -66,12 +66,12 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @param[in]   name    name of the cross-file array
  */
 #define XFA_INIT_CONST(type, name) \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
-    _XFA_CONST(name, 0_) const volatile type name [0] = {}; \
-    _XFA_CONST(name, 9_) const volatile type name ## _end [0] = {}; \
-    _Pragma("GCC diagnostic pop") \
-    extern const unsigned __xfa_dummy
+	_Pragma("GCC diagnostic push") \
+	_Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
+	_XFA_CONST(name, 0_) const volatile type name [0] = {}; \
+	_XFA_CONST(name, 9_) const volatile type name ## _end [0] = {}; \
+	_Pragma("GCC diagnostic pop") \
+	extern const unsigned __xfa_dummy
 
 /**
  * @brief Define a writable cross-file array
@@ -88,12 +88,12 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @param[in]   name    name of the cross-file array
  */
 #define XFA_INIT(type, name) \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
-    _XFA(name, 0_) type name [0] = {}; \
-    _XFA(name, 9_) type name ## _end [0] = {}; \
-    _Pragma("GCC diagnostic pop") \
-    extern const unsigned __xfa_dummy
+	_Pragma("GCC diagnostic push") \
+	_Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
+	_XFA(name, 0_) type name [0] = {}; \
+	_XFA(name, 9_) type name ## _end [0] = {}; \
+	_Pragma("GCC diagnostic pop") \
+	extern const unsigned __xfa_dummy
 
 /**
  * @brief Declare an external read-only cross-file array
@@ -107,8 +107,8 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @param[in]   name    name of the cross-file array
  */
 #define XFA_USE_CONST(type, name) \
-    extern const type name []; \
-    extern const type name ## _end []
+	extern const type name []; \
+	extern const type name ## _end []
 
 /**
  * @brief Declare an external writable cross-file array
@@ -122,8 +122,8 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @param[in]   name    name of the cross-file array
  */
 #define XFA_USE(type, name) \
-    extern type name []; \
-    extern type name ## _end []
+	extern type name []; \
+	extern type name ## _end []
 
 /**
  * @brief Define variable in writable cross-file array
@@ -164,15 +164,15 @@ _Pragma("GCC diagnostic ignored \"-Warray-bounds\"")
  * @param[in]   entry       pointer variable to add to xfa
  */
 #define XFA_ADD_PTR(xfa_name, prio, name, entry) \
-    _XFA_CONST(xfa_name, 5_ ## prio) \
-    const typeof(entry) xfa_name ## _ ## prio ## _ ## name = entry
+	_XFA_CONST(xfa_name, 5_ ## prio) \
+	const typeof(entry) xfa_name ## _ ## prio ## _ ## name = entry
 
 /**
  * @brief Calculate number of entries in cross-file array
  */
 #define XFA_LEN(type, \
-                name) (((const char *)name ## _end - (const char *)name) / \
-                       sizeof(type))
+	        name) (((const char *)name ## _end - (const char *)name) / \
+	               sizeof(type))
 
 #ifdef __cplusplus
 extern "C" {
