@@ -60,6 +60,8 @@ RUN_TESTS=${RUN_TESTS:-${NIGHTLY}}
 DWQ_ENV="-E BOARDS -E APPS -E NIGHTLY -E RUN_TESTS -E ENABLE_TEST_CACHE
          -E TEST_HASH -E CI_PULL_LABELS"
 
+APPS="tests/congure_test"
+
 get_kconfig_test_apps() {
     case "$1" in
         "samr21-xpro") echo "${TEST_KCONFIG_samr21_xpro}" ;;
