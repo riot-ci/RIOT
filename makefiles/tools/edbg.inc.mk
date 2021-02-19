@@ -3,12 +3,8 @@ include $(RIOTMAKE)/tools/edbg-devices.inc.mk
 # Edbg use a bin file for flashing
 FLASHFILE ?= $(BINFILE)
 
-RIOT_EDBG = $(RIOTTOOLS)/edbg/edbg
-EDBG ?= $(RIOT_EDBG)
-ifneq (0,$(shell command -v $(EDBG) 2>&1 > /dev/null ; echo $$?))
-  FLASHDEPS += $(RIOT_EDBG)
-  EDBG := $(RIOT_EDBG)
-endif
+EDBG ?= $(RIOTTOOLS)/edbg/edbg
+FLASHDEPS += $(EDBG)
 
 # Use USB serial number to select device when more than one is connected
 # Use /dist/tools/usb-serial/list-ttys.sh to find out serial number.
