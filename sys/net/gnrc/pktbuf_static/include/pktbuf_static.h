@@ -27,14 +27,23 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Mask to align packet buffer allocations with size of @ref _unused_t
+ */
 #define GNRC_PKTBUF_STATIC_ALIGN_MASK   (sizeof(_unused_t) - 1)
 
+/**
+ * @brief   Marks an unused section of the packet buffer arena array
+ */
 typedef struct _unused {
-    struct _unused *next;
-    unsigned int size;
+    struct _unused *next;   /**< the next unused section */
+    unsigned int size;      /**< the size of the unused section */
 } _unused_t;
 
-/* fits size to byte alignment */
+/**
+ * @brief   Calculates the required space of a number of bytes including
+ *          alignment to the size of @ref _unused_t
+ */
 static inline size_t _align(size_t size)
 {
     return (size + GNRC_PKTBUF_STATIC_ALIGN_MASK) &
