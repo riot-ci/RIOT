@@ -17,6 +17,9 @@ ifeq (1,$(PARTICLE_MONOFIRMWARE))
   # then again nothing can be done in that case anyway, and the preflash
   # routines fall through without erring.
   include $(RIOTMAKE)/tools/usb_board_reset.mk
+
+  # Only dfu-util is supported in this case
+  PROGRAMMERS_SUPPORTED ?= dfu-util
 else
   # This board uses a DAP-Link programmer
   # Flashing support is provided through pyocd (default) and openocd.
