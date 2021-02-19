@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 
+#include "cpu.h"
 #include "periph_conf.h"
 #include "periph/init.h"
 #include "kernel_init.h"
