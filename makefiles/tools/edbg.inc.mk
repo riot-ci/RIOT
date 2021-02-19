@@ -19,7 +19,7 @@ endif
 EDBG_ARGS += $(if $(IMAGE_OFFSET),--offset $(IMAGE_OFFSET))
 EDBG_ARGS += --target $(EDBG_DEVICE_TYPE)
 
-EDBG_TARGETS = flash reset
+EDBG_TARGETS = flash flash-only reset
 # Export EDBG to required targets
 $(call target-export-variables,$(EDBG_TARGETS),EDBG)
 
