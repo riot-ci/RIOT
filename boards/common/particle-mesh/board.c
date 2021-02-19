@@ -51,7 +51,7 @@ void post_startup(void)
      * largely mimics the ARM bootup by requiring a VTOR at the start of the
      * writable firmware, it does not set the VTOR to the loaded data.
      *
-     * That step is not executed *right* here as cpu_init will do it a few
+     * That step is not executed *right* here as soc_init will do it a few
      * lines down anyway. */
 
     /* Force keeping the metadata -- the __attribute__((used)) in their macro
@@ -89,6 +89,4 @@ void board_init(void)
 
     board_nrfantenna_select(BOARD_NRFANTENNA_DEFAULT);
 
-    /* initialize the CPU */
-    cpu_init();
 }
