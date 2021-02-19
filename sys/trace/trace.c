@@ -24,10 +24,7 @@
 
 #include "irq.h"
 #include "xtimer.h"
-
-#ifndef CONFIG_TRACE_BUFSIZE
-#define CONFIG_TRACE_BUFSIZE 512
-#endif
+#include "trace.h"
 
 typedef struct {
     uint32_t time;
