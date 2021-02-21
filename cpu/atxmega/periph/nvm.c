@@ -44,6 +44,7 @@ static inline uint8_t _nvm_read_byte(uint8_t nvm_cmd, uint16_t address)
 
     __asm__ volatile (
         "in  __tmp_reg__, __SREG__ \n\t"
+        "cli                       \n\t"
         "lds __zero_reg__, %3      \n\t"
         "sts %3, %1                \n\t"
         "lpm %0, %a2               \n\t"
