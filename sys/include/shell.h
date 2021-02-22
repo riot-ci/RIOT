@@ -202,6 +202,19 @@ static inline void shell_run(const shell_command_t *commands,
  *
  * This macro is a helper for defining a shell command and adding it to the
  * shell commands XFA (cross file array).
+ *
+ * @experimental This should be considered experimental API, subject to change
+ *               without notice!
+ *
+ * Example:
+ *
+ * ```.c
+ * #include "shell.h"
+ * static int _my_command(int argc, char **argv) {
+ *   // ...
+ * }
+ * SHELL_COMMAND(my_command, "my command help text", _my_command);
+ * ```
  */
 #define SHELL_COMMAND(name, help, func) \
     XFA_USE_CONST(shell_command_t*, shell_commands_xfa); \
