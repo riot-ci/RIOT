@@ -36,7 +36,7 @@ ifeq ($(TOOLCHAIN),llvm)
   # autodetected gcc target triples are incompatible with clang
   TARGET_ARCH_LLVM := riscv32-none-elf
 else
-  CFLAGS_CPU += -mcmodel=medlow -msmall-data-limit=8
+  CFLAGS_CPU += -mcmodel=medlow -msmall-data-limit=8 -malign-data=natural
 endif
 CFLAGS_LINK  = -ffunction-sections -fdata-sections
 CFLAGS_DBG  ?= -g3
