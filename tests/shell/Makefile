@@ -4,6 +4,7 @@ include ../Makefile.tests_common
 USEMODULE += app_metadata
 USEMODULE += shell
 USEMODULE += shell_commands
+USEMODULE += shell_command_xfa
 USEMODULE += ps
 
 # for z1, socat doesn't work (unknown reason)
