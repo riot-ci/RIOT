@@ -203,6 +203,13 @@ static inline void shell_run(const shell_command_t *commands,
  * This macro is a helper for defining a shell command and adding it to the
  * shell commands XFA (cross file array).
  *
+ * Shell commands added using this macros will be sorted *after* builtins and
+ * commands passed via parameter to `shell_run_once()`. If a command with the
+ * same name exists in any of those, they will make a command added via this
+ * macro inaccassible.
+ *
+ * Commands added with this macro will be sorted alphanumerically by `name`.
+ *
  * This requires the module `shell_command_xfa`.
  *
  * @experimental This should be considered experimental API, subject to change
