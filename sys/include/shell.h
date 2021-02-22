@@ -21,9 +21,9 @@
 #define SHELL_H
 
 #include <stdint.h>
-#include "kernel_defines.h"
-
 #include "periph/pm.h"
+
+#include "kernel_defines.h"
 #include "xfa.h"
 
 #ifdef __cplusplus
