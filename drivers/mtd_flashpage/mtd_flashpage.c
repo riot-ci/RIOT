@@ -53,6 +53,11 @@ static int _write(mtd_dev_t *dev, const void *buf, uint32_t addr, uint32_t size)
 {
     (void)dev;
 
+#ifndef CPU_HAS_UNALIGNED_ACCESS
+    if ((uintptr_t)buf % sizeof(word_t)) {
+￼        return -EINVAL;
+￼   }
+#endif
     if (addr % FLASHPAGE_WRITE_BLOCK_ALIGNMENT) {
         return -EINVAL;
     }
