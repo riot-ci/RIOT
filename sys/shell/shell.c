@@ -36,8 +36,14 @@
 #include <errno.h>
 
 #include "kernel_defines.h"
+#include "xfa.h"
 #include "shell.h"
 #include "shell_commands.h"
+
+#if defined(MODULE_SHELL_COMMAND_XFA)
+/* define shell command cross file array */
+XFA_INIT_CONST(shell_command_t*, shell_commands_xfa);
+#endif
 
 #define ETX '\x03'  /** ASCII "End-of-Text", or Ctrl-C */
 #define EOT '\x04'  /** ASCII "End-of-Transmission", or Ctrl-D */
@@ -92,6 +98,21 @@ static shell_command_handler_t search_commands(const shell_command_t *entry,
     return NULL;
 }
 
+#if defined(MODULE_SHELL_COMMAND_XFA)
+static shell_command_handler_t search_commands_xfa(char *command)
+{
+    unsigned n = XFA_LEN(shell_command_t*, shell_commands_xfa);
+
+    for (unsigned i = 0; i < n; i++) {
+        const volatile shell_command_t *entry = shell_commands_xfa[i];
+        if (strcmp(entry->name, command) == 0) {
+            return entry->handler;
+        }
+    }
+    return NULL;
+}
+#endif
+
 static shell_command_handler_t find_handler(
         const shell_command_t *command_list, char *command)
 {
@@ -104,6 +125,12 @@ static shell_command_handler_t find_handler(
         handler = search_commands(_builtin_cmds, command);
     }
 
+#if defined(MODULE_SHELL_COMMAND_XFA)
+    if (handler == NULL) {
+        handler = search_commands_xfa(command);
+    }
+#endif
+
     return handler;
 }
 
@@ -113,6 +140,17 @@ static void print_commands(const shell_command_t *entry)
         printf("%-20s %s\n", entry->name, entry->desc);
     }
 }
+
+#if defined(MODULE_SHELL_COMMAND_XFA)
+static void print_commands_xfa(void)
+{
+    unsigned n = XFA_LEN(shell_command_t*, shell_commands_xfa);
+    for (unsigned i = 0; i < n; i++) {
+        const volatile shell_command_t *entry = shell_commands_xfa[i];
+        printf("%-20s %s\n", entry->name, entry->desc);
+    }
+}
+#endif
 
 static void print_help(const shell_command_t *command_list)
 {
@@ -125,6 +163,10 @@ static void print_help(const shell_command_t *command_list)
     if (_builtin_cmds != NULL) {
         print_commands(_builtin_cmds);
     }
+
+#if defined(MODULE_SHELL_COMMAND_XFA)
+    print_commands_xfa();
+#endif
 }
 
 /**
