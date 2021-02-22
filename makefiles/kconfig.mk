@@ -150,9 +150,15 @@ EXTERNAL_MODULE_KCONFIGS ?= $(sort $(foreach dir,$(EXTERNAL_MODULE_DIRS),\
 # files. Every EXTERNAL_MODULE_DIRS with a Kconfig file is written to
 # KCONFIG_EXTERNAL_CONFIGS as 'osource dir/Kconfig'
 $(KCONFIG_EXTERNAL_CONFIGS): FORCE | $(GENERATED_DIR)
-	$(Q)printf "%s\n" $(EXTERNAL_MODULE_KCONFIGS) \
-	  | awk '{ printf "osource \"%s\"\n", $$0 }' \
-	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
+	$(Q)\
+	if [ -n "$(EXTERNAL_MODULE_KCONFIGS)" ] ; then  \
+		printf "%s\n" $(EXTERNAL_MODULE_KCONFIGS) \
+		| awk '{ printf "osource \"%s\"\n", $$0 }' \
+		| $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@ ; \
+	else \
+		printf "# no external modules" \
+		| $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@ ; \
+	fi
 
 # When the 'clean' target is called, the files inside GENERATED_DIR should be
 # regenerated. For that, we conditionally change GENERATED_DIR from an 'order
