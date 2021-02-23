@@ -1,6 +1,8 @@
 # Adafruit-nrfutil is the default programmer
 PROGRAMMER ?= adafruit-nrfutil
 
+PROGRAMMERS_SUPPORTED ?= adafruit-nrfutil
+
 include $(RIOTBOARD)/common/nrf52/Makefile.include
 
 ifeq ($(PROGRAMMER),adafruit-nrfutil)
@@ -16,8 +18,6 @@ ifeq ($(PROGRAMMER),adafruit-nrfutil)
     TERMDEPS += term-delay
   endif
 endif
-
-PROGRAMMERS_SUPPORTED ?= adafruit-nrfutil
 
 term-delay:
 	sleep $(TERM_DELAY)
