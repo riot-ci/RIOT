@@ -102,7 +102,8 @@ congure_test_snd_t *congure_test_get_state(void);
  * @param[in] argv  Command line arguments. No extra arguments are required
  *                  except for the command name in `argv[0]`.
  *
- * Provides no output.
+ * Always generates the following JSON object in STDOUT:
+ * @code {"success": null} @endcode
  *
  * @return  Always 0.
  */
@@ -120,7 +121,7 @@ int congure_test_clear_state(int argc, char **argv);
  *                  @ref congure_test_snd_setup().
  *
  * This function will generate the following JSON objects in STDOUT:
- * - @code {"setup": "0x12345678"} @endcode
+ * - @code {"success": "0x12345678"} @endcode
  *   On success, with `0x12345678` being replaced with the memory address of the
  *   state object.
  * - @code {"error":"`id` expected to be integer"} @endcode
@@ -155,7 +156,8 @@ int congure_test_call_setup(int argc, char **argv);
  * - @code {"error":"`ctx` expected to be hex"} @endcode
  *   When `argv[1]` is not parseable as a hexadecimal integer.
  *
- * Provides no output on success.
+ * Always generates the following JSON object in STDOUT:
+ * @code {"success": null} @endcode
  *
  * @retval  0 on success.
  * @retval  1 on error.
@@ -172,7 +174,7 @@ int congure_test_call_init(int argc, char **argv);
  *                  except for the command name in `argv[0]`.
  *
  * This function will generate the following JSON objects in STDOUT:
- * - @code {"inter_msg_interval":X} @endcode
+ * - @code {"success":X} @endcode
  *   On success, with `X` being replaced with the return value of
  *   congure_snd_driver_t::inter_msg_interval().
  * - @code {"error":"State object not set up"} @endcode
@@ -270,7 +272,9 @@ int congure_test_call_inter_msg_interval(int argc, char **argv);
  *                  - `ecn_ce`: `argv[2]` is expected to be an integer for the
  *                    `time` parameter of congure_snd_driver_t::report_ecn_ce()
  *
- * This function will generate the following JSON objects in STDOUT on error:
+ * This function will generate the following JSON objects in STDOUT:
+ * - @code {"success":null} @endcode
+ *   On success
  * - @code {"error":"State object not set up"} @endcode
  *   When @ref congure_test_snd_setup() was not called before calling this
  *   command (i.e. the `driver` member of the state object is `NULL`).
