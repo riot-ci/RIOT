@@ -126,28 +126,6 @@ def merge_configs(kconf, configs=[]):
     if configs:
         for config in configs:
             log(kconf.load_config(config, replace=False))
-    # Pull in config from environment variables:
-    used_env = set()
-    for sym in kconf.defined_syms:
-        env_name = "RIOT_CONFIG_{}".format(sym.name)
-        if env_name in os.environ:
-            value = os.environ[env_name]
-            # for bool and tristate values may be integer
-            if sym.type in (kconfiglib.BOOL, kconfiglib.TRISTATE) and \
-               value.isnumeric():
-                # convert all non-zero bools to match "y == 2"
-                if sym.type is kconfiglib.BOOL and int(value) > 0:
-                    value = 2
-                sym.set_value(int(value))
-            else:
-                sym.set_value(value)
-            used_env.add(env_name)
-    for env in os.environ:
-        if not env.startswith("RIOT_CONFIG_"):
-            continue
-        if env not in used_env:
-            log('{}={} not used as it is not known'
-                .format(env, os.environ[env]), level=logging.WARNING)
 
 
 def check_config_symbols(kconf):
