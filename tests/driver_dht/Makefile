@@ -4,6 +4,6 @@ USEMODULE += dht
 USEMODULE += fmt
 USEMODULE += xtimer
 
-RIOT_CONFIG_MODULE_PS=1
+RIOT_CONFIG_MODULE_PS=y
 
 include $(RIOTBASE)/Makefile.include
