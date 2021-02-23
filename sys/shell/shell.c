@@ -390,6 +390,7 @@ static inline void new_line(void)
     }
 }
 
+/* needed externally by module shell_lock */
 /**
  * @brief   Read a single line from standard input into a buffer.
  *
@@ -413,7 +414,7 @@ static inline void new_line(void)
  * @return  EOF, if the end of the input stream was reached.
  * @return  -ENOBUFS if the buffer size was exceeded.
  */
-static int readline(char *buf, size_t size)
+int readline(char *buf, size_t size)
 {
     int curr_pos = 0;
     bool length_exceeded = false;

@@ -49,6 +49,9 @@ extern void flush_if_needed(void);
 /* defined in shell.c */
 extern void print_prompt(void);
 
+/* defined in shell.c */
+extern int readline(char *buf, size_t size);
+
 int _lock_handler(int argc, char **argv)
 {
     (void) argc;
@@ -115,11 +118,9 @@ static bool _login(char *line_buf, size_t buf_size)
 
     print_prompt();
 
-    if (fgets(line_buf, buf_size, stdin) != NULL) {
+    if (readline(line_buf, buf_size) > 0) {
 
-        char *line = strtok(line_buf, "\n");
-
-        if (_safe_strcmp(line, SHELL_LOCK_PASSWORD)) {
+        if (_safe_strcmp(line_buf, SHELL_LOCK_PASSWORD)) {
             success = true;
         }
     }
