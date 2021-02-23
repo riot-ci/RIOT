@@ -18,8 +18,8 @@ endif
 # Default for these boards is to use a CMSIS-DAP programmer
 OPENOCD_DEBUG_ADAPTER ?= dap
 
-# Declare the list of supported programmers
-PROGRAMMERS_SUPPORTED ?= openocd edbg jlink
+# Increase the list of supported programmers
+PROGRAMMERS_SUPPORTED += openocd edbg jlink
 
 # If no programmer is set, select a default programmer
 ifeq ($(PROGRAMMER),)
