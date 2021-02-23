@@ -70,6 +70,7 @@ endif
 
 MERGE_SOURCES += $(wildcard $(KCONFIG_APP_CONFIG))
 MERGE_SOURCES += $(wildcard $(KCONFIG_USER_CONFIG))
+MERGE_SOURCES += $(KCONFIG_GENERATED_ENV_CONFIG)
 
 # Create directory to place generated files
 $(GENERATED_DIR): $(if $(MAKE_RESTARTS),,$(CLEAN))
@@ -145,11 +146,12 @@ $(KCONFIG_GENERATED_DEPENDENCIES): FORCE | $(GENERATED_DIR)
 	      printf "config %s\n\tbool\n\tdefault y\n", toupper($$0)}' \
 	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
 
+KCONFIG_ENV_CONFIG = $(patsubst RIOT_%,%,$(foreach v,$(filter RIOT_CONFIG_%,$(.VARIABLES)),$(v)=$($(v))))
+
 # Build an intermediate file based on the `RIOT_CONFIG_<CONFIG>` environment
 # variables
 $(KCONFIG_GENERATED_ENV_CONFIG): FORCE | $(GENERATED_DIR)
-	$(Q)printf "%s\n" \
-	  $(foreach v,$(filter RIOT_CONFIG_%,$(.VARIABLES)),"$(v)=$($(v))") \
+	$(Q)printf "%s\n" $(KCONFIG_ENV_CONFIG) \
 	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
 
 # When the 'clean' target is called, the files inside GENERATED_DIR should be
@@ -168,7 +170,7 @@ GENERATED_DIR_DEP := $(if $(CLEAN),,|) $(GENERATED_DIR)
 # Generates a .config file by merging multiple sources specified in
 # MERGE_SOURCES. This will also generate KCONFIG_OUT_DEP with the list of used
 # Kconfig files.
-$(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(KCONFIG_GENERATED_ENV_CONFIG) $(GENCONFIG) $(MERGE_SOURCES) $(GENERATED_DIR_DEP)
+$(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(GENCONFIG) $(MERGE_SOURCES) $(GENERATED_DIR_DEP)
 	$(Q) $(GENCONFIG) \
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
 	  --file-list $(KCONFIG_OUT_DEP) \
