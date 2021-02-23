@@ -4,6 +4,8 @@
 eclipsesym: $(CURDIR)/eclipsesym.xml
 eclipsesym.xml: eclipsesym
 
+RIOT_CONFIG_MODULE_ECLIPSE=1
+
 $(CURDIR)/eclipsesym.xml: FORCE
 	$(Q)printf "%s\n" $(CC) $(CFLAGS_WITH_MACROS) $(INCLUDES) | \
 		$(RIOTTOOLS)/eclipsesym/cmdline2xml.sh > $@
