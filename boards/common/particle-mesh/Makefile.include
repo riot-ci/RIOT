@@ -5,6 +5,8 @@ CFLAGS += -DBOARD_NRFANTENNA_DEFAULT=BOARD_NRFANTENNA_$(BOARD_NRFANTENNA_DEFAULT
 # add the common header files to the include path
 INCLUDES += -I$(RIOTBOARD)/common/particle-mesh/include
 
+PROGRAMMERS_SUPPORTED ?= dfu-util pyocd
+
 ifeq (1,$(PARTICLE_MONOFIRMWARE))
   CFLAGS += -DPARTICLE_MONOFIRMWARE
   ROM_OFFSET = 0x30000
