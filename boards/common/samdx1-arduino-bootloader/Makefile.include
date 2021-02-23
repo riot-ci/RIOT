@@ -2,9 +2,9 @@
 # Bossa is the default programmer
 PROGRAMMER ?= bossa
 
-# Set bossa as supported programmers. Boards that support more programmers
+# Add bossa as supported programmers. Boards that support more programmers
 # should declare them in their own Makefile.include
-PROGRAMMERS_SUPPORTED ?= bossa
+PROGRAMMERS_SUPPORTED += bossa
 
 ifeq ($(PROGRAMMER),bossa)
   # by default, we use BOSSA to flash this board and take into account the
