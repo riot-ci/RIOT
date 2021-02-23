@@ -48,7 +48,7 @@ extern "C" {
  *
  * @extends congure_snd_t
  *
- * @note    Needs to be iset within an application-provided `congure_impl.h` to
+ * @note    Needs to be set within an application-provided `congure_impl.h` to
  *          the state object of the CongURE implementation you want to test.
  */
 typedef congure_snd_t congure_test_snd_t;
