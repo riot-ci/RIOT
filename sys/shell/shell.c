@@ -98,9 +98,9 @@ static shell_command_handler_t search_commands(const shell_command_t *entry,
     return NULL;
 }
 
-#if defined(MODULE_SHELL_COMMAND_XFA)
 static shell_command_handler_t search_commands_xfa(char *command)
 {
+#if IS_USED(MODULE_SHELL_COMMAND_XFA)
     unsigned n = XFA_LEN(shell_command_t*, shell_commands_xfa);
 
     for (unsigned i = 0; i < n; i++) {
@@ -109,9 +109,11 @@ static shell_command_handler_t search_commands_xfa(char *command)
             return entry->handler;
         }
     }
+#else
+    (void)command;
+#endif
     return NULL;
 }
-#endif
 
 static shell_command_handler_t find_handler(
         const shell_command_t *command_list, char *command)
