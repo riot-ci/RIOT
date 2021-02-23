@@ -32,6 +32,11 @@ KCONFIG_APP_CONFIG = $(APPDIR)/app.config
 # Default and user overwritten configurations
 KCONFIG_USER_CONFIG = $(APPDIR)/user.config
 
+# This file will contain configuration using the `RIOT_CONFIG_<CONFIG>`
+# environment variables. Used to enforce a rerun of GENCONFIG when environment
+# changes.
+KCONFIG_GENERATED_ENV_CONFIG = $(GENERATED_DIR)/env.config
+
 # This is the output of the generated configuration. It always mirrors the
 # content of KCONFIG_GENERATED_AUTOCONF_HEADER_C, and it is used to load
 # configuration symbols to the build system.
@@ -140,6 +145,13 @@ $(KCONFIG_GENERATED_DEPENDENCIES): FORCE | $(GENERATED_DIR)
 	      printf "config %s\n\tbool\n\tdefault y\n", toupper($$0)}' \
 	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
 
+# Build an intermediate file based on the `RIOT_CONFIG_<CONFIG>` environment
+# variables
+$(KCONFIG_GENERATED_ENV_CONFIG): FORCE | $(GENERATED_DIR)
+	$(Q)printf "%s\n" \
+	  $(foreach v,$(filter RIOT_CONFIG_%,$(.VARIABLES)),"$(v)=$($(v))") \
+	  | $(LAZYSPONGE) $(LAZYSPONGE_FLAGS) $@
+
 # When the 'clean' target is called, the files inside GENERATED_DIR should be
 # regenerated. For that, we conditionally change GENERATED_DIR from an 'order
 # only' requisite to a normal one.
@@ -156,7 +168,7 @@ GENERATED_DIR_DEP := $(if $(CLEAN),,|) $(GENERATED_DIR)
 # Generates a .config file by merging multiple sources specified in
 # MERGE_SOURCES. This will also generate KCONFIG_OUT_DEP with the list of used
 # Kconfig files.
-$(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(GENCONFIG) $(MERGE_SOURCES) $(GENERATED_DIR_DEP)
+$(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(KCONFIG_GENERATED_ENV_CONFIG) $(GENCONFIG) $(MERGE_SOURCES) $(GENERATED_DIR_DEP)
 	$(Q) $(GENCONFIG) \
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
 	  --file-list $(KCONFIG_OUT_DEP) \
