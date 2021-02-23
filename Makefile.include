@@ -415,7 +415,7 @@ endif
 ifneq (iotlab,$(PROGRAMMER))
   ifneq (,$(PROGRAMMERS_SUPPORTED))
     ifeq (,$(filter $(PROGRAMMER),$(PROGRAMMERS_SUPPORTED)))
-      $(error '$(PROGRAMMER)' programmer is not supported by this board. \
+      $(info '$(PROGRAMMER)' programmer is not supported by this board. \
               Supported programmers: '$(PROGRAMMERS_SUPPORTED)')
     endif
   endif
