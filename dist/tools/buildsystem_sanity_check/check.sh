@@ -340,10 +340,8 @@ check_no_riot_config() {
 
     patterns+=(-e 'RIOT_CONFIG_.*')
 
-    pathspec+=('Makefile')
-    pathspec+=('Makefile\..\+')
-    pathspec+=('**/Makefile')
-    pathspec+=('**/Makefile\..\+')
+    pathspec+=('Makefile*')
+    pathspec+=('**/Makefile*')
     pathspec+=('**/*.mk')
     pathspec+=(':!makefiles/kconfig.mk')
     git -C "${RIOTBASE}" grep -n "${patterns[@]}" -- "${pathspec[@]}" \
