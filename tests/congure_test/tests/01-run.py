@@ -271,10 +271,11 @@ class TestCongUREWithSetup(TestCongUREBase):
         })
 
     def _report_msgs_timeout_lost_acked_args_not_int(self, cmd, exp_params):
-        # generate list of arguments that are exp_params string parameters and
-        # exp_params integer parameters
-        args = ["arg{}".format(i) for i in range(len(exp_params))] + \
-               [str(i + len(exp_params)) for i in range(len(exp_params))]
+        # generate list of arguments that are exp_params string parameters
+        args = [chr(i + ord('a')) for i in range(len(exp_params))]
+        if cmd != 'msg_acked':
+            # and exp_params integer parameters for msgs_timeout and msgs_lost
+            args += [str(i + len(exp_params)) for i in range(len(exp_params))]
         res = self.exec_cmd('cong_report {} {}'.format(cmd, ' '.join(args)))
         self.assertEqual(res, {
             'error': '`{}` expected to be integer'.format(exp_params[0])
@@ -376,7 +377,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_msg_acked_wnd_not_wnd_size(self):
         msg = {'send_time': 12345, 'size': 456, 'resends': 0}
-        ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
+        ack = {'recv_time': 12432, 'id': 18846, 'size': 12,
                'clean': 1, 'wnd': (1 << 16) + 7642, 'delay': 1235}
         res = self.exec_cmd(
             'cong_report msg_acked '
@@ -391,7 +392,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_msg_acked_delay_not_uint16(self):
         msg = {'send_time': 12345, 'size': 456, 'resends': 0}
-        ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
+        ack = {'recv_time': 12432, 'id': 18846, 'size': 12,
                'clean': 1, 'wnd': 7642, 'delay': (1 << 16) + 1235}
         res = self.exec_cmd(
             'cong_report msg_acked '
@@ -406,7 +407,7 @@ class TestCongUREWithSetup(TestCongUREBase):
 
     def test_report_msg_acked_success(self):
         msg = {'send_time': 12345, 'size': 456, 'resends': 0}
-        ack = {'recv_time': 12432, 'id': 1715718846, 'size': 12,
+        ack = {'recv_time': 12432, 'id': 18846, 'size': 12,
                'clean': 1, 'wnd': 742, 'delay': 1235}
         res = self.exec_cmd(
             'cong_report msg_acked '
