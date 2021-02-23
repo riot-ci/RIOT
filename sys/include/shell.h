@@ -225,12 +225,10 @@ static inline void shell_run(const shell_command_t *commands,
  * SHELL_COMMAND(my_command, "my command help text", _my_command);
  * ```
  */
-#if defined(DOXYGEN) || IS_USED(MODULE_SHELL_COMMAND_XFA)
 #define SHELL_COMMAND(name, help, func) \
     XFA_USE_CONST(shell_command_t*, shell_commands_xfa); \
     static shell_command_t _xfa_ ## name ## _cmd = { #name, help, &func }; \
     XFA_ADD_PTR(shell_commands_xfa, name, name, &_xfa_ ## name ## _cmd)
-#endif
 
 #ifdef __cplusplus
 }
