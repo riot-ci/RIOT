@@ -21,6 +21,8 @@
 
 #include <avr/interrupt.h>
 
+#include <assert.h>
+
 #include "cpu.h"
 #include "thread.h"
 
@@ -64,10 +66,6 @@ static ctx_t *ctx[] = { { NULL } };
 #endif
 /** @} */
 
-#if TIMER_CH_MAX_NUMOF * TIMER_NUMOF > 32
-#error "periph_timer: The current implementation supports at most 32 / TIMER_CH_MAX_NUMOF timers"
-#endif
-
 static uint32_t _oneshot;
 
 static inline void set_oneshot(tim_t tim, int chan)
@@ -95,6 +93,8 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     TC0_t *dev;
     uint8_t pre;
     uint8_t ch;
+
+    assert(TIMER_CH_MAX_NUMOF * TIMER_NUMOF < 32);
 
     /* make sure given device is valid */
     if (tim >= TIMER_NUMOF) {
