@@ -25,6 +25,15 @@ It can also executed with pytest:
 $ pytest tests/01-run.py
 ```
 
+Note that this only works from within the directory of the test, so if you are
+somewhere else, use
+
+```console
+$ cd tests/congure_test
+```
+
+first to change into that.
+
 Expected result
 ---------------
 
