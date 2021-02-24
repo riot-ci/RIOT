@@ -19,7 +19,7 @@ endif
 OPENOCD_DEBUG_ADAPTER ?= dap
 
 # Increase the list of supported programmers
-PROGRAMMERS_SUPPORTED += openocd edbg jlink
+PROGRAMMERS_SUPPORTED += openocd edbg
 
 # If no programmer is set, select a default programmer
 ifeq ($(PROGRAMMER),)
