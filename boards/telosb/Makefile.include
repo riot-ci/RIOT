@@ -8,4 +8,4 @@ BAUD ?= 9600
 PROGRAMMER ?= goodfet
 GOODFET_FLAGS ?= --telosb
 
-PROGRAMMERS_SUPPORTED ?= goodfet
+PROGRAMMERS_SUPPORTED += goodfet

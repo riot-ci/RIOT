@@ -6,4 +6,4 @@ PORT_DARWIN ?= $(firstword $(sort $(wildcard /dev/tty.SLAB_USBtoUART*)))
 PROGRAMMER ?= goodfet
 GOODFET_FLAGS ?= --z1
 
-PROGRAMMERS_SUPPORTED ?= goodfet
+PROGRAMMERS_SUPPORTED += goodfet
