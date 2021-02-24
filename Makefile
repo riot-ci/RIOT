@@ -1,5 +1,7 @@
 .all:
 
+RIOT_CONFIG_MODULE_PS=y
+
 .PHONY: all doc doc-man doc-latex docclean print-versions welcome
 
 all: welcome
