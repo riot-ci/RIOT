@@ -17,5 +17,5 @@ else ifeq ($(PROGRAMMER),jlink)
   JLINK_DEVICE = nrf51822
 endif
 
-# Set jlink and openocd as supported programmers
-PROGRAMMERS_SUPPORTED ?= jlink openocd
+# Set openocd as default supported programmers
+PROGRAMMERS_SUPPORTED += openocd
