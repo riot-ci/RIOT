@@ -132,6 +132,7 @@ int lis2dh12_init(lis2dh12_t *dev, const lis2dh12_params_t *params)
     assert(dev && params);
 
     dev->p = params;
+    /* calculate shift amount to convert raw acceleration data */
     dev->comp = 4 - (dev->p->scale >> 4);
 
     /* initialize the chip select line */
@@ -329,7 +330,8 @@ int lis2dh12_read_fifo_src(const lis2dh12_t *dev, LIS2DH12_FIFO_SRC_REG_t *data)
     return LIS2DH12_OK;
 }
 
-uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fifo_data, uint8_t number) {
+uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fifo_data,
+                                uint8_t number) {
 
     assert(dev && fifo_data);
     /* check max FIFO length */
@@ -350,9 +352,12 @@ uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fif
 
     /* calculate X, Y and Z values */
     for (uint8_t i = 0; i < number; i++){
-        fifo_data[i].X = (int16_t)(_read(dev, REG_OUT_X_L) | (_read(dev, REG_OUT_X_H) << 8)) >> dev->comp;
-        fifo_data[i].Y = (int16_t)(_read(dev, REG_OUT_Y_L) | (_read(dev, REG_OUT_Y_H) << 8)) >> dev->comp;
-        fifo_data[i].Z = (int16_t)(_read(dev, REG_OUT_Z_L) | (_read(dev, REG_OUT_Z_H) << 8)) >> dev->comp;
+        fifo_data[i].X = (int16_t)(_read(dev, REG_OUT_X_L) | (_read(dev, REG_OUT_X_H) << 8))
+                            >> dev->comp;
+        fifo_data[i].Y = (int16_t)(_read(dev, REG_OUT_Y_L) | (_read(dev, REG_OUT_Y_H) << 8))
+                            >> dev->comp;
+        fifo_data[i].Z = (int16_t)(_read(dev, REG_OUT_Z_L) | (_read(dev, REG_OUT_Z_H) << 8))
+                            >> dev->comp;
     }
 
     _release(dev);

@@ -311,7 +311,8 @@ int lis2dh12_read_fifo_src(const lis2dh12_t *dev, LIS2DH12_FIFO_SRC_REG_t *data)
  *
  * @return  number of valid data read from FIFO
  */
-uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fifo_data, uint8_t number);
+uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fifo_data,
+                                uint8_t number);
 #endif /* MODULE_LIS2DH12_INT */
 
 /**
