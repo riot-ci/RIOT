@@ -25,4 +25,4 @@ ifneq (,$(filter $(BOARD),ruuvitag thingy52))
 endif
 
 # set list of supported programmers
-PROGRAMMERS_SUPPORTED ?= bmp jlink openocd
+PROGRAMMERS_SUPPORTED += bmp openocd

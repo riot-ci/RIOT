@@ -22,7 +22,7 @@ ifeq (nrfutil,$(PROGRAMMER))
   include $(RIOTMAKE)/tools/usb_board_reset.mk
 endif
 
-PROGRAMMERS_SUPPORTED ?= nrfutil
+PROGRAMMERS_SUPPORTED += nrfutil
 
 %.hex.zip: %.hex
 	$(call check_cmd,$(FLASHER),Flash program and preparation tool)
