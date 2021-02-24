@@ -1,5 +1,5 @@
 PROGRAMMER ?= openocd
-PROGRAMMERS_SUPPORTED += bmp dfu-util openocd stm32flash jlink
+PROGRAMMERS_SUPPORTED += bmp dfu-util openocd stm32flash
 
 ifeq (bmp,$(PROGRAMMER))
   # On Blackmagic Probe, the first ACM is used to connect to the gdb server,
