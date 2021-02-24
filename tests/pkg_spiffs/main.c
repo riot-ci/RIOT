@@ -22,10 +22,6 @@
 #include "embUnit.h"
 
 
-/* Define MTD_0 in board.h to use the board mtd if any */
-#ifdef MTD_0
-#define _dev (MTD_0)
-#else
 /* Test mock object implementing a simple RAM-based mtd */
 #ifndef SECTOR_COUNT
 #define SECTOR_COUNT 4
@@ -113,7 +109,6 @@ static mtd_dev_t dev = {
 };
 
 static mtd_dev_t *_dev = (mtd_dev_t*) &dev;
-#endif /* MTD_0 */
 
 static struct spiffs_desc spiffs_desc = {
     .lock = MUTEX_INIT,
@@ -436,9 +431,7 @@ static void tests_spiffs_partition(void)
 
 Test *tests_spiffs(void)
 {
-#ifndef MTD_0
     memset(dummy_memory, 0xff, sizeof(dummy_memory));
-#endif
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_spiffs_format),
         new_TestFixture(tests_spiffs_mount_umount),
