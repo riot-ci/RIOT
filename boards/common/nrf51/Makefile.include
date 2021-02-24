@@ -16,3 +16,6 @@ else ifeq ($(PROGRAMMER),jlink)
   # setup JLink for flashing
   JLINK_DEVICE = nrf51822
 endif
+
+# Set jlink and openocd as supported programmers
+PROGRAMMERS_SUPPORTED ?= jlink openocd

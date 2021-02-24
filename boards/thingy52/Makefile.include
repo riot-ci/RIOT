@@ -5,5 +5,9 @@ ifeq (,$(filter stdio_%,$(DISABLE_MODULE) $(USEMODULE)))
   RIOT_TERMINAL ?= jlink
 endif
 
+# set list of supported programmers (openocd doesn't fully work with this board
+# and jlink is added to all ARM based boards)
+PROGRAMMERS_SUPPORTED ?= bmp
+
 # use shared Makefile.include
 include $(RIOTBOARD)/common/nrf52/Makefile.include

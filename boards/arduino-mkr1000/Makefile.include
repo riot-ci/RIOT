@@ -1,3 +1,6 @@
+# This board can be flashed using bossa (default) and jlink (using the JTAG pins)
+PROGRAMMERS_SUPPORTED ?= bossa jlink
+
 ifeq ($(PROGRAMMER),jlink)
   MKR_JLINK_DEVICE = atsamw25
 endif

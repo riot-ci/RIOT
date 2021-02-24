@@ -10,9 +10,9 @@ else ifeq (jlink,$(PROGRAMMER))
   JLINK_DEVICE = FE310
   JLINK_IF = JTAG
   FLASH_ADDR = 0x20010000
-else
-  $(error Programmer '$(PROGRAMMER)' not supported for board '$(BOARD)')
 endif
+
+PROGRAMMERS_SUPPORTED ?= jlink openocd
 
 TESTRUNNER_RESET_DELAY = 1
 $(call target-export-variables,test,TESTRUNNER_RESET_DELAY)
