@@ -154,11 +154,8 @@ void lis2dh12_test_init(void) {
     lis2dh12_set_scale(&dev, LIS2DH12_SCALE_4G);
 
     /* set interrupt pins */
-    gpio_t pin1 = GPIO_UNDEF;
-    gpio_t pin2 = GPIO_UNDEF;
-
-    pin1 = dev.p->int1_pin;
-    pin2 = dev.p->int2_pin;
+    gpio_t pin1 = dev.p->int1_pin;
+    gpio_t pin2 = dev.p->int2_pin;
 
     /* set Interrupt params */
     if (gpio_is_valid(pin1)) {
