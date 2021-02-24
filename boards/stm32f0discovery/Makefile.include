@@ -10,5 +10,5 @@ PROGRAMMER ?= openocd
 OPENOCD_DEBUG_ADAPTER ?= stlink
 STLINK_VERSION ?= 2
 
-# Only openocd programmer is supported
-PROGRAMMERS_SUPPORTED ?= openocd
+# openocd programmer is supported
+PROGRAMMERS_SUPPORTED += openocd

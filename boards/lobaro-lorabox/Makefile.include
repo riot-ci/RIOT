@@ -15,5 +15,5 @@ STM32LOADER_FLAGS ?= -u -S -l 0x1ff
 
 PYTERMFLAGS +=  --set-rts 0
 
-# Only stm32loader programmer is supported
-PROGRAMMERS_SUPPORTED ?= stm32loader
+# stm32loader programmer is supported
+PROGRAMMERS_SUPPORTED += stm32loader

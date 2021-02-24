@@ -5,8 +5,8 @@ INCLUDES += -I$(RIOTBOARD)/common/stm32/include
 PROGRAMMER ?= openocd
 OPENOCD_DEBUG_ADAPTER ?= stlink
 
-# Only openocd programmer is supported
-PROGRAMMERS_SUPPORTED ?= openocd
+# Add openocd as supported programmer
+PROGRAMMERS_SUPPORTED += openocd
 
 # The board can become un-flashable after some execution,
 # use connect_assert_srst to always be able to flash or reset the board.

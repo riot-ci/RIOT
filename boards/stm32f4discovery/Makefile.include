@@ -13,5 +13,5 @@ STLINK_VERSION ?= 2
 # Tell renode on which UART stdio is available
 RENODE_SYSBUS_UART ?= sysbus.uart2
 
-# Only openocd programmer is supported
-PROGRAMMERS_SUPPORTED ?= openocd
+# openocd programmer is supported
+PROGRAMMERS_SUPPORTED += openocd

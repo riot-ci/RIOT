@@ -10,5 +10,5 @@ PROGRAMMER ?= dfu-util
 DFU_USB_ID = 0483:df11
 DFU_USE_DFUSE = 1
 
-# Only dfu-util programmer is supported
-PROGRAMMERS_SUPPORTED ?= dfu-util
+# dfu-util programmer is supported
+PROGRAMMERS_SUPPORTED += dfu-util
