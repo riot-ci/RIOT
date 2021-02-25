@@ -21,8 +21,9 @@
 
 #include "embUnit.h"
 
-
-/* Define MTD_0 in board.h to use the board mtd if any */
+/* Define MTD_0 in board.h to use the board mtd if any and if
+ * CONFIG_USE_HARDWARE_MTD is defined (add CFLAGS=-DCONFIG_USE_HARDWARE_MTD to
+ * the command line to enable it */
 #if defined(MTD_0) && IS_ACTIVE(CONFIG_USE_HARDWARE_MTD)
 #define USE_MTD_0
 #define _dev (MTD_0)
