@@ -207,6 +207,7 @@ typedef struct {
     gpio_cb_t cb;                   /**< the callback to execute */
     void *arg;                      /**< the callback argument */
 } lis2dh12_int_params_t;
+#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   LIS2DH12 FIFO data struct
@@ -235,8 +236,6 @@ typedef struct {
     uint8_t FIFO_watermark:5;       /**< set the FIFO watermark level */
     bool FIFO_set_INT2;             /**< sets the FIFO interrupt to INT2, otherwise INT1 */
 } lis2dh12_fifo_t;
-
-#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   Export the SAUL interface for this driver
@@ -267,6 +266,7 @@ int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params,
  * @return  LIS2DH12_NOBUS on bus errors
  */
 int lis2dh12_read_int_src(const lis2dh12_t *dev, uint8_t *data, uint8_t int_line);
+#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   Set the FIFO configuration
@@ -313,7 +313,6 @@ int lis2dh12_read_fifo_src(const lis2dh12_t *dev, LIS2DH12_FIFO_SRC_REG_t *data)
  */
 uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fifo_data,
                                 uint8_t number);
-#endif /* MODULE_LIS2DH12_INT */
 
 /**
  * @brief   Initialize the given LIS2DH12 sensor device

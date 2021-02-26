@@ -272,6 +272,7 @@ int lis2dh12_read_int_src(const lis2dh12_t *dev, uint8_t *data, uint8_t int_line
 
     return LIS2DH12_OK;
 }
+#endif /* MODULE_LIS2DH12_INT */
 
 int lis2dh12_set_fifo(const lis2dh12_t *dev, const lis2dh12_fifo_t *config) {
 
@@ -364,7 +365,6 @@ uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fif
 
     return number;
 }
-#endif /* MODULE_LIS2DH12_INT */
 
 int lis2dh12_clear_data(const lis2dh12_t *dev) {
 
