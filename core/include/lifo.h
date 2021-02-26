@@ -13,6 +13,9 @@
  * @file
  * @brief   LIFO buffer API, read long description carefully
  * @author  Heiko Will <hwill@inf.fu-berlin.de>
+ * @deprecated Is no longer used in RIOT.
+ *             Has very tight constrains making new use unlikely.
+ *             Will be removed after release 2021.04.
  *
  * @details This LIFO implementation very efficiently handles integer values.
  *          The caveat is that it **can only handle values between 0 and its own
