@@ -501,7 +501,7 @@ include $(RIOTBASE)/sys/Makefile.include
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.include)
 
 # include external modules configuration
--include $(EXTERNAL_MODULE_DIRS:%=%/Makefile.include)
+-include $(EXTERNAL_MODULE_PATHS:%=%/Makefile.include)
 
 # Deduplicate includes without sorting them
 # see https://stackoverflow.com/questions/16144115/makefile-remove-duplicate-words-without-sorting
@@ -590,7 +590,8 @@ endif
 # We assume $(LINK) to be gcc-like. Use `LINKFLAGPREFIX :=` for ld-like linker options.
 LINKFLAGPREFIX ?= -Wl,
 
-DIRS += $(EXTERNAL_MODULE_DIRS)
+# Also build external modules
+DIRS += $(EXTERNAL_MODULE_PATHS)
 
 # Define dependencies required for building (headers, downloading source files,)
 BUILDDEPS += $(RIOTBUILD_CONFIG_HEADER_C)
