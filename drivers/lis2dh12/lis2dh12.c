@@ -205,10 +205,8 @@ int lis2dh12_read(const lis2dh12_t *dev, int16_t *data)
 int lis2dh12_set_int(const lis2dh12_t *dev, const lis2dh12_int_params_t *params, uint8_t int_line)
 {
     assert (int_line == LIS2DH12_INT1 || int_line == LIS2DH12_INT2);
-    assert (dev && params->int_type);
-    assert (params->int_threshold >= 0);
-    assert (params->int_duration >= 0);
-    assert (params->int_config >= 0);
+    assert (dev && params);
+    assert (params->cb);
 
     _acquire(dev);
 
