@@ -25,14 +25,15 @@
 #include "saul/periph.h"
 #include "periph/adc.h"
 
-/* ADC uses ¼ Vdd for Vref amplified by 4 */
-#define VDD_REF_mV  (3300)
-
 static int _read_voltage(const void *dev, phydat_t *res)
 {
     (void)dev;
 
-    int raw = adc_sample(NRF52_VDDHDIV5, ADC_RES_12BIT) * 5 * VDD_REF_mV;
+    /* GPIO reference voltage / external output supply voltage in high voltage mode */
+    const uint8_t vref_dV[] = { 18, 21, 24, 27, 30, 33, 0, 18 };
+    uint8_t idx = NRF_UICR->REGOUT0 & UICR_REGOUT0_VOUT_Msk;
+
+    int raw = adc_sample(NRF52_VDDHDIV5, ADC_RES_12BIT) * 5 * vref_dV[idx] * 100;
     res->val[0] = raw >> 12;
     res->unit = UNIT_V;
     res->scale = -3;
