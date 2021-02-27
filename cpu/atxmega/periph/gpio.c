@@ -25,6 +25,7 @@
 #include "cpu.h"
 #include "periph_conf.h"
 #include "periph/gpio.h"
+#include "bitarithm.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -74,7 +75,6 @@ static inline PORT_t *_port_addr(gpio_t pin)
     return (PORT_t *) port_addr;
 }
 
-#if ENABLE_DEBUG
 static inline void _print_config(gpio_t pin)
 {
     PORT_t *port = _port_addr(pin);
@@ -90,7 +90,6 @@ static inline void _print_config(gpio_t pin)
         DEBUG("PIN%dCTRL: 0x%02x\n", p, pin_ctrl[p]);
     }
 }
-#endif
 
 static inline void _gpio_pinctrl_set(gpio_t pin, gpio_mode_t mode,
                                      gpio_flank_t flank, gpio_cb_t cb,
@@ -101,7 +100,17 @@ static inline void _gpio_pinctrl_set(gpio_t pin, gpio_mode_t mode,
     PORT_t *port = _port_addr(pin);
     volatile uint8_t *pin_ctrl = &port->PIN0CTRL;
     uint8_t irq_state;
-    uint8_t tmp;
+    uint8_t in_sense_cfg;
+    uint8_t pins;
+    uint8_t pin_idx;
+
+    in_sense_cfg  = (mode & ~PORT_ISC_gm);
+    in_sense_cfg |= (mode & GPIO_ANALOG)
+                 ?  PORT_ISC_INPUT_DISABLE_gc
+                 :  ((flank >> 4) & PORT_ISC_gm);
+
+    pins = pin_mask;
+    pin_idx = 0;
 
     if (mode & GPIO_OUT) {
         port->DIRSET = pin_mask;
@@ -112,14 +121,9 @@ static inline void _gpio_pinctrl_set(gpio_t pin, gpio_mode_t mode,
 
     irq_state = irq_disable();
 
-    for (uint8_t p = 0; p < 8; p++) {
-        if (pin_mask & (1 << p)) {
-            tmp = (mode & ~PORT_ISC_gm);
-            tmp |= (mode & GPIO_ANALOG)
-                   ?  PORT_ISC_INPUT_DISABLE_gc
-                   :  ((flank >> 4) & PORT_ISC_gm);
-            pin_ctrl[p] = tmp;
-        }
+    while (pins) {
+        pins = bitarithm_test_and_clear(pins, &pin_idx);
+        pin_ctrl[pin_idx] = in_sense_cfg;
     }
 
     if (flank & GPIO_INT_DISABLED_ALL) {
@@ -175,7 +179,6 @@ static inline void _gpio_pinctrl_set(gpio_t pin, gpio_mode_t mode,
     }
 
     irq_restore(irq_state);
-
 }
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
@@ -200,9 +203,9 @@ int gpio_init_int(gpio_t pin, gpio_mode_t mode, gpio_flank_t flank,
 
     _gpio_pinctrl_set(pin, mode, flank, cb, arg);
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 
     return 0;
 }
@@ -224,9 +227,9 @@ void gpio_irq_enable(gpio_t pin)
         port->INTCTRL |= config_irq[port_num];
     }
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 }
 
 void gpio_irq_disable(gpio_t pin)
@@ -243,9 +246,9 @@ void gpio_irq_disable(gpio_t pin)
         port->INTCTRL &= ~PORT_INT0LVL_gm;
     }
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 }
 
 int gpio_read(gpio_t pin)
@@ -253,9 +256,9 @@ int gpio_read(gpio_t pin)
     PORT_t *port = _port_addr(pin);
     uint8_t pin_mask = _pin_mask(pin);
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 
     return port->IN & pin_mask;
 }
@@ -269,9 +272,9 @@ void gpio_set(gpio_t pin)
 
     port->OUTSET = pin_mask;
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 }
 
 void gpio_clear(gpio_t pin)
@@ -283,9 +286,9 @@ void gpio_clear(gpio_t pin)
 
     port->OUTCLR = pin_mask;
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 }
 
 void gpio_toggle(gpio_t pin)
@@ -297,9 +300,9 @@ void gpio_toggle(gpio_t pin)
 
     port->OUTTGL = pin_mask;
 
-#if ENABLE_DEBUG
-    _print_config(pin);
-#endif
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        _print_config(pin);
+    }
 }
 
 void gpio_write(gpio_t pin, int value)

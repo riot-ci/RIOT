@@ -195,17 +195,27 @@ typedef struct {
 /**
  * @brief   Max number of available timer channels
  */
-#define TIMER_CH_MAX_NUMOF  (4)
+#define TIMER_CHANNEL_NUMOF (4)
+
+/**
+ * @brief   A low-level timer_set() implementation is provided
+ */
+#define PERIPH_TIMER_PROVIDES_SET
 
 /**
  * @brief   Timer Type
+ *
+ * Timer Type 1 is equal to Type 0 (two channels instead four)
+ * Timer Type 2 is Type 0 configured as two 8 bit timers instead one 16 bit
+ * Timer Type 2 won't be available as a standard timer
+ * Timer Type 5 is equal to Type 4 (two channels instead four)
  */
 typedef enum {
-    TC_TYPE_0 = 0,
-    TC_TYPE_1 = 1,
-    TC_TYPE_2 = 2,
-    TC_TYPE_4 = 4,
-    TC_TYPE_5 = 5,
+    TC_TYPE_0               = 0,
+    TC_TYPE_1               = 1,
+    TC_TYPE_2               = 2,
+    TC_TYPE_4               = 4,
+    TC_TYPE_5               = 5,
 } timer_type_t;
 
 /**
@@ -215,9 +225,9 @@ typedef enum {
  * type and number of channels to perform all operations.
  */
 typedef struct {
-    TC0_t *dev;                                /**< Pointer to the used as Timer device */
-    timer_type_t type;                         /**< Timer Type */
-    cpu_int_lvl_t int_lvl[TIMER_CH_MAX_NUMOF]; /**< Interrupt channels level */
+    TC0_t *dev;                                 /**< Pointer to the used as Timer device */
+    timer_type_t type;                          /**< Timer Type */
+    cpu_int_lvl_t int_lvl[TIMER_CHANNEL_NUMOF]; /**< Interrupt channels level */
 } timer_conf_t;
 
 #ifdef __cplusplus

@@ -54,11 +54,11 @@ void cpuid_get(void *id)
     addr[0xa] = nvm_read_production_signature_row(
         nvm_get_production_signature_row_offset(COORDY1));
 
-#if ENABLE_DEBUG
-    DEBUG("CPUID: ");
-    for (uint8_t i = 0; i < CPUID_LEN; i++) {
-        DEBUG("%02x ", addr[i]);
+    if (IS_ACTIVE(ENABLE_DEBUG)) {
+        DEBUG("CPUID: ");
+        for (uint8_t i = 0; i < CPUID_LEN; i++) {
+            DEBUG("%02x ", addr[i]);
+        }
+        DEBUG("\n");
     }
-    DEBUG("\n");
-#endif
 }

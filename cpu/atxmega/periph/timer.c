@@ -70,17 +70,17 @@ static uint32_t _oneshot;
 
 static inline void set_oneshot(tim_t tim, int chan)
 {
-    _oneshot |= (1 << chan) << (TIMER_CH_MAX_NUMOF * tim);
+    _oneshot |= (1 << chan) << (TIMER_CHANNEL_NUMOF * tim);
 }
 
 static inline void clear_oneshot(tim_t tim, int chan)
 {
-    _oneshot &= ~((1 << chan) << (TIMER_CH_MAX_NUMOF * tim));
+    _oneshot &= ~((1 << chan) << (TIMER_CHANNEL_NUMOF * tim));
 }
 
 static inline bool is_oneshot(tim_t tim, int chan)
 {
-    return _oneshot & ((1 << chan) << (TIMER_CH_MAX_NUMOF * tim));
+    return _oneshot & ((1 << chan) << (TIMER_CHANNEL_NUMOF * tim));
 }
 
 /**
@@ -94,7 +94,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     uint8_t pre;
     uint8_t ch;
 
-    assert(TIMER_CH_MAX_NUMOF * TIMER_NUMOF < 32);
+    assert(TIMER_CHANNEL_NUMOF * TIMER_NUMOF < 32);
 
     /* make sure given device is valid */
     if (tim >= TIMER_NUMOF) {
@@ -125,7 +125,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 
     /* Check enabled channels */
     ctx[tim].channels = 0;
-    for (ch = 0; ch < 4; ch++) {
+    for (ch = 0; ch < TIMER_CHANNEL_NUMOF; ch++) {
         if (timer_config[tim].int_lvl[ch] != CPU_INT_LVL_OFF) {
             ctx[tim].channels++;
         }
@@ -139,9 +139,7 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
         }
     }
 
-    if (timer_config[tim].type == TC_TYPE_2
-        || timer_config[tim].type == TC_TYPE_4
-        || timer_config[tim].type == TC_TYPE_5) {
+    if (timer_config[tim].type == TC_TYPE_2) {
         DEBUG("timer.c: Timer version %d is current not supported.\n",
             timer_config[tim].type);
         return -1;
@@ -150,13 +148,8 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
     /* Normal Counter with rollover */
     dev->CTRLB = TC_WGMODE_NORMAL_gc;
 
-    /* Compare or Capture Interrupt Level */
-    dev->INTCTRLB  = (timer_config[tim].int_lvl[0] << TC0_CCAINTLVL_gp);
-    dev->INTCTRLB |= (timer_config[tim].int_lvl[1] << TC0_CCBINTLVL_gp);
-    if (ctx[tim].channels > 2) {
-        dev->INTCTRLB |= (timer_config[tim].int_lvl[2] << TC0_CCCINTLVL_gp);
-        dev->INTCTRLB |= (timer_config[tim].int_lvl[3] << TC0_CCDINTLVL_gp);
-    }
+    /* Compare or Capture disable all channels */
+    dev->INTCTRLB = 0;
 
     /* Free running counter */
     dev->PER = 0xFFFF;
@@ -169,7 +162,9 @@ int timer_init(tim_t tim, unsigned long freq, timer_cb_t cb, void *arg)
 
 int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 {
-    TC0_t *dev;
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
 
     if (channel >= ctx[tim].channels) {
         return -1;
@@ -177,28 +172,30 @@ int timer_set_absolute(tim_t tim, int channel, unsigned int value)
 
     DEBUG("Setting timer %i channel %i to %04x\n", tim, channel, value);
 
+    TC0_t *dev = timer_config[tim].dev;
+
+    dev->INTCTRLB &= ~(TC0_CCAINTLVL_gm << (channel * 2));
+    dev->INTFLAGS |= TC0_CCAIF_bm << channel;
+
+    uint8_t irq_state = irq_disable();
+
+    *(((uint16_t *)(&dev->CCA)) + channel) = (uint16_t)value;
+
+    irq_restore(irq_state);
     set_oneshot(tim, channel);
 
-    dev = timer_config[tim].dev;
+    dev->INTCTRLB |= (timer_config[tim].int_lvl[channel] << (channel * 2));
 
-    /* Compare or Capture Disable */
-    dev->CTRLB &= ~(1 << (channel + TC0_CCAEN_bp));
-
-    /* Clear Interrupt Flag */
-    dev->INTFLAGS &= ~(1 << (channel + TC0_CCAIF_bp));
-
-    /* set value to compare with rollover */
-    *(((uint16_t *)(&dev->CCA)) + channel) = (dev->CNT + (uint16_t)value);
-
-    /* Compare or Capture Enable */
-    dev->CTRLB |= (1 << (channel + TC0_CCAEN_bp));
-
-    return 1;
+    return 0;
 }
 
 int timer_set_periodic(tim_t tim, int channel, unsigned int value, uint8_t flags)
 {
-    TC0_t *dev;
+    (void)flags;
+
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
 
     if (channel > 0 || ctx[tim].channels != 1) {
         DEBUG("Only channel 0 can be set as periodic and channels must be 1\n");
@@ -209,32 +206,29 @@ int timer_set_periodic(tim_t tim, int channel, unsigned int value, uint8_t flags
     DEBUG("Setting timer %i channel 0 to %i and flags %i (repeating)\n",
           tim, value, flags);
 
-    dev = timer_config[tim].dev;
+    TC0_t *dev = timer_config[tim].dev;
+    uint8_t irq_state = irq_disable();
 
-    /* Set Freq. Mode  (TIM_FLAG_RESET_ON_MATCH) */
-    dev->CTRLB = TC_WGMODE_FRQ_gc;
-
-    if (flags & TIM_FLAG_RESET_ON_SET) {
-        dev->CTRLFSET = TC_CMD_RESTART_gc;
-    }
-
-    /* Clear Interrupt Flag */
-    dev->INTFLAGS &= ~(1 << (channel + TC0_CCAIF_bp));
-
-    /* set value to compare match */
-    *(((uint16_t *)(&dev->CCA)) + channel) = (uint16_t)value;
+    dev->CTRLA     = 0;
+    dev->CTRLFSET  = TC_CMD_RESET_gc;
+    dev->CTRLB     = TC_WGMODE_FRQ_gc;
+    dev->INTCTRLB  = 0;
+    dev->INTFLAGS |= TC0_CCAIF_bm;
+    dev->CCA       = (uint16_t)value;
+    dev->INTCTRLB  = timer_config[tim].int_lvl[0];
+    dev->CTRLA     = ctx[tim].prescaler;
 
     clear_oneshot(tim, channel);
-
-    /* Compare or Capture Enable */
-    dev->CTRLB |= (1 << (channel + TC0_CCAEN_bp));
+    irq_restore(irq_state);
 
     return 0;
 }
 
 int timer_clear(tim_t tim, int channel)
 {
-    TC0_t *dev;
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
 
     if (channel >= ctx[tim].channels) {
         return -1;
@@ -242,33 +236,79 @@ int timer_clear(tim_t tim, int channel)
 
     DEBUG("timer_clear channel %d\n", channel  );
 
-    dev = timer_config[tim].dev;
+    TC0_t *dev = timer_config[tim].dev;
 
     /* Compare or Capture Disable */
-    dev->CTRLB &= ~(1 << (channel + TC0_CCAEN_bp));
+    dev->INTCTRLB &= ~(TC0_CCAINTLVL_gm << (channel * 2));
 
     /* Clear Interrupt Flag
      * The CCxIF is automatically cleared when the corresponding
      * interrupt vector is executed.*/
-    dev->INTFLAGS &= ~(1 << (channel + TC0_CCAIF_bp));
+    dev->INTFLAGS |= TC0_CCAIF_bm << channel;
+
+    return 0;
+}
+
+int timer_set(tim_t tim, int channel, unsigned int timeout)
+{
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
+
+    if (channel >= ctx[tim].channels) {
+        return -1;
+    }
+
+    TC0_t *dev = timer_config[tim].dev;
+
+    /* Compare or Capture Disable */
+    dev->INTCTRLB &= ~(TC0_CCAINTLVL_gm << (channel * 2));
+
+    /* Clear Interrupt Flag */
+    dev->INTFLAGS |= TC0_CCAIF_bm << channel;
+
+    uint8_t irq_state = irq_disable();
+
+    /* set value to compare with rollover */
+    uint16_t absolute = dev->CNT + timeout;
+    *(((uint16_t *)(&dev->CCA)) + channel) = absolute;
+
+    irq_restore(irq_state);
+    set_oneshot(tim, channel);
+
+    /* Compare or Capture Enable */
+    dev->INTCTRLB |= (timer_config[tim].int_lvl[channel] << (channel * 2));
 
     return 0;
 }
 
 unsigned int timer_read(tim_t tim)
 {
+    if (tim >= TIMER_NUMOF) {
+        return -1;
+    }
+
     DEBUG("timer_read\n");
     return (unsigned int)timer_config[tim].dev->CNT;
 }
 
 void timer_stop(tim_t tim)
 {
+    if (tim >= TIMER_NUMOF) {
+        return;
+    }
+
     DEBUG("timer_stop\n");
     timer_config[tim].dev->CTRLA = 0;
+    timer_config[tim].dev->CTRLFSET = TC_CMD_RESTART_gc;
 }
 
 void timer_start(tim_t tim)
 {
+    if (tim >= TIMER_NUMOF) {
+        return;
+    }
+
     DEBUG("timer_start\n");
     timer_config[tim].dev->CTRLA = ctx[tim].prescaler;
 }
@@ -278,10 +318,10 @@ static inline void _isr(tim_t tim, int channel)
 {
     avr8_enter_isr();
 
-    DEBUG("timer _isr channel %d\n", channel);
+    DEBUG("timer %d _isr channel %d\n", tim, channel);
 
     if (is_oneshot(tim, channel)) {
-        timer_config[tim].dev->CTRLB &= ~(1 << (channel + TC0_CCAEN_bp));
+        timer_config[tim].dev->INTCTRLB &= ~(TC0_CCAINTLVL_gm << (channel * 2));
     }
 
     if (ctx[tim].cb) {
