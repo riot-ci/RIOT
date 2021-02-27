@@ -107,7 +107,7 @@ extern "C" {
 #define XTIMER_DEV          TIMER_DEV(0)
 #define XTIMER_CHAN         (0)
 #define XTIMER_WIDTH        (16)
-#define XTIMER_HZ           (500000UL)
+#define XTIMER_HZ           KHZ(500)
 #define XTIMER_BACKOFF      (150)
 /** @} */
 /** @} */
