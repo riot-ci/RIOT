@@ -1,0 +1,5 @@
+PORT_LINUX = /dev/ttyUSB0
+AVRDUDE_PROGRAMMER = atmelice_pdi
+DEBUGPROTO = -X
+
+include $(RIOTBOARD)/common/atxmega/Makefile.include
