@@ -173,7 +173,7 @@ static inline uint8_t _get_aux_hdr_size(uint8_t security_level,
             return 0;
     }
     switch (key_mode) {
-        case IEEE802154_SCF_KEYMODE_IMPLICIT:
+            memcpy(ahr->key_id + 8, &ctx->key_index, 1);
             return 5;
         case IEEE802154_SCF_KEYMODE_INDEX:
             return 6;
