@@ -206,7 +206,7 @@ typedef union {
  */
 typedef union {
     struct {
-        uint8_t SIM:1;  /**< SPI serial interface mode selection */
+        uint8_t SPIM:1; /**< SPI serial interface mode selection (SIM)*/
         uint8_t ST:2;   /**< Self-test enable */
         uint8_t HR:1;   /**< Operating mode */
         uint8_t FS:2;   /**< Full-scale selection */
