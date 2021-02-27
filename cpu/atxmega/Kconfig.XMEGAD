@@ -1,0 +1,55 @@
+## CPU Models
+# XMEGA - D3
+config CPU_MODEL_XMEGA32D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+config CPU_MODEL_XMEGA64D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+config CPU_MODEL_XMEGC128D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+config CPU_MODEL_XMEGC192D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+config CPU_MODEL_XMEGA256D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+config CPU_MODEL_XMEGA384D3
+    bool
+    select CPU_CORE_ATXMEGA_D3
+
+# XMEGA - D4
+config CPU_MODEL_XMEGA16D4
+    bool
+    select CPU_CORE_ATXMEGA_D4
+
+config CPU_MODEL_XMEGA32D4
+    bool
+    select CPU_CORE_ATXMEGA_D4
+
+config CPU_MODEL_XMEGA64D4
+    bool
+    select CPU_CORE_ATXMEGA_D4
+
+config CPU_MODEL_XMEGA128D4
+    bool
+    select CPU_CORE_ATXMEGA_D4
+
+config CPU_MODEL
+    default "atxmega32D3"    if CPU_MODEL_XMEGA32D3
+    default "atxmega64D3"    if CPU_MODEL_XMEGA64D3
+    default "atxmega128D3"   if CPU_MODEL_XMEGC128D3
+    default "atxmega192D3"   if CPU_MODEL_XMEGC192D3
+    default "atxmega256D3"   if CPU_MODEL_XMEGA256D3
+    default "atxmega384D3"   if CPU_MODEL_XMEGA384D3
+
+    default "atxmega16D4"    if CPU_MODEL_XMEGA16D4
+    default "atxmega32D4"    if CPU_MODEL_XMEGA32D4
+    default "atxmega64D4"    if CPU_MODEL_XMEGA64D4
+    default "atxmega128D4"   if CPU_MODEL_XMEGA128D4
