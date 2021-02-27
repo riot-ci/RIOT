@@ -21,15 +21,7 @@ ifeq (,$(AVRDUDE_PROGRAMMER))
 
   ifeq (stk500v2,$(BOOTLOADER))
     AVRDUDE_PROGRAMMER = stk500v2
-    BOOTLOADER_SIZE ?= 2K
-    # Disable auto erase; erasing the flash is done implicitly by the bootloader
-    # and explicit erase is not supported
-    FFLAGS_EXTRA += -D
-  endif
-
-  ifeq (stk500v2,$(BOOTLOADER))
-    AVRDUDE_PROGRAMMER = stk500v2
-    BOOTLOADER_SIZE ?= 2K
+    BOOTLOADER_SIZE ?= 4K
     # Disable auto erase; erasing the flash is done implicitly by the bootloader
     # and explicit erase is not supported
     FFLAGS_EXTRA += -D
@@ -37,7 +29,7 @@ ifeq (,$(AVRDUDE_PROGRAMMER))
 
   ifeq (avr109,$(BOOTLOADER))
     AVRDUDE_PROGRAMMER = avr109
-    BOOTLOADER_SIZE ?= 2K
+    BOOTLOADER_SIZE ?= 4K
   endif
 
   ifneq (,$(BOOTLOADER_BAUD))
