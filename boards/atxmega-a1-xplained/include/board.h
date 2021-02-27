@@ -59,6 +59,8 @@ extern "C" {
  * @name   LED pin definitions and handlers
  * @{
  */
+#define LED_PORT            PORTE
+
 #define LED0_PIN            GPIO_PIN(PORT_E, PIN0_bm)
 #define LED0_MODE           GPIO_OUT
 #define LED0_MASK           (PIN0_bm)
