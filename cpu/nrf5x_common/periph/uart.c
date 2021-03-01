@@ -283,7 +283,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
         }
         else {
             /* if no transmission is ongoing and ring buffer is full
-               free up a sport in the buffer by sending one byte */
+               free up a spot in the buffer by sending one byte */
             if (!dev(uart)->EVENTS_TXSTARTED && tsrb_full(&uart_tx_rb[uart])) {
                 tx_buf[uart] = tsrb_get_one(&uart_tx_rb[uart]);
                 _write_buf(uart, &tx_buf[uart], 1);
@@ -291,7 +291,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
             while (tsrb_add_one(&uart_tx_rb[uart], data[i]) < 0) {}
         }
     }
-    /* if no transmission is ongoing bootstrap the tranmission process
+    /* if no transmission is ongoing bootstrap the transmission process
        by setting a single byte to be written */
     if (!dev(uart)->EVENTS_TXSTARTED) {
         if (!tsrb_empty(&uart_tx_rb[uart])) {
