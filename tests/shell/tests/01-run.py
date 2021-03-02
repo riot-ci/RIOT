@@ -17,9 +17,11 @@ EXPECTED_HELP = (
     'start_test           starts a test',
     'end_test             ends a test',
     'echo                 prints the input command',
-    'reboot               Reboot the node',
+    'app_metadata         Returns application metadata',
     'ps                   Prints information about running threads.',
-    'app_metadata         Returns application metadata'
+    'reboot               Reboot the node',
+    'xfa_test1            xfa test command 1',
+    'xfa_test2            xfa test command 2'
 )
 
 EXPECTED_PS = (
@@ -95,6 +97,10 @@ CMDS = (
     # test default commands
     ('ps', EXPECTED_PS),
     ('help', EXPECTED_HELP),
+
+    # test commands added to shell_commands_xfa
+    ('xfa_test1', '[XFA TEST 1 OK]'),
+    ('xfa_test2', '[XFA TEST 2 OK]'),
 
     # test reboot
     ('reboot', 'test_shell.'),
