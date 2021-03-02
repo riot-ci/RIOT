@@ -39,8 +39,8 @@ static void _touch_event_callback(void *arg)
 }
 #endif
 
-#ifndef LVGL_SCREEN_DEFAULT
-#define LVGL_SCREEN_DEFAULT     0   /**< Default screen ID used by LVGL */
+#ifndef CONFIG_LVGL_SCREEN_DEFAULT
+#define CONFIG_LVGL_SCREEN_DEFAULT  0   /**< Default screen ID used by LVGL */
 #endif
 
 void auto_init_lvgl(void)
@@ -48,11 +48,11 @@ void auto_init_lvgl(void)
     LOG_DEBUG("[auto_init_screen] initializing lvgl\n");
 
     /* Only a single screen is supported by lvgl */
-    disp_dev_reg_t *disp_dev = disp_dev_reg_find_screen(LVGL_SCREEN_DEFAULT);
+    disp_dev_reg_t *disp_dev = disp_dev_reg_find_screen(CONFIG_LVGL_SCREEN_DEFAULT);
     s_screen.display = disp_dev->dev;
 
 #if IS_USED(MODULE_TOUCH_DEV)
-    touch_dev_reg_t *touch_dev = touch_dev_reg_find_screen(LVGL_SCREEN_DEFAULT);
+    touch_dev_reg_t *touch_dev = touch_dev_reg_find_screen(CONFIG_LVGL_SCREEN_DEFAULT);
     if (touch_dev) {
         s_screen.touch = touch_dev->dev;
         touch_dev_set_touch_event_callback(touch_dev->dev, _touch_event_callback, NULL);
