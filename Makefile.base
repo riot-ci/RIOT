@@ -17,7 +17,8 @@ DIRS := $(sort $(abspath $(DIRS)))
 _MOD := $(shell basename $(CURDIR))
 MODULE ?= $(_MOD)
 
-.PHONY: all clean $(DIRS:%=ALL--%) $(DIRS:%=CLEAN--%) $(MODULE).module
+.PHONY: all clean $(DIRS:%=ALL--%) $(DIRS:%=CLEAN--%) $(MODULE).module \
+        compile-commands $(DIRS:%=COMPILE-COMMANDS--%)
 
 all: $(MODULE).module ..nothing
 
@@ -31,6 +32,9 @@ $(DIRS:%=ALL--%):
 
 $(DIRS:%=CLEAN--%):
 	$(QQ)"$(MAKE)" -C $(@:CLEAN--%=%) clean
+
+$(DIRS:%=COMPILE-COMMANDS--%):
+	$(QQ)"$(MAKE)" -C $(@:COMPILE-COMMANDS--%=%) compile-commands
 
 ## submodules
 ifeq (1, $(SUBMODULES))
@@ -69,6 +73,16 @@ ifneq (,$(SRCXX))
   endif
 endif
 
+compile-commands: | $(DIRS:%=COMPILE-COMMANDS--%)
+	$(file >$(BINDIR)/$(MODULE)/src_c.txt,$(sort $(SRC) $(SRC_NO_LTO)))
+	$(file >$(BINDIR)/$(MODULE)/src_cxx.txt,$(sort $(SRCXX)))
+	$(file >$(BINDIR)/$(MODULE)/directory.txt,$(CURDIR))
+	$(file >$(BINDIR)/$(MODULE)/cflags.txt,$(CFLAGS) $(INCLUDES))
+	$(file >$(BINDIR)/$(MODULE)/cxxflags.txt,$(CXXFLAGS) $(CXXINCLUDES) $(INCLUDES))
+	$(file >$(BINDIR)/$(MODULE)/cxxflags.txt,$(CXXFLAGS) $(CXXINCLUDES) $(INCLUDES))
+	$(file >$(BINDIR)/$(MODULE)/cc.txt,$(CC))
+	$(file >$(BINDIR)/$(MODULE)/cxx.txt,$(CXX))
+
 # include makefile snippets for packages in $(USEPKG) that modify GENSRC:
 -include $(USEPKG:%=$(RIOTPKG)/%/Makefile.gensrc)
 
@@ -89,9 +103,10 @@ include $(RIOTMAKE)/tools/fixdep.inc.mk
 $(BINDIR)/$(MODULE)/:
 	$(Q)mkdir -p $@
 
-$(MODULE).module $(OBJ): | $(BINDIR)/$(MODULE)/
+$(MODULE).module compile-commands $(OBJ): | $(BINDIR)/$(MODULE)/
 
 $(MODULE).module: $(OBJ) | $(DIRS:%=ALL--%)
+
 
 CXXFLAGS = $(filter-out $(CXXUWFLAGS), $(CFLAGS)) $(CXXEXFLAGS)
 CCASFLAGS = $(filter-out $(CCASUWFLAGS), $(CFLAGS)) $(CCASEXFLAGS)
