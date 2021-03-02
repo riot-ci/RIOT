@@ -25,6 +25,10 @@
 #include "cpu_conf.h"
 #include "sched.h"      /* for SCHED_PRIO_LEVELS */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @def THREAD_STACKSIZE_DEFAULT
  * @brief A reasonable default stack size that will suffice most smaller tasks
@@ -130,6 +134,10 @@
 #ifndef THREAD_PRIORITY_MAIN
 #define THREAD_PRIORITY_MAIN           (THREAD_PRIORITY_MIN - \
                                         (SCHED_PRIO_LEVELS / 2))
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* THREAD_CONFIG_H */
