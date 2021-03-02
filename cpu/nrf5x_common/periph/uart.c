@@ -238,6 +238,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
         NRF_UART0->TASKS_STARTRX = 1;
 #endif
     }
+
     if (rx_cb || IS_USED(MODULE_PERIPH_UART_NONBLOCKING)) {
         NVIC_EnableIRQ(UART_IRQN);
     }
@@ -268,6 +269,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     assert(uart < UART_NUMOF);
 #ifdef MODULE_PERIPH_UART_NONBLOCKING
     for (size_t i = 0; i < len; i++) {
+        /* in IRQ or interrupts disabled */
         if (irq_is_in() || __get_PRIMASK()) {
             if (tsrb_full(&uart_tx_rb[uart])) {
                 /* wait for end of ongoing transmission */
