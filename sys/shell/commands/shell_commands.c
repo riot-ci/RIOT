@@ -340,3 +340,17 @@ SHELL_COMMAND(cryptoauth, "Commands for Microchip CryptoAuth devices", _cryptoau
 #ifdef MODULE_DFPLAYER
 SHELL_COMMAND(dfplayer, "Control a DFPlayer Mini MP3 player", _sc_dfplayer);
 #endif
+
+#ifdef MODULE_CONGURE_TEST
+#include "congure/test.h"
+SHELL_COMMAND(cong_clear, "Clears CongURE state object",
+              congure_test_clear_state);
+SHELL_COMMAND(cong_setup,
+              "Calls the setup function for the CongURE state object", congure_test_call_setup);
+SHELL_COMMAND(cong_init,
+              "Calls init method of the CongURE state object", congure_test_call_init);
+SHELL_COMMAND(cong_imi,
+              "Calls inter_message_interval method of the CongURE state object", congure_test_call_inter_msg_interval);
+SHELL_COMMAND(cong_report,
+              "Calls a report_* method of the CongURE state object", congure_test_call_report);
+#endif
