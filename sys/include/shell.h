@@ -227,7 +227,7 @@ static inline void shell_run(const shell_command_t *commands,
  */
 #define SHELL_COMMAND(name, help, func) \
     XFA_USE_CONST(shell_command_t*, shell_commands_xfa); \
-    static shell_command_t _xfa_ ## name ## _cmd = { #name, help, &func }; \
+    static const shell_command_t _xfa_ ## name ## _cmd = { #name, help, &func }; \
     XFA_ADD_PTR(shell_commands_xfa, name, name, &_xfa_ ## name ## _cmd)
 
 #ifdef __cplusplus
