@@ -16,6 +16,7 @@
  * @author      Oliver Hahm <oliver.hahm@inria.fr>
  * @author      Zakaria Kasmi <zkasmi@inf.fu-berlin.de>
  * @author      Ludwig Knüpfer <ludwig.knuepfer@fu-berlin.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
  *
  * @}
  */
@@ -222,7 +223,7 @@ SHELL_COMMAND(ps, "Prints information about running threads.", _ps_handler);
 SHELL_COMMAND(temp, "Prints measured temperature.", _get_temperature_handler);
 SHELL_COMMAND(hum, "Prints measured humidity.", _get_humidity_handler);
 SHELL_COMMAND(weather, "Prints measured humidity and temperature.", _get_weather_handler);
-SHELL_COMMAND(sht-config, "Get/set SHT10/11/15 sensor configuration.", _sht_config_handler);
+SHELL_COMMAND(sht_config, "Get/set SHT10/11/15 sensor configuration.", _sht_config_handler);
 #endif
 #ifdef MODULE_AT30TSE75X
 SHELL_COMMAND(at30tse75x, "Test AT30TSE75X temperature sensor", _at30tse75x_handler);
