@@ -290,7 +290,9 @@ typedef union {
  */
 typedef union {
     struct {
-        uint8_t THS:7;          /**< Sets threshold level, LSB according to LIS2DH12_SCALE */
+        uint8_t THS:7;          /**< Sets threshold level, the LSB changes according to
+                                    LIS2DH12_SCALE (@2G LSB=16mg; @4G LSB=32mg; @8G LSB=62mg
+                                    @16G LSB=186mg) */
         uint8_t _RESERVED:1;    /**< needs to be zero */
     } bit;                      /**< Structure used for bit access */
     uint8_t reg;                /**< Type used for register access */
