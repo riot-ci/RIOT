@@ -18,7 +18,6 @@
  * @}
  */
 
-
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
@@ -159,6 +158,12 @@ static void lis2dh12_int_cb(void* l) {
 
 void lis2dh12_test_init(void) {
 
+    if (IS_USED(MODULE_LIS2DH12_SPI)) {
+        puts("using SPI mode, for I2C mode select the lis2dh12_i2c module");
+    } else {
+        puts("using I2C mode, for SPI mode select the lis2dh12_spi module");
+    }
+
     /* init lis */
     if (lis2dh12_init(&dev, &lis2dh12_params[0]) == LIS2DH12_OK) {
         puts("lis2dh12 [Initialized]");
@@ -253,9 +258,9 @@ void* lis2dh12_test_process(void* arg) {
         /* display FIFO data */
         if (ENABLE_DEBUG) {
             for (int i = 0; i < number_read; i++){
-                printf("[Process]: X_%2d  %d\n", i ,data_fifo[i].X_AXIS);
-                printf("[Process]: Y_%2d  %d\n", i ,data_fifo[i].Y_AXIS);
-                printf("[Process]: Z_%2d  %d\n", i ,data_fifo[i].Z_AXIS);
+                printf("[Process]: X[%2d]  %d\n", i, data_fifo[i].X_AXIS);
+                printf("[Process]: Y[%2d]  %d\n", i, data_fifo[i].Y_AXIS);
+                printf("[Process]: Z[%2d]  %d\n", i, data_fifo[i].Z_AXIS);
             }
         }
 
@@ -471,9 +476,9 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "read_fifo", sizeof("read_fifo")) == 0) {
         uint8_t number = 0;
         if ((argc < 3) || (number = atoi(argv[2])) > 32) {
-            puts("Error: Missing parameter. The command should "
-                 "contain number of FIFO values to read (max. 32)). "
-                 "USAGE: lis read_fifo [number]");
+            puts("Error: Missing parameter.");
+            puts("The command should contain number of FIFO values to read (max. 32)).");
+            puts("USAGE: lis read_fifo [number]");
             return -1;
         }
 
@@ -484,9 +489,16 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
 
         /* print data */
         for (int entry = 0; entry < number_read; entry++){
-            printf("X_%2d  %d\n", entry ,data_fifo[entry].X_AXIS);
-            printf("Y_%2d  %d\n", entry ,data_fifo[entry].Y_AXIS);
-            printf("Z_%2d  %d\n", entry ,data_fifo[entry].Z_AXIS);
+
+            /* format data */
+            size_t len = fmt_s16_dfp(str_out[0], data_fifo[entry].X_AXIS, -3);
+            str_out[0][len] = '\0';
+            len = fmt_s16_dfp(str_out[1], data_fifo[entry].Y_AXIS, -3);
+            str_out[1][len] = '\0';
+            len = fmt_s16_dfp(str_out[2], data_fifo[entry].Z_AXIS, -3);
+            str_out[2][len] = '\0';
+
+            printf("[%2d] X: %6s  Y: %6s  Z: %6s\n", entry, str_out[0], str_out[1], str_out[2]);
         }
         return 1;
     }
@@ -503,9 +515,11 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "set-click", sizeof("set-click")) == 0) {
         uint8_t thold = 0;
         if ((argc < 3) || (thold = atoi(argv[2])) > 127) {
-            puts("Error: Missing parameter. The command should "
-                 "contain a threshold value below 128 (LSB according to SCALE). "
-                 "USAGE: lis set-click [thold]");
+            puts("Error: Missing parameter.");
+            puts("The command should contain a threshold value below 128. "
+                 "The LSB changes according to selected SCALE "
+                 "(@2G LSB=16mg; @4G LSB=32mg; @8G LSB=62mg: @16G LSB=186mg).");
+            puts("USAGE: lis set-click [thold]");
             return -1;
         }
 
@@ -520,10 +534,11 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     }
     else if (strncmp(argv[1], "set-thold-shock", sizeof("set-thold-shock")) == 0) {
         uint16_t thold = 0;
-        if ((argc < 3) || (thold = atoi(argv[2])) > 2000) {
-            puts("Error: Missing parameter. The command should "
-                 "contain a threshold value below 2000 (~2g). "
-                 "USAGE: lis set-thold-shock [thold]");
+        if ((argc < 3) || !(thold = atoi(argv[2]))) {
+            puts("Error: Missing parameter.");
+            puts("The command should contain a threshold value in [mg] below the max SCALE. "
+                 "(@2G below 2000; @4G below 4000; and so on)");
+            puts("USAGE: lis set-thold-shock [thold]");
             return -1;
         }
         shock_thold = thold;
@@ -532,10 +547,12 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "set-thold-inter", sizeof("set-thold-inter")) == 0) {
         uint8_t line = 0;
         if ((argc < 4) || (line = atoi(argv[3])) > 2) {
-            puts("Error: Missing parameter. The command should "
-                 "contain threshold value and interrupt line (1 or 2). "
-                 "To disable interrupt set thold to 0. "
-                 "USAGE: lis set-thold-inter [thold] [line]");
+            puts("Error: Missing parameter.");
+            puts("The command should contain threshold value and interrupt line (1 or 2). "
+                 "The threshold LSB changes according to selected SCALE "
+                 "(@2G LSB=16mg; @4G LSB=32mg; @8G LSB=62mg: @16G LSB=186mg).");
+            puts("To disable interrupt set thold to 0.");
+            puts("USAGE: lis set-thold-inter [thold] [line]");
             return -1;
         }
         uint8_t thold = atoi(argv[2]);
@@ -580,12 +597,12 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
         uint8_t out = 0;
         uint8_t reference = atoi(argv[2]);
         if ((argc < 4) || (out = atoi(argv[3])) > 3) {
-            puts("Error: Missing parameter. The command should "
-                 "contains the number of an output which gets filtered "
+            puts("Error: Missing parameter.");
+            puts("The command should contains the number of an output which gets filtered "
                  "and the reference value less than 255. "
                  "Possible outputs are IA1 (1) or IA2 (2) or CLICK (3) "
-                 "or (0) to disable the filter. "
-                 "USAGE: lis set-highpass [reference] [out_number]");
+                 "or (0) to disable the filter.");
+            puts("USAGE: lis set-highpass [reference] [out_number]");
             return -1;
         }
 
@@ -620,11 +637,11 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "change_rate", sizeof("change_rate")) == 0) {
         uint8_t rate = 0;
         if ((argc < 3) || (rate = atoi(argv[2])) > 9) {
-            puts("Error: Missing parameter. The command should "
-                 "contain a number for sampling rate. "
+            puts("Error: Missing parameter.");
+            puts("The command should contain a number for sampling rate. "
                  "Possible outputs are 1Hz (1), 10Hz (2), 25Hz (3), "
-                 "50Hz (4), 100Hz (5), 200Hz (6) or 400Hz (7). "
-                 "USAGE: lis change_rate [samplingrate]");
+                 "50Hz (4), 100Hz (5), 200Hz (6) or 400Hz (7).");
+            puts("USAGE: lis change_rate [samplingrate]");
             return -1;
         }
 
@@ -636,11 +653,11 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "change_power", sizeof("change_power")) == 0) {
         uint8_t power = 0;
         if ((argc < 3) || (power = atoi(argv[2])) > 9) {
-            puts("Error: Missing parameter. The command should "
-                 "contain a number for power mode. "
+            puts("Error: Missing parameter.");
+            puts("The command should contain a number for power mode. "
                  "Possible outputs are POWER_DOWN (0), POWER_LOW (1), "
-                 "POWER_NORMAL (2) or POWER_HIGH (3). "
-                 "USAGE: lis change_power [powermode]");
+                 "POWER_NORMAL (2) or POWER_HIGH (3).");
+            puts("USAGE: lis change_power [powermode]");
             return -1;
         }
 
@@ -652,11 +669,11 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
     else if (strncmp(argv[1], "change_scale", sizeof("change_scale")) == 0) {
         uint8_t scale = 0;
         if ((argc < 3) || (scale = atoi(argv[2])) > 3) {
-            puts("Error: Missing parameter. The command should "
-                 "contain a number for scale value. "
+            puts("Error: Missing parameter.");
+            puts("The command should contain a number for scale value. "
                  "Possible values are SCALE_2G (0), SCALE_4G (1), "
-                 "SCALE_8G (2) or SCALE_16G (3). "
-                 "USAGE: lis change_scale [scale]");
+                 "SCALE_8G (2) or SCALE_16G (3).");
+            puts("USAGE: lis change_scale [scale]");
             return -1;
         }
 
