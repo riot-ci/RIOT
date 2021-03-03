@@ -351,12 +351,12 @@ uint8_t lis2dh12_read_fifo_data(const lis2dh12_t *dev, lis2dh12_fifo_data_t *fif
 
     /* calculate X, Y and Z values */
     for (uint8_t i = 0; i < number; i++){
-        fifo_data[i].X = (int16_t)(_read(dev, REG_OUT_X_L) | (_read(dev, REG_OUT_X_H) << 8))
-                            >> dev->comp;
-        fifo_data[i].Y = (int16_t)(_read(dev, REG_OUT_Y_L) | (_read(dev, REG_OUT_Y_H) << 8))
-                            >> dev->comp;
-        fifo_data[i].Z = (int16_t)(_read(dev, REG_OUT_Z_L) | (_read(dev, REG_OUT_Z_H) << 8))
-                            >> dev->comp;
+        fifo_data[i].X_AXIS = (int16_t)(_read(dev, REG_OUT_X_L) | (_read(dev, REG_OUT_X_H) << 8))
+                                >> dev->comp;
+        fifo_data[i].Y_AXIS = (int16_t)(_read(dev, REG_OUT_Y_L) | (_read(dev, REG_OUT_Y_H) << 8))
+                                >> dev->comp;
+        fifo_data[i].Z_AXIS = (int16_t)(_read(dev, REG_OUT_Z_L) | (_read(dev, REG_OUT_Z_H) << 8))
+                                >> dev->comp;
     }
 
     _release(dev);

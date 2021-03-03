@@ -101,9 +101,9 @@ enum {
  */
 typedef union {
     struct {
-        uint8_t X:1;         /**< X click detected */
-        uint8_t Y:1;         /**< Y click detected */
-        uint8_t Z:1;         /**< Z click detected */
+        uint8_t X_AXIS:1;    /**< X click detected */
+        uint8_t Y_AXIS:1;    /**< Y click detected */
+        uint8_t Z_AXIS:1;    /**< Z click detected */
         uint8_t Sign:1;      /**< Click sign, "0" positive, "1" negative */
         uint8_t SClick:1;    /**< Single click detected */
         uint8_t DClick:1;    /**< Double click detected */

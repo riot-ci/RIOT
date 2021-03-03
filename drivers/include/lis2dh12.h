@@ -213,9 +213,9 @@ typedef struct {
  * @brief   LIS2DH12 FIFO data struct
  */
 typedef struct {
-    int16_t X;    /**< X raw data in FIFO */
-    int16_t Y;    /**< Y raw data in FIFO */
-    int16_t Z;    /**< Z raw data in FIFO */
+    int16_t X_AXIS;    /**< X raw data in FIFO */
+    int16_t Y_AXIS;    /**< Y raw data in FIFO */
+    int16_t Z_AXIS;    /**< Z raw data in FIFO */
 } lis2dh12_fifo_data_t;
 
 /**

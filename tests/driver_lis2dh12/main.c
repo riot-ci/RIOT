@@ -253,9 +253,9 @@ void* lis2dh12_test_process(void* arg) {
         /* display FIFO data */
         if (ENABLE_DEBUG) {
             for (int i = 0; i < number_read; i++){
-                printf("[Process]: X_%2d  %d\n", i ,data_fifo[i].X);
-                printf("[Process]: Y_%2d  %d\n", i ,data_fifo[i].Y);
-                printf("[Process]: Z_%2d  %d\n", i ,data_fifo[i].Z);
+                printf("[Process]: X_%2d  %d\n", i ,data_fifo[i].X_AXIS);
+                printf("[Process]: Y_%2d  %d\n", i ,data_fifo[i].Y_AXIS);
+                printf("[Process]: Z_%2d  %d\n", i ,data_fifo[i].Z_AXIS);
             }
         }
 
@@ -273,24 +273,27 @@ void* lis2dh12_test_process(void* arg) {
 
         for (uint8_t entry = NUM_FIFO_VALUES - NUM_DATA_SHOCK_DETECT; entry < NUM_FIFO_VALUES;
                 entry++) {
-            uint16_t abs_X = data_fifo[entry].X >= 0 ? data_fifo[entry].X : -1*data_fifo[entry].X;
-            uint16_t abs_Y = data_fifo[entry].Y >= 0 ? data_fifo[entry].Y : -1*data_fifo[entry].Y;
-            uint16_t abs_Z = data_fifo[entry].Z >= 0 ? data_fifo[entry].Z : -1*data_fifo[entry].Z;
+            uint16_t abs_X = data_fifo[entry].X_AXIS >= 0 ? data_fifo[entry].X_AXIS :
+                                                            -1*data_fifo[entry].X_AXIS;
+            uint16_t abs_Y = data_fifo[entry].Y_AXIS >= 0 ? data_fifo[entry].Y_AXIS :
+                                                            -1*data_fifo[entry].Y_AXIS;
+            uint16_t abs_Z = data_fifo[entry].Z_AXIS >= 0 ? data_fifo[entry].Z_AXIS :
+                                                            -1*data_fifo[entry].Z_AXIS;
 
             /* check X shock direction */
             if (max_data_X <= abs_X) {
                 max_data_X = abs_X;
-                X_shock_pos = (data_fifo[entry].X >= 0);
+                X_shock_pos = (data_fifo[entry].X_AXIS >= 0);
             }
             /* check Y shock direction */
             if (max_data_Y <= abs_Y) {
                 max_data_Y = abs_Y;
-                Y_shock_pos = (data_fifo[entry].Y >= 0);
+                Y_shock_pos = (data_fifo[entry].Y_AXIS >= 0);
             }
             /* check Z shock direction */
             if (max_data_Z <= abs_Z) {
                 max_data_Z = abs_Z;
-                Z_shock_pos = (data_fifo[entry].Z >= 0);
+                Z_shock_pos = (data_fifo[entry].Z_AXIS >= 0);
             }
         }
 
@@ -374,17 +377,20 @@ void* lis2dh12_test_process(void* arg) {
 
         if (click_src_reg.bit.IA && click_src_reg.bit.DClick) {
             /* X-Double */
-            if (click_src_reg.bit.X && !click_src_reg.bit.Y && !click_src_reg.bit.Z) {
+            if (click_src_reg.bit.X_AXIS && !click_src_reg.bit.Y_AXIS
+                && !click_src_reg.bit.Z_AXIS) {
                 int8_t sign = click_src_reg.bit.Sign ? -1 : 1;
                 printf("got X-DCLICK, sign %d\n", sign);
             }
             /* Y-Double */
-            if (!click_src_reg.bit.X && click_src_reg.bit.Y && !click_src_reg.bit.Z) {
+            if (!click_src_reg.bit.X_AXIS && click_src_reg.bit.Y_AXIS
+                && !click_src_reg.bit.Z_AXIS) {
                 int8_t sign = click_src_reg.bit.Sign ? -1 : 1;
                 printf("got Y-DCLICK, sign %d\n", sign);
             }
             /* Z-Double */
-            if (!click_src_reg.bit.X && !click_src_reg.bit.Y && click_src_reg.bit.Z) {
+            if (!click_src_reg.bit.X_AXIS && !click_src_reg.bit.Y_AXIS
+                && click_src_reg.bit.Z_AXIS) {
                 int8_t sign = click_src_reg.bit.Sign ? -1 : 1;
                 printf("got Z-DCLICK, sign %d\n", sign);
             }
@@ -478,9 +484,9 @@ int shell_lis2dh12_cmd(int argc, char **argv) {
 
         /* print data */
         for (int entry = 0; entry < number_read; entry++){
-            printf("X_%2d  %d\n", entry ,data_fifo[entry].X);
-            printf("Y_%2d  %d\n", entry ,data_fifo[entry].Y);
-            printf("Z_%2d  %d\n", entry ,data_fifo[entry].Z);
+            printf("X_%2d  %d\n", entry ,data_fifo[entry].X_AXIS);
+            printf("Y_%2d  %d\n", entry ,data_fifo[entry].Y_AXIS);
+            printf("Z_%2d  %d\n", entry ,data_fifo[entry].Z_AXIS);
         }
         return 1;
     }
