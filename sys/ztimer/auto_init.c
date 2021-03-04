@@ -55,7 +55,6 @@
 #define FREQ_1KHZ       1000LU
 #define FREQ_1HZ        1LU
 
-
 /* Step 0: define available ztimer-periphery by activated modules */
 
 /* #if CONFIG_ZTIMER_USEC_TYPE_PERIPH_TIMER
@@ -79,16 +78,22 @@
 #  define ZTIMER_RTC_CLK  _ztimer_periph_timer_rtc
 #endif
 
-/* Step 1: prepare defines for ztimer initialization and
- *         check which ztimer-periphery is in use
+/* Step 1: select which periphery to use for the higher level ZTIMER_*SEC
+ *         selected periphery is marked for initialisation (INIT_ZTIMER_<periph>
+ *         prepare defines for ztimer initialization
  */
 
+/* ZTIMER_USEC always uses the basic timer
+ * basic timer is available on all boards */
 #if MODULE_ZTIMER_USEC
 #  ifndef INIT_ZTIMER_TIMER
 #    define INIT_ZTIMER_TIMER 1
 #  endif
 #endif
 
+/* ZTIMER_MSEC prefers ZTIMER_RTT (ztrimer_periph_timer_rtt)
+ * if it is available and runs at a frequency > 1kHz
+ * if not it falls back to use the basic timer */
 #if MODULE_ZTIMER_MSEC
 #  if defined(ZTIMER_RTT) && RTT_FREQUENCY >= FREQ_1KHZ
 #    define ZTIMER_MSEC_RTT 1
@@ -96,24 +101,27 @@
 #      define INIT_ZTIMER_RTT 1
 #    endif
 #    if RTT_FREQUENCY != FREQ_1KHZ
-#      define ZTIMER_MSEC_CONVERT_LOWER_FREQ    RTT_FREQUENCY
+#      define ZTIMER_MSEC_CONVERT_LOWER_FREQ RTT_FREQUENCY
 #    endif
 #  else
 #    define ZTIMER_MSEC_TIMER 1
 #    ifndef INIT_ZTIMER_TIMER
 #      define INIT_ZTIMER_TIMER 1
 #    endif
-#    define ZTIMER_MSEC_CONVERT_LOWER_FREQ    CONFIG_ZTIMER_USEC_BASE_FREQ
+#    define ZTIMER_MSEC_CONVERT_LOWER_FREQ CONFIG_ZTIMER_USEC_BASE_FREQ
 #  endif
 #endif
 
+/* ZTIMER_MSEC prefers ZTIMER_RTT (ztrimer_periph_timer_rtt) if it is available
+ * if not it prefers ZTIMER_RTC (ztrimer_periph_timer_rtc) if it is available
+ * if not it falls back to use the basic timer */
 #if MODULE_ZTIMER_SEC
 #  ifdef ZTIMER_RTT
 #    define ZTIMER_SEC_RTT
 #    ifndef INIT_ZTIMER_RTT
 #      define INIT_ZTIMER_RTT 1
 #    endif
-#    define ZTIMER_SEC_CONVERT_LOWER_FREQ    RTT_FREQUENCY
+#    define ZTIMER_SEC_CONVERT_LOWER_FREQ RTT_FREQUENCY
 #  else
 #    ifdef ZTIMER_RTC
 #      define ZTIMER_SEC_RTC
@@ -125,7 +133,7 @@
 #      ifndef INIT_ZTIMER_TIMER
 #        define INIT_ZTIMER_TIMER 1
 #      endif
-#      define ZTIMER_SEC_CONVERT_LOWER_FREQ       CONFIG_ZTIMER_USEC_BASE_FREQ
+#      define ZTIMER_SEC_CONVERT_LOWER_FREQ CONFIG_ZTIMER_USEC_BASE_FREQ
 #    endif
 #  endif
 #endif
@@ -212,8 +220,8 @@ void ztimer_init(void)
                              WIDTH_TO_MAXVAL(CONFIG_ZTIMER_USEC_WIDTH));
 #  ifdef MODULE_PM_LAYERED
     LOG_DEBUG("ztimer_init(): ZTIMER_TIMER setting required_pm_mode to %i\n",
-              CONFIG_ZTIMER_TIMER_REQUIRED_PM_MODE);
-    ZTIMER_TIMER_CLK.required_pm_mode = CONFIG_ZTIMER_TIMER_REQUIRED_PM_MODE;
+              CONFIG_ZTIMER_TIMER_BLOCK_PM_MODE);
+    ZTIMER_TIMER_CLK.required_pm_mode = CONFIG_ZTIMER_TIMER_BLOCK_PM_MODE;
 #  endif
 #endif
 
@@ -222,8 +230,8 @@ void ztimer_init(void)
     ztimer_periph_rtt_init(&ZTIMER_RTT);
 #  ifdef MODULE_PM_LAYERED
     LOG_DEBUG("ztimer_init(): ZTIMER_RTT setting required_pm_mode to %i\n",
-              CONFIG_ZTIMER_RTT_REQUIRED_PM_MODE);
-    ZTIMER_RTT_CLK.required_pm_mode = CONFIG_ZTIMER_RTT_REQUIRED_PM_MODE;
+              CONFIG_ZTIMER_RTT_BLOCK_PM_MODE);
+    ZTIMER_RTT_CLK.required_pm_mode = CONFIG_ZTIMER_RTT_BLOCK_PM_MODE;
 #  endif
 #endif
 
@@ -232,8 +240,8 @@ void ztimer_init(void)
     ztimer_periph_rtc_init(&ZTIMER_RTC);
 #  ifdef MODULE_PM_LAYERED
     LOG_DEBUG("ztimer_init(): ZTIMER_RTC setting required_pm_mode to %i\n",
-              CONFIG_ZTIMER_RTC_REQUIRED_PM_MODE);
-    ZTIMER_RTC_CLK.required_pm_mode = CONFIG_ZTIMER_RTC_REQUIRED_PM_MODE;
+              CONFIG_ZTIMER_RTC_BLOCK_PM_MODE);
+    ZTIMER_RTC_CLK.block_pm_mode = CONFIG_ZTIMER_RTC_BLOCK_PM_MODE;
 #  endif
 #endif
 
