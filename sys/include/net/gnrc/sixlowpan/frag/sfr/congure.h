@@ -240,7 +240,7 @@ static inline uint32_t gnrc_sixlowpan_frag_sfr_congure_snd_inter_frame_gap(
         );
 
         if ((res >= 0) &&
-            (res >= CONFIG_GNRC_SIXLOWPAN_SFR_INTER_FRAME_GAP_US)) {
+            ((unsigned)res >= CONFIG_GNRC_SIXLOWPAN_SFR_INTER_FRAME_GAP_US)) {
             return (uint32_t)res;
         }
     }
