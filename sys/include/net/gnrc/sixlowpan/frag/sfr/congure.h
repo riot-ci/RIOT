@@ -308,8 +308,6 @@ static inline void gnrc_sixlowpan_frag_sfr_congure_snd_report_frag_discard(
  *          called with module `gnrc_sixlowpan_frag_sfr_congure` used.
  *
  * @param[in]   fb      A fragmentation buffer.
- * @param[in]   frags   A collection of fragments for which the ACK timed out.
- *                      The list may be changed by the function.
  */
 static inline void gnrc_sixlowpan_frag_sfr_congure_snd_report_frags_timeout(
         gnrc_sixlowpan_frag_fb_t *fb
