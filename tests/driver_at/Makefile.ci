@@ -4,9 +4,13 @@ BOARD_INSUFFICIENT_MEMORY := \
     arduino-nano \
     arduino-uno \
     atmega328p \
+    atxmega-a1-xplained \
+    atxmega-a1-xpro \
+    atxmega-a3bu-xplained \
     nucleo-f031k6 \
     nucleo-l011k4 \
     samd10-xmini \
     stk3200 \
     stm32f030f4-demo \
+    wm-200 \
     #
