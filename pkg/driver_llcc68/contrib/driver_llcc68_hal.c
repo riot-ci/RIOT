@@ -51,7 +51,7 @@ llcc68_hal_status_t llcc68_hal_write(const void *context,
         spi_transfer_bytes(dev->params->spi, dev->params->nss_pin, false, data, NULL, data_length);
     }
     spi_release(dev->params->spi);
-    return 0;
+    return LLCC68_STATUS_OK;
 }
 
 llcc68_hal_status_t llcc68_hal_read(const void *context,
@@ -67,7 +67,7 @@ llcc68_hal_status_t llcc68_hal_read(const void *context,
     spi_transfer_bytes(dev->params->spi, dev->params->nss_pin, true, command, NULL, command_length);
     spi_transfer_bytes(dev->params->spi, dev->params->nss_pin, false, NULL, data, data_length);
     spi_release(dev->params->spi);
-    return 0;
+    return LLCC68_STATUS_OK;
 }
 
 llcc68_hal_status_t llcc68_hal_reset(const void *context)
@@ -79,7 +79,7 @@ llcc68_hal_status_t llcc68_hal_reset(const void *context)
     gpio_clear(dev->params->reset_pin);
     ztimer_sleep(ZTIMER_USEC, 100);
     gpio_set(dev->params->reset_pin);
-    return 0;
+    return LLCC68_STATUS_OK;
 }
 
 llcc68_hal_status_t llcc68_hal_wakeup(const void *context)
@@ -94,5 +94,5 @@ llcc68_hal_status_t llcc68_hal_wakeup(const void *context)
 
     /* it takes 500us for the radio device to be ready after waking up */
     ztimer_sleep(ZTIMER_USEC, 500);
-    return 0;
+    return LLCC68_STATUS_OK;
 }
