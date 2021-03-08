@@ -27,6 +27,11 @@ config HAS_ARCH_ARM
     help
         Indicates that the current architecture is ARM.
 
+config HAS_ARCH_ARM_CORTEX_M
+    bool
+    help
+        Indicates that the current architecture is Cortex-M ARM.
+
 config HAS_ARDUINO
     bool
     help
