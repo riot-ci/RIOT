@@ -1,0 +1,3 @@
+CPU_MODEL = atxmega256a3u
+
+include $(RIOTBOARD)/common/atxmega/Makefile.features
