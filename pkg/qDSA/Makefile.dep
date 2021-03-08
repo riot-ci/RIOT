@@ -1,8 +1,8 @@
-ifneq (,$(filter cortex-m23 cortex-m0%,$(CPU_CORE)))
+ifneq (,$(filter arch_arm,$(FEATURES_USED)))
   USEMODULE += qDSA_asm
 endif
 
-ifneq (,$(filter atmega_common,$(USEMODULE)))
+ifneq (,$(filter arch_avr8,$(FEATURES_USED)))
   USEMODULE += qDSA_asm
 endif
 
