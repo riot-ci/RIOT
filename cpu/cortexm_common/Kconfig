@@ -38,16 +38,17 @@ config CPU_ARCH
 
 config CPU_CORE_CORTEX_M
     bool
-    select HAS_CPU_CORE_CORTEXM
-    select HAS_PERIPH_PM
-    select HAS_PUF_SRAM
-    select HAS_PICOLIBC
-    select HAS_CPP
-    select HAS_LIBSTDCPP
-    select HAS_CPU_CHECK_ADDRESS
-    select HAS_SSP
+    select HAS_ARCH_ARM_CORTEX_M
     select HAS_CORTEXM_SVC
+    select HAS_CPP
+    select HAS_CPU_CHECK_ADDRESS
+    select HAS_CPU_CORE_CORTEXM
+    select HAS_LIBSTDCPP
     select HAS_NEWLIB
+    select HAS_PERIPH_PM
+    select HAS_PICOLIBC
+    select HAS_PUF_SRAM
+    select HAS_SSP
 
 ## Common CPU symbols
 config CPU_CORE
