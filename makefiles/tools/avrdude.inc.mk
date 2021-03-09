@@ -20,9 +20,9 @@ DEBUGGER_FLAGS ?= "-x $(AVARICE_PATH)/gdb.conf $(ELFFILE)"
 DEBUGGER = "$(AVARICE_PATH)/debug.sh" $(DEBUGSERVER_FLAGS) $(AVARICE_PATH) $(DEBUGSERVER_PORT)
 
 ifeq (atxmega,$(CPU))
-AVRDUDE_PROGRAMMER_FLAGS ?= -p $(subst atxmega,x,$(CPU_MODEL))
+  AVRDUDE_PROGRAMMER_FLAGS ?= -p $(subst atxmega,x,$(CPU_MODEL))
 else
-AVRDUDE_PROGRAMMER_FLAGS = -p $(subst atmega,m,$(CPU))
+  AVRDUDE_PROGRAMMER_FLAGS = -p $(subst atmega,m,$(CPU))
 endif
 
 # Set flasher port only for programmers that require it
