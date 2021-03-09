@@ -66,6 +66,18 @@ static inline void cib_init(cib_t *__restrict cib, unsigned int size)
 }
 
 /**
+ * @brief   Returns the size of a cib_t
+ *
+ * @param[in] cib   the cib_t to check.
+ *                  Must not be NULL.
+ * @return  The total size of @p cib.
+ */
+static inline unsigned int cib_size(const cib_t *cib)
+{
+    return cib->mask + 1;
+}
+
+/**
  * @brief Calculates difference between cib_put() and cib_get() accesses.
  *
  * @param[in] cib       the cib_t to check.
