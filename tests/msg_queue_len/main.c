@@ -30,7 +30,7 @@
 
 #define MSG_QUEUE_LENGTH                (8)
 
-msg_t msg_queue[MSG_QUEUE_LENGTH];
+static msg_t msg_queue[MSG_QUEUE_LENGTH];
 
 static void test_msg_queue_len(void)
 {
