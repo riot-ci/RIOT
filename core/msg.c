@@ -457,19 +457,19 @@ int msg_avail(void)
     return _msg_avail(thread_get_active());
 }
 
-int msg_queue_len(kernel_pid_t pid)
+int msg_queue_capacity(kernel_pid_t pid)
 {
-    DEBUG("msg_queue_len: %" PRIkernel_pid ": msg_queue_len.\n",
+    DEBUG("msg_queue_capacity: %" PRIkernel_pid ": msg_queue_capacity.\n",
           pid);
 
     thread_t *thread = thread_get(pid);
-    int queue_size = -1;
+    int queue_cap = -1;
 
     if (thread_has_msg_queue(thread)) {
-        queue_size = cib_size(&(thread->msg_queue));
+        queue_cap = cib_size(&(thread->msg_queue));
     }
 
-    return queue_size;
+    return queue_cap;
 }
 
 void msg_init_queue(msg_t *array, int num)

@@ -66,7 +66,8 @@ static inline void cib_init(cib_t *__restrict cib, unsigned int size)
 }
 
 /**
- * @brief   Returns the size of a cib_t
+ * @brief   Returns the total capacity (`size` parameter of @ref cib_init()) of
+ *          a cib_t
  *
  * @param[in] cib   the cib_t to check.
  *                  Must not be NULL.
