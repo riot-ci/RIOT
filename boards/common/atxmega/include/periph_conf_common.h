@@ -16,8 +16,8 @@
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  */
 
-#ifndef PERIPH_CONF_ATXMEGA_COMMON_H
-#define PERIPH_CONF_ATXMEGA_COMMON_H
+#ifndef PERIPH_CONF_COMMON_H
+#define PERIPH_CONF_COMMON_H
 
 #include "periph_cpu.h"
 #include "macros/units.h"
@@ -46,7 +46,7 @@ extern "C" {
  */
 
 #ifndef UART_NUMOF
-    #define UART_NUMOF      (0U)
+#define UART_NUMOF          (0U)
 #endif /* UART_NUMOF */
 /** @} */
 
@@ -77,15 +77,10 @@ extern "C" {
 /**
  * @name ADC Configuration
  *
- * The number of ADC channels of the atmega328p depends on the package:
- *  - 6-channel 10-bit ADC in PDIP package
- *  - 8-channel 10-bit ADC in TQFP and QFN/MLF package
- * Arduino UNO / Duemilanove has thereby 6 channels. But only 5 channels can be
- * used for ADC, because the pin of ADC5 emulate a software triggered interrupt.
  * @{
  */
 #ifndef ADC_NUMOF
-    #define ADC_NUMOF       (0U)
+#define ADC_NUMOF           (0U)
 #endif /* ADC_NUMOF */
 /** @} */
 
@@ -95,7 +90,7 @@ extern "C" {
  * @{
  */
 #ifndef PWM_NUMOF
-    #define PWM_NUMOF       (0U)
+#define PWM_NUMOF           (0U)
 #endif /* PWM_NUMOF */
 /** @} */
 
@@ -103,4 +98,5 @@ extern "C" {
 }
 #endif
 
-#endif /* PERIPH_CONF_ATXMEGA_COMMON_H */
+#endif /* PERIPH_CONF_COMMON_H */
+/** @} */
