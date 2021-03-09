@@ -29,7 +29,7 @@ extern "C" {
  * @name   Length of the CPU_ID in octets
  * @{
  */
-#define CPUID_LEN           (11U)
+#define CPUID_LEN               (11U)
 /** @} */
 
 /**
@@ -72,14 +72,14 @@ enum {
  * @name    Power management configuration
  * @{
  */
-#define PM_NUM_MODES        (4)
+#define PM_NUM_MODES            (4)
 /** @} */
 
 /**
  * @brief   Define the number of GPIO interrupts vectors for ATxmega CPU.
  * @{
  */
-#define GPIO_EXT_INT_NUMOF  (2 * PORT_MAX)
+#define GPIO_EXT_INT_NUMOF      (2 * PORT_MAX)
 /** @} */
 
 /**
@@ -93,12 +93,21 @@ typedef uint16_t gpio_t;
 /**
  * @brief   Definition of a fitting UNDEF value
  */
-#define GPIO_UNDEF          (0xffff)
+#define GPIO_UNDEF              (0xffff)
 
 /**
  * @brief   Define a CPU specific GPIO pin generator macro
+ *
+ * The ATxmega internally uses pin mask to manipulate all gpio functions.
+ * This allows simultaneous pin actions at any method call.  ATxmega specific
+ * applications can use ATXMEGA_GPIO_PIN macro to define pins and generic
+ * RIOT-OS application should continue to use GPIO_PIN API for compatibility.
+ *
+ * @{
  */
-#define GPIO_PIN(x, y)      ((x << 8) | y)
+#define ATXMEGA_GPIO_PIN(x, y)  (((x & 0x0f) << 8) | (y & 0xff))
+#define GPIO_PIN(x, y)          ATXMEGA_GPIO_PIN(x, (1U << (y & 0x07)))
+/** @} */
 
 /**
  * @brief   Available pin modes
@@ -111,28 +120,28 @@ typedef uint16_t gpio_t;
  */
 #define HAVE_GPIO_MODE_T
 typedef enum GPIO_MODE {
-    GPIO_SLEW_RATE          = (1 << 7),     /**< enable slew rate */
-    GPIO_INVERTED           = (1 << 6),     /**< enable inverted signal */
+    GPIO_SLEW_RATE            = (1 << 7), /**< enable slew rate */
+    GPIO_INVERTED             = (1 << 6), /**< enable inverted signal */
 
-    GPIO_OPC_TOTEN          = (0 << 3),     /**< select no pull resistor (TOTEM) */
-    GPIO_OPC_BSKPR          = (1 << 3),     /**< push-pull mode (BUSKEEPER) */
-    GPIO_OPC_PD             = (2 << 3),     /**< pull-down resistor */
-    GPIO_OPC_PU             = (3 << 3),     /**< pull-up resistor */
-    GPIO_OPC_WRD_OR         = (4 << 3),     /**< enable wired OR  */
-    GPIO_OPC_WRD_AND        = (5 << 3),     /**< enable wired AND */
-    GPIO_OPC_WRD_OR_PULL    = (6 << 3),     /**< enable wired OR and pull-down resistor */
-    GPIO_OPC_WRD_AND_PULL   = (7 << 3),     /**< enable wired AND and pull-up resistor */
+    GPIO_OPC_TOTEN            = (0 << 3), /**< select no pull resistor (TOTEM) */
+    GPIO_OPC_BSKPR            = (1 << 3), /**< push-pull mode (BUSKEEPER) */
+    GPIO_OPC_PD               = (2 << 3), /**< pull-down resistor */
+    GPIO_OPC_PU               = (3 << 3), /**< pull-up resistor */
+    GPIO_OPC_WRD_OR           = (4 << 3), /**< enable wired OR  */
+    GPIO_OPC_WRD_AND          = (5 << 3), /**< enable wired AND */
+    GPIO_OPC_WRD_OR_PULL      = (6 << 3), /**< enable wired OR and pull-down resistor */
+    GPIO_OPC_WRD_AND_PULL     = (7 << 3), /**< enable wired AND and pull-up resistor */
 
-    GPIO_ANALOG             = (1 << 1),     /**< select GPIO for analog function */
+    GPIO_ANALOG               = (1 << 1), /**< select GPIO for analog function */
 
-    GPIO_IN                 = (0 << 0),     /**< select GPIO MASK as input */
-    GPIO_OUT                = (1 << 0),     /**< select GPIO MASK as output */
+    GPIO_IN                   = (0 << 0), /**< select GPIO MASK as input */
+    GPIO_OUT                  = (1 << 0), /**< select GPIO MASK as output */
 
     /* Compatibility Mode */
-    GPIO_IN_PU              = GPIO_IN  | GPIO_OPC_PU,
-    GPIO_IN_PD              = GPIO_IN  | GPIO_OPC_PD,
-    GPIO_OD                 = GPIO_OUT | GPIO_OPC_WRD_OR,
-    GPIO_OD_PU              = GPIO_OUT | GPIO_OPC_WRD_OR_PULL,
+    GPIO_IN_PU                = GPIO_IN  | GPIO_OPC_PU,
+    GPIO_IN_PD                = GPIO_IN  | GPIO_OPC_PD,
+    GPIO_OD                   = GPIO_OUT | GPIO_OPC_WRD_OR,
+    GPIO_OD_PU                = GPIO_OUT | GPIO_OPC_WRD_OR_PULL,
 } gpio_mode_t;
 /** @} */
 
@@ -142,38 +151,38 @@ typedef enum GPIO_MODE {
  */
 #define HAVE_GPIO_FLANK_T
 typedef enum {
-    GPIO_ISC_BOTH           = (0 << 4),     /**< emit interrupt on both flanks (default) */
-    GPIO_ISC_RISING         = (1 << 4),     /**< emit interrupt on rising flank */
-    GPIO_ISC_FALLING        = (2 << 4),     /**< emit interrupt on falling flank */
-    GPIO_ISC_LOW_LEVEL      = (3 << 4),     /**< emit interrupt on low level */
+    GPIO_ISC_BOTH             = (0 << 4), /**< emit interrupt on both flanks (default) */
+    GPIO_ISC_RISING           = (1 << 4), /**< emit interrupt on rising flank */
+    GPIO_ISC_FALLING          = (2 << 4), /**< emit interrupt on falling flank */
+    GPIO_ISC_LOW_LEVEL        = (3 << 4), /**< emit interrupt on low level */
 
-    GPIO_INT_DISABLED_ALL   = (1 << 3),     /**< disable all interrupts */
+    GPIO_INT_DISABLED_ALL     = (1 << 3), /**< disable all interrupts */
 
-    GPIO_INT0_VCT           = (0 << 2),     /**< enable interrupt on Vector 0 (default) */
-    GPIO_INT1_VCT           = (1 << 2),     /**< enable interrupt on Vector 1 */
+    GPIO_INT0_VCT             = (0 << 2), /**< enable interrupt on Vector 0 (default) */
+    GPIO_INT1_VCT             = (1 << 2), /**< enable interrupt on Vector 1 */
 
-    GPIO_LVL_OFF            = (0 << 0),     /**< interrupt disabled (default) */
-    GPIO_LVL_LOW            = (1 << 0),     /**< interrupt low level */
-    GPIO_LVL_MID            = (2 << 0),     /**< interrupt medium level */
-    GPIO_LVL_HIGH           = (3 << 0),     /**< interrupt higher */
+    GPIO_LVL_OFF              = (0 << 0), /**< interrupt disabled (default) */
+    GPIO_LVL_LOW              = (1 << 0), /**< interrupt low level */
+    GPIO_LVL_MID              = (2 << 0), /**< interrupt medium level */
+    GPIO_LVL_HIGH             = (3 << 0), /**< interrupt higher */
 
     /* Compatibility Mode */
-    GPIO_FALLING            = GPIO_ISC_FALLING | GPIO_LVL_LOW,
-    GPIO_RISING             = GPIO_ISC_RISING  | GPIO_LVL_LOW,
-    GPIO_BOTH               = GPIO_ISC_BOTH    | GPIO_LVL_LOW,
+    GPIO_FALLING              = GPIO_ISC_FALLING | GPIO_LVL_LOW,
+    GPIO_RISING               = GPIO_ISC_RISING  | GPIO_LVL_LOW,
+    GPIO_BOTH                 = GPIO_ISC_BOTH    | GPIO_LVL_LOW,
 } gpio_flank_t;
 /** @} */
 
 /**
  * @brief   Max number of available UARTs
  */
-#define UART_MAX_NUMOF      (7)
+#define UART_MAX_NUMOF          (7)
 
 /**
  * @brief   Size of the UART TX buffer for non-blocking mode.
  */
 #ifndef UART_TXBUF_SIZE
-#define UART_TXBUF_SIZE     (64)
+#define UART_TXBUF_SIZE         (64)
 #endif
 
 /**
@@ -195,7 +204,7 @@ typedef struct {
 /**
  * @brief   Max number of available timer channels
  */
-#define TIMER_CH_MAX_NUMOF  (4)
+#define TIMER_CH_MAX_NUMOF      (4)
 
 /**
  * @brief   A low-level timer_set() implementation is provided
@@ -211,11 +220,11 @@ typedef struct {
  * Timer Type 5 is equal to Type 4 (two channels instead four)
  */
 typedef enum {
-    TC_TYPE_0               = 0,
-    TC_TYPE_1               = 1,
-    TC_TYPE_2               = 2,
-    TC_TYPE_4               = 4,
-    TC_TYPE_5               = 5,
+    TC_TYPE_0                 = 0,
+    TC_TYPE_1                 = 1,
+    TC_TYPE_2                 = 2,
+    TC_TYPE_4                 = 4,
+    TC_TYPE_5                 = 5,
 } timer_type_t;
 
 /**

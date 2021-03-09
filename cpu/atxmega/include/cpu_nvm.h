@@ -19,12 +19,21 @@
 #define CPU_NVM_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /**
  * @brief Get offset of calibration bytes in the production signature row
+ *
+ * @Note In some distributions may require most recent vendor headers, even
+ *       more recent than the upstream avr-libc.  The headers can be download
+ *       directly from Microchip web site.  In general, Microchip have a
+ *       dedicated page at Tools and Software / AVR and SAM Downloads Archive.
+ *       The most recent version is AVR 8-bit Toolchain (3.4.4) 6.2.0.334.
+ *       http://ww1.microchip.com/downloads/archive/avr8-headers-6.2.0.334.zip
+ *
+ *       The official RIOT-OS docker container, Debian and Ubuntu are
+ *       distributions that already had updated versions of those files.
  *
  * @param regname Name of register within the production signature row
  * @retval Offset of register into the production signature row
