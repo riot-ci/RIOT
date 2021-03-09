@@ -28,7 +28,6 @@ extern "C" {
 
 /**
  * @brief   Clock configuration
- * @{
  */
 #define CLOCK_CORECLOCK     MHZ(32)
 
@@ -56,7 +55,7 @@ extern "C" {
  */
 #define LED_PORT            PORTQ
 
-#define LED0_PIN            GPIO_PIN(PORT_Q, PIN3_bm)
+#define LED0_PIN            GPIO_PIN(PORT_Q, PIN3_bp)
 #define LED0_MODE           GPIO_OUT
 #define LED0_MASK           (PIN3_bm)
 #define LED0_ON             (LED_PORT.OUTCLR = LED0_MASK)
@@ -70,7 +69,7 @@ extern "C" {
  * @name    Button pin configuration
  * @{
  */
-#define BTN0_PIN            GPIO_PIN(PORT_Q, PIN2_bm)
+#define BTN0_PIN            GPIO_PIN(PORT_Q, PIN2_bp)
 #define BTN0_MODE           (GPIO_IN | GPIO_OPC_PU | GPIO_SLEW_RATE)
 #define BTN0_INT_FLANK      (GPIO_ISC_FALLING | GPIO_LVL_LOW)
 /** @} */
@@ -95,7 +94,6 @@ extern "C" {
 #define XTIMER_WIDTH        (16)
 #define XTIMER_HZ           KHZ(500)
 #define XTIMER_BACKOFF      (150)
-/** @} */
 /** @} */
 
 #ifdef __cplusplus
