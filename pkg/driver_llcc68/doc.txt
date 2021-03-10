@@ -1,0 +1,7 @@
+/**
+ * @defgroup pkg_driver_llcc68   LLCC68 LoRa radio driver
+ * @ingroup  pkg
+ * @brief    This package is an implementation of the LLCC68 LoRa radio driver.
+ *
+ * @see      https://github.com/Lora-net/llcc68_driver
+ */
