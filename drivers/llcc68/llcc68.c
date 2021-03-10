@@ -70,9 +70,9 @@ static void llcc68_init_default_config(llcc68_t *dev)
     llcc68_set_pa_cfg(dev, &pa_cfg);
     llcc68_set_tx_params(dev, CONFIG_LLCC68_TX_POWER_DEFAULT, CONFIG_LLCC68_RAMP_TIME_DEFAULT);
 
-    dev->mod_params.bw = CONFIG_LORA_BW_DEFAULT + LLCC68_LORA_BW_125;
-    dev->mod_params.sf = CONFIG_LORA_SF_DEFAULT;
-    dev->mod_params.cr = CONFIG_LORA_CR_DEFAULT;
+    dev->mod_params.bw = (llcc68_lora_bw_t)(CONFIG_LORA_BW_DEFAULT + LLCC68_LORA_BW_125);
+    dev->mod_params.sf = (llcc68_lora_sf_t)CONFIG_LORA_SF_DEFAULT;
+    dev->mod_params.cr = (llcc68_lora_cr_t)CONFIG_LORA_CR_DEFAULT;
     dev->mod_params.ldro = 1;
     llcc68_set_lora_mod_params(dev, &dev->mod_params);
 
@@ -187,7 +187,7 @@ uint8_t llcc68_get_spreading_factor(const llcc68_t *dev)
 
 void llcc68_set_spreading_factor(llcc68_t *dev, uint8_t sf)
 {
-    dev->mod_params.sf = sf;
+    dev->mod_params.sf = (llcc68_lora_sf_t)sf;
     llcc68_set_lora_mod_params(dev, &dev->mod_params);
 }
 
@@ -198,7 +198,7 @@ uint8_t llcc68_get_coding_rate(const llcc68_t *dev)
 
 void llcc68_set_coding_rate(llcc68_t *dev, uint8_t cr)
 {
-    dev->mod_params.cr = cr;
+    dev->mod_params.cr = (llcc68_lora_cr_t)cr;
     llcc68_set_lora_mod_params(dev, &dev->mod_params);
 }
 
