@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Mesotic SAS
+ * Copyright (C) 2021  @h-filzer
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,10 +13,12 @@
  * @{
  *
  * @file
- * @brief       Support for the BASTWAN SAM R34 board. Based on the work from Dylan Laduranty <dylan.laduranty@mesotic.com> for the  Microchip
+ * @brief       Support for the BASTWAN SAM R34 board.
+ *              Based on the work from
+ *              Dylan Laduranty <dylan.laduranty@mesotic.com> for the  Microchip
  *              SAM R34 Xplained Pro board.
  *
- * @author      h-filzer
+ * @author       @h-filzer
  */
 
 #ifndef BOARD_H

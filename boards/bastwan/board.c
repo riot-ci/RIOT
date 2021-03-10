@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Mesotic SAS
+ * Copyright (C) 2021  @h-filzer
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +14,7 @@
  * @brief       Board specific implementations for the bastwan board
  *
  *
- * @author      h-filzer
+ * @author      @h-filzer
  *
  * @}
  */
@@ -38,13 +38,16 @@ void board_init(void)
     gpio_init(LED0_PIN, GPIO_OUT);
 
 #ifdef TX_SWITCH_PWR_PIN
+    /* Enables pwr to the Antenna switch circuit */
     gpio_init(TX_SWITCH_PWR_PIN, GPIO_OUT);
     gpio_set(TX_SWITCH_PWR_PIN);
 #endif /* TX_SWITCH_PWR_PIN */
        /* initialize board specific pins for LoRa */
 #ifdef MODULE_SX127X
+    /* Enable the pwr for the tcxo of the radio module*/
     gpio_init(TCXO_PWR_PIN, GPIO_OUT);
     gpio_set(TCXO_PWR_PIN);
+    /* Enable Toggling on TX/RX between RFI and RFO on the antenna switch SKY13373 */
     gpio_init(TX_OUTPUT_SEL_PIN, GPIO_OUT);
     gpio_write(TX_OUTPUT_SEL_PIN, !SX127X_PARAM_PASELECT);
 #endif /* USEMODULE_SX127X */

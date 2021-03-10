@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Mesotic SAS
+ * Copyright (C) 2021  @h-filzer
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,7 +13,7 @@
  * @file
  * @brief     Board specific configuration of direct mapped GPIOs
  *
- * @author    h-filzer
+ * @author     @h-filzer
  */
 
 #ifndef GPIO_PARAMS_H
