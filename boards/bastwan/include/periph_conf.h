@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019  @h-filzer
+ * Copyright (C) 2019  Lokotius Filzer
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -13,7 +13,7 @@
  * @file
  * @brief       Peripheral MCU configuration for the bastwan board.
  *
- * @author       h-filzer
+ * @author      Lokotius Filzer <h-filzer@pixelsalat.de>
  */
 
 #ifndef PERIPH_CONF_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021  @h-filzer
+ * Copyright (C) 2021  Lokotius Filzer
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -14,7 +14,7 @@
  * @brief       Board specific implementations for the bastwan board
  *
  *
- * @author      h-filzer
+ * @author      Lokotius Filzer <h-filzer@pixelsalat.de>
  *
  * @}
  */
