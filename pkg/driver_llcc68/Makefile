@@ -5,5 +5,7 @@ PKG_LICENSE=BSD
 
 include $(RIOTBASE)/pkg/pkg.mk
 
+CFLAGS += -Wno-enum-conversion
+
 all:
 	"$(MAKE)" -C $(PKG_SOURCE_DIR)/src -f $(CURDIR)/$(PKG_NAME).mk
