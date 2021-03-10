@@ -53,6 +53,20 @@ enum {
     DS2321_OPT_32KHZ_ENABLE = 0x02, /* enable 32KHz output */
 };
 
+typedef enum {
+    DS2321_AL1_TRIG_PER_S = 0x0F,  /* alarm once per second */
+    DS2321_AL1_TRIG_S     = 0x0E,  /* alarm when second match */
+    DS2321_AL1_TRIG_M_S   = 0x0C,  /* alarm when minutes and seconds match */
+    DS2321_AL1_TRIG_H_M_S = 0x08,  /* alarm when hours minutes seconds match */
+} ds3231_alm_1_mode_t;
+
+
+typedef enum {
+    DS2321_AL2_TRIG_PER_M = 0x07,  /* alarm once per minute */
+    DS2321_AL2_TRIG_M     = 0x06,  /* alarm when minutes match */
+    DS2321_AL2_TRIG_H_M   = 0x04,  /* alarm when hours and minutes match */
+} ds3231_alm_2_mode_t;
+
 /**
  * @brief   Device descriptor for DS3231 devices
  */
@@ -100,6 +114,20 @@ int ds3231_get_time(const ds3231_t *dev, struct tm *time);
  * @return  -EIO on I2C communication error
  */
 int ds3231_set_time(const ds3231_t *dev, const struct tm *time);
+
+int ds3231_set_alarm_1(const ds3231_t *dev, struct tm *time,
+                       ds3231_alm_1_mode_t trigger);
+
+int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
+                       ds3231_alm_2_mode_t trigger);
+
+int ds3231_clear_alarm_1_flag(const ds3231_t *dev);
+
+int ds3231_clear_alarm_2_flag(const ds3231_t *dev);
+
+int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state);
+
+int ds3231_toggle_alarm_2(const ds3231_t *dev, bool state);
 
 /**
  * @brief   Get the configured aging offset (see datasheet for more information)
@@ -160,3 +188,4 @@ int ds3231_disable_bat(const ds3231_t *dev);
 
 #endif /* DS3231_H */
 /** @} */
+

@@ -75,11 +75,11 @@
 #define CTRL_BBSQW          0x40
 #define CTRL_CONV           0x20
 #define CTRL_RS2            0x10
-#define CTRL_RS1            0x80
+#define CTRL_RS1            0x08
 #define CTRL_RS             (CTRL_RS2 | CTRL_RS1)
-#define CTRL_INTCN          0x40
-#define CTRL_A2IE           0x20
-#define CTRL_A1IE           0x10
+#define CTRL_INTCN          0x04
+#define CTRL_A2IE           0x02
+#define CTRL_A1IE           0x01
 #define CTRL_AIE            (CTRL_A2IE | CTRL_A1IE)
 
 /* status register bitmaps */
@@ -171,6 +171,9 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
         set = CTRL_EOSC;
     }
 
+    /* enables  the alarm interrupt control (no SQW output) */
+    set |= CTRL_INTCN;
+
     return _clrset(dev, REG_CTRL, clr, set, 0, 1);
 }
 
@@ -236,6 +239,114 @@ int ds3231_set_time(const ds3231_t *dev, const struct tm *time)
     return 0;
 }
 
+int ds3231_set_alarm_1(const ds3231_t *dev, struct tm *time,
+                       ds3231_alm_1_mode_t trigger)
+{
+    uint8_t raw[A1_REG_NUMOF];
+    uint8_t a1mxMask[A1_REG_NUMOF];
+
+    /* A1M1, A1M2, A1M3 and A1M4 are set accordingly to the trigger type */
+    a1mxMask[0] = (trigger & 0x01) << 7;
+    a1mxMask[1] = (trigger & 0x02) << 6;
+    a1mxMask[2] = (trigger & 0x04) << 5;
+    a1mxMask[3] = (trigger & 0x08) << 4;
+
+    raw[0] = ((bcd_from_byte(time->tm_sec)  & (MASK_SEC10  | MASK_SEC))
+            | a1mxMask[0]);
+    raw[1] = ((bcd_from_byte(time->tm_min)  & (MASK_MIN10  | MASK_MIN))
+            | a1mxMask[1]);
+    /* note: we always set the hours in 24-hour format */
+    raw[2] = ((bcd_from_byte(time->tm_hour) & (MASK_H20H10 | MASK_HOUR))
+            | a1mxMask[2]);
+    raw[3] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
+            | a1mxMask[3]);
+
+    /* clear alarm flag */
+    if (_clrset(dev, REG_STATUS, STAT_A1F, 0, 1, 1) < 0){
+        return -EIO;
+    }
+
+    /* write alarm configuration to device */
+    if (_write(dev, REG_A1_SEC, raw, A1_REG_NUMOF, 1, 1) < 0) {
+        return -EIO;
+    }
+
+    /* activate alarm 1 in case it was not */
+    if (_clrset(dev, REG_CTRL, 0, CTRL_A1IE, 1, 1) < 0){
+        return -EIO;
+    }
+
+    return 0;
+}
+
+int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
+                       ds3231_alm_2_mode_t trigger)
+{
+    uint8_t raw[A2_REG_NUMOF];
+    uint8_t a2mxMask[A2_REG_NUMOF];
+
+    /*A2M2, A2M3 and A2M4 are set accordingly to the trigger type */
+    a2mxMask[0] = (trigger & 0x01) << 7;
+    a2mxMask[1] = (trigger & 0x02) << 6;
+    a2mxMask[2] = (trigger & 0x04) << 5;
+
+    raw[0] = ((bcd_from_byte(time->tm_min)  & (MASK_MIN10  | MASK_MIN))
+            | a2mxMask[0]);
+    /* note: we always set the hours in 24-hour format */
+    raw[1] = ((bcd_from_byte(time->tm_hour) & (MASK_H20H10 | MASK_HOUR))
+            | a2mxMask[1]);
+    raw[2] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
+            | a2mxMask[2]);
+
+    /* clear alarm flag */
+    if (_clrset(dev, REG_STATUS, STAT_A2F, 0, 1, 1) < 0){
+        return -EIO;
+    }
+
+    /* write alarm configuration to device */
+    if (_write(dev, REG_A2_MIN, raw, A2_REG_NUMOF, 1, 1) < 0) {
+        return -EIO;
+    }
+
+    /* activate alarm 2 in case it was not */
+    if (_clrset(dev, REG_CTRL, 0, CTRL_A2IE, 1, 1) < 0){
+        return -EIO;
+    }
+
+    return 0;
+}
+
+int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state)
+{
+    if(state){
+        return _clrset(dev, REG_CTRL, 0, CTRL_A1IE, 1, 1);
+    }
+    else{
+        return _clrset(dev, REG_CTRL, CTRL_A1IE, 0, 1, 1);
+    }
+}
+
+int ds3231_toggle_alarm_2(const ds3231_t *dev, bool state)
+{
+    if(state){
+        return _clrset(dev, REG_CTRL, 0, CTRL_A2IE, 1, 1);
+    }
+    else{
+        return _clrset(dev, REG_CTRL, CTRL_A2IE, 0, 1, 1);
+    }
+}
+
+int ds3231_clear_alarm_1_flag(const ds3231_t *dev)
+{
+    return _clrset(dev, REG_STATUS, STAT_A1F, 0, 1, 1);
+}
+
+int ds3231_clear_alarm_2_flag(const ds3231_t *dev)
+{
+    return _clrset(dev, REG_STATUS, STAT_A2F, 0, 1, 1);
+
+}
+
 int ds3231_get_aging_offset(const ds3231_t *dev, int8_t *offset)
 {
     return _read(dev, REG_AGING_OFFSET, (uint8_t *)offset, 1, 1, 1);
@@ -266,3 +377,4 @@ int ds3231_disable_bat(const ds3231_t *dev)
 {
     return _clrset(dev, REG_CTRL, 0, CTRL_EOSC, 1, 1);
 }
+
