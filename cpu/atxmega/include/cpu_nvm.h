@@ -25,7 +25,7 @@ extern "C" {
 /**
  * @brief Get offset of calibration bytes in the production signature row
  *
- * @Note In some distributions may require most recent vendor headers, even
+ * @note In some distributions may require most recent vendor headers, even
  *       more recent than the upstream avr-libc.  The headers can be download
  *       directly from Microchip web site.  In general, Microchip have a
  *       dedicated page at Tools and Software / AVR and SAM Downloads Archive.
