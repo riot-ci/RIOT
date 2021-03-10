@@ -20,7 +20,7 @@
 #define PERIPH_CONF_H
 
 #include "periph_cpu.h"
-#include "macros/units.h
+#include "macros/units.h"
 
 #ifdef __cplusplus
 extern "C\
@@ -190,4 +190,3 @@ static const sam0_common_usb_config_t sam_usbdev_config[] = {
 
 #endif /* PERIPH_CONF_H */
 /** @} */
-
