@@ -26,7 +26,6 @@
 #include "msg.h"
 #include "thread.h"
 #include "shell.h"
-#include "xtimer.h"
 
 #include "net/lora.h"
 #include "net/netdev.h"
