@@ -14,7 +14,7 @@
  * @brief       Board specific implementations for the bastwan board
  *
  *
- * @author      @h-filzer
+ * @author      h-filzer
  *
  * @}
  */

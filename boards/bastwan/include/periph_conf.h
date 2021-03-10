@@ -13,7 +13,7 @@
  * @file
  * @brief       Peripheral MCU configuration for the bastwan board.
  *
- * @author       @h-filzer
+ * @author       h-filzer
  */
 
 #ifndef PERIPH_CONF_H

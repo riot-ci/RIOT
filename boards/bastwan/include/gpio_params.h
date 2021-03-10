@@ -13,7 +13,7 @@
  * @file
  * @brief     Board specific configuration of direct mapped GPIOs
  *
- * @author     @h-filzer
+ * @author     h-filzer
  */
 
 #ifndef GPIO_PARAMS_H

@@ -18,7 +18,7 @@
  *              Dylan Laduranty <dylan.laduranty@mesotic.com> for the  Microchip
  *              SAM R34 Xplained Pro board.
  *
- * @author       @h-filzer
+ * @author      h-filzer
  */
 
 #ifndef BOARD_H
