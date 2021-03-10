@@ -1,0 +1,3 @@
+USEMODULE += iolist
+USEPKG += driver_llcc68
+FEATURES_REQUIRED += periph_gpio_irq
