@@ -1,0 +1,3 @@
+INCLUDES += -I$(PKGDIRBASE)/driver_llcc68/src
+
+DIRS += $(RIOTBASE)/pkg/driver_llcc68/contrib
