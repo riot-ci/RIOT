@@ -69,8 +69,8 @@ static const timer_conf_t timer_config[] = {
 static const uart_conf_t uart_config[] = {
     {   /* CDC-ACM */
         .dev            = &USARTE0,
-        .rx_pin         = GPIO_PIN(PORT_E, PIN2_bp),
-        .tx_pin         = GPIO_PIN(PORT_E, PIN3_bp),
+        .rx_pin         = GPIO_PIN(PORT_E, 2),
+        .tx_pin         = GPIO_PIN(PORT_E, 3),
 #ifdef MODULE_PERIPH_UART_HW_FC
         .rts_pin        = GPIO_UNDEF,
         .cts_pin        = GPIO_UNDEF,
