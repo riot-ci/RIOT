@@ -138,7 +138,7 @@ void soft_spi_release(soft_spi_t bus)
 
 static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
 {
-    int8_t bit = 0, i = 8;
+    int8_t i = 8;
     if (SOFT_SPI_MODE_1 == soft_spi_config[bus].soft_spi_mode ||
         SOFT_SPI_MODE_3 == soft_spi_config[bus].soft_spi_mode) {
         /* CPHA = 1*/
@@ -146,7 +146,7 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
     }
 
     do{
-        bit = (out & (1 << 7)) >> 7;
+        int8_t bit = (out & (1 << 7)) >> 7;
         gpio_write(soft_spi_config[bus].mosi_pin, bit);
 
         xtimer_nanosleep(soft_spi_config[bus].soft_spi_clk);
