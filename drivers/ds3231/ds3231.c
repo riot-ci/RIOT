@@ -318,7 +318,7 @@ int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
 
 int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state)
 {
-    if(state){
+    if (state){
         return _clrset(dev, REG_CTRL, 0, CTRL_A1IE, 1, 1);
     }
     else{
@@ -328,7 +328,7 @@ int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state)
 
 int ds3231_toggle_alarm_2(const ds3231_t *dev, bool state)
 {
-    if(state){
+    if (state){
         return _clrset(dev, REG_CTRL, 0, CTRL_A2IE, 1, 1);
     }
     else{
@@ -345,6 +345,32 @@ int ds3231_clear_alarm_2_flag(const ds3231_t *dev)
 {
     return _clrset(dev, REG_STATUS, STAT_A2F, 0, 1, 1);
 
+}
+
+int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool* flag)
+{
+    uint8_t raw;
+    int res = _read(dev, REG_STATUS, &raw, 1, 1, 1);
+    if (res != 0) {
+        return -EIO;
+    }
+
+    *flag = (raw & STAT_A1F) ;
+
+    return res;
+}
+
+int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool* flag)
+{
+    uint8_t raw;
+    int res = _read(dev, REG_STATUS, &raw, 1, 1, 1);
+    if (res != 0) {
+        return -EIO;
+    }
+
+    *flag = (raw & STAT_A2F) >> 1 ;
+
+    return res;
 }
 
 int ds3231_get_aging_offset(const ds3231_t *dev, int8_t *offset)
@@ -377,4 +403,3 @@ int ds3231_disable_bat(const ds3231_t *dev)
 {
     return _clrset(dev, REG_CTRL, 0, CTRL_EOSC, 1, 1);
 }
-
