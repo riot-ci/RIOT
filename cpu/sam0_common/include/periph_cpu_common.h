@@ -766,6 +766,17 @@ static inline bool cpu_woke_from_backup(void)
 #endif
 }
 
+#if RTC_NUM_OF_TAMPERS || DOXYGEN
+/**
+ * @brief   Get and clear the RTC tamper event that has woken the CPU
+ *          from Deep Sleep.
+ *
+ * @return  The set bits in the return value correspond to the tamper
+ *          pin index inside the @ref rtc_tamper_pins array.
+ */
+uint8_t rtc_get_tamper_event(void);
+#endif
+
 /**
  * @brief ADC Channel Configuration
  */
