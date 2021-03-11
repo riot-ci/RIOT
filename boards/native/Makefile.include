@@ -22,7 +22,11 @@ export GPROF ?= gprof
 # basic cflags:
 CFLAGS += -Wall -Wextra -pedantic $(CFLAGS_DBG) $(CFLAGS_OPT)
 CFLAGS_DBG ?= -g3
-CFLAGS_OPT ?= -Og
+ifneq (,$(filter backtrace,$(USEMODULE)))
+  $(warning module backtrace is used, not adding -Og compile flag)
+else
+  CFLAGS_OPT ?= -Og
+endif
 
 # default std set to gnu11 if not overwritten by user
 ifeq (,$(filter -std=%, $(CFLAGS)))
