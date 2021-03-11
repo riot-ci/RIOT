@@ -25,8 +25,8 @@
 #include "msg.h"
 #include "xtimer.h"
 
-#ifndef TEST_DURATION
-#define TEST_DURATION       (1000000U)
+#ifndef TEST_DURATION_US
+#define TEST_DURATION_US    (1000000U)
 #endif
 
 volatile unsigned _flag = 0;
@@ -44,7 +44,7 @@ static void *_second_thread(void *arg)
     (void)arg;
     msg_t test;
 
-    while(1) {
+    while (1) {
         msg_receive(&test);
     }
 
@@ -70,7 +70,7 @@ int main(void)
 
     uint32_t n = 0;
 
-    xtimer_set(&timer, TEST_DURATION);
+    xtimer_set(&timer, TEST_DURATION_US);
     while(!_flag) {
         msg_send(&test, other);
         n++;
@@ -79,7 +79,7 @@ int main(void)
     printf("{ \"result\" : %"PRIu32, n);
 #ifdef CLOCK_CORECLOCK
     printf(", \"ticks\" : %"PRIu32,
-           (uint32_t)((TEST_DURATION/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
+           (uint32_t)((TEST_DURATION_US/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
 #endif
     puts(" }");
 
