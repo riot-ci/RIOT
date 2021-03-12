@@ -145,7 +145,7 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
         gpio_toggle(soft_spi_config[bus].clk_pin);
     }
 
-    do{
+    do {
         int8_t bit = (out & (1 << 7)) >> 7;
         gpio_write(soft_spi_config[bus].mosi_pin, bit);
 
