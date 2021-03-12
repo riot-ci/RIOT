@@ -155,7 +155,7 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
         out <<= 1; /*shift transfer register*/
 
         bit = gpio_read(soft_spi_config[bus].miso_pin);
-        out = bit ? out | 0x01 : out & 0xfe; /*set or delete bit 0*/
+        out = bit ? (out | 0x01) : (out & 0xfe); /*set or delete bit 0*/
 
         xtimer_nanosleep(soft_spi_config[bus].soft_spi_clk);
         --i;
