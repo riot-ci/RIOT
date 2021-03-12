@@ -3,7 +3,7 @@ include ../Makefile.tests_common
 FEATURES_REQUIRED = periph_timer
 
 BOARDS_TIMER_500kHz := \
-    atxmega-a1-xpro \
+    atxmega-a1u-xpro \
     #
 
 BOARDS_TIMER_250kHz := \
