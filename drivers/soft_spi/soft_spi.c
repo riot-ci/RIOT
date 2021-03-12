@@ -159,7 +159,9 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
 
         xtimer_nanosleep(soft_spi_config[bus].soft_spi_clk);
         --i;
-        if (i > 0) gpio_toggle(soft_spi_config[bus].clk_pin);
+        if (i > 0) {
+            gpio_toggle(soft_spi_config[bus].clk_pin);
+        }
     }while(i > 0);
 
     if (SOFT_SPI_MODE_0 == soft_spi_config[bus].soft_spi_mode ||
