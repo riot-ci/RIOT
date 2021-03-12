@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     boards_atxmega-a1-xpro
+ * @ingroup     boards_atxmega-a1u-xpro
  * @{
  *
  * @file

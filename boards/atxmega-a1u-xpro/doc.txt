@@ -1,11 +1,11 @@
 /**
-@defgroup    boards_atxmega-a1-xpro ATxmega-A1 Xplained Pro board
+@defgroup    boards_atxmega-a1u-xpro ATxmega-A1U Xplained Pro board
 @ingroup     boards
-@brief       Support for the ATxmega-A1 Xplained Pro board
+@brief       Support for the ATxmega-A1U Xplained Pro board
 
 ## Overview
 
-The ATxmega-A1 Xplained Pro is the reference to develop with XMEGA's.
+The ATxmega-A1U Xplained Pro is the reference to develop with XMEGA's.
 
 ### MCU
 | MCU           | ATxmega128A1U                                 |
@@ -37,7 +37,7 @@ The ATxmega-A1 Xplained Pro is the reference to develop with XMEGA's.
 
 ## Flashing the Device
 
-The ATxmega-A1 Xplained Pro came with a full EDBG + CDC-ACM. The EDBG works
+The ATxmega-A1U Xplained Pro came with a full EDBG + CDC-ACM. The EDBG works
 with default avrdude tool. However, the below programmer must have at
 /etc/avrdude.conf file:
 
@@ -51,13 +51,13 @@ programmer
 
 In order to flash the ATxmega128A1U, simple run:
 
-    make BOARD=atxmega-a1-xpro flash
+    make BOARD=atxmega-a1u-xpro flash
 
 ## Serial Terminal
 
 The CDC-ACM will enumerate a /dev/ttyACM device.
 
-    make BOARD=atxmega-a1-xpro term
+    make BOARD=atxmega-a1u-xpro term
 
 ## On-Chip Debugging (OCD)
 

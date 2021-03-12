@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     boards_atxmega-a1-xpro
+ * @ingroup     boards_atxmega-a1u-xpro
  * @{
  *
  * @file
- * @brief       Peripheral MCU configuration for the ATxmegaA1 Xplained Pro board.
+ * @brief       Peripheral MCU configuration for the ATxmegaA1U Xplained Pro board.
  *
  * @author      Gerson Fernando Budke <nandojve@gmail.com>
  */
