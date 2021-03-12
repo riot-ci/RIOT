@@ -20,8 +20,15 @@ export CGANNOTATE ?= cg_annotate
 export GPROF ?= gprof
 
 # basic cflags:
-CFLAGS += -Wall -Wextra -pedantic $(CFLAGS_DBG)
+CFLAGS += -Wall -Wextra -pedantic $(CFLAGS_DBG) $(CFLAGS_OPT)
 CFLAGS_DBG ?= -g3
+
+ifneq (,$(filter backtrace,$(USEMODULE)))
+  $(warning module backtrace is used, do not omit frame pointers)
+  CFLAGS_OPT ?= -Og -U_FORTIFY_SOURCE -fno-omit-frame-pointer
+else
+  CFLAGS_OPT ?= -Os -U_FORTIFY_SOURCE
+endif
 
 # default std set to gnu11 if not overwritten by user
 ifeq (,$(filter -std=%, $(CFLAGS)))
