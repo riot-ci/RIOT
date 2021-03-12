@@ -230,10 +230,8 @@ void soft_spi_transfer_bytes(soft_spi_t bus, soft_spi_cs_t cs, bool cont,
         }
     }
 
-    if (!cont)
-    {
-        if ((cs != GPIO_UNDEF) && (cs != SOFT_SPI_CS_UNDEF))
-        {
+    if (!cont)  {
+        if ((cs != GPIO_UNDEF) && (cs != SOFT_SPI_CS_UNDEF))  {
             gpio_set((gpio_t)cs);
         }
     }
