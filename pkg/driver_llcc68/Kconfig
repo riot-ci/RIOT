@@ -1,0 +1,14 @@
+config PACKAGE_DRIVER_LLCC68
+    bool "LLCC68 driver package"
+    depends on TEST_KCONFIG
+    depends on HAS_PERIPH_SPI
+    select MODULE_PERIPH_SPI
+    select MODULE_FMT
+    select MODULE_ZTIMER
+    select MODULE_ZTIMER_USEC
+    select MODULE_DRIVER_LLCC68_HAL
+
+config MODULE_DRIVER_LLCC68_HAL
+    bool
+    help
+        HAL implementation for the LLCC68 LoRa radio driver.
