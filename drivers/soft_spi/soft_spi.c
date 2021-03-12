@@ -138,7 +138,7 @@ void soft_spi_release(soft_spi_t bus)
 
 static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
 {
-    int8_t i = 8;
+    uint8_t i = 8;
     if (SOFT_SPI_MODE_1 == soft_spi_config[bus].soft_spi_mode ||
         SOFT_SPI_MODE_3 == soft_spi_config[bus].soft_spi_mode) {
         /* CPHA = 1*/
