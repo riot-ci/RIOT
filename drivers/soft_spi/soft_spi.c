@@ -209,8 +209,7 @@ void soft_spi_transfer_bytes(soft_spi_t bus, soft_spi_cs_t cs, bool cont,
     uint8_t *inbuf = in;
 
     /* activate the given chip select line */
-    if ((cs != GPIO_UNDEF) && (cs != SOFT_SPI_CS_UNDEF))
-    {
+    if ((cs != GPIO_UNDEF) && (cs != SOFT_SPI_CS_UNDEF)) {
         gpio_clear((gpio_t)cs);
     }
 
