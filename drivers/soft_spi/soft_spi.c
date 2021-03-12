@@ -146,7 +146,7 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
     }
 
     do {
-        int8_t bit = (out & (1 << 7)) >> 7;
+        uint8_t bit = out >> 7;
         gpio_write(soft_spi_config[bus].mosi_pin, bit);
 
         xtimer_nanosleep(soft_spi_config[bus].soft_spi_clk);
