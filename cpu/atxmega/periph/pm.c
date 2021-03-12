@@ -62,7 +62,7 @@ void pm_set(unsigned mode)
         set_sleep_mode(SLEEP_SMODE_STDBY_gc);
         break;
     case 3:
-        set_sleep_mode(SLEEP_SMODE_ESTDBY_gc);
+        set_sleep_mode(SLEEP_SMODE_PDOWN_gc);
         break;
     default:
         set_sleep_mode(SLEEP_SMODE_IDLE_gc);

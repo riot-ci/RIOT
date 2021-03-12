@@ -27,7 +27,7 @@
 #include "periph/gpio.h"
 #include "bitarithm.h"
 
-#define ENABLE_DEBUG 0
+#define ENABLE_DEBUG 1
 #include "debug.h"
 
 /**
@@ -333,6 +333,8 @@ static inline void irq_handler(uint8_t port_num, uint8_t isr_vct_num)
     else {
         DEBUG("WARNING! irq_handler without callback\n");
     }
+
+    DEBUG("irq_handler end\n");
 
     avr8_exit_isr();
 }
