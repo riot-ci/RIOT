@@ -162,7 +162,7 @@ static inline uint8_t _transfer_one_byte(soft_spi_t bus, uint8_t out)
         if (i > 0) {
             gpio_toggle(soft_spi_config[bus].clk_pin);
         }
-    }while(i > 0);
+    } while (i > 0);
 
     if (SOFT_SPI_MODE_0 == soft_spi_config[bus].soft_spi_mode ||
         SOFT_SPI_MODE_2 == soft_spi_config[bus].soft_spi_mode) {
