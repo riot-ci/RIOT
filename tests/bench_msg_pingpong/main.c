@@ -25,26 +25,24 @@
 #include "msg.h"
 #include "xtimer.h"
 
-#ifndef TEST_DURATION
-#define TEST_DURATION       (1000000U)
+#ifndef TEST_DURATION_US
+#define TEST_DURATION_US    (1000000U)
 #endif
 
-volatile unsigned _flag = 0;
 static char _stack[THREAD_STACKSIZE_MAIN];
 
 static void _timer_callback(void*arg)
 {
-    (void)arg;
-
-    _flag = 1;
+    unsigned *flag = arg;
+    *flag = 1;
 }
 
 static void *_second_thread(void *arg)
 {
     (void)arg;
-    msg_t test;
 
-    while(1) {
+    while (1) {
+        msg_t test;
         msg_receive(&test);
     }
 
@@ -53,7 +51,7 @@ static void *_second_thread(void *arg)
 
 int main(void)
 {
-    printf("main starting\n");
+    puts("main starting");
 
     kernel_pid_t other = thread_create(_stack,
                                        sizeof(_stack),
@@ -62,16 +60,17 @@ int main(void)
                                        _second_thread,
                                        NULL,
                                        "second_thread");
-
-    xtimer_t timer;
-    timer.callback = _timer_callback;
-
-    msg_t test;
-
+    unsigned flag = 0;
     uint32_t n = 0;
 
-    xtimer_set(&timer, TEST_DURATION);
-    while(!_flag) {
+    xtimer_t timer = {
+        .callback = _timer_callback,
+        .arg = &flag,
+    };
+
+    xtimer_set(&timer, TEST_DURATION_US);
+    while (!flag) {
+        msg_t test;
         msg_send(&test, other);
         n++;
     }
@@ -79,7 +78,7 @@ int main(void)
     printf("{ \"result\" : %"PRIu32, n);
 #ifdef CLOCK_CORECLOCK
     printf(", \"ticks\" : %"PRIu32,
-           (uint32_t)((TEST_DURATION/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
+           (uint32_t)((TEST_DURATION_US/US_PER_MS) * (CLOCK_CORECLOCK/KHZ(1)))/n);
 #endif
     puts(" }");
 
