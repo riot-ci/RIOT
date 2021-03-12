@@ -224,10 +224,8 @@ void soft_spi_transfer_bytes(soft_spi_t bus, soft_spi_cs_t cs, bool cont,
             inbuf[i] = _transfer_one_byte(bus, READ_PADDING_BYTE);
         }
     }
-    else
-    {
-        for (size_t i = 0; i < len; i++)
-        {
+    else  {
+        for (size_t i = 0; i < len; i++)  {
             inbuf[i] = _transfer_one_byte(bus, outbuf[i]);
         }
     }
