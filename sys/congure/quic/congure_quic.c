@@ -160,6 +160,17 @@ static void _reset_cwnd(congure_quic_snd_t *c, congure_snd_msg_t *msgs)
     }
 }
 
+static void _dec_flight_size(congure_quic_snd_t *c, unsigned msg_size)
+{
+    /* check for integer underflow */
+    if ((c->in_flight_size - msg_size) > c->in_flight_size) {
+        c->in_flight_size = 0U;
+    }
+    else {
+        c->in_flight_size -= msg_size;
+    }
+}
+
 static void _snd_init(congure_snd_t *cong, void *ctx)
 {
     congure_quic_snd_t *c = (congure_quic_snd_t *)cong;
@@ -203,7 +214,7 @@ static void _snd_report_msg_discarded(congure_snd_t *cong, unsigned msg_size)
 
     assert(msg_size <= c->in_flight_size);
 
-    c->in_flight_size -= msg_size;
+    _dec_flight_size(c, msg_size);
 }
 
 static void _snd_report_msgs_lost(congure_snd_t *cong, congure_snd_msg_t *msgs)
@@ -216,7 +227,7 @@ static void _snd_report_msgs_lost(congure_snd_t *cong, congure_snd_msg_t *msgs)
     if (ptr) {
         do {
             ptr = (congure_snd_msg_t *)ptr->super.next;
-            c->in_flight_size -= ptr->size;
+            _dec_flight_size(c, ptr->size);
             if (last_lost_sent < ptr->send_time) {
                 last_lost_sent = ptr->send_time;
             }
@@ -233,7 +244,7 @@ static void _snd_report_msg_acked(congure_snd_t *cong, congure_snd_msg_t *msg,
 {
     congure_quic_snd_t *c = (congure_quic_snd_t *)cong;
 
-    c->in_flight_size -= msg->size;
+    _dec_flight_size(c, msg->size);
 
     /* https://tools.ietf.org/html/draft-ietf-quic-recovery-34#appendix-A.7 */
     if ((msg->size > 0) && (ack->recv_time > 0)) {
