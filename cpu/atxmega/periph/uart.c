@@ -33,6 +33,7 @@
 #include "thread.h"
 #include "periph/uart.h"
 #include "periph/gpio.h"
+#include "pm_layered.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -301,6 +302,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
+    pm_block(3);
     for (size_t i = 0; i < len; i++) {
         while (!(dev(uart)->STATUS & USART_DREIF_bm)) {}
 
@@ -312,6 +314,8 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 
         dev(uart)->DATA = data[i];
     }
+    while (!(dev(uart)->STATUS & USART_DREIF_bm)) {};
+    pm_unblock(3);
 }
 
 void uart_poweron(uart_t uart)
