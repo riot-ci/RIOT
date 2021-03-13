@@ -420,7 +420,7 @@ class TestCongURERenoDefault(TestCongUREBase):
         self._send_msg_and_timeout([{'size': flight_size, 'send_time': 1000,
                                      'resends': 0}])
         state = self.cong_state()
-        self.assertEqual(state['in_flight_size'], flight_size)
+        self.assertEqual(state['in_flight_size'], 0)
         # MSS did not change
         self.assertEqual(state['mss'], init_mss)
         """
@@ -460,7 +460,7 @@ class TestCongURERenoDefault(TestCongUREBase):
             {'size': 543, 'send_time': 140, 'resends': 0},
         ])
         state = self.cong_state()
-        self.assertEqual(state['in_flight_size'], flight_size)
+        self.assertEqual(state['in_flight_size'], 0)
         # MSS did not change
         self.assertEqual(state['mss'], init_mss)
         # cwnd became SMSS due to timeout
