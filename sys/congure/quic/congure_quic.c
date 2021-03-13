@@ -203,7 +203,9 @@ static void _snd_report_msg_sent(congure_snd_t *cong, unsigned sent_size)
 {
     congure_quic_snd_t *c = (congure_quic_snd_t *)cong;
 
-    assert((c->in_flight_size + sent_size) <= c->super.cwnd);
+    if ((c->in_flight_size + sent_size) <= c->super.cwnd) {
+        c->in_flight_size += sent_size;
+    }
 
     c->in_flight_size += sent_size;
 }
