@@ -51,6 +51,11 @@ void pm_set(unsigned mode)
 {
     unsigned irq_state = irq_disable();
 
+    if (avr8_is_uart_tx_pending() && mode < 4) {
+        irq_restore(irq_state);
+        return;
+    }
+
     switch (mode) {
     case 0:
         set_sleep_mode(SLEEP_SMODE_PDOWN_gc);
