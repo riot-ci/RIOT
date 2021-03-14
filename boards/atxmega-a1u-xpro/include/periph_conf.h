@@ -29,6 +29,8 @@ extern "C" {
 
 #include "periph_cpu.h"
 
+#define AVR8_NESTED_IRQ   (1)
+
 /**
  * @name    Timer peripheral configuration
  * @{

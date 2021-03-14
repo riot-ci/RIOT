@@ -279,19 +279,31 @@ void thread_yield_higher(void)
     }
 }
 
+__attribute__((always_inline)) static inline void avr8_context_switch(void)
+{
+    avr8_context_save();
+    sched_run();
+    avr8_context_restore();
+}
+
 void avr8_exit_isr(void)
 {
-    avr8_state &= ~AVR8_STATE_FLAG_ISR;
-
-    /* Force access to avr8_state to take place */
-    __asm__ volatile ("" : : : "memory");
+#if (AVR8_NESTED_IRQ == 1 && defined(CPU_ATXMEGA))
+    cli();
+    --GPIOR0;
+    sei();
+    if (sched_context_switch_request && GPIOR0 == 0) {
+        avr8_context_switch();
+    }
+#else
+    GPIOR0 &= ~AVR8_STATE_FLAG_ISR;
 
     if (sched_context_switch_request) {
-        avr8_context_save();
-        sched_run();
-        avr8_context_restore();
-        __asm__ volatile ("reti");
+        avr8_context_switch();
     }
+#endif
+
+    __asm__ volatile ("reti");
 }
 
 __attribute__((always_inline)) static inline void avr8_context_save(void)

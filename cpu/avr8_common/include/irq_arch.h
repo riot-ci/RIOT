@@ -71,27 +71,9 @@ __attribute__((always_inline)) static inline unsigned int irq_enable(void)
 /**
  * @brief Restore the state of the IRQ flags
  */
-__attribute__((always_inline)) static inline void irq_restore(unsigned int _state)
+__attribute__((always_inline)) static inline void irq_restore(unsigned int state)
 {
-    uint8_t state = (uint8_t)_state;
-    /*
-     * Implementation in pseudo-code:
-     *
-     * disable_irqs();
-     * if (state & BIT7) {
-     *    enable_irqs();
-     * }
-     *
-     * This takes 3 CPU Cycles if BIT7 is set (IRQs are enabled), otherwise 2.
-     */
-    __asm__ volatile(
-        "cli"                       "\n\t"
-        "sbrc %[state], 7"          "\n\t"
-        "sei"                       "\n\t"
-        : /* no outputs */
-        : [state]           "r"(state)
-        : "memory"
-    );
+    SREG = state;
 }
 
 /**
@@ -99,8 +81,7 @@ __attribute__((always_inline)) static inline void irq_restore(unsigned int _stat
  */
 __attribute__((always_inline)) static inline int irq_is_in(void)
 {
-    uint8_t state = avr8_get_state();
-    return (state & AVR8_STATE_FLAG_ISR);
+    return GPIOR0;
 }
 
 #ifdef __cplusplus
