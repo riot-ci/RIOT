@@ -1,0 +1,9 @@
+# Put the package dependencies here
+
+USEMODULE += fmt
+USEMODULE += driver_llcc68_hal
+USEMODULE += ztimer
+USEMODULE += ztimer_usec
+
+# required features
+FEATURES_REQUIRED += periph_spi
