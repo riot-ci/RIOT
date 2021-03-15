@@ -34,6 +34,7 @@
 #include <time.h>
 #include <errno.h>
 
+#include "periph/gpio.h"
 #include "periph/i2c.h"
 
 #ifdef __cplusplus
@@ -54,16 +55,18 @@ enum {
 };
 
 typedef enum {
-    DS2321_AL1_TRIG_PER_S = 0x0F,  /* alarm once per second */
-    DS2321_AL1_TRIG_S     = 0x0E,  /* alarm when second match */
-    DS2321_AL1_TRIG_M_S   = 0x0C,  /* alarm when minutes and seconds match */
-    DS2321_AL1_TRIG_H_M_S = 0x08,  /* alarm when hours minutes seconds match */
+    DS2321_AL1_TRIG_PER_S = 0x0F, /* alarm once per second */
+    DS2321_AL1_TRIG_S = 0x0E, /* alarm when second match */
+    DS2321_AL1_TRIG_M_S = 0x0C, /* alarm when minutes and seconds match */
+    DS2321_AL1_TRIG_H_M_S = 0x08, /* alarm when hours minutes seconds match */
+    DS2321_AL1_TRIG_D_H_M_S = 0x00, /* alarm when D/H/M/S match */
 } ds3231_alm_1_mode_t;
 
 typedef enum {
     DS2321_AL2_TRIG_PER_M = 0x07,  /* alarm once per minute */
-    DS2321_AL2_TRIG_M     = 0x06,  /* alarm when minutes match */
-    DS2321_AL2_TRIG_H_M   = 0x04,  /* alarm when hours and minutes match */
+    DS2321_AL2_TRIG_M = 0x06,  /* alarm when minutes match */
+    DS2321_AL2_TRIG_H_M = 0x04,  /* alarm when hours and minutes match */
+    DS2321_AL2_TRIG_D_H_M_S = 0x00, /* alarm when D/H/M match */
 } ds3231_alm_2_mode_t;
 
 /**
@@ -71,6 +74,9 @@ typedef enum {
  */
 typedef struct {
     i2c_t bus;          /**< I2C bus the device is connected to */
+#if IS_USED(MODULE_DS3231_INT)
+    gpio_t int_pin;     /**< alarm interrupt pin */
+#endif /* MODULE_DS3231_INT */
 } ds3231_t;
 
 /**
@@ -79,7 +85,15 @@ typedef struct {
 typedef struct {
     i2c_t bus;          /**< I2C bus the device is connected to */
     uint8_t opt;        /**< additional options */
+#if IS_USED(MODULE_DS3231_INT)
+    gpio_t int_pin;     /**< alarm interrupt pin */
+#endif /* MODULE_DS3231_INT */
 } ds3231_params_t;
+
+#if IS_USED(MODULE_DS3231_INT)
+typedef void (*ds3231_alarm_cb_t)(void *);
+
+#endif /* MODULE_DS3231_INT */
 
 /**
  * @brief   Initialize the given DS3231 device
@@ -91,6 +105,10 @@ typedef struct {
  * @return  -EIO if no DS3231 device was found
  */
 int ds3231_init(ds3231_t *dev, const ds3231_params_t *params);
+
+#if IS_USED(MODULE_DS3231_INT)
+int ds3231_init_int(ds3231_t *dev, ds3231_alarm_cb_t cb, void *arg);
+#endif /* MODULE_DS3231_INT */
 
 /**
  * @brief   Get date and time from the device
@@ -124,13 +142,13 @@ int ds3231_clear_alarm_1_flag(const ds3231_t *dev);
 
 int ds3231_clear_alarm_2_flag(const ds3231_t *dev);
 
-int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool* flag);
+int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool *flag);
 
-int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool* flag);
+int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool *flag);
 
-int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state);
+int ds3231_toggle_alarm_1(const ds3231_t *dev, bool enable);
 
-int ds3231_toggle_alarm_2(const ds3231_t *dev, bool state);
+int ds3231_toggle_alarm_2(const ds3231_t *dev, bool enable);
 
 /**
  * @brief   Get the configured aging offset (see datasheet for more information)

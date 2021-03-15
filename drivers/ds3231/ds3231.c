@@ -149,6 +149,11 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
     memset(dev, 0, sizeof(ds3231_t));
     dev->bus = params->bus;
 
+#if IS_USED(MODULE_DS3231_INT)
+    /* write interrupt pin configuration */
+    dev->int_pin = params->int_pin;
+#endif
+
     /* en or disable 32KHz output */
     if (params->opt & DS2321_OPT_32KHZ_ENABLE) {
         res = _clrset(dev, REG_STATUS, 0, STAT_EN32KHZ, 1, 0);
@@ -176,6 +181,19 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
 
     return _clrset(dev, REG_CTRL, clr, set, 0, 1);
 }
+
+#if IS_USED(MODULE_DS3231_INT)
+int ds3231_init_int(ds3231_t *dev, ds3231_alarm_cb_t cb, void *arg)
+{
+    assert(dev != NULL);
+    assert(gpio_is_valid(dev->int_pin));
+
+    /* SQW is set to low when an alarm is trigerred */
+    gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, cb, arg);
+
+    return 0;
+}
+#endif
 
 int ds3231_get_time(const ds3231_t *dev, struct tm *time)
 {
@@ -243,23 +261,23 @@ int ds3231_set_alarm_1(const ds3231_t *dev, struct tm *time,
                        ds3231_alm_1_mode_t trigger)
 {
     uint8_t raw[A1_REG_NUMOF];
-    uint8_t a1mxMask[A1_REG_NUMOF];
+    uint8_t a1mx_mask[A1_REG_NUMOF];
 
     /* A1M1, A1M2, A1M3 and A1M4 are set accordingly to the trigger type */
-    a1mxMask[0] = (trigger & 0x01) << 7;
-    a1mxMask[1] = (trigger & 0x02) << 6;
-    a1mxMask[2] = (trigger & 0x04) << 5;
-    a1mxMask[3] = (trigger & 0x08) << 4;
+    a1mx_mask[0] = (trigger & 0x01) << 7;
+    a1mx_mask[1] = (trigger & 0x02) << 6;
+    a1mx_mask[2] = (trigger & 0x04) << 5;
+    a1mx_mask[3] = (trigger & 0x08) << 4;
 
     raw[0] = ((bcd_from_byte(time->tm_sec)  & (MASK_SEC10  | MASK_SEC))
-            | a1mxMask[0]);
+            | a1mx_mask[0]);
     raw[1] = ((bcd_from_byte(time->tm_min)  & (MASK_MIN10  | MASK_MIN))
-            | a1mxMask[1]);
+            | a1mx_mask[1]);
     /* note: we always set the hours in 24-hour format */
     raw[2] = ((bcd_from_byte(time->tm_hour) & (MASK_H20H10 | MASK_HOUR))
-            | a1mxMask[2]);
+            | a1mx_mask[2]);
     raw[3] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
-            | a1mxMask[3]);
+            | a1mx_mask[3]);
 
     /* clear alarm flag */
     if (_clrset(dev, REG_STATUS, STAT_A1F, 0, 1, 1) < 0){
@@ -283,20 +301,20 @@ int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
                        ds3231_alm_2_mode_t trigger)
 {
     uint8_t raw[A2_REG_NUMOF];
-    uint8_t a2mxMask[A2_REG_NUMOF];
+    uint8_t a2mx_mask[A2_REG_NUMOF];
 
     /*A2M2, A2M3 and A2M4 are set accordingly to the trigger type */
-    a2mxMask[0] = (trigger & 0x01) << 7;
-    a2mxMask[1] = (trigger & 0x02) << 6;
-    a2mxMask[2] = (trigger & 0x04) << 5;
+    a2mx_mask[0] = (trigger & 0x01) << 7;
+    a2mx_mask[1] = (trigger & 0x02) << 6;
+    a2mx_mask[2] = (trigger & 0x04) << 5;
 
     raw[0] = ((bcd_from_byte(time->tm_min)  & (MASK_MIN10  | MASK_MIN))
-            | a2mxMask[0]);
+            | a2mx_mask[0]);
     /* note: we always set the hours in 24-hour format */
     raw[1] = ((bcd_from_byte(time->tm_hour) & (MASK_H20H10 | MASK_HOUR))
-            | a2mxMask[1]);
+            | a2mx_mask[1]);
     raw[2] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
-            | a2mxMask[2]);
+            | a2mx_mask[2]);
 
     /* clear alarm flag */
     if (_clrset(dev, REG_STATUS, STAT_A2F, 0, 1, 1) < 0){
@@ -316,9 +334,9 @@ int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
     return 0;
 }
 
-int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state)
+int ds3231_toggle_alarm_1(const ds3231_t *dev, bool enable)
 {
-    if (state){
+    if (enable){
         return _clrset(dev, REG_CTRL, 0, CTRL_A1IE, 1, 1);
     }
     else{
@@ -326,9 +344,9 @@ int ds3231_toggle_alarm_1(const ds3231_t *dev, bool state)
     }
 }
 
-int ds3231_toggle_alarm_2(const ds3231_t *dev, bool state)
+int ds3231_toggle_alarm_2(const ds3231_t *dev, bool enable)
 {
-    if (state){
+    if (enable){
         return _clrset(dev, REG_CTRL, 0, CTRL_A2IE, 1, 1);
     }
     else{
@@ -347,7 +365,7 @@ int ds3231_clear_alarm_2_flag(const ds3231_t *dev)
 
 }
 
-int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool* flag)
+int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool *flag)
 {
     uint8_t raw;
     int res = _read(dev, REG_STATUS, &raw, 1, 1, 1);
@@ -355,12 +373,12 @@ int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool* flag)
         return -EIO;
     }
 
-    *flag = (raw & STAT_A1F) ;
+    *flag = (raw & STAT_A1F);
 
     return res;
 }
 
-int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool* flag)
+int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool *flag)
 {
     uint8_t raw;
     int res = _read(dev, REG_STATUS, &raw, 1, 1, 1);
@@ -368,7 +386,7 @@ int ds3231_get_alarm_2_flag(const ds3231_t *dev, bool* flag)
         return -EIO;
     }
 
-    *flag = (raw & STAT_A2F) >> 1 ;
+    *flag = (raw & STAT_A2F) >> 1;
 
     return res;
 }

@@ -33,6 +33,8 @@
 
 static ds3231_t _dev;
 
+static kernel_pid_t p_main;
+
 /* 2010-09-22T15:10:42 is the author date of RIOT's initial commit */
 static struct tm _riot_bday = {
     .tm_sec = 42,
@@ -43,6 +45,16 @@ static struct tm _riot_bday = {
     .tm_mon = 8,
     .tm_year = 110
 };
+
+#ifdef MODULE_DS3231_INT
+static void ds3231_isr_alm_ready (void *arg)
+{
+    (void)arg;
+    /* send a message to trigger main thread to handle the interrupt */
+    msg_t msg;
+    msg_send(&msg, p_main);
+}
+#endif
 
 /* parse ISO date string (YYYY-MM-DDTHH:mm:ss) to struct tm */
 static int _tm_from_str(const char *str, struct tm *time)
@@ -275,8 +287,14 @@ static int _cmd_test(int argc, char **argv)
         return 1;
     }
 
+#ifdef MODULE_DS3231_INT
+    /* wait for data ready interrupt */
+    msg_t msg;
+    msg_receive(&msg);
+#else
     /* wait for the alarm to trigger */
     xtimer_sleep(TEST_DELAY);
+#endif
 
     bool alarm;
 
@@ -316,6 +334,8 @@ int main(void)
 {
     int res;
 
+    p_main = thread_getpid();
+
     puts("DS3231 RTC test\n");
 
     /* initialize the device */
@@ -324,6 +344,10 @@ int main(void)
         puts("error: unable to initialize DS3231 [I2C initialization error]");
         return 1;
     }
+#ifdef MODULE_DS3231_INT
+    /* init interrupt */
+    ds3231_init_int(&_dev, ds3231_isr_alm_ready, NULL);
+#endif
 
     /* start the shell */
     char line_buf[SHELL_DEFAULT_BUFSIZE];
