@@ -1,0 +1,62 @@
+From 03559056422c57a04c8960d6dfe55898c21bf4c9 Mon Sep 17 00:00:00 2001
+From: Alexandre Abadie <alexandre.abadie@inria.fr>
+Date: Fri, 5 Mar 2021 14:12:50 +0100
+Subject: [PATCH 1/1] adapt for RIOT
+
+---
+ src/llcc68.c                                | 4 ++--
+ src/{llcc68.h => llcc68_driver.h}           | 6 +++---
+ src/{llcc68_regs.h => llcc68_driver_regs.h} | 0
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+ rename src/{llcc68.h => llcc68_driver.h} (99%)
+ rename src/{llcc68_regs.h => llcc68_driver_regs.h} (100%)
+
+diff --git a/src/llcc68.c b/src/llcc68.c
+index f6906cc..d24e194 100644
+--- a/src/llcc68.c
++++ b/src/llcc68.c
+@@ -35,9 +35,9 @@
+  */
+ 
+ #include <string.h>  // memcpy
+-#include "llcc68.h"
++#include "llcc68_driver.h"
+ #include "llcc68_hal.h"
+-#include "llcc68_regs.h"
++#include "llcc68_driver_regs.h"
+ 
+ /*
+  * -----------------------------------------------------------------------------
+diff --git a/src/llcc68.h b/src/llcc68_driver.h
+similarity index 99%
+rename from src/llcc68.h
+rename to src/llcc68_driver.h
+index 058de31..cd17f3e 100644
+--- a/src/llcc68.h
++++ b/src/llcc68_driver.h
+@@ -29,8 +29,8 @@
+  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#ifndef LLCC68_H
+-#define LLCC68_H
++#ifndef LLCC68_DRIVER_H
++#define LLCC68_DRIVER_H
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -1516,6 +1516,6 @@ llcc68_status_t llcc68_set_trimming_capacitor_values( const void* context, const
+ }
+ #endif
+ 
+-#endif  // LLCC68_H
++#endif  // LLCC68_DRIVER_H
+ 
+ /* --- EOF ------------------------------------------------------------------ */
+diff --git a/src/llcc68_regs.h b/src/llcc68_driver_regs.h
+similarity index 100%
+rename from src/llcc68_regs.h
+rename to src/llcc68_driver_regs.h
+-- 
+2.27.0
+
