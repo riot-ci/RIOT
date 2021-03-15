@@ -73,7 +73,7 @@ static const uart_conf_t uart_config[] = {
         .cts_pin = GPIO_UNDEF,
 #endif
         .mux = GPIO_MUX_D,
-        .rx_pad = UART_PAD_RX_2,
+        .rx_pad = UART_PAD_RX_3,
         .tx_pad = UART_PAD_TX_2,
         .flags = UART_FLAG_NONE,
         .gclk_src = SAM0_GCLK_MAIN,
@@ -91,15 +91,15 @@ static const uart_conf_t uart_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
-        .dev = &(SERCOM4->SPI),
-        .miso_pin = GPIO_PIN(PC, 19),
-        .mosi_pin = GPIO_PIN(PB, 30),
-        .clk_pin = GPIO_PIN(PC, 18),
-        .miso_mux = GPIO_MUX_F,
-        .mosi_mux = GPIO_MUX_F,
-        .clk_mux = GPIO_MUX_F,
-        .miso_pad = SPI_PAD_MISO_0,
-        .mosi_pad = SPI_PAD_MOSI_2_SCK_3,
+        .dev = &(SERCOM5->SPI),
+        .miso_pin = GPIO_PIN(PA, 23),
+        .mosi_pin = GPIO_PIN(PB, 02),
+        .clk_pin = GPIO_PIN(PB, 23),
+        .miso_mux = GPIO_MUX_D,
+        .mosi_mux = GPIO_MUX_D,
+        .clk_mux = GPIO_MUX_D,
+        .miso_pad = SPI_PAD_MISO_1,
+        .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
         .gclk_src = SAM0_GCLK_MAIN,
 #ifdef MODULE_PERIPH_DMA
         .tx_trigger = SERCOM4_DMAC_ID_TX,
