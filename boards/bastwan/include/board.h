@@ -36,7 +36,7 @@ extern "C"
  * @name Semtech SX1276 configuration
  * @{
  */
-#define SX127X_PARAM_SPI (SPI_DEV(0))
+#define SX127X_PARAM_SPI (SPI_DEV(1))
 #define SX127X_PARAM_SPI_NSS GPIO_PIN(PB, 31)   /* D10 */
 #define SX127X_PARAM_RESET GPIO_PIN(PB, 15)     /* A0 */
 #define SX127X_PARAM_DIO0 GPIO_PIN(PB, 16)      /* D2 */

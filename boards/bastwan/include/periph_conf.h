@@ -90,6 +90,23 @@ static const uart_conf_t uart_config[] = {
  * @{
  */
 static const spi_conf_t spi_config[] = {
+
+    {
+        .dev = &(SERCOM5->SPI),
+        .miso_pin = GPIO_PIN(PA, 23),
+        .mosi_pin = GPIO_PIN(PB, 02),
+        .clk_pin = GPIO_PIN(PB, 23),
+        .miso_mux = GPIO_MUX_D,
+        .mosi_mux = GPIO_MUX_D,
+        .clk_mux = GPIO_MUX_D,
+        .miso_pad = SPI_PAD_MISO_1,
+        .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
+        .gclk_src = SAM0_GCLK_MAIN,
+#ifdef MODULE_PERIPH_DMA
+        .tx_trigger = SERCOM5_DMAC_ID_TX,
+        .rx_trigger = SERCOM5_DMAC_ID_RX,
+#endif
+    },
     {
         .dev = &(SERCOM4->SPI),
         .miso_pin = GPIO_PIN(PC, 19),
