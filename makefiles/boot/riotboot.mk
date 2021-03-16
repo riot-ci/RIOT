@@ -95,6 +95,7 @@ $(BOOTLOADER_BIN)/riotboot.extended.bin: $(BOOTLOADER_BIN)/riotboot.bin
 
 # Only call sub make if not already in riotboot
 ifneq ($(BOOTLOADER_BIN)/riotboot.bin,$(BINFILE))
+  clean: riotboot/bootloader/clean
   $(BOOTLOADER_BIN)/riotboot.bin: riotboot/bootloader/binfile
 endif
 
