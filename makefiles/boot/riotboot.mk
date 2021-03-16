@@ -74,9 +74,11 @@ $(BINDIR_APP)-slot1.hdr: OFFSET=$(SLOT1_IMAGE_OFFSET)
 # Generic target to create a binary files for both slots
 riotboot: $(SLOT_RIOT_BINS)
 
+# Same as CLEAN for the submake riotboot/bootlader/% targets
+RIOTBOOT_CLEAN = $(if $(filter clean, $(MAKECMDGOALS)),riotboot/bootloader/clean,)
 # riotboot bootloader compile target
 riotboot/flash-bootloader: riotboot/bootloader/flash
-riotboot/bootloader/%: $(BUILDDEPS)
+riotboot/bootloader/%: $(BUILDDEPS) | $$(filter-out $$@,$$(RIOTBOOT_CLEAN))
 	$(Q)/usr/bin/env -i \
 		QUIET=$(QUIET) PATH="$(PATH)"\
 		EXTERNAL_BOARD_DIRS="$(EXTERNAL_BOARD_DIRS)" BOARD=$(BOARD)\
@@ -95,7 +97,7 @@ $(BOOTLOADER_BIN)/riotboot.extended.bin: $(BOOTLOADER_BIN)/riotboot.bin
 
 # Only call sub make if not already in riotboot
 ifneq ($(BOOTLOADER_BIN)/riotboot.bin,$(BINFILE))
-  $(BOOTLOADER_BIN)/riotboot.bin: riotboot/bootloader/binfile
+  $(BOOTLOADER_BIN)/riotboot.bin: riotboot/bootloader/binfile | $(RIOTBOOT_CLEAN)
 endif
 
 # Create combined binary booloader + RIOT firmware with header
