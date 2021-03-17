@@ -155,7 +155,7 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
 #endif
 
     /* en or disable 32KHz output */
-    if (params->opt & DS2321_OPT_32KHZ_ENABLE) {
+    if (params->opt & DS3221_OPT_32KHZ_ENABLE) {
         res = _clrset(dev, REG_STATUS, 0, STAT_EN32KHZ, 1, 0);
     }
     else {
@@ -165,8 +165,8 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
         return -EIO;
     }
 
-    /* disable interrupts and configure backup battery */
-    uint8_t clr = (CTRL_A1IE | CTRL_A2IE);
+    /* Configure backup battery */
+    uint8_t clr = 0;
     uint8_t set = 0;
     /* if configured, start the oscillator */
     if (params->opt & DS3231_OPT_BAT_ENABLE) {
@@ -176,8 +176,13 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
         set = CTRL_EOSC;
     }
 
-    /* enables  the alarm interrupt control (no SQW output) */
-    set |= CTRL_INTCN;
+    /* if configured, enable the interrupts (no SQW output) */
+    if (params->opt & DS3231_OPT_INTER_ENABLE) {
+        set |= CTRL_INTCN;
+    }
+    else {
+        clr |= CTRL_INTCN;
+    }
 
     return _clrset(dev, REG_CTRL, clr, set, 0, 1);
 }
@@ -189,7 +194,9 @@ int ds3231_init_int(ds3231_t *dev, ds3231_alarm_cb_t cb, void *arg)
     assert(gpio_is_valid(dev->int_pin));
 
     /* SQW is set to low when an alarm is trigerred */
-    gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, cb, arg);
+    if (gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, cb, arg) < 0) {
+            return -EIO;
+    }
 
     return 0;
 }
@@ -279,11 +286,6 @@ int ds3231_set_alarm_1(const ds3231_t *dev, struct tm *time,
     raw[3] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
             | a1mx_mask[3]);
 
-    /* clear alarm flag */
-    if (_clrset(dev, REG_STATUS, STAT_A1F, 0, 1, 1) < 0){
-        return -EIO;
-    }
-
     /* write alarm configuration to device */
     if (_write(dev, REG_A1_SEC, raw, A1_REG_NUMOF, 1, 1) < 0) {
         return -EIO;
@@ -315,11 +317,6 @@ int ds3231_set_alarm_2(const ds3231_t *dev, struct tm *time,
             | a2mx_mask[1]);
     raw[2] = ((bcd_from_byte(time->tm_wday  + 1) & (MASK_DATE10 | MASK_DATE))
             | a2mx_mask[2]);
-
-    /* clear alarm flag */
-    if (_clrset(dev, REG_STATUS, STAT_A2F, 0, 1, 1) < 0){
-        return -EIO;
-    }
 
     /* write alarm configuration to device */
     if (_write(dev, REG_A2_MIN, raw, A2_REG_NUMOF, 1, 1) < 0) {

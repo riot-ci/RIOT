@@ -33,7 +33,9 @@
 
 static ds3231_t _dev;
 
+#ifdef MODULE_DS3231_INT
 static kernel_pid_t p_main;
+#endif
 
 /* 2010-09-22T15:10:42 is the author date of RIOT's initial commit */
 static struct tm _riot_bday = {
@@ -281,7 +283,7 @@ static int _cmd_test(int argc, char **argv)
     mktime(&time);
 
     /* set alarm */
-    res = ds3231_set_alarm_1(&_dev, &time, DS2321_AL1_TRIG_H_M_S);
+    res = ds3231_set_alarm_1(&_dev, &time, DS3231_AL1_TRIG_H_M_S);
     if (res != 0) {
         puts("error: unable to program alarm");
         return 1;
@@ -334,7 +336,9 @@ int main(void)
 {
     int res;
 
+#ifdef MODULE_DS3231_INT
     p_main = thread_getpid();
+#endif
 
     puts("DS3231 RTC test\n");
 
