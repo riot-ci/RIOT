@@ -18,6 +18,7 @@
  * @}
  */
 
+#include <stdatomic.h>
 #include <stdio.h>
 #include "macros/units.h"
 #include "thread.h"
@@ -31,10 +32,9 @@
 
 static char _stack[THREAD_STACKSIZE_MAIN];
 
-static void _timer_callback(void*arg)
+static void _timer_callback(void* flag)
 {
-    unsigned *flag = arg;
-    *flag = 1;
+    atomic_flag_clear(flag);
 }
 
 static void *_second_thread(void *arg)
@@ -60,7 +60,8 @@ int main(void)
                                        _second_thread,
                                        NULL,
                                        "second_thread");
-    unsigned flag = 0;
+
+    atomic_flag flag = ATOMIC_FLAG_INIT;
     uint32_t n = 0;
 
     xtimer_t timer = {
@@ -68,8 +69,10 @@ int main(void)
         .arg = &flag,
     };
 
+    atomic_flag_test_and_set(&flag);
     xtimer_set(&timer, TEST_DURATION_US);
-    while (!flag) {
+
+    while (atomic_flag_test_and_set(&flag)) {
         msg_t test;
         msg_send(&test, other);
         n++;
