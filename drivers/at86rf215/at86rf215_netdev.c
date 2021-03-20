@@ -36,6 +36,7 @@
 #include "at86rf215_netdev.h"
 #include "at86rf215_internal.h"
 
+#define ENABLE_DEBUG 1
 #include "debug.h"
 
 static int _send(netdev_t *netdev, const iolist_t *iolist);
@@ -199,6 +200,12 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     if (info != NULL) {
         netdev_ieee802154_rx_info_t *radio_info = info;
         radio_info->rssi = (int8_t) at86rf215_reg_read(dev, dev->RF->RG_EDV);
+
+        /* read timestamp counter */
+        uint32_t rx_timestamp;
+        at86rf215_reg_read_bytes(dev, dev->BBC->RG_CNT0, &rx_timestamp, sizeof(rx_timestamp));
+        radio_info->timestamp = rx_timestamp;
+        DEBUG("timestamp counter: %" PRIX32 "\n", rx_timestamp);
     }
 
     return pkt_len;
