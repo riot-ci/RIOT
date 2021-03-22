@@ -32,7 +32,7 @@
 
 static char _stack[THREAD_STACKSIZE_MAIN];
 
-static void _timer_callback(void* flag)
+static void _timer_callback(void *flag)
 {
     atomic_flag_clear(flag);
 }
