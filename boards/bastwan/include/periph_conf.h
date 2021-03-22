@@ -102,10 +102,6 @@ static const spi_conf_t spi_config[] = {
         .miso_pad = SPI_PAD_MISO_1,
         .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
         .gclk_src = SAM0_GCLK_MAIN,
-#ifdef MODULE_PERIPH_DMA
-        .tx_trigger = SERCOM5_DMAC_ID_TX,
-        .rx_trigger = SERCOM5_DMAC_ID_RX,
-#endif
     },
     {
         .dev = &(SERCOM4->SPI),
@@ -179,7 +175,8 @@ static const adc_conf_chan_t adc_channels[] = {
     { GPIO_PIN(PA, 9), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN17) },
     { GPIO_PIN(PA, 8), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN16) },
     { GPIO_PIN(PA, 7), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN7) },
-    { GPIO_PIN(PA, 6), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN6) }
+    { GPIO_PIN(PA, 6), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN6) },
+    { GPIO_PIN(PA, 4), ADC_INPUTCTRL_MUXPOS(ADC_INPUTCTRL_MUXPOS_AIN4) }
 };
 
 #define ADC_NUMOF                               ARRAY_SIZE(adc_channels)
