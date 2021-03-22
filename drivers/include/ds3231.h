@@ -55,6 +55,9 @@ enum {
     DS3231_OPT_INTER_ENABLE = 0x04, /**< enable the interrupt control */
 };
 
+/**
+ * @brief   Alarm trigger type of alarm 1 for DS3231 devices
+ */
 typedef enum {
     DS3231_AL1_TRIG_PER_S = 0x0F, /**< alarm once per second */
     DS3231_AL1_TRIG_S = 0x0E, /**< alarm when seconds match */
@@ -63,6 +66,9 @@ typedef enum {
     DS3231_AL1_TRIG_D_H_M_S = 0x00, /**< alarm when D/H/M/S match */
 } ds3231_alm_1_mode_t;
 
+/**
+ * @brief   Alarm trigger type of alarm 2 for DS3231 devices
+ */
 typedef enum {
     DS3231_AL2_TRIG_PER_M = 0x07,  /**< alarm once per minute */
     DS3231_AL2_TRIG_M = 0x06,  /**< alarm when minutes match */
@@ -112,19 +118,17 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params);
  * @brief   Initialize the GPIO alarm interrupt
  *
  * This function initializes the pin defined as the interrupt pin in the
- * initialization parameters of the device. The @p cb parameter specifies the
- *  function, along with an optional argument @p arg, which is called when an
- *  alarm is is triggered.
+ * initialization parameters of the device then blocks until an alarm is
+ * triggered.
  *
- * @warning The given callback function @p cb is executed in interrupt context.
- *          Make sure not to call any driver API function in that context.
  * @note This function is only available when module `ds3231_int` is enabled.
  *
  * @param[in]   dev     device descriptor of DS3231 device
- * @param[in]   cb      function called when alarm is triggered
- * @param[in]   arg     argument for the callback function
+ *
+ * @return  status of A1F and A2F on success
+ * @return  -EIO if unable to initialize GPIO interrupt
  */
-int ds3231_init_int(ds3231_t *dev, ds3231_alarm_cb_t cb, void *arg);
+int ds3231_await_alarm(ds3231_t *dev);
 #endif /* MODULE_DS3231_INT */
 
 /**

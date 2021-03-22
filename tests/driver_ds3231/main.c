@@ -48,16 +48,6 @@ static struct tm _riot_bday = {
     .tm_year = 110
 };
 
-#ifdef MODULE_DS3231_INT
-static void ds3231_isr_alm_ready (void *arg)
-{
-    (void)arg;
-    /* send a message to trigger main thread to handle the interrupt */
-    msg_t msg;
-    msg_send(&msg, p_main);
-}
-#endif
-
 /* parse ISO date string (YYYY-MM-DDTHH:mm:ss) to struct tm */
 static int _tm_from_str(const char *str, struct tm *time)
 {
@@ -272,7 +262,14 @@ static int _cmd_test(int argc, char **argv)
         return 1;
     }
 
-    /* test an alarm */
+    /* clear all existing alarm flag */
+    res = ds3231_clear_alarm_1_flag(&_dev);
+    if (res != 0) {
+        puts("error: unable to clear alarm flag");
+        return 1;
+    }
+
+    /* get time to set up next alarm*/
     res = ds3231_get_time(&_dev, &time);
     if (res != 0) {
         puts("error: unable to read time");
@@ -290,13 +287,24 @@ static int _cmd_test(int argc, char **argv)
     }
 
 #ifdef MODULE_DS3231_INT
-    /* wait for data ready interrupt */
-    msg_t msg;
-    msg_receive(&msg);
-#else
+
+    /* wait for an alarm with GPIO interrupt */
+    res = ds3231_await_alarm(&_dev);
+    if (res < 0){
+        puts("error: unable to program GPIO interrupt or to clear alarm flag");
+    }
+
+    if (!(res & 0x01)){
+        puts("error: alarm was not triggered");
+    }
+
+    puts("OK");
+    return 0;
+
+#endif
+
     /* wait for the alarm to trigger */
     xtimer_sleep(TEST_DELAY);
-#endif
 
     bool alarm;
 
@@ -343,15 +351,14 @@ int main(void)
     puts("DS3231 RTC test\n");
 
     /* initialize the device */
-    res = ds3231_init(&_dev, &ds3231_params[0]);
+    ds3231_params_t params= ds3231_params[0];
+    params.opt     = DS3231_OPT_BAT_ENABLE;
+    params.opt    |= DS3231_OPT_INTER_ENABLE;
+    res = ds3231_init(&_dev, &params);
     if (res != 0) {
         puts("error: unable to initialize DS3231 [I2C initialization error]");
         return 1;
     }
-#ifdef MODULE_DS3231_INT
-    /* init interrupt */
-    ds3231_init_int(&_dev, ds3231_isr_alm_ready, NULL);
-#endif
 
     /* start the shell */
     char line_buf[SHELL_DEFAULT_BUFSIZE];

@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "bcd.h"
+#include "mutex.h"
 #include "ds3231.h"
 
 #define ENABLE_DEBUG        0
@@ -141,6 +142,11 @@ static int _clrset(const ds3231_t *dev, uint8_t reg,
     return 0;
 }
 
+static void _unlock(void *m)
+{
+    mutex_unlock(m);
+}
+
 int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
 {
     int res;
@@ -186,21 +192,6 @@ int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
 
     return _clrset(dev, REG_CTRL, clr, set, 0, 1);
 }
-
-#if IS_USED(MODULE_DS3231_INT)
-int ds3231_init_int(ds3231_t *dev, ds3231_alarm_cb_t cb, void *arg)
-{
-    assert(dev != NULL);
-    assert(gpio_is_valid(dev->int_pin));
-
-    /* SQW is set to low when an alarm is trigerred */
-    if (gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, cb, arg) < 0) {
-            return -EIO;
-    }
-
-    return 0;
-}
-#endif
 
 int ds3231_get_time(const ds3231_t *dev, struct tm *time)
 {
@@ -263,6 +254,34 @@ int ds3231_set_time(const ds3231_t *dev, const struct tm *time)
 
     return 0;
 }
+
+#if IS_USED(MODULE_DS3231_INT)
+int ds3231_await_alarm(ds3231_t *dev)
+{
+    mutex_t mutex = MUTEX_INIT_LOCKED;
+
+    assert(dev != NULL);
+    assert(gpio_is_valid(dev->int_pin));
+
+    if (gpio_init_int(dev->int_pin, GPIO_IN, GPIO_FALLING, _unlock, &mutex) < 0) {
+            return -EIO;
+    }
+
+    /* wait for alarm */
+    mutex_lock(&mutex);
+
+    uint8_t status, tmp;
+    _read(dev, REG_STATUS, &status, 1, 1, 0);
+
+    /* clear interrupt flags */
+    tmp = status & ~(STAT_A1F | STAT_A2F);
+    if (_write(dev, REG_STATUS, &tmp, 1, 0, 1) < 0) {
+        return -EIO;
+    }
+
+    return status & (STAT_A1F | STAT_A2F);
+}
+#endif
 
 int ds3231_set_alarm_1(const ds3231_t *dev, struct tm *time,
                        ds3231_alm_1_mode_t trigger)
