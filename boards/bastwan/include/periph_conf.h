@@ -89,6 +89,7 @@ static const uart_conf_t uart_config[] = {
  * @name    SPI configuration
  * @{
  */
+/* SERCOM5 does not support DMA at the moment. See Datasheet samr34, Figure 4-2 */
 static const spi_conf_t spi_config[] = {
 
     {
@@ -102,6 +103,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pad = SPI_PAD_MISO_1,
         .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
         .gclk_src = SAM0_GCLK_MAIN,
+#ifdef MODULE_PERIPH_DMA
+        .tx_trigger = SERCOM5_DMAC_ID_TX,
+        .rx_trigger = SERCOM5_DMAC_ID_RX,
+#endif
     },
     {
         .dev = &(SERCOM4->SPI),
