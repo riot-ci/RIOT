@@ -241,7 +241,7 @@ default, the `compile_commands.json` is placed in the RIOT base directory. This 
 overwritten using the `COMPILE_COMMANDS_PATH` variable by specifying the full absolute path
 (including file name) of the `compile_commands.json` instead.
 
-***Note:*** By default, the built-in include search directories of GCC while be explicitly added
+***Note:*** By default, the built-in include search directories of GCC will be explicitly added
 and flags incompatible with `clangd` will be dropped. This will allow using `clangd` as language
 server out of the box. If this is not desired, run `export COMPILE_COMMANDS_FLAGS=""` to turn
 modification of the compile commands off. For a list of available flags, run

@@ -79,7 +79,6 @@ compile-commands: | $(DIRS:%=COMPILE-COMMANDS--%)
 	$(file >$(BINDIR)/$(MODULE)/directory.txt,$(CURDIR))
 	$(file >$(BINDIR)/$(MODULE)/cflags.txt,$(CFLAGS) $(INCLUDES))
 	$(file >$(BINDIR)/$(MODULE)/cxxflags.txt,$(CXXFLAGS) $(CXXINCLUDES) $(INCLUDES))
-	$(file >$(BINDIR)/$(MODULE)/cxxflags.txt,$(CXXFLAGS) $(CXXINCLUDES) $(INCLUDES))
 	$(file >$(BINDIR)/$(MODULE)/cc.txt,$(CC))
 	$(file >$(BINDIR)/$(MODULE)/cxx.txt,$(CXX))
 

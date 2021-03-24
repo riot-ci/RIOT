@@ -3,32 +3,12 @@
 Command line utility to generate compile_commands.json for RIOT applications
 """
 import argparse
+import json
 import os
+import re
 import shlex
 import subprocess
 import sys
-import re
-
-TEMPLATE_COMMAND = """  {{
-    "arguments": [
-      "{compiler}",
-      "-DRIOT_FILE_RELATIVE=\\\"{directory}/{source}\\\"",
-      "-DRIOT_FILE_NOPATH=\\\"{source}\\\"",
-{flags}      "-MQ",
-      "{output}",
-      "-MD",
-      "-MP",
-      "-c",
-      "-o",
-      "{output}",
-      "{source}"
-    ],
-    "directory": "{directory}",
-    "file": "{directory}/{source}",
-    "output": "{bin_directory}/{output}"
-  }}"""
-
-TEMPLATE_FLAG = "      \"{flag}\",\n"
 
 REGEX_VERSION = re.compile(r"\ngcc version ([^ ]+)")
 REGEX_INCLUDES = r"^#include <\.\.\.> search starts here:$((?:\n|\r|.)*?)^End of search list\.$"
@@ -158,17 +138,17 @@ def get_built_in_include_flags(compiler, state, args):
     :param state: state of the program
     :param args: command line arguments
 
-    :return: The -I<...> compiler flags for the built-in include search dirs in JSON format
-    :rtype: str
+    :return: The -isystem <...> compiler flags for the built-in include search dirs as list
+    :rtype: list
     """
-    result = ""
 
+    result = []
     if compiler not in state.def_includes:
         state.def_includes[compiler] = detect_built_in_includes(compiler, args)
 
     for include in state.def_includes[compiler]:
-        result += TEMPLATE_FLAG.format(flag='-isystem')
-        result += TEMPLATE_FLAG.format(flag=include)
+        result.append('-isystem')
+        result.append(include)
 
     return result
 
@@ -184,18 +164,19 @@ def generate_module_compile_commands(path, state, args):
     """
     cdetails = CompilationDetails(path)
 
-    cflags = ""
-    cxxflags = ""
-    for flag in cdetails.cflags:
-        if flag not in state.flags_to_remove:
-            cflags += TEMPLATE_FLAG.format(flag=flag.replace("\\", "\\\\").replace("\"", "\\\""))
-    for flag in cdetails.cxxflags:
-        if flag not in state.flags_to_remove:
-            cxxflags += TEMPLATE_FLAG.format(flag=flag.replace("\\", "\\\\").replace("\"", "\\\""))
+    for flag in state.flags_to_remove:
+        try:
+            cdetails.cflags.remove(flag)
+        except ValueError:
+            pass
+        try:
+            cdetails.cxxflags.remove(flag)
+        except ValueError:
+            pass
 
     if args.add_built_in_includes:
-        cflags += get_built_in_include_flags(cdetails.cc, state, args)
-        cxxflags += get_built_in_include_flags(cdetails.cxx, state, args)
+        cdetails.cflags += get_built_in_include_flags(cdetails.cc, state, args)
+        cdetails.cxxflags += get_built_in_include_flags(cdetails.cxx, state, args)
 
     for src in cdetails.src_c:
         if state.is_first:
@@ -203,9 +184,17 @@ def generate_module_compile_commands(path, state, args):
         else:
             sys.stdout.write(",\n")
         obj = os.path.splitext(src)[0] + ".o"
-        sys.stdout.write(TEMPLATE_COMMAND.format(
-                compiler=cdetails.cc, directory=cdetails.dir, output=obj,
-                source=src, flags=cflags, bin_directory=path))
+        arguments = [cdetails.cc, '-DRIOT_FILE_RELATIVE="' + os.path.join(cdetails.dir, src) + '"',
+                     '-DRIOT_FILE_NOPATH="' + src + '"']
+        arguments += cdetails.cflags
+        arguments += ['-MQ', obj, '-MD', '-MP', '-c', '-o', obj, src]
+        entry = {
+            'arguments': arguments,
+            'directory': cdetails.dir,
+            'file': os.path.join(cdetails.dir, src),
+            'output': os.path.join(path, obj)
+        }
+        sys.stdout.write(json.dumps(entry, indent=2))
 
     for src in cdetails.src_cxx:
         if state.is_first:
@@ -213,9 +202,17 @@ def generate_module_compile_commands(path, state, args):
         else:
             sys.stdout.write(",\n")
         obj = os.path.splitext(src)[0] + ".o"
-        sys.stdout.write(TEMPLATE_COMMAND.format(
-                compiler=cdetails.cxx, directory=cdetails.dir, output=obj,
-                source=src, flags=cxxflags, bin_directory=path))
+        arguments = [cdetails.cxx, '-DRIOT_FILE_RELATIVE="' + os.path.join(cdetails.dir, src) + '"',
+                     '-DRIOT_FILE_NOPATH="' + src + '"']
+        arguments += cdetails.cxxflags
+        arguments += ['-MQ', obj, '-MD', '-MP', '-c', '-o', obj, src]
+        entry = {
+            'arguments': arguments,
+            'directory': cdetails.dir,
+            'file': os.path.join(cdetails.dir, src),
+            'output': os.path.join(path, obj)
+        }
+        sys.stdout.write(json.dumps(entry, indent=2))
 
 
 def generate_compile_commands(args):
