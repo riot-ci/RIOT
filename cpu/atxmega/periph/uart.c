@@ -241,9 +241,11 @@ static inline void _configure_pins(uart_t uart)
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
-    int8_t bscale;
-    uint8_t clk2x;
-    uint16_t bsel;
+    int8_t bscale = 0;
+    uint8_t clk2x = 0;
+    uint16_t bsel = 0;
+
+    assert(UART_NUMOF <= UART_MAX_NUMOF);
 
     /* make sure the given device is valid */
     if (uart >= UART_NUMOF) {
@@ -306,7 +308,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
         /* start of TX won't finish until no data in DATAn and transmit shift
            register is empty */
         uint8_t irq_state = irq_disable();
-        avr8_state |= AVR8_STATE_FLAG_UART_TX(uart);
+        avr8_uart_tx_set_pending(uart);
         irq_restore(irq_state);
 
         dev(uart)->DATA = data[i];
@@ -336,13 +338,13 @@ static inline void _rx_isr_handler(int num)
     avr8_exit_isr();
 }
 
-static inline void _tx_isr_handler(int num)
+static inline void _tx_isr_handler(int uart)
 {
     avr8_enter_isr();
 
     /* entire frame in the Transmit Shift Register has been shifted out and
        there are no new data currently present in the transmit buffer */
-    avr8_state &= ~AVR8_STATE_FLAG_UART_TX(num);
+    avr8_uart_tx_clear_pending(uart);
 
     avr8_exit_isr();
 }
@@ -423,3 +425,14 @@ ISR(UART_6_TXC_ISR, ISR_BLOCK)
     _tx_isr_handler(6);
 }
 #endif /* UART_6_ISR */
+
+#ifdef UART_7_RXC_ISR
+ISR(UART_7_RXC_ISR, ISR_BLOCK)
+{
+    _rx_isr_handler(7);
+}
+ISR(UART_7_TXC_ISR, ISR_BLOCK)
+{
+    _tx_isr_handler(7);
+}
+#endif /* UART_7_ISR */

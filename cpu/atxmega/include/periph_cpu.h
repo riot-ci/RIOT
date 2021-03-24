@@ -176,7 +176,7 @@ typedef enum {
 /**
  * @brief   Max number of available UARTs
  */
-#define UART_MAX_NUMOF          (7)
+#define UART_MAX_NUMOF          (8)
 
 /**
  * @brief   Size of the UART TX buffer for non-blocking mode.
