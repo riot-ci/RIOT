@@ -107,7 +107,6 @@ $(MODULE).module compile-commands $(OBJ): | $(BINDIR)/$(MODULE)/
 
 $(MODULE).module: $(OBJ) | $(DIRS:%=ALL--%)
 
-
 CXXFLAGS = $(filter-out $(CXXUWFLAGS), $(CFLAGS)) $(CXXEXFLAGS)
 CCASFLAGS = $(filter-out $(CCASUWFLAGS), $(CFLAGS)) $(CCASEXFLAGS)
 
