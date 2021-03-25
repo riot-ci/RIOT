@@ -104,8 +104,8 @@ static const spi_conf_t spi_config[] = {
         .mosi_pad = SPI_PAD_MOSI_0_SCK_3,
         .gclk_src = SAM0_GCLK_MAIN,
 #ifdef MODULE_PERIPH_DMA
-        .tx_trigger = SERCOM5_DMAC_ID_TX,
-        .rx_trigger = SERCOM5_DMAC_ID_RX,
+        .tx_trigger = DMA_TRIGGER_DISABLED,
+        .rx_trigger = DMA_TRIGGER_DISABLED,
 #endif
     },
     {
