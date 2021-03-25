@@ -37,13 +37,7 @@ void ptp_timer_cb(void)
 static void _ztimer_periph_ptp_set(ztimer_clock_t *clock, uint32_t val)
 {
     (void)clock;
-
-    unsigned state = irq_disable();
-
-    clock_timer = clock;
     ptp_timer_set_u64(val);
-
-    irq_restore(state);
 }
 
 static uint32_t _ztimer_periph_ptp_now(ztimer_clock_t *clock)
@@ -67,6 +61,8 @@ static const ztimer_ops_t _ztimer_periph_ptp_ops = {
 void ztimer_periph_ptp_init(ztimer_periph_ptp_t *clock)
 {
     clock->ops = &_ztimer_periph_ptp_ops;
-    ptp_init();
+    clock->max_value = UINT32_MAX;
+    clock_timer = clock;
+
     ztimer_init_extend(clock);
 }
