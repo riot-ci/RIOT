@@ -11,6 +11,16 @@ config CPU_ARCH_AVR8
     select HAS_ARCH_8BIT
     select HAS_ARCH_AVR8
 
+config CPU_ARCH_AVR8_NESTED_ISR
+    bool "Enable AVR-8 nested interrupts"
+    help
+        ATmega requires that user re-enebale interrupt inside ISR handle to
+        allow nested interrupts.  ATxmega has a specialized controller to allow
+        three interrupt levels: low, mid, high.  The controller automatically
+        prioritize according to level and vector address.  The round-robin
+        priority scheme within low-level interrupts can be enable to avoid
+        starvation at low level.
+
 ## Common CPU symbols
 config CPU_ARCH
     default "avr8" if CPU_ARCH_AVR8
