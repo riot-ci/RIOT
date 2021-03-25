@@ -266,13 +266,17 @@ void NORETURN avr8_enter_thread_mode(void)
     UNREACHABLE();
 }
 
+__attribute__((always_inline)) static inline void avr8_context_switch(void)
+{
+    avr8_context_save();
+    sched_run();
+    avr8_context_restore();
+}
+
 void thread_yield_higher(void)
 {
     if (irq_is_in() == 0) {
-        avr8_context_save();
-        sched_run();
-        avr8_context_restore();
-        __asm__ volatile ("ret");
+        avr8_context_switch();
     }
     else {
         sched_context_switch_request = 1;
@@ -281,17 +285,24 @@ void thread_yield_higher(void)
 
 void avr8_exit_isr(void)
 {
-    avr8_state &= ~AVR8_STATE_FLAG_ISR;
+    /* ATxmega requires a critical section because interrupts are always
+     * enabled.
+     */
+#ifdef CPU_ATXMEGA
+    cli();
+#endif
 
-    /* Force access to avr8_state to take place */
-    __asm__ volatile ("" : : : "memory");
+    --GPIOR0;
 
-    if (sched_context_switch_request) {
-        avr8_context_save();
-        sched_run();
-        avr8_context_restore();
-        __asm__ volatile ("reti");
+#ifdef CPU_ATXMEGA
+    sei();
+#endif
+
+    if (sched_context_switch_request && GPIOR0 == 0) {
+        avr8_context_switch();
     }
+
+    __asm__ volatile ("reti");
 }
 
 __attribute__((always_inline)) static inline void avr8_context_save(void)
