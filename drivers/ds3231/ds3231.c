@@ -142,10 +142,12 @@ static int _clrset(const ds3231_t *dev, uint8_t reg,
     return 0;
 }
 
+#if IS_USED(MODULE_DS3231_INT)
 static void _unlock(void *m)
 {
     mutex_unlock(m);
 }
+#endif
 
 int ds3231_init(ds3231_t *dev, const ds3231_params_t *params)
 {
