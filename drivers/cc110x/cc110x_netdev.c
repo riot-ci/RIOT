@@ -426,6 +426,9 @@ static int cc110x_send(netdev_t *netdev, const iolist_t *iolist)
         DEBUG("[cc110x] netdev_driver_t::send(): Refusing to send while "
               "receiving a frame\n");
         return -EBUSY;
+    case CC110X_STATE_OFF:
+        cc110x_release(dev);
+        return -ENOTSUP;
     default:
         cc110x_release(dev);
         DEBUG("[cc110x] netdev_driver_t::send(): Driver state %i prevents "

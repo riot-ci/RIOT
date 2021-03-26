@@ -216,5 +216,6 @@ void cc110x_sleep(cc110x_t *dev)
     cc110x_cmd(dev, CC110X_STROBE_IDLE);
     /* go to SLEEP */
     cc110x_cmd(dev, CC110X_STROBE_OFF);
+    dev->state = CC110X_STATE_OFF;
     cc110x_release(dev);
 }
