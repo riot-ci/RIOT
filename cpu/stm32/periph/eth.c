@@ -336,9 +336,9 @@ static bool _phy_can_negotiate(void)
     return (_mii_reg_read(MII_BMSR) & MII_BMSR_HAS_AN);
 }
 
-#if IS_USED(MODULE_STM32_ETH_AUTO)
 static void _complete_auto_negotiation(void)
 {
+#if IS_USED(MODULE_STM32_ETH_AUTO)
     /* first, wait until auto-negotiation really has completed */
     uint16_t bmsr;
 
@@ -374,8 +374,8 @@ static void _complete_auto_negotiation(void)
           (maccr & ETH_MACCR_FES) ? "100" : "10",
           (maccr & ETH_MACCR_DM) ? "full" : "half");
     ETH->MACCR = maccr;
-}
 #endif /* IS_USED(MODULE_STM32_ETH_AUTO) */
+}
 
 static void _setup_phy(void)
 {
