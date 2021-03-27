@@ -283,26 +283,24 @@ void thread_yield_higher(void)
     }
 }
 
+__attribute__((always_inline)) static inline int avr8_nested_isr_allows_ctx_switch(void)
+{
+#if !defined(CPU_ATXMEGA)
+    return GPIOR1 == 0;
+#else
+    return PMIC.STATUS <= PMIC_LOLVLEX_bm;
+#endif
+}
+
 void avr8_exit_isr(void)
 {
-    /* ATxmega requires a critical section because interrupts are always
-     * enabled.
-     */
-#ifdef CPU_ATXMEGA
-    cli();
+#if !defined(CPU_ATXMEGA)
+    --GPIOR1;
 #endif
-
-    --GPIOR0;
-
-#ifdef CPU_ATXMEGA
-    sei();
-#endif
-
-    if (sched_context_switch_request && GPIOR0 == 0) {
+    if (avr8_nested_isr_allows_ctx_switch() && sched_context_switch_request) {
         avr8_context_switch();
+        __asm__ volatile ("reti" : : : "memory");
     }
-
-    __asm__ volatile ("reti");
 }
 
 __attribute__((always_inline)) static inline void avr8_context_save(void)

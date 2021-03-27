@@ -57,21 +57,24 @@ extern "C"
 /** @} */
 
 /**
- * @brief   Global variable containing the current state of the MCU ISR
+ * @brief   MCU ISR State
  *
  * Contents:
  *
- * The General Purpose I/O Register 0 (GPIOR0) is used to flag if system is
- * processing an ISR.  It stores how deep system is processing a nested
- * interrupt.  In special, ATxmega have three selectable interrupt levels for
- * any interrupt: low, medium and high.  ATmega requires that users re-enable
- * interrupts after executing @ref avr8_enter_isr method to enable nested IRQs
- * in low priority interrupts.
+ * The General Purpose I/O Register 1 (GPIOR1) is used to flag if system is
+ * processing an ISR for ATmega devices.  It stores how deep system is
+ * processing a nested interrupt.  ATxmega have three selectable interrupt
+ * levels for any interrupt: low, medium and high and are controlled by PMIC.
+ * ATmega requires that users re-enable interrupts after executing
+ * @ref avr8_enter_isr method to enable nested IRQs in low priority interrupts.
+ * ATxmega PMIC should be used to determine the current state of MCU ISR.
  *
- * If the system is running outside an interrupt, GPIOR0 will have always
+ * If the system is running outside an interrupt, GPIOR1 will have always
  * value 0, on any configuration.  When one or more interrupt vectors are
- * activated, GPIOR0 will have a value greater than 0.  These operations are
+ * activated, GPIOR1 will have a value greater than 0.  These operations are
  * performed by the pair @ref avr8_enter_isr and @ref avr8_exit_isr.
+ *
+ * An 3-level nested IRQ ilustration can be visualized below:
  *
  *                           int-3
  *                              ↯
@@ -85,15 +88,16 @@ extern "C"
  *          ↯         |                              |
  *          +---------+                              +---------+
  *          | low lvl |                              | low lvl |
- *          +---------+                              +---------+
- *          |                                                  |
+ *          +---------+                              +---------+ ↯ can switch
+ *          |                                                  | context here
  * +--------+                                                  +--------+
  * | thread |                                                  | thread |
  * +--------+                                                  +--------+
  *
- * The scheduler is allowed to switch context always GPIOR0 is equal to 0.
- * This is necessary because thread stack is shared between interrupts when
- * executing a nested interrupt.
+ * At @ref avr8_exit_isr scheduler may require a switch context.  That can be
+ * performed in the following situation to avoid stack curruption:
+ *  - ATmega: when GPIOR1 is equal to 0
+ *  - ATxmega: when PMIC.STATUS indicate a low level IRQ
  */
 
 /**
@@ -102,12 +106,13 @@ extern "C"
 #define AVR8_STATE_FLAG_UART_TX(x)    (0x01U << x)
 
 /**
- * @brief   Global variable containing the current state of the MCU UART TX
+ * @brief   MCU UART TX pending state
  *
  * @note    The content must be changed using the pair
  *          @ref avr8_uart_tx_set_pending and @ref avr8_uart_tx_clear_pending
- *          methods.  The variable outside an IRQ context should be wrapped
- *          into @ref irq_disable and @ref irq_restore.
+ *          methods.  The variable uses General Purpose IO Register 0 (GPIOR0)
+ *          which allows atomic operations and don't require a critical
+ *          section.
  *
  * Contents:
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,17 +140,10 @@ extern "C"
 static inline void avr8_enter_isr(void)
 {
     /* This flag is only called from IRQ context. The value will be handled
-     * before ISR context is left by @ref avr8_exit_isr.  ATxmega require a
-     * critical section because interrupts are always enabled.
+     * before ISR context is left by @ref avr8_exit_isr.
      */
-#ifdef CPU_ATXMEGA
-    cli();
-#endif
-
-    ++GPIOR0;
-
-#ifdef CPU_ATXMEGA
-    sei();
+#if !defined(CPU_ATXMEGA)
+    ++GPIOR1;
 #endif
 }
 
@@ -157,27 +155,33 @@ static inline void avr8_enter_isr(void)
  */
 static inline int avr8_is_uart_tx_pending(void)
 {
-    return GPIOR1;
+    return GPIOR0;
 }
 
 /**
  * @brief        Set UART TX channel as pending
  *
+ * General Purpose IO Register 0 (GPIOR0) allows RMW which eliminates critical
+ * section.
+ *
  * @param uart   The UART number
  */
 static inline void avr8_uart_tx_set_pending(unsigned uart)
 {
-    GPIOR1 |= AVR8_STATE_FLAG_UART_TX(uart);
+    GPIOR0 |= AVR8_STATE_FLAG_UART_TX(uart);
 }
 
 /**
  * @brief        Clear UART TX channel pending state
  *
+ * General Purpose IO Register 0 (GPIOR0) allows RMW which eliminates critical
+ * section.
+ *
  * @param uart   The UART number
  */
 static inline void avr8_uart_tx_clear_pending(unsigned uart)
 {
-    GPIOR1 &= ~AVR8_STATE_FLAG_UART_TX(uart);
+    GPIOR0 &= ~AVR8_STATE_FLAG_UART_TX(uart);
 }
 
 /**

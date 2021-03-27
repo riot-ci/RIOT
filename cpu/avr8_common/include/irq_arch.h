@@ -81,7 +81,11 @@ __attribute__((always_inline)) static inline void irq_restore(unsigned int state
  */
 __attribute__((always_inline)) static inline int irq_is_in(void)
 {
-    return GPIOR0;
+#if !defined(CPU_ATXMEGA)
+    return GPIOR1;
+#else
+    return PMIC.STATUS;
+#endif
 }
 
 #ifdef __cplusplus
