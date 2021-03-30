@@ -74,7 +74,7 @@ void *timer_thread(void *arg)
         msg_receive(&m);
         struct timer_msg *tmsg = m.content.ptr;
         uint32_t now = ztimer_now(ZTIMER);
-        /* casts are need to solve for sometimes TICKS_PER_SEC being UL
+        /* casts are needed to solve for sometimes TICKS_PER_SEC being UL
          * result of / and % of uint32_t will always fit into uint32_t
          */
         printf("now=%"PRIu32":%"PRIu32" -> every %"PRIu32".%"PRIu32"s: %s\n",
