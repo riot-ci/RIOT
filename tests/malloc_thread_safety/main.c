@@ -63,10 +63,16 @@ void * t1_t2_realloc_func(void *arg)
     while (atomic_load(&is_running)) {
         int *chunk = realloc(NULL, sizeof(int) * 1);
         expect(chunk);
+        /* cppcheck-suppress memleakOnRealloc
+         * no need to free data on allocation failure, as expect() terminates then anyway */
         chunk = realloc(chunk, sizeof(int) * 2);
         expect(chunk);
+        /* cppcheck-suppress memleakOnRealloc
+         * no need to free data on allocation failure, as expect() terminates then anyway */
         chunk = realloc(chunk, sizeof(int) * 4);
         expect(chunk);
+        /* cppcheck-suppress memleakOnRealloc
+         * no need to free data on allocation failure, as expect() terminates then anyway */
         chunk = realloc(chunk, sizeof(int) * 8);
         expect(chunk);
         free(chunk);
