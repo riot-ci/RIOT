@@ -49,12 +49,16 @@ static const timer_conf_t timer_config[] = {
         .bitmode  = TIMER_BITMODE_BITMODE_08Bit,
         .irqn     = TIMER3_IRQn
     },
+#ifdef NRF_TIMER4
+    /* Only present on the larger NRF52 CPUs like NRF52840 or NRF52833, but not
+     * e.g. on NRF52810 */
     {
         .dev      = NRF_TIMER4,
         .channels = 3,
         .bitmode  = TIMER_BITMODE_BITMODE_08Bit,
         .irqn     = TIMER4_IRQn
     }
+#endif
 };
 
 #define TIMER_0_ISR         isr_timer1
