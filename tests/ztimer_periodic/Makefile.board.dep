@@ -1,0 +1,6 @@
+ifneq (,$(filter stm32 nrf52 sam%,$(CPU)))
+  FEATURES_OPTIONAL += periph_rtt
+  ifneq (,$(filter periph_rtt,$(FEATURES_USED)))
+    USEMODULE += ztimer_periph_rtt
+  endif
+endif
