@@ -153,6 +153,11 @@ int main(void)
 #endif
     }
 
+    /* cppcheck-suppress knownConditionTrueFalse
+     * The actual test is that this application doesn't crash / hang due to memory corruptions.
+     * But if there is mallinfo() provided, we can also test for memory leaks in the malloc()
+     * implementation pretty much for free. Even if this implementation most likely comes from
+     * the standard C lib, it is still good to be at least aware of bugs in the used toolchain */
     if (failed) {
         puts("TEST FAILED");
     }
