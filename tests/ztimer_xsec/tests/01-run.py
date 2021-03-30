@@ -13,9 +13,9 @@ from testrunner import run
 def testfunc(child):
     child.expect_exact("starting ztimers")
     child.expect_exact("waiting for locks")
-    child.expect_exact("unlocking USEC")
-    child.expect_exact("unlocking MSEC")
-    child.expect_exact("unlocking SEC")
+    child.expect_exact("USEC")
+    child.expect_exact("MSEC")
+    child.expect_exact("SEC")
     child.expect_exact("SUCCESS!")
 
 

@@ -23,6 +23,7 @@
 
 #include "ztimer.h"
 #include "mutex.h"
+#include "timex.h"
 
 #ifndef LOG_LEVEL
 #define LOG_LEVEL LOG_WARNING
@@ -51,7 +52,7 @@ void release(void *arg)
 
     LOG_INFO("time: %" PRIu32 "\n", ztimer_now(ZTIMER_USEC));
 
-    printf("unlocking %s\n", e->name);
+    puts(e->name);
     mutex_unlock(&e->mut);
 }
 
