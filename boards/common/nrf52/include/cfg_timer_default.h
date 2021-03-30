@@ -45,7 +45,7 @@ static const timer_conf_t timer_config[] = {
     },
     /* The later timers are only present on the larger NRF52 CPUs like NRF52840
      * or NRF52833, but not small ones like NRF52810 */
-#ifdef NRF_TIMER4
+#ifdef NRF_TIMER3
     {
         .dev      = NRF_TIMER3,
         .channels = 3,
