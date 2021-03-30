@@ -37,15 +37,13 @@ typedef struct named_lock {
 
 void release(void *arg);
 
-static named_lock_t sec_lock = { .name = "SEC", .mut = MUTEX_INIT };
-static named_lock_t msec_lock = { .name = "MSEC", .mut = MUTEX_INIT };
-static named_lock_t usec_lock = { .name = "USEC", .mut = MUTEX_INIT };
+static named_lock_t sec_lock = { .name = "SEC", .mut = MUTEX_INIT_LOCKED };
+static named_lock_t msec_lock = { .name = "MSEC", .mut = MUTEX_INIT_LOCKED };
+static named_lock_t usec_lock = { .name = "USEC", .mut = MUTEX_INIT_LOCKED };
 
 static ztimer_t sec_tim = { .callback = release, .arg =  &sec_lock };
 static ztimer_t msec_tim = { .callback = release, .arg = &msec_lock };
 static ztimer_t usec_tim = { .callback = release, .arg = &usec_lock };
-
-
 void release(void *arg)
 {
     named_lock_t *e = arg;
@@ -58,11 +56,6 @@ void release(void *arg)
 
 int main(void)
 {
-    /*prelock*/
-    mutex_lock( &sec_lock.mut);
-    mutex_lock(&msec_lock.mut);
-    mutex_lock(&usec_lock.mut);
-
     puts("starting ztimers");
     /* start a timer on each high level ztimer*/
     ztimer_set(ZTIMER_SEC,   &sec_tim,  1);
@@ -76,8 +69,6 @@ int main(void)
     mutex_lock( &sec_lock.mut);
     mutex_lock(&msec_lock.mut);
     mutex_lock(&usec_lock.mut);
-
-
     printf("SUCCESS!\n");
     return 0;
 }
