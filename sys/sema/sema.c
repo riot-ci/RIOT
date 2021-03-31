@@ -49,7 +49,7 @@ void sema_destroy(sema_t *sema)
     mutex_unlock(&sema->mutex);
 }
 
-#if !IS_USED(MODULE_SEMA_NO_XTIMER)
+#if IS_USED(MODULE_XTIMER)
 int _sema_wait(sema_t *sema, int block, uint64_t us)
 {
     assert(sema != NULL);
@@ -65,7 +65,6 @@ int _sema_wait(sema_t *sema, int block, uint64_t us)
         if (us == 0) {
             mutex_lock(&sema->mutex);
         }
-#if IS_USED(MODULE_XTIMER)
         else {
             uint64_t start = xtimer_now_usec64();
             block = !xtimer_mutex_lock_timeout(&sema->mutex, us);
@@ -78,7 +77,6 @@ int _sema_wait(sema_t *sema, int block, uint64_t us)
                 block = 0;
             }
         }
-#endif
 
         if (sema->state != SEMA_OK) {
             mutex_unlock(&sema->mutex);
@@ -123,9 +121,9 @@ int _sema_wait_ztimer(sema_t *sema, int block,
             mutex_lock(&sema->mutex);
         }
         else {
-            ztimer_now_t start = ztimer_now(ZTIMER_MSEC);
-            block = !ztimer_mutex_lock_timeout(ZTIMER_MSEC, &sema->mutex, timeout);
-            uint32_t elapsed = (uint32_t)(ztimer_now(ZTIMER_MSEC) - start);
+            ztimer_now_t start = ztimer_now(clock);
+            block = !ztimer_mutex_lock_timeout(clock, &sema->mutex, timeout);
+            uint32_t elapsed = (uint32_t)(ztimer_now(clock) - start);
 
             if (elapsed < timeout) {
                 timeout -= elapsed;
