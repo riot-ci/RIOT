@@ -241,7 +241,7 @@ void ztimer_init(void)
 #  ifdef MODULE_PM_LAYERED
     LOG_DEBUG("ztimer_init(): ZTIMER_RTC setting required_pm_mode to %i\n",
               CONFIG_ZTIMER_RTC_BLOCK_PM_MODE);
-    ZTIMER_RTC_CLK.block_pm_mode = CONFIG_ZTIMER_RTC_BLOCK_PM_MODE;
+    ZTIMER_RTC_CLK.required_pm_mode = CONFIG_ZTIMER_RTC_BLOCK_PM_MODE;
 #  endif
 #endif
 
