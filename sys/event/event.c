@@ -122,6 +122,7 @@ static event_t *_wait_timeout_xtimer(event_queue_t *queue, xtimer_t *timer)
     if (result) {
         xtimer_remove(timer);
     }
+
     return result;
 }
 
