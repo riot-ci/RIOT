@@ -47,7 +47,7 @@ void release(void *arg)
 {
     named_lock_t *e = arg;
 
-    e->release_time = (uint32_t) ztimer_now(ZTIMER_USEC);
+    e->release_time = (uint32_t)ztimer_now(ZTIMER_USEC);
     puts(e->name);
     mutex_unlock(&e->mut);
 }
@@ -60,7 +60,7 @@ int main(void)
     ztimer_set(ZTIMER_MSEC, &msec_tim, 200);
     ztimer_set(ZTIMER_USEC, &usec_tim, 100 * US_PER_MS);
 
-    printf("time %s:\t%" PRIu32 "\n", "Wait", ztimer_now(ZTIMER_USEC));
+    printf("time %s:\t%" PRIu32 "\n", "Wait", (uint32_t)ztimer_now(ZTIMER_USEC));
 
     puts("waiting for locks");
     /* wait for mutexes */
