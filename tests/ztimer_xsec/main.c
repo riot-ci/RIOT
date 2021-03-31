@@ -27,12 +27,6 @@
 /* only header information is used we do not need to use MODULE_TIMEX */
 #include "timex.h"
 
-#ifndef LOG_LEVEL
-#define LOG_LEVEL LOG_WARNING
-#endif
-
-#include "log.h"
-
 typedef struct named_lock {
     char *name;
     mutex_t mut;
@@ -66,7 +60,7 @@ int main(void)
     ztimer_set(ZTIMER_MSEC, &msec_tim, 200);
     ztimer_set(ZTIMER_USEC, &usec_tim, 100 * US_PER_MS);
 
-    LOG_INFO("time %s:\t%" PRIu32 "\n", "Wait", ztimer_now(ZTIMER_USEC));
+    printf("time %s:\t%" PRIu32 "\n", "Wait", ztimer_now(ZTIMER_USEC));
 
     puts("waiting for locks");
     /* wait for mutexes */
@@ -74,9 +68,9 @@ int main(void)
     mutex_lock(&msec_lock.mut);
     mutex_lock(&usec_lock.mut);
 
-    LOG_INFO("time %s:\t%" PRIu32 "\n", sec_lock.name, sec_lock.release_time);
-    LOG_INFO("time %s:\t%" PRIu32 "\n", msec_lock.name, msec_lock.release_time);
-    LOG_INFO("time %s:\t%" PRIu32 "\n", usec_lock.name, usec_lock.release_time);
+    printf("time %s:\t%" PRIu32 "\n", sec_lock.name, sec_lock.release_time);
+    printf("time %s:\t%" PRIu32 "\n", msec_lock.name, msec_lock.release_time);
+    printf("time %s:\t%" PRIu32 "\n", usec_lock.name, usec_lock.release_time);
 
     printf("SUCCESS!\n");
     return 0;

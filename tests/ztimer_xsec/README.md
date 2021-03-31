@@ -6,6 +6,7 @@ be unlocked by ZTIMER_USEC, ZTIMER_MSEC and ZTIMER_SEC
 The tests succeeds if the board running the test does not get stuck.
 
 ZTIMER_MSEC and ZTIMER_SEC will be configured following the rules described
-in the ztimer documentation. Defining LOG_LEVEL to LOG_INFO some timing information
-for human analysis is provided, without that the application is setup for automatic
-testing (not providing timing information -since they are system and runtime dependent)
+in the ztimer documentation (one may want to use extra ztimer_perih_*).
+Timing information is provided for human analysis it is not checked by automatic
+testing, since they are system and runtime dependent, there are other tests
+that (partially) cover the accuracy of timers.
