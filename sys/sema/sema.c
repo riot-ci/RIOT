@@ -50,7 +50,7 @@ void sema_destroy(sema_t *sema)
 }
 
 #if IS_USED(MODULE_XTIMER)
-int _sema_wait(sema_t *sema, int block, uint64_t us)
+int _sema_wait_xtimer(sema_t *sema, int block, uint64_t us)
 {
     assert(sema != NULL);
 

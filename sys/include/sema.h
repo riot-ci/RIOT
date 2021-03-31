@@ -132,7 +132,7 @@ static inline unsigned sema_get_value(const sema_t *sema)
  * @return  -ECANCELED, if the semaphore was destroyed.
  * @return  -EAGAIN,    if the semaphore is not posted (only if block = 0)
  */
-int _sema_wait(sema_t *sema, int block, uint64_t timeout);
+int _sema_wait_xtimer(sema_t *sema, int block, uint64_t timeout);
 #endif
 
 #if IS_USED(MODULE_ZTIMER)
@@ -174,7 +174,7 @@ static inline int sema_wait(sema_t *sema)
 #if IS_USED(MODULE_ZTIMER)
     return _sema_wait_ztimer(sema, 1, NULL, 0);
 #else
-    return _sema_wait(sema, 1, 0);
+    return _sema_wait_xtimer(sema, 1, 0);
 #endif
 }
 
@@ -194,7 +194,7 @@ static inline int sema_try_wait(sema_t *sema)
 #if IS_USED(MODULE_ZTIMER)
     return _sema_wait_ztimer(sema, 0, NULL, 0);
 #else
-    return _sema_wait(sema, 0, 0);
+    return _sema_wait_xtimer(sema, 0, 0);
 #endif
 }
 
@@ -215,7 +215,7 @@ static inline int sema_try_wait(sema_t *sema)
  */
 static inline int sema_wait_timed(sema_t *sema, uint64_t timeout)
 {
-    return _sema_wait(sema, (timeout != 0), timeout);
+    return _sema_wait_xtimer(sema, (timeout != 0), timeout);
 }
 #endif
 
