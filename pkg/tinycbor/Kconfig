@@ -5,7 +5,7 @@
 # directory for more details.
 #
 
-config PACKAGE_TINYCBOR
+menuconfig PACKAGE_TINYCBOR
     bool "Tiny CBOR encode/decoder package"
     depends on TEST_KCONFIG
     depends on HAS_ARCH_32BIT

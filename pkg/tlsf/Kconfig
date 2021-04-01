@@ -5,7 +5,7 @@
 # directory for more details.
 #
 
-config PACKAGE_TLSF
+menuconfig PACKAGE_TLSF
     bool "TLFS malloc/realloc/free/etc package"
     depends on TEST_KCONFIG
     depends on HAS_ARCH_32BIT
@@ -17,6 +17,7 @@ config PACKAGE_TLSF
 config MODULE_TLSF_MALLOC
     bool "TLSF malloc"
     depends on TEST_KCONFIG
+    depends on PACKAGE_TLSF
 
 config MODULE_TLSF_MALLOC_NEWLIB
     bool

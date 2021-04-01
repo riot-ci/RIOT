@@ -5,7 +5,7 @@
 # directory for more details.
 #
 
-config PACKAGE_MICRO_ECC
+config PACKAGE_MICRO-ECC
     bool "Micro-ECC package"
     depends on TEST_KCONFIG
     depends on MODULE_RANDOM

@@ -5,7 +5,7 @@
 # directory for more details.
 #
 
-config PACKAGE_CN_CBOR
+config PACKAGE_CN-CBOR
     bool "Constrained Node CBOR"
     depends on TEST_KCONFIG
     depends on HAS_ARCH_32BIT

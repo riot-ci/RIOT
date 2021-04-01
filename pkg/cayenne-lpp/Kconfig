@@ -5,7 +5,7 @@
 # directory for more details.
 #
 
-config PACKAGE_CAYENNE_LPP
+config PACKAGE_CAYENNE-LPP
     bool "Cayenne Low Power Payload package"
     depends on TEST_KCONFIG
     help

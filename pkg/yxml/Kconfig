@@ -6,7 +6,7 @@
 #
 
 config PACKAGE_YXML
-    depends on TEST_KCONFIG
     bool "yXML parser library"
+    depends on TEST_KCONFIG
     depends on !HAS_ARCH_16BIT
     depends on !HAS_ARCH_8BIT

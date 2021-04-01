@@ -5,6 +5,6 @@
 # directory for more details.
 #
 
-config PACKAGE_LORA_SERIALIZATION
+config PACKAGE_LORA-SERIALIZATION
     bool "LoRa Serialization package"
     depends on TEST_KCONFIG

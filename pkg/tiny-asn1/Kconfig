@@ -5,6 +5,6 @@
 # directory for more details.
 #
 
-config PACKAGE_TINY_ASN1
-    depends on TEST_KCONFIG
+config PACKAGE_TINY-ASN1
     bool "ASN.1 decoding/encoding package"
+    depends on TEST_KCONFIG
