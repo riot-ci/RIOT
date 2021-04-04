@@ -338,7 +338,10 @@ struct ztimer_clock {
 #endif
 #if MODULE_PM_LAYERED || DOXYGEN
     union {
-        uint8_t required_pm_mode;       /**< min. pm mode required for the clock to run */
+        uint8_t required_pm_mode;       /**< min. pm mode required for the clock to run
+                                         *   @deprecated name change -> block_pm_mode:
+                                         *               this is used to block a pm_mode
+                                         *               use block_pm_mode instead */
         uint8_t block_pm_mode;          /**< min. pm mode to block for the clock to run */
     };
 #endif
