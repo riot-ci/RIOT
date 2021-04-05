@@ -26,16 +26,18 @@
 #define CONFIG_BOARD_HAS_LSE            1
 #endif
 
-/* HSE is currently not used */
+/* This board provides a 32MHz HSE oscillator  */
 #ifndef CONFIG_BOARD_HAS_HSE
 #define CONFIG_BOARD_HAS_HSE            1
 #endif
 
 #define CLOCK_HSE                       MHZ(32)
 
+/* VCO output frequency ((PLL input clock frequency / PLLM ) x PLLN ) must be
+   between 96 and 344 MHz. PLLN can have values <=127 & >=6 */
 /* use a core clock of 48MHz and run APBx buses at the same speed */
-// #define CONFIG_CLOCK_PLL_N              12
-#define CONFIG_USE_CLOCK_MSI            1
+#define CONFIG_CLOCK_PLL_N              18
+
 #define CONFIG_CLOCK_APB1_DIV           1
 #define CONFIG_CLOCK_APB2_DIV           1
 
