@@ -433,12 +433,20 @@
  * @name    Deduct the needed flash wait states from the core clock frequency
  * @{
  */
-#if defined(CPU_FAM_STM32WB) || defined(CPU_FAM_STM32WL)
+#if defined(CPU_FAM_STM32WL)
+#if (CLOCK_AHB <= 48000000) /* VCORE range 1 */
+#define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 18000000U)
+#elif ((CLOCK_AHB <= 16000000)) /* VCORE range 2 */
+#define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 6000000U)
+#else
+#define FLASH_WAITSTATES        FLASH_ACR_LATENCY_1
+#endif /* CPU_FAM_STM32WL */
+#elif defined(CPU_FAM_STM32WB)
 #if (CLOCK_AHB <= 64000000)
 #define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 18000000U)
 #else
 #define FLASH_WAITSTATES        FLASH_ACR_LATENCY_3WS
-#endif
+#endif /* CPU_FAM_STM32WB */
 #else
 #define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 16000000U)
 #endif
@@ -487,6 +495,9 @@ void stmclk_init_sysclk(void)
         - Use HSE as PLL input clock
     */
     if (IS_ACTIVE(CLOCK_ENABLE_HSE)) {
+#if defined(CPU_FAM_STM32WL)
+        RCC->CR |= (RCC_CR_HSEBYPPWR);
+#endif
         RCC->CR |= (RCC_CR_HSEON);
         while (!(RCC->CR & RCC_CR_HSERDY)) {}
     }
