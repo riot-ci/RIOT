@@ -434,10 +434,10 @@
  * @{
  */
 #if defined(CPU_FAM_STM32WL)
-#if (CLOCK_AHB <= 48000000) /* VCORE range 1 */
-#define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 18000000U)
-#elif ((CLOCK_AHB <= 16000000)) /* VCORE range 2 */
+#if (CLOCK_AHB <= 16000000)     /* VCORE range 2 */
 #define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 6000000U)
+#elif (CLOCK_AHB <= 48000000)   /* VCORE range 1 */
+#define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 18000000U)
 #else
 #define FLASH_WAITSTATES        FLASH_ACR_LATENCY_1
 #endif /* CPU_FAM_STM32WL */
