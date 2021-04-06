@@ -48,9 +48,11 @@ extern "C" {
 
 /**
  * @brief   Alarm flags returned by the ds3231_await_alarm function
+ * @{
  */
 #define DS3231_FLAG_ALARM_1         0x01
 #define DS3231_FLAG_ALARM_2         0x02
+/** @} */
 
 /**
  * @brief   Configuration options
