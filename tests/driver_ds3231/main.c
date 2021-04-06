@@ -28,14 +28,12 @@
 #include "ds3231.h"
 #include "ds3231_params.h"
 
+#define DS3231_FLAG_ALARM_1 (0x01)
+
 #define ISOSTR_LEN      (20U)
 #define TEST_DELAY      (2U)
 
 static ds3231_t _dev;
-
-#ifdef MODULE_DS3231_INT
-static kernel_pid_t p_main;
-#endif
 
 /* 2010-09-22T15:10:42 is the author date of RIOT's initial commit */
 static struct tm _riot_bday = {
@@ -294,14 +292,14 @@ static int _cmd_test(int argc, char **argv)
         puts("error: unable to program GPIO interrupt or to clear alarm flag");
     }
 
-    if (!(res & 0x01)){
+    if (!(res & DS3231_FLAG_ALARM_1)){
         puts("error: alarm was not triggered");
     }
 
     puts("OK");
     return 0;
 
-#endif
+#else
 
     /* wait for the alarm to trigger */
     xtimer_sleep(TEST_DELAY);
@@ -328,6 +326,8 @@ static int _cmd_test(int argc, char **argv)
 
     puts("OK");
     return 0;
+
+#endif
 }
 
 static const shell_command_t shell_commands[] = {
@@ -343,10 +343,6 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     int res;
-
-#ifdef MODULE_DS3231_INT
-    p_main = thread_getpid();
-#endif
 
     puts("DS3231 RTC test\n");
 

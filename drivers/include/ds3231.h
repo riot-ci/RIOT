@@ -202,6 +202,8 @@ int ds3231_clear_alarm_2_flag(const ds3231_t *dev);
 /**
  * @brief   Get the state of alarm 1 flag (A1F)
  *
+ * @note    This function is not needed when ds3231_await_alarm is used
+ *
  * @param[in] dev       DS3231 device descriptor
  * @param[out] flag     Current value of the flag
  *
@@ -212,6 +214,8 @@ int ds3231_get_alarm_1_flag(const ds3231_t *dev, bool *flag);
 
 /**
  * @brief   Get the state of alarm 2 flag (A2F)
+ *
+ * @note    This function is not needed when ds3231_await_alarm is used
  *
  * @param[in] dev       DS3231 device descriptor
  * @param[out] flag     Current value of the flag
