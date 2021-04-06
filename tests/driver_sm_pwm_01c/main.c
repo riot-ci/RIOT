@@ -32,7 +32,7 @@ int main(void)
     sm_pwm_01c_t dev;
 
     puts("sm_pwm_01c driver test application");
-    if (sm_pwm_01c_init(&dev,  &sm_pwm_01c_params[0]) != 0) {
+    if (sm_pwm_01c_init(&dev, &sm_pwm_01c_params[0]) != 0) {
         puts("init device [ERROR]");
         return -1;
     }
