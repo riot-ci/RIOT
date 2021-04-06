@@ -32,10 +32,10 @@ extern "C" {
  * @{
  */
 #ifndef SM_PWM_01C_TSP_PIN
-#define SM_PWM_01C_TSP_PIN               GPIO_PIN(PA, 13)
+#define SM_PWM_01C_TSP_PIN               GPIO_PIN(0, 13)
 #endif
 #ifndef SM_PWM_01C_TLP_PIN
-#define SM_PWM_01C_TLP_PIN               GPIO_PIN(PA, 28)
+#define SM_PWM_01C_TLP_PIN               GPIO_PIN(0, 28)
 #endif
 #ifndef SM_PWM_01C_SAUL_INFO
 #define SM_PWM_01C_SAUL_INFO             { .name = "sm-pwm-01c" }
