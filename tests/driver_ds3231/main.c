@@ -28,8 +28,6 @@
 #include "ds3231.h"
 #include "ds3231_params.h"
 
-#define DS3231_FLAG_ALARM_1 (0x01)
-
 #define ISOSTR_LEN      (20U)
 #define TEST_DELAY      (2U)
 
