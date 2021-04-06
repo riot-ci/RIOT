@@ -41,7 +41,7 @@ typedef enum {
     SGP30_CMD_SET_HUMIDITY              = 0x2061,   /**< Set absolute humidity value
                                                          for compensation */
     SGP30_CMD_MEASURE_TEST              = 0x2032,   /**< Perform on-chip self test */
-    SGP30_CMD_GET_FEATURE_SET_VERSION   = 0x202f,   /**< Get feature set verion */
+    SGP30_CMD_GET_FEATURE_SET_VERSION   = 0x202f,   /**< Get feature set version */
     SGP30_CMD_MEASURE_RAW_SIGNALS       = 0x2050,   /**< Read raw H2 and Ethanol signals */
     SGP30_CMD_READ_SERIAL               = 0x3682,   /**< Read serial number */
     SGP30_CMD_SOFT_RESET                = 0x0006,   /**< Perform General Call reset */
@@ -313,7 +313,7 @@ int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t *data)
 int sgp30_read_measurements(sgp30_t *dev, sgp30_data_t *data)
 {
 #ifdef MODULE_SGP30_STRICT
-    if(dev->ready) {
+    if (dev->ready) {
         unsigned state = irq_disable();
         memcpy(data, &dev->_data, sizeof(sgp30_data_t));
         irq_restore(state);
@@ -344,3 +344,10 @@ int sgp30_read_raw_measurements(sgp30_t *dev, sgp30_raw_data_t *data)
     data->raw_h2 = (frame[3] << 8) + frame[4];
     return 0;
 }
+
+#ifdef MODULE_SGP30_STRICT
+bool sgp30_ready(sgp30_t *dev)
+{
+    return dev->ready;
+}
+#endif

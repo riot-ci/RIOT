@@ -110,7 +110,6 @@ int sgp30_init(sgp30_t *dev, const sgp30_params_t *params);
  * @note    Must be called after every power-cycle or soft reset.
  *
  * @param[inout] dev        Device descriptor of the driver
- * @param[in]    params     Initialization parameters
  *
  * @retval  0         Success
  * @retval -PROTO     Sensor did not acknowledge command
@@ -142,6 +141,21 @@ int sgp30_read_future_set(sgp30_t *dev, uint16_t* version);
  * @retval -PROTO     Sensor did not acknowledge command
  */
 int sgp30_reset(sgp30_t *dev);
+
+#if defined(MODULE_SGP30_STRICT) || defined(DOXYGEN)
+/**
+ * @brief   If device is ready to start reading measurements
+ *
+ * @note    Only available if sgp30_strict is used
+ *
+ * @param[in]   dev        Device descriptor of the driver
+ *
+ * @retval true      If ready to read measurements
+ * @retval false     If still in warm-up period of it @ref sgp30_start_air_quality
+ *                   has not been called
+ */
+bool sgp30_ready(sgp30_t *dev);
+#endif
 
 /**
  * @brief   Read the serial number from the sensor
