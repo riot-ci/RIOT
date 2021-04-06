@@ -33,9 +33,6 @@
 /* Scaling value to get 1/100 of a % resolution for lpo values */
 #define LPO_SCALING         (100)
 
-/* Sampling Timer */
-static ztimer_t _timer;
-
 /* Circular average for moving average calculation, this is always
    called in irq context */
 #ifdef MODULE_SM_PWM_01C_MA
@@ -79,17 +76,17 @@ static void _sample_timer_cb(void *arg)
     sm_pwm_01c_t *dev = (sm_pwm_01c_t *)arg;
 
     /* schedule next sample */
-    ztimer_set(ZTIMER_USEC, &_timer, CONFIG_SM_PWM_01C_SAMPLE_TIME);
-    DEBUG("[sm_pwm_01c] tsp_lpo %" PRIu32 "\n", dev->values.tsp_lpo);
-    DEBUG("[sm_pwm_01c] tlp_lpo %" PRIu32 "\n", dev->values.tlp_lpo);
+    ztimer_set(ZTIMER_USEC, &dev->_sampler, CONFIG_SM_PWM_01C_SAMPLE_TIME);
+    DEBUG("[sm_pwm_01c] tsp_lpo %" PRIu32 "\n", dev->_values.tsp_lpo);
+    DEBUG("[sm_pwm_01c] tlp_lpo %" PRIu32 "\n", dev->_values.tlp_lpo);
 
     /* calculate low Pulse Output Occupancy in (% * LPO_SCALING),
        e.g. 1% -> 100 */
     uint16_t tsp_ratio =
-        (uint16_t)((uint64_t)(100 * LPO_SCALING * dev->values.tsp_lpo) /
+        (uint16_t)((uint64_t)(100 * LPO_SCALING * dev->_values.tsp_lpo) /
                    CONFIG_SM_PWM_01C_SAMPLE_TIME);
     uint16_t tlp_ratio =
-        (uint16_t)((uint64_t)(100 * LPO_SCALING * dev->values.tlp_lpo) /
+        (uint16_t)((uint64_t)(100 * LPO_SCALING * dev->_values.tlp_lpo) /
                    CONFIG_SM_PWM_01C_SAMPLE_TIME);
     DEBUG("[sm_pwm_01c] tsp_ratio %" PRIu16 "/%d %%\n", tsp_ratio, LPO_SCALING);
     DEBUG("[sm_pwm_01c] tlp_ratio %" PRIu16 "/%d %%\n", tlp_ratio, LPO_SCALING);
@@ -102,20 +99,20 @@ static void _sample_timer_cb(void *arg)
 
     /* update concentration values*/
 #ifdef MODULE_SM_PWM_01C_MA
-    _circ_buf_push(&dev->values.tsp_circ_buf, tsp);
-    _circ_buf_push(&dev->values.tlp_circ_buf, tlp);
+    _circ_buf_push(&dev->_values.tsp_circ_buf, tsp);
+    _circ_buf_push(&dev->_values.tlp_circ_buf, tlp);
 #else
-    dev->values.data.mc_pm_10 =
+    dev->_values.data.mc_pm_10 =
         (uint16_t)((tlp + (uint32_t)(CONFIG_SM_PWM_01C_EXP_WEIGHT - 1) *
-                    dev->values.data.mc_pm_10) / CONFIG_SM_PWM_01C_EXP_WEIGHT);
-    dev->values.data.mc_pm_2p5 =
+                    dev->_values.data.mc_pm_10) / CONFIG_SM_PWM_01C_EXP_WEIGHT);
+    dev->_values.data.mc_pm_2p5 =
         (uint16_t)((tsp + (uint32_t)(CONFIG_SM_PWM_01C_EXP_WEIGHT - 1) *
-                    dev->values.data.mc_pm_2p5) / CONFIG_SM_PWM_01C_EXP_WEIGHT);
+                    dev->_values.data.mc_pm_2p5) / CONFIG_SM_PWM_01C_EXP_WEIGHT);
 #endif
 
     /* reset lpo */
-    dev->values.tlp_lpo = 0;
-    dev->values.tsp_lpo = 0;
+    dev->_values.tlp_lpo = 0;
+    dev->_values.tsp_lpo = 0;
 }
 
 static void _tsp_pin_cb(void *arg)
@@ -124,10 +121,10 @@ static void _tsp_pin_cb(void *arg)
     uint32_t now = ztimer_now(ZTIMER_USEC);
 
     if (gpio_read(dev->params.tsp_pin) == 0) {
-        dev->values.tsp_start_time = now;
+        dev->_values.tsp_start_time = now;
     }
     else {
-        dev->values.tsp_lpo += (now - dev->values.tsp_start_time);
+        dev->_values.tsp_lpo += (now - dev->_values.tsp_start_time);
     }
 }
 
@@ -137,10 +134,10 @@ static void _tlp_pin_cb(void *arg)
     uint32_t now = ztimer_now(ZTIMER_USEC);
 
     if (gpio_read(dev->params.tlp_pin) == 0) {
-        dev->values.tlp_start_time = now;
+        dev->_values.tlp_start_time = now;
     }
     else {
-        dev->values.tlp_lpo += (now - dev->values.tlp_start_time);
+        dev->_values.tlp_lpo += (now - dev->_values.tlp_start_time);
     }
 }
 
@@ -161,12 +158,12 @@ int sm_pwm_01c_init(sm_pwm_01c_t *dev, const sm_pwm_01c_params_t *params)
     }
 
     /* setup timer */
-    _timer.callback = _sample_timer_cb;
-    _timer.arg = dev;
+    dev->_sampler.callback = _sample_timer_cb;
+    dev->_sampler.arg = dev;
 
 #ifdef MODULE_SM_PWM_01C_MA
-    memset(&dev->values.tsp_circ_buf, 0, sizeof(circ_buf_t));
-    memset(&dev->values.tlp_circ_buf, 0, sizeof(circ_buf_t));
+    memset(&dev->_values.tsp_circ_buf, 0, sizeof(circ_buf_t));
+    memset(&dev->_values.tlp_circ_buf, 0, sizeof(circ_buf_t));
 #endif
 
     return 0;
@@ -176,9 +173,9 @@ void sm_pwm_01c_start(sm_pwm_01c_t *dev)
 {
     assert(dev);
     /* reset old values */
-    memset((void *)&dev->values, 0, sizeof(sm_pwm_01c_values_t));
+    memset((void *)&dev->_values, 0, sizeof(sm_pwm_01c_values_t));
     /* enable irq and set timer */
-    ztimer_set(ZTIMER_USEC, &_timer, CONFIG_SM_PWM_01C_SAMPLE_TIME);
+    ztimer_set(ZTIMER_USEC, &dev->_sampler, CONFIG_SM_PWM_01C_SAMPLE_TIME);
     gpio_irq_enable(dev->params.tsp_pin);
     gpio_irq_enable(dev->params.tlp_pin);
     DEBUG("[sm_pwm_01c] started average measurements\n");
@@ -188,7 +185,7 @@ void sm_pwm_01c_stop(sm_pwm_01c_t *dev)
 {
     assert(dev);
     /* disable irq and remove timer */
-    ztimer_remove(ZTIMER_USEC, &_timer);
+    ztimer_remove(ZTIMER_USEC, &dev->_sampler);
     gpio_irq_disable(dev->params.tsp_pin);
     gpio_irq_disable(dev->params.tlp_pin);
     DEBUG("[sm_pwm_01c] stopped average measurements\n");
@@ -197,15 +194,13 @@ void sm_pwm_01c_stop(sm_pwm_01c_t *dev)
 void sm_pwm_01c_read_data(sm_pwm_01c_t *dev, sm_pwm_01c_data_t *data)
 {
     assert(dev);
+    unsigned int state = irq_disable();
 #ifdef MODULE_SM_PWM_01C_MA
-    unsigned int state = irq_disable();
-    data->mc_pm_10 = _circ_buf_avg(&dev->values.tlp_circ_buf);
-    data->mc_pm_2p5 = _circ_buf_avg(&dev->values.tsp_circ_buf);
-    irq_restore(state);
+    data->mc_pm_10 = _circ_buf_avg(&dev->_values.tlp_circ_buf);
+    data->mc_pm_2p5 = _circ_buf_avg(&dev->_values.tsp_circ_buf);
 #else
-    unsigned int state = irq_disable();
-    data->mc_pm_10 = dev->values.data.mc_pm_10;
-    data->mc_pm_2p5 = dev->values.data.mc_pm_2p5;
-    irq_restore(state);
+    data->mc_pm_10 = dev->_values.data.mc_pm_10;
+    data->mc_pm_2p5 = dev->_values.data.mc_pm_2p5;
 #endif
+    irq_restore(state);
 }

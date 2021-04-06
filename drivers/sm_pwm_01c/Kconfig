@@ -4,7 +4,7 @@
 # General Public License v2.1. See the file LICENSE in the top level
 # directory for more details.
 #
-config MODULE_SM_PWM_01C
+menuconfig MODULE_SM_PWM_01C
     bool "SM_PWM_01C Amphenol infrared dust sensor"
     depends on HAS_PERIPH_GPIO
     depends on HAS_PERIPH_GPIO_IRQ
@@ -15,10 +15,11 @@ config MODULE_SM_PWM_01C
     select MODULE_ZTIMER
     select MODULE_ZTIMER_USEC
     select MODULE_ZTIMER_PERIPH_TIMER
-    imply MODULE_SM_PWM_01C_MA
 
 config MODULE_SM_PWM_01C_MA
     bool "Use a moving average for sensor values"
+    depends on MODULE_SM_PWM_01C
+    default y
 
 menuconfig KCONFIG_USEMODULE_SM_PWM_01C
     bool "Configure SM_PWM_01C driver"

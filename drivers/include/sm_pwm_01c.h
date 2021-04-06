@@ -42,6 +42,7 @@
 #include <inttypes.h>
 
 #include "timex.h"
+#include "ztimer.h"
 #include "periph/gpio.h"
 
 #ifdef __cplusplus
@@ -70,7 +71,7 @@ extern "C" {
  * @brief   Length in time of the measuring window, recommended 5-30s
  */
 #ifndef CONFIG_SM_PWM_01C_WINDOW_TIME
-#define CONFIG_SM_PWM_01C_WINDOW_TIME     (10*US_PER_SEC)
+#define CONFIG_SM_PWM_01C_WINDOW_TIME           (10*US_PER_SEC)
 #endif
 
 #if defined(MODULE_SM_PWM_01C_MA) || defined(DOXYGEN)
@@ -115,14 +116,18 @@ typedef struct {
  * These parameters are needed to configure the device at startup.
  */
 typedef struct {
-    gpio_t tsp_pin;                   /**< Low Pulse Signal Output (P1)
-                                           of small Particle, active low */
-    gpio_t tlp_pin;                   /**< Low Pulse Signal Output (P2)
-                                           of large Particle, active low */
+    gpio_t tsp_pin;     /**< Low Pulse Signal Output (P1) of small Particle,
+                             active low, PM2.5 equivalent */
+    gpio_t tlp_pin;     /**< Low Pulse Signal Output (P2) of large Particle,
+                             active low, PM10 equivalent */
 } sm_pwm_01c_params_t;
 
 /**
  * @brief   LPO and concentration (ug/m3) values for small and large particles
+ *
+ * @note Actual measured particle size are: 1~ 2μm for small particles and 3 ~10μm,
+ *       for large particles, but this values are exposed as standard PM2.5 and
+ *       PM10 measurements.
  */
 typedef struct {
     uint16_t mc_pm_2p5;         /**< Small particle concentration ug/m3 */
@@ -139,10 +144,11 @@ typedef struct {
     uint32_t tlp_start_time;    /**< Last time tlp pin went low */
     uint32_t tsp_start_time;    /**< Last time tsp pin went low */
 #ifdef MODULE_SM_PWM_01C_MA
-    circ_buf_t tsp_circ_buf;     /**< Small particle moving average values */
-    circ_buf_t tlp_circ_buf;     /**< Large particle moving average values */
+    circ_buf_t tsp_circ_buf;    /**< Small particle moving average values */
+    circ_buf_t tlp_circ_buf;    /**< Large particle moving average values */
 #else
-    sm_pwm_01c_data_t data;
+    sm_pwm_01c_data_t data;     /**< Current value for the exponentially averaged
+                                     particle concentration values */
 #endif
 } sm_pwm_01c_values_t;
 
@@ -150,10 +156,11 @@ typedef struct {
  * @brief   Device descriptor for the SM_PWM_01c sensor
  */
 typedef struct {
-    sm_pwm_01c_params_t params;  /**< Device driver parameters */
-    sm_pwm_01c_values_t values;  /**< Internal */
+    sm_pwm_01c_params_t params;     /**< Device driver parameters */
+    sm_pwm_01c_values_t _values;    /**< Internal data to calculate concentration
+                                         from tsl/tsp low Pulse Output Occupancy */
+    ztimer_t _sampler;              /**< internal sampling timer */
 } sm_pwm_01c_t;
-
 
 /**
  * @brief       Initialize the given SM_PWM_01C device
@@ -161,13 +168,13 @@ typedef struct {
  * @param[out]  dev         Initialized device descriptor of SM_PWM_01C device
  * @param[in]   params      The parameters for the SM_PWM_01C device
  *
- * @return                  0 on success
- *                         -EIO GPIO error
+ * @retval                    0 on success
+ * @retval                   -EIO GPIO error
  */
 int sm_pwm_01c_init(sm_pwm_01c_t* dev, const sm_pwm_01c_params_t* params);
 
 /**
- * @brief       Start continuos measurement of Large and Small particle
+ * @brief       Start continuous measurement of Large and Small particle
  *              concentrations
  *
  * @param[in]   dev         Device descriptor of SM_PWM_01C device
@@ -175,7 +182,7 @@ int sm_pwm_01c_init(sm_pwm_01c_t* dev, const sm_pwm_01c_params_t* params);
 void sm_pwm_01c_start(sm_pwm_01c_t* dev);
 
 /**
- * @brief       Stops continuos measurement of Large and Small particle
+ * @brief       Stops continuous measurement of Large and Small particle
  *              concentration
  *
  * @param[in]   dev         Device descriptor of SM_PWM_01C device
@@ -183,10 +190,10 @@ void sm_pwm_01c_start(sm_pwm_01c_t* dev);
 void sm_pwm_01c_stop(sm_pwm_01c_t* dev);
 
 /**
- * @brief       Reads concentration values for small particle  (1 ~ 2um)
+ * @brief       Reads particle concentration values
  *
  * @param[in]   dev        Device descriptor of SM_PWM_01C device
- * @param[out]  data       Pre-allocated memory to measured concentrations
+ * @param[out]  data       Pre-allocated memory to hold measured concentrations
  *
  */
 void sm_pwm_01c_read_data(sm_pwm_01c_t *dev, sm_pwm_01c_data_t* data);
@@ -195,5 +202,5 @@ void sm_pwm_01c_read_data(sm_pwm_01c_t *dev, sm_pwm_01c_data_t* data);
 }
 #endif
 
-#endif /* SM_PWM_01C_PARAMS_H */
+#endif /* SM_PWM_01C_H */
 /** @} */
