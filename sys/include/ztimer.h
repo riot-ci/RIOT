@@ -337,7 +337,13 @@ struct ztimer_clock {
     ztimer_now_t checkpoint;        /**< cumulated time at last now() call  */
 #endif
 #if MODULE_PM_LAYERED || DOXYGEN
-    uint8_t required_pm_mode;       /**< min. pm mode required for the clock to run */
+    union {
+        uint8_t required_pm_mode;       /**< min. pm mode required for the clock to run
+                                         *   @deprecated name change -> block_pm_mode:
+                                         *               this is used to block a pm_mode
+                                         *               use block_pm_mode instead */
+        uint8_t block_pm_mode;          /**< min. pm mode to block for the clock to run */
+    };
 #endif
 };
 
