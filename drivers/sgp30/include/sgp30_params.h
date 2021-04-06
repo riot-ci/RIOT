@@ -69,7 +69,6 @@ static const saul_reg_info_t sgp30_saul_info[] =
  */
 #define SGP30_INFO_NUM ARRAY_SIZE(sgp30_saul_info)
 
-
 #ifdef __cplusplus
 }
 #endif
