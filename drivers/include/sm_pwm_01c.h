@@ -75,7 +75,9 @@ extern "C" {
 #endif
 
 #if defined(MODULE_SM_PWM_01C_MA) || defined(DOXYGEN)
-/*
+/**
+ * @def     SM_PWM_01C_BUFFER_LEN
+ *
  * @brief   Length in time of the measuring window
  */
 #define SM_PWM_01C_BUFFER_LEN    (CONFIG_SM_PWM_01C_WINDOW_TIME / \
