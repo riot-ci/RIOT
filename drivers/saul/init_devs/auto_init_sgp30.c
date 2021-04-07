@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gunar Schorcht
+ * Copyright (C) 2021 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -9,7 +9,8 @@
 /**
  * @ingroup     sys_auto_init_saul
  * @brief       Auto initialization of AMS SGP30 digital gas sensor driver
- * @author      Gunar Schorcht <gunar@schorcht.net>
+ *
+ * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @file
  */
 
