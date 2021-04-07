@@ -1,5 +1,9 @@
-ifneq (,$(filter auto_init_saul,$(USEMODULE)))
-  USEMODULE += saul_init_devs
+ifneq (,$(filter gcoap,$(USEMODULE)))
+   USEMODULE += gnrc_sock_async
+endif
+
+ifneq (,$(filter sock_async,$(USEMODULE)))
+  USEMODULE += gnrc_sock_async
 endif
 
 ifneq (,$(filter gnrc_mac,$(USEMODULE)))

@@ -16,6 +16,7 @@ ifneq (,$(filter arduino_pwm,$(FEATURES_USED)))
   FEATURES_REQUIRED += periph_pwm
 endif
 
+# cannot be moved to GNRC's Makefile.dep, as module name neither starts or ends with gnrc
 ifneq (,$(filter auto_init_gnrc_netif,$(USEMODULE)))
   USEMODULE += gnrc_netif_init_devs
 endif
@@ -449,9 +450,6 @@ ifneq (,$(filter sock_async_event,$(USEMODULE)))
 endif
 
 ifneq (,$(filter sock_async,$(USEMODULE)))
-  ifneq (,$(filter gnrc%,$(USEMODULE)))
-    USEMODULE += gnrc_sock_async
-  endif
   ifneq (,$(filter openwsn%,$(USEMODULE)))
     USEMODULE += openwsn_sock_async
   endif
@@ -495,9 +493,6 @@ ifneq (,$(filter gcoap,$(USEMODULE)))
   USEMODULE += sock_util
   USEMODULE += event_callback
   USEMODULE += event_timeout
-  ifneq (,$(filter gnrc%,$(USEMODULE)))
-    USEMODULE += gnrc_sock_async
-  endif
   ifneq (,$(filter openwsn%,$(USEMODULE)))
     USEMODULE += openwsn_sock_udp
   endif
