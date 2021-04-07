@@ -145,6 +145,8 @@ static const i2c_conf_t i2c_config[] = {
 };
 
 #define I2C_0_ISR           isr_i2c1_erq
+
+#define I2C_NUMOF           ARRAY_SIZE(i2c_config)
 /** @} */
 
 #ifdef __cplusplus
