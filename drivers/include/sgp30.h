@@ -124,7 +124,7 @@ int sgp30_start_air_quality(sgp30_t *dev);
  * @retval -EBADMSG   CRC checksum didn't match
  * @retval -EPROTO    Sensor did not acknowledge command
  */
-int sgp30_read_future_set(sgp30_t *dev, uint16_t* version);
+int sgp30_read_future_set(sgp30_t *dev, uint16_t *version);
 
 /**
  * @brief   Performs a soft reset on the device
@@ -166,7 +166,7 @@ bool sgp30_ready(sgp30_t *dev);
  * @retval -EBADMSG   CRC checksum didn't match
  * @retval -EPROTO    Sensor did not acknowledge command
  */
-int sgp30_read_serial_number(sgp30_t *dev, uint8_t* buf, size_t len);
+int sgp30_read_serial_number(sgp30_t *dev, uint8_t *buf, size_t len);
 
 /**
  * @brief   Read air quality signals
@@ -184,7 +184,7 @@ int sgp30_read_serial_number(sgp30_t *dev, uint8_t* buf, size_t len);
  * @retval -EBADMSG   CRC checksum didn't match
  * @retval -EPROTO    Sensor did not acknowledge command
  */
-int sgp30_read_measurements(sgp30_t *dev, sgp30_data_t* data);
+int sgp30_read_measurements(sgp30_t *dev, sgp30_data_t *data);
 
 /**
  * @brief   Set absolute humidity value for on-chop humidity compensation
@@ -217,7 +217,7 @@ int sgp30_set_absolute_humidity(sgp30_t *dev, uint32_t humidity);
  * @retval  0         Success
  * @retval -PROTO     Sensor did not acknowledge command
  */
-int sgp30_set_baseline(sgp30_t *dev, sgp30_data_t* data);
+int sgp30_set_baseline(sgp30_t *dev, sgp30_data_t *data);
 
 /**
  * @brief   Returns baseline values
@@ -229,7 +229,7 @@ int sgp30_set_baseline(sgp30_t *dev, sgp30_data_t* data);
  * @retval -EBADMSG   CRC checksum didn't match
  * @retval -EPROTO    Sensor did not acknowledge command
  */
-int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t* data);
+int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t *data);
 
 /**
  * @brief   Read raw signals H2 (sout_H2) and Ethanol(sout_EthOH)
@@ -244,7 +244,7 @@ int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t* data);
  * @retval -EBADMSG   CRC checksum didn't match
  * @retval -EPROTO    Sensor did not acknowledge command
  */
-int sgp30_read_raw_measurements(sgp30_t *dev, sgp30_raw_data_t* data);
+int sgp30_read_raw_measurements(sgp30_t *dev, sgp30_raw_data_t *data);
 
 #ifdef __cplusplus
 }

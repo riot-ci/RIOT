@@ -36,7 +36,7 @@ extern "C" {
 #define SGP30_PARAM_I2C_DEV  (I2C_DEV(0))
 #endif
 #ifndef SGP30_PARAMS
-#define SGP30_PARAMS         { .i2c_dev  = SGP30_PARAM_I2C_DEV }
+#define SGP30_PARAMS         { .i2c_dev = SGP30_PARAM_I2C_DEV }
 #endif
 #ifndef SGP30_SAUL_INFO
 #define SGP30_SAUL_INFO      { .name = "sgp30" }

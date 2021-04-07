@@ -86,7 +86,7 @@ void _set_uint16_and_crc(uint8_t *buf, uint16_t *val)
 
 int _get_uint16_and_check_crc(uint8_t *buf, uint16_t *val)
 {
-    if(_crc8(buf, sizeof(uint16_t)) == buf[2]) {
+    if (_crc8(buf, sizeof(uint16_t)) == buf[2]) {
         *val = (buf[0] << 8) + buf[1];
         return 0;
     }
@@ -156,7 +156,8 @@ int _read_measurements(sgp30_t *dev, sgp30_data_t *data)
 #ifdef MODULE_SGP30_STRICT
 static void _read_cb(void *arg)
 {
-    sgp30_t* dev = (sgp30_t*) arg;
+    sgp30_t *dev = (sgp30_t *)arg;
+
     if (!dev->ready) {
         dev->ready = true;
     }
@@ -170,6 +171,7 @@ int sgp30_start_air_quality(sgp30_t *dev)
 {
     int ret = _rx_tx_data(dev, SGP30_CMD_INIT_AIR_QUALITY, NULL, 0,
                           SGP30_DELAY_INIT_AIR_QUALITY, false);
+
 #ifdef MODULE_SGP30_STRICT
     if (ret == 0) {
         ztimer_set(ZTIMER_USEC, &dev->_timer, SGP30_AIR_QUALITY_INIT_DELAY_US);
@@ -246,9 +248,9 @@ int sgp30_read_serial_number(sgp30_t *dev, uint8_t *buf, size_t len)
         return -EPROTO;
     }
     /* the serial id is in big endian format */
-    if (_get_uint16_and_check_crc(&frame[0], (uint16_t*) &buf[4]) ||
-        _get_uint16_and_check_crc(&frame[3], (uint16_t*) &buf[2]) ||
-        _get_uint16_and_check_crc(&frame[6], (uint16_t*) &buf[0])) {
+    if (_get_uint16_and_check_crc(&frame[0], (uint16_t *)&buf[4]) ||
+        _get_uint16_and_check_crc(&frame[3], (uint16_t *)&buf[2]) ||
+        _get_uint16_and_check_crc(&frame[6], (uint16_t *)&buf[0])) {
         DEBUG_PUTS("[sgp30]: wrong crc");
         return -EBADMSG;
     }
