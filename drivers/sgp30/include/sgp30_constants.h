@@ -48,7 +48,7 @@ extern "C" {
 /**
  * @brief     Sampling for dynamic baseline compensation algorithm
  */
-#define SGP30_MINIMUM_SAMPLING_PERIOD        (1 * US_PER_SEC)
+#define SGP30_RECOMMENDED_SAMPLING_PERIOD        (1 * US_PER_SEC)
 
 #ifdef __cplusplus
 }
