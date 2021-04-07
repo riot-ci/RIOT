@@ -54,7 +54,6 @@ extern "C" {
 
 /**
  * @brief     Set of measured values
- *
  */
 typedef struct {
     uint16_t tvoc;      /**< The last measurement of the IAQ-calculated Total
@@ -68,7 +67,6 @@ typedef struct {
 
 /**
  * @brief     Set of measured raw values
- *
  */
 typedef struct {
     uint16_t raw_h2;        /**< raw H2 signal, only for testing purposes */
@@ -88,7 +86,7 @@ typedef struct {
 typedef struct {
     sgp30_params_t params;      /**< parameters of the sensor device */
 #ifdef MODULE_SGP30_STRICT
-    bool ready;                 /**< if initialization faze is over*/
+    bool ready;                 /**< if initialization phase is over*/
     ztimer_t _timer;            /**< timer */
     sgp30_data_t _data;         /**< internal current data */
 #endif
@@ -218,7 +216,6 @@ int sgp30_set_absolute_humidity(sgp30_t *dev, uint32_t humidity);
  *
  * @retval  0         Success
  * @retval -PROTO     Sensor did not acknowledge command
- *
  */
 int sgp30_set_baseline(sgp30_t *dev, sgp30_data_t* data);
 

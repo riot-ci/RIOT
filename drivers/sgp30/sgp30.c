@@ -52,14 +52,14 @@ typedef enum {
  * @name      Max delays for SGP30 I2C commands completion
  * @{
  */
-#define SGP30_DELAY_INIT_AIR_QUALITY        (10 * MS_PER_SEC)
-#define SGP30_DELAY_MEASURE_AIR_QUALITY     (12 * MS_PER_SEC)
-#define SGP30_DELAY_GET_BASELINE            (10 * MS_PER_SEC)
-#define SGP30_DELAY_SET_BASELINE            (10 * MS_PER_SEC)
-#define SGP30_DELAY_SET_HUMIDITY            (10 * MS_PER_SEC)
-#define SGP30_DELAY_MEASURE_TEST            (220 * MS_PER_SEC)
-#define SGP30_DELAY_GET_FEATURE_SET_VERSION (2 * MS_PER_SEC)
-#define SGP30_DELAY_MEASURE_RAW_SIGNALS     (25 * MS_PER_SEC)
+#define SGP30_DELAY_INIT_AIR_QUALITY        (10 * US_PER_MS)
+#define SGP30_DELAY_MEASURE_AIR_QUALITY     (12 * US_PER_MS)
+#define SGP30_DELAY_GET_BASELINE            (10 * US_PER_MS)
+#define SGP30_DELAY_SET_BASELINE            (10 * US_PER_MS)
+#define SGP30_DELAY_SET_HUMIDITY            (10 * US_PER_MS)
+#define SGP30_DELAY_MEASURE_TEST            (220 * US_PER_MS)
+#define SGP30_DELAY_GET_FEATURE_SET_VERSION (2 * US_PER_MS)
+#define SGP30_DELAY_MEASURE_RAW_SIGNALS     (25 * US_PER_MS)
 #define SGP30_DELAY_READ_SERIAL             (500)
 #define SGP30_DELAY_SOFT_RESET              (60 * US_PER_MS)
 /** @} */
@@ -75,6 +75,24 @@ static inline uint8_t _crc8(const void *buf, size_t len)
 {
     return crc8(buf, len, SGP30_CRC8_POLYNOMIAL, SGP30_CRC8_SEED);
 }
+
+void _set_uint16_and_crc(uint8_t *buf, uint16_t *val)
+{
+    buf[0] = *val >> 8;
+    buf[1] = *val & 0xFF;
+    buf[2] = _crc8(buf, sizeof(uint16_t));
+}
+
+
+int _get_uint16_and_check_crc(uint8_t *buf, uint16_t *val)
+{
+    if(_crc8(buf, sizeof(uint16_t)) == buf[2]) {
+        *val = (buf[0] << 8) + buf[1];
+        return 0;
+    }
+    return -EBADMSG;
+}
+
 
 static int _rx_tx_data(sgp30_t *dev, uint16_t cmd, uint8_t *data,
                        size_t len, uint32_t delay, bool read)
@@ -111,7 +129,7 @@ static int _rx_tx_data(sgp30_t *dev, uint16_t cmd, uint8_t *data,
         res = i2c_write_bytes(dev->params.i2c_dev, SGP30_I2C_ADDRESS,
                               frame_cmd, sizeof(cmd) + len, 0);
         if (res) {
-            DEBUG_PUTS("[sgp30]: fail to write data");
+            DEBUG_PUTS("[sgp30]: failed to write data");
         }
     }
 
@@ -128,12 +146,10 @@ int _read_measurements(sgp30_t *dev, sgp30_data_t *data)
                     SGP30_DELAY_MEASURE_AIR_QUALITY, true)) {
         return -EPROTO;
     }
-    if (_crc8(frame, 2) != frame[2] || _crc8(frame + 3, 2) != frame[5]) {
-        DEBUG_PUTS("[sgp30]: wrong crc");
+    if (_get_uint16_and_check_crc(&frame[0], &data->eco2) ||
+        _get_uint16_and_check_crc(&frame[3], &data->tvoc)) {
         return -EBADMSG;
     }
-    data->eco2 = (frame[0] << 8) + frame[1];
-    data->tvoc = (frame[3] << 8) + frame[4];
     return 0;
 }
 
@@ -146,7 +162,7 @@ static void _read_cb(void *arg)
     }
     _read_measurements(dev, &dev->_data);
     dev->_data.timestamp = ztimer_now(ZTIMER_USEC);
-    ztimer_set(ZTIMER_USEC, &dev->_timer, SGP30_MINIMUM_SAMPLING_PERIOD);
+    ztimer_set(ZTIMER_USEC, &dev->_timer, SGP30_RECOMMENDED_SAMPLING_PERIOD);
 }
 #endif
 
@@ -198,7 +214,7 @@ int sgp30_init(sgp30_t *dev, const sgp30_params_t *params)
         DEBUG_PUTS("\n");
     }
 
-    /* start air quality measurement */
+    /* start air quality measurement_get_uint16_and_check_crc(&frame[0], &buf[0]) */
     if (sgp30_start_air_quality(dev)) {
         DEBUG_PUTS("[sgp30]: could not start air quality measurements ");
         return -1;
@@ -229,14 +245,13 @@ int sgp30_read_serial_number(sgp30_t *dev, uint8_t *buf, size_t len)
         DEBUG_PUTS("[sgp30]: fail read");
         return -EPROTO;
     }
-    if (_crc8(frame, 2) != frame[2] || _crc8(frame + 3, 2) != frame[5] ||
-        _crc8(frame + 6, 2) != frame[8]) {
+    /* the serial id is in big endian format */
+    if (_get_uint16_and_check_crc(&frame[0], (uint16_t*) &buf[4]) ||
+        _get_uint16_and_check_crc(&frame[3], (uint16_t*) &buf[2]) ||
+        _get_uint16_and_check_crc(&frame[6], (uint16_t*) &buf[0])) {
         DEBUG_PUTS("[sgp30]: wrong crc");
         return -EBADMSG;
     }
-    memcpy(buf, frame, 2);
-    memcpy(&buf[2], &frame[3], 2);
-    memcpy(&buf[4], &frame[6], 2);
     return 0;
 }
 
@@ -248,18 +263,17 @@ int sgp30_read_future_set(sgp30_t *dev, uint16_t *version)
                     SGP30_DELAY_GET_FEATURE_SET_VERSION, true)) {
         return -EPROTO;
     }
-    if (_crc8(frame, 2) != frame[2]) {
+    if (_get_uint16_and_check_crc(&frame[0], version)) {
         DEBUG_PUTS("[sgp30]: wrong crc");
         return -EBADMSG;
     }
-    *version = (frame[0] << 8) + frame[1];
     return 0;
 }
 
 int sgp30_set_absolute_humidity(sgp30_t *dev, uint32_t a_humidity)
 {
     /* max value is (255g/m3+255/256g/m3), or 255999 mg/m3*/
-    if (a_humidity > 256000) {
+    if (a_humidity > 256000LU) {
         return -1;
     }
 
@@ -268,10 +282,7 @@ int sgp30_set_absolute_humidity(sgp30_t *dev, uint32_t a_humidity)
         (uint16_t)(((uint64_t)a_humidity * 256 * 16777) >> 24);
 
     uint8_t frame[3];
-    frame[0] = humidity_scaled >> 8;
-    frame[1] = humidity_scaled & 0xFF;
-    frame[2] = _crc8(frame, sizeof(humidity_scaled));
-
+    _set_uint16_and_crc(&frame[0], &humidity_scaled);
     int ret = _rx_tx_data(dev, SGP30_CMD_SET_HUMIDITY, frame, sizeof(frame),
                           SGP30_DELAY_SET_HUMIDITY, false);
     return ret ? -EPROTO : 0;
@@ -281,12 +292,8 @@ int sgp30_set_baseline(sgp30_t *dev, sgp30_data_t *data)
 {
     uint8_t frame[6];
 
-    frame[0] = data->eco2 >> 8;
-    frame[1] = data->eco2 & 0xFF;
-    frame[2] = _crc8(frame, sizeof(data->eco2));
-    frame[3] = data->tvoc >> 8;
-    frame[4] = data->tvoc & 0xFF;
-    frame[5] = _crc8(frame + 3, sizeof(data->tvoc));
+    _set_uint16_and_crc(&frame[0], &data->eco2);
+    _set_uint16_and_crc(&frame[3], &data->tvoc);
 
     int ret = _rx_tx_data(dev, SGP30_CMD_SET_BASELINE, frame, sizeof(frame),
                           SGP30_DELAY_SET_BASELINE, false);
@@ -301,12 +308,10 @@ int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t *data)
                     SGP30_DELAY_GET_BASELINE, true)) {
         return -EPROTO;
     }
-    if (_crc8(frame, 2) != frame[2] || _crc8(frame + 3, 2) != frame[5]) {
-        DEBUG_PUTS("[sgp30]: wrong crc");
+    if (_get_uint16_and_check_crc(&frame[0], &data->eco2) ||
+        _get_uint16_and_check_crc(&frame[3], &data->tvoc)) {
         return -EBADMSG;
     }
-    data->eco2 = (frame[0] << 8) + frame[1];
-    data->tvoc = (frame[3] << 8) + frame[4];
     return 0;
 }
 
@@ -336,12 +341,11 @@ int sgp30_read_raw_measurements(sgp30_t *dev, sgp30_raw_data_t *data)
                     SGP30_DELAY_MEASURE_RAW_SIGNALS, true)) {
         return -EPROTO;
     }
-    if (_crc8(frame, 2) != frame[2] || _crc8(frame + 3, 2) != frame[5]) {
+    if (_get_uint16_and_check_crc(&frame[0], &data->raw_ethanol) ||
+        _get_uint16_and_check_crc(&frame[3], &data->raw_h2)) {
         DEBUG_PUTS("[sgp30]: wrong crc");
         return -EBADMSG;
     }
-    data->raw_ethanol = (frame[0] << 8) + frame[1];
-    data->raw_h2 = (frame[3] << 8) + frame[4];
     return 0;
 }
 
