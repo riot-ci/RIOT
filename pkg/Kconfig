@@ -49,6 +49,3 @@ rsource "wakaama/Kconfig"
 rsource "yxml/Kconfig"
 
 endmenu # Packages
-
-
-
