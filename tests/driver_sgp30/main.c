@@ -56,7 +56,7 @@ int main(void)
         else {
             printf("Could not read data from sensor\n");
         }
-        ztimer_sleep(ZTIMER_USEC, 100000);
+        ztimer_sleep(ZTIMER_USEC, 100000LU);
     }
 
     return 0;
