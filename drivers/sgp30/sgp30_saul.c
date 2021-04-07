@@ -30,7 +30,7 @@ static int _read_tvoc(const void *dev, phydat_t *res)
 {
     sgp30_data_t data;
 
-    if (sgp30_read_measurements(dev, &data)) {
+    if (sgp30_read_measurements((sgp30_t *)dev, &data)) {
         return -ECANCELED;
     }
     res->val[0] = data.tvoc;
@@ -43,7 +43,7 @@ static int _read_eco2(const void *dev, phydat_t *res)
 {
     sgp30_data_t data;
 
-    if (sgp30_read_measurements(dev, &data)) {
+    if (sgp30_read_measurements((sgp30_t *)dev, &data)) {
         return -ECANCELED;
     }
     res->val[0] = data.eco2;
