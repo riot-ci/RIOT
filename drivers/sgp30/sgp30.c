@@ -83,7 +83,6 @@ void _set_uint16_and_crc(uint8_t *buf, uint16_t *val)
     buf[2] = _crc8(buf, sizeof(uint16_t));
 }
 
-
 int _get_uint16_and_check_crc(uint8_t *buf, uint16_t *val)
 {
     if (_crc8(buf, sizeof(uint16_t)) == buf[2]) {
@@ -93,9 +92,8 @@ int _get_uint16_and_check_crc(uint8_t *buf, uint16_t *val)
     return -EBADMSG;
 }
 
-
 static int _rx_tx_data(sgp30_t *dev, uint16_t cmd, uint8_t *data,
-                       size_t len, uint32_t delay, bool read)
+                       size_t len, uint32_t delay, bool do_read)
 {
     int res = 0;
 
@@ -108,11 +106,11 @@ static int _rx_tx_data(sgp30_t *dev, uint16_t cmd, uint8_t *data,
     frame_cmd[0] = cmd >> 8;
     frame_cmd[1] = cmd & 0xFF;
 
-    if (len == 0 || read) {
+    if (len == 0 || do_read) {
         res = i2c_write_bytes(dev->params.i2c_dev, SGP30_I2C_ADDRESS,
                               &frame_cmd[0], sizeof(cmd), 0);
     }
-    if (res == 0 && read) {
+    if (res == 0 && do_read) {
         /* delay for command completion */
         if (!irq_is_in()) {
             ztimer_sleep(ZTIMER_USEC, delay);
@@ -124,7 +122,7 @@ static int _rx_tx_data(sgp30_t *dev, uint16_t cmd, uint8_t *data,
                              data, len, 0);
 
     }
-    else if (res == 0 && !read) {
+    else if (res == 0 && !do_read) {
         memcpy(&frame_cmd[2], data, len);
         res = i2c_write_bytes(dev->params.i2c_dev, SGP30_I2C_ADDRESS,
                               frame_cmd, sizeof(cmd) + len, 0);
@@ -216,7 +214,7 @@ int sgp30_init(sgp30_t *dev, const sgp30_params_t *params)
         DEBUG_PUTS("\n");
     }
 
-    /* start air quality measurement_get_uint16_and_check_crc(&frame[0], &buf[0]) */
+       /* start air quality measurement */
     if (sgp30_start_air_quality(dev)) {
         DEBUG_PUTS("[sgp30]: could not start air quality measurements ");
         return -1;
@@ -248,12 +246,14 @@ int sgp30_read_serial_number(sgp30_t *dev, uint8_t *buf, size_t len)
         return -EPROTO;
     }
     /* the serial id is in big endian format */
-    if (_get_uint16_and_check_crc(&frame[0], (uint16_t *)&buf[4]) ||
-        _get_uint16_and_check_crc(&frame[3], (uint16_t *)&buf[2]) ||
-        _get_uint16_and_check_crc(&frame[6], (uint16_t *)&buf[0])) {
+    uint16_t tmp[SGP30_SERIAL_ID_LEN/2];
+    if (_get_uint16_and_check_crc(&frame[0], &tmp[2]) ||
+        _get_uint16_and_check_crc(&frame[3], &tmp[1]) ||
+        _get_uint16_and_check_crc(&frame[6], &tmp[0])) {
         DEBUG_PUTS("[sgp30]: wrong crc");
         return -EBADMSG;
     }
+    memcpy(buf, tmp, SGP30_SERIAL_ID_LEN);
     return 0;
 }
 

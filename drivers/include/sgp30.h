@@ -20,20 +20,21 @@
  * After the sensor is powered up and starts measuring air quality for the
  * first 15s @ref sgp30_read_measurements calls will return fixed values of
  * of 400ppm CO2eq and 0ppb TVOC. Afterwards values should be read in regular
- * intervals of 1s for best operation of the dynamic baseline compensationalgorithm.
+ * intervals of 1s for best operation of the dynamic baseline compensation
+ * algorithm.
  *
- * This above not done by default but if the `sgp30_strict` module is included then
- * then if attempting to read before the is completed then -EAGAIN will be returned.
- * After this periodic readings happen every 1s, and the last value read is
- * returned when calling @ref sgp30_read_measurements. A timestamp is also added
- * to @ref sgp30_data_t.
+ * The above is not done by default unless the `sgp30_strict` module is included.
+ * In that case, if attempting to read before the is completed, then -EAGAIN
+ * will be returned. After this periodic readings happen every 1s, and the last
+ * value read is returned when calling @ref sgp30_read_measurements. A
+ * timestamp is also added to @ref sgp30_data_t.
  *
  * The sensor features on-chip humidity compensation for the air quality
- * signals. @ref sgp30_set_absolute_humidity can be used to change the
+ * measurements. @ref sgp30_set_absolute_humidity can be used to change the
  * absolute humidity value used. See [SGP30 driver integration] (https://files.seeedstudio.com/wiki/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/res/Sensirion_Gas_Sensors_SGP30_Driver-Integration-Guide_HW_I2C.pdf)
  * for more on this. The baseline values for the correction algorithm can
  * also be tweaked with @ref sgp30_set_baseline. More on how to implement
- * dynamic baseline compensation can be seen in at [SGP30 driver integration] (https://files.seeedstudio.com/wiki/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/res/Sensirion_Gas_Sensors_SGP30_Driver-Integration-Guide_HW_I2C.pdf).
+ * dynamic baseline compensation can be seen at [SGP30 driver integration] (https://files.seeedstudio.com/wiki/Grove-VOC_and_eCO2_Gas_Sensor-SGP30/res/Sensirion_Gas_Sensors_SGP30_Driver-Integration-Guide_HW_I2C.pdf).
  *
  * @{
  *
@@ -190,7 +191,7 @@ int sgp30_read_measurements(sgp30_t *dev, sgp30_data_t *data);
  * @brief   Set absolute humidity value for on-chop humidity compensation
  *
  * @note This function requires absolute humidity values, most sensors
- * output relative humidity, this can be calculated it temperature is also
+ * output relative humidity, this can be calculated if temperature is also
  * known:
  *
  * AH = 216.7 * ((RH / 100.0) * 6.112 * exp(17.62 * T / (243.12 + T))) / (273.15 + T)
@@ -234,8 +235,8 @@ int sgp30_get_baseline(sgp30_t *dev, sgp30_data_t *data);
 /**
  * @brief   Read raw signals H2 (sout_H2) and Ethanol(sout_EthOH)
  *
- * It returns the sensor raw signals which are used as inputs for
- * the  on-chip calibration and baseline compensationalgorithms.
+ * It returns the sensor raw sensor signals which are used as inputs for
+ * the  on-chip calibration and baseline compensation algorithms.
  *
  * @param[in]   dev        Device descriptor of the driver
  * @param[out]  data       Raw measurement values
