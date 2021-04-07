@@ -271,6 +271,10 @@ void saul_init_devs(void)
         extern void auto_init_si70xx(void);
         auto_init_si70xx();
     }
+    if (IS_USED(MODULE_SGP30)) {
+        extern void auto_init_sgp30(void);
+        auto_init_sgp30();
+    }
     if (IS_USED(MODULE_SPS30)) {
         extern void auto_init_sps30(void);
         auto_init_sps30();
