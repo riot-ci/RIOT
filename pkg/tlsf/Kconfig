@@ -1,0 +1,28 @@
+# Copyright (c) 2021 HAW Hamburg
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+
+menuconfig PACKAGE_TLSF
+    bool "TLFS malloc/realloc/free/etc package"
+    depends on TEST_KCONFIG
+    depends on HAS_ARCH_32BIT
+    select MODULE_TLSF_MALLOC_NEWLIB if MODULE_TLSF_MALLOC && MODULE_NEWLIB
+    select MODULE_TLSF_MALLOC_NATIVE if MODULE_TLSF_MALLOC && BOARD_NATIVE
+    help
+        TLSF provides an implementation of malloc/realloc/free/etc.
+
+config MODULE_TLSF_MALLOC
+    bool "TLSF malloc"
+    depends on TEST_KCONFIG
+    depends on PACKAGE_TLSF
+
+config MODULE_TLSF_MALLOC_NEWLIB
+    bool
+    depends on TEST_KCONFIG
+
+config MODULE_TLSF_MALLOC_NATIVE
+    bool
+    depends on TEST_KCONFIG
