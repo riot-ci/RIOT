@@ -95,28 +95,42 @@ def detect_built_in_includes(compiler, args):
     return includes
 
 
-class CompilationDetails:  # pylint: disable=too-few-public-methods
+class CompilationDetails:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
     """
     Representation of the compilation details stored by RIOT's build system.
 
     :param path: Path of the module to read compilation details from
     :type path: str
     """
-    def __init__(self, path):
-        with open(os.path.join(path, "src_c.txt"), "r") as file:
-            self.src_c = file.read().split()
-        with open(os.path.join(path, "src_cxx.txt"), "r") as file:
-            self.src_cxx = file.read().split()
-        with open(os.path.join(path, "cflags.txt"), "r") as file:
-            self.cflags = shlex.split(file.read())
-        with open(os.path.join(path, "cxxflags.txt"), "r") as file:
-            self.cxxflags = shlex.split(file.read())
-        with open(os.path.join(path, "directory.txt"), "r") as file:
-            self.dir = file.read().strip()
-        with open(os.path.join(path, "cc.txt"), "r") as file:
-            self.cc = file.read().strip()  # pylint: disable=invalid-name
-        with open(os.path.join(path, "cxx.txt"), "r") as file:
-            self.cxx = file.read().strip()
+    def __init__(self, path):  # pylint: disable=too-many-branches
+        with open(os.path.join(path, "compile_cmds.txt"), "r") as file:
+            for line in file.read().splitlines():
+                if line.startswith("SRC: "):
+                    self.src_c = line.lstrip("SRC: ").split()
+                elif line.startswith("SRC_NO_LTO: "):
+                    self.src_c_no_lto = line.lstrip("SRC_NO_LTO: ").split()
+                elif line.startswith("SRCXX: "):
+                    self.src_cxx = line.lstrip("SRCXX: ").split()
+                elif line.startswith("CURDIR: "):
+                    self.dir = line.lstrip("CURDIR: ").strip()
+                elif line.startswith("CFLAGS: "):
+                    self.cflags = shlex.split(line.lstrip("CFLAGS: "))
+                elif line.startswith("LTOFLAGS: "):
+                    self.ltoflags = shlex.split(line.lstrip("LTOFLAGS: "))
+                elif line.startswith("INCLUDES: "):
+                    self.includes = shlex.split(line.lstrip("INCLUDES: "))
+                elif line.startswith("CXXFLAGS: "):
+                    self.cxxflags = shlex.split(line.lstrip("CXXFLAGS: "))
+                elif line.startswith("CXXINCLUDES: "):
+                    self.cxxincludes = shlex.split(line.lstrip("CXXINCLUDES: "))
+                elif line.startswith("CC: "):
+                    self.cc = line.lstrip("CC: ").strip()  # pylint: disable=invalid-name
+                elif line.startswith("CXX: "):
+                    self.cxx = line.lstrip("CXX: ").strip()
+                elif line.startswith("TARGET_ARCH: "):
+                    self.target_arch = line.lstrip("TARGET_ARCH: ").strip()
+                elif line.startswith("TARGET_ARCH_LLVM: "):
+                    self.target_arch_llvm = line.lstrip("TARGET_ARCH_LLVM: ").strip()
 
 
 class State:  # pylint: disable=too-few-public-methods
@@ -125,13 +139,12 @@ class State:  # pylint: disable=too-few-public-methods
     """
     def __init__(self):
         self.def_includes = dict()
-        self.flags_to_remove = set()
         self.is_first = True
 
 
 def get_built_in_include_flags(compiler, state, args):
     """
-    Get built-in include search directories as parameter list in JSON format.
+    Get built-in include search directories as parameter list.
 
     :param compiler: Name or path of the compiler to get the include search dirs from
     :type compiler: str
@@ -153,6 +166,40 @@ def get_built_in_include_flags(compiler, state, args):
     return result
 
 
+def write_compile_command(state, compiler, src, flags, cdetails, path):
+    """
+    Write the compile command for the given source file with the given parameters to stdout
+
+    :param state: state of the program
+    :param compiler: the C/C++ compiler used
+    :type compiler: str
+    :param src: the file to compiler
+    :type src: str
+    :param flags: flags used for compiler invocation
+    :type flags: list of str
+    :param cetails: compilation details
+    :type cdetails: CompilationDetails
+    :param path: the output path
+    "type path: str
+    """
+    if state.is_first:
+        state.is_first = False
+    else:
+        sys.stdout.write(",\n")
+    obj = os.path.splitext(src)[0] + ".o"
+    arguments = [compiler, '-DRIOT_FILE_RELATIVE="' + os.path.join(cdetails.dir, src) + '"',
+                 '-DRIOT_FILE_NOPATH="' + src + '"']
+    arguments += flags
+    arguments += ['-MQ', obj, '-MD', '-MP', '-c', '-o', obj, src]
+    entry = {
+        'arguments': arguments,
+        'directory': cdetails.dir,
+        'file': os.path.join(cdetails.dir, src),
+        'output': os.path.join(path, obj)
+    }
+    sys.stdout.write(json.dumps(entry, indent=2))
+
+
 def generate_module_compile_commands(path, state, args):
     """
     Generate section of compile_commands.json for the module in path and write it to stdout.
@@ -164,7 +211,7 @@ def generate_module_compile_commands(path, state, args):
     """
     cdetails = CompilationDetails(path)
 
-    for flag in state.flags_to_remove:
+    for flag in args.filter_out:
         try:
             cdetails.cflags.remove(flag)
         except ValueError:
@@ -174,45 +221,35 @@ def generate_module_compile_commands(path, state, args):
         except ValueError:
             pass
 
+    c_extra_includes = []
+    cxx_extra_includes = []
+
     if args.add_built_in_includes:
-        cdetails.cflags += get_built_in_include_flags(cdetails.cc, state, args)
-        cdetails.cxxflags += get_built_in_include_flags(cdetails.cxx, state, args)
+        c_extra_includes = get_built_in_include_flags(cdetails.cc, state, args)
+        cxx_extra_includes = get_built_in_include_flags(cdetails.cxx, state, args)
+
+    if args.clangd:
+        if cdetails.target_arch_llvm:
+            cdetails.cflags += ['-target', cdetails.target_arch_llvm]
+            cdetails.cxxflags += ['-target', cdetails.target_arch_llvm]
+        else:
+            cdetails.cflags += ['-target', cdetails.target_arch]
+            cdetails.cxxflags += ['-target', cdetails.target_arch]
 
     for src in cdetails.src_c:
-        if state.is_first:
-            state.is_first = False
-        else:
-            sys.stdout.write(",\n")
-        obj = os.path.splitext(src)[0] + ".o"
-        arguments = [cdetails.cc, '-DRIOT_FILE_RELATIVE="' + os.path.join(cdetails.dir, src) + '"',
-                     '-DRIOT_FILE_NOPATH="' + src + '"']
-        arguments += cdetails.cflags
-        arguments += ['-MQ', obj, '-MD', '-MP', '-c', '-o', obj, src]
-        entry = {
-            'arguments': arguments,
-            'directory': cdetails.dir,
-            'file': os.path.join(cdetails.dir, src),
-            'output': os.path.join(path, obj)
-        }
-        sys.stdout.write(json.dumps(entry, indent=2))
+        compiler = 'clang' if args.clangd else cdetails.cc
+        flags = cdetails.cflags + cdetails.ltoflags + cdetails.includes + c_extra_includes
+        write_compile_command(state, compiler, src, flags, cdetails, path)
+
+    for src in cdetails.src_c_no_lto:
+        compiler = 'clang' if args.clangd else cdetails.cc
+        flags = cdetails.cflags + cdetails.includes + c_extra_includes
+        write_compile_command(state, compiler, src, flags, cdetails, path)
 
     for src in cdetails.src_cxx:
-        if state.is_first:
-            state.is_first = False
-        else:
-            sys.stdout.write(",\n")
-        obj = os.path.splitext(src)[0] + ".o"
-        arguments = [cdetails.cxx, '-DRIOT_FILE_RELATIVE="' + os.path.join(cdetails.dir, src) + '"',
-                     '-DRIOT_FILE_NOPATH="' + src + '"']
-        arguments += cdetails.cxxflags
-        arguments += ['-MQ', obj, '-MD', '-MP', '-c', '-o', obj, src]
-        entry = {
-            'arguments': arguments,
-            'directory': cdetails.dir,
-            'file': os.path.join(cdetails.dir, src),
-            'output': os.path.join(path, obj)
-        }
-        sys.stdout.write(json.dumps(entry, indent=2))
+        compiler = 'clang++' if args.clangd else cdetails.cxx
+        flags = cdetails.cxxflags + cdetails.cxxincludes + cdetails.includes + cxx_extra_includes
+        write_compile_command(state, compiler, src, flags, cdetails, path)
 
 
 def generate_compile_commands(args):
@@ -222,9 +259,6 @@ def generate_compile_commands(args):
     :param args: command line arguments
     """
     state = State()
-    for flag in args.filter_out:
-        state.flags_to_remove.add(flag)
-
     sys.stdout.write("[\n")
 
     for module in os.scandir(args.path):
