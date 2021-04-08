@@ -31,14 +31,14 @@ def wait_for_update(child):
 
 def make_notify(client_url, slot, version):
     cmd = [
-        "coap-client",
+        "aiocoap-client",
         "-m",
-        "post",
+        "POST",
         "coap://{}/flashwrite".format(client_url),
-        "-f",
-        "tests_riotboot_flashwrite-slot{}.{}.riot.bin".format(slot, version),
-        "-b",
-        "64",
+        "--payload",
+        "@tests_riotboot_flashwrite-slot{}.{}.riot.bin".format(slot, version),
+        "--payload-initial-szx",
+        "2",
     ]
     return subprocess.Popen(cmd, cwd=BINDIR)
 

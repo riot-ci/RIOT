@@ -60,9 +60,6 @@ BUILD_FILES += $(SLOT_RIOT_ELFS:%.elf=%.bin)
 # submitted along with the test jobs.
 TEST_EXTRA_FILES += $(SLOT_RIOT_ELFS)
 
-# Currently no libcoap is available on the Pi-fleet
-TEST_ON_CI_BLACKLIST = all
-
 include $(RIOTBASE)/Makefile.include
 
 # lower pktbuf size to something sufficient for this application
