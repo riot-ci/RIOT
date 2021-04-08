@@ -52,7 +52,7 @@ extern "C" {
 #define LED2_TOGGLE         (LED0_PORT->ODR  ^= LED2_MASK)
 /** @} */
 
-/* p-nucleo-wb55 always use LED0, as there is no dual use of its pin */
+/* nucleo-wl55jc always use LED0, as there is no dual use of its pin */
 #ifndef AUTO_INIT_LED0
 #define AUTO_INIT_LED0
 #endif
@@ -62,7 +62,7 @@ extern "C" {
  * @name    User button
  * @{
  */
-#define BTN0_PIN            GPIO_PIN(PORT_C, 13)
+#define BTN0_PIN            GPIO_PIN(PORT_A, 0)
 #define BTN0_MODE           GPIO_IN_PU
 #define BTN1_PIN            GPIO_PIN(PORT_A, 1)
 #define BTN1_MODE           GPIO_IN_PU
