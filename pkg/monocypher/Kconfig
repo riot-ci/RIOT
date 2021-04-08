@@ -9,13 +9,13 @@ config PACKAGE_MONOCYPHER
     bool "Monocypher high performance cryptographic library package"
     depends on TEST_KCONFIG
     depends on HAS_ARCH_32BIT
-    select MODULE_MONOCYPTHER_OPTIONAL
+    select MODULE_MONOCYPHER_OPTIONAL
     help
         Provides functions for authenticated encryption, hashing,
         password key derivation, key exchange, and public key
         signatures.
 
-config MODULE_MONOCYPTHER_OPTIONAL
+config MODULE_MONOCYPHER_OPTIONAL
     bool
     depends on TEST_KCONFIG
     help
