@@ -17,17 +17,17 @@ menuconfig PACKAGE_LIBCOSE
 if PACKAGE_LIBCOSE
 
 config MODULE_LIBCOSE_CRYPT_C25519
-    bool "COSE use C25519 as backend"
+    bool "COSE use C25519 backend"
     depends on TEST_KCONFIG
     depends on PACKAGE_C25519
 
 config MODULE_LIBCOSE_CRYPT_HACL
-    bool "COSE use HACL as backend"
+    bool "COSE use HACL backend"
     depends on TEST_KCONFIG
     depends on PACKAGE_HACL
 
 config MODULE_LIBCOSE_CRYPT_MONOCYPHER
-    bool "COSE use MONOCYPHER as backend"
+    bool "COSE use MONOCYPHER backend"
     depends on TEST_KCONFIG
     depends on PACKAGE_MONOCYPHER
 

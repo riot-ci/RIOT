@@ -9,8 +9,10 @@ config PACKAGE_DRIVER_ATWINC15X0
     bool "ATWINC15x0 WiFi driver package"
     depends on TEST_KCONFIG
     depends on HAS_PERIPH_SPI
-    select MODULE_PERIPH_SPI
+    depends on HAS_PERIPH_GPIO
     depends on HAS_PERIPH_GPIO_IRQ
+    select MODULE_PERIPH_SPI
+    select MODULE_PERIPH_GPIO
     select MODULE_PERIPH_GPIO_IRQ
     select MODULE_DRIVER_ATWINC15X0
     select MODULE_DRIVER_ATWINC15X0_COMMON
