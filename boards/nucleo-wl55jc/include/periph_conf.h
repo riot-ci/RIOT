@@ -35,37 +35,19 @@
 
 /* VCO output frequency ((PLL input clock frequency / PLLM ) x PLLN ) must be
    between 96 and 344 MHz. PLLN can have values <=127 & >=6 */
-/* use a core clock of 48MHz and run APBx buses at the same speed */
-#define CONFIG_CLOCK_PLL_N              18
+#ifndef CONFIG_CLOCK_PLL_N
+#define CONFIG_CLOCK_PLL_N              12
+#endif
 
-#define CONFIG_CLOCK_APB1_DIV           1
-#define CONFIG_CLOCK_APB2_DIV           1
+#define CLOCK_CORECLOCK_MAX             MHZ(48)
 
 #include "periph_cpu.h"
 #include "clk_conf.h"
+#include "cfg_timer_tim2.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * @name    Timer configuration
- * @{
- */
-static const timer_conf_t timer_config[] = {
-    {
-        .dev      = TIM2,
-        .max      = 0xffffffff,
-        .rcc_mask = RCC_APB1ENR1_TIM2EN,
-        .bus      = APB1,
-        .irqn     = TIM2_IRQn
-    }
-};
-
-#define TIMER_0_ISR         isr_tim2
-
-#define TIMER_NUMOF         ARRAY_SIZE(timer_config)
-/** @} */
 
 /**
  * @name    UART configuration
@@ -132,19 +114,19 @@ static const spi_conf_t spi_config[] = {
  */
 static const i2c_conf_t i2c_config[] = {
     {
-        .dev            = I2C1,
+        .dev            = I2C2,
         .speed          = I2C_SPEED_NORMAL,
         .scl_pin        = GPIO_PIN(PORT_A, 12),
         .sda_pin        = GPIO_PIN(PORT_A, 11),
         .scl_af         = GPIO_AF4,
         .sda_af         = GPIO_AF4,
         .bus            = APB1,
-        .rcc_mask       = RCC_APB1ENR1_I2C1EN,
-        .irqn           = I2C1_ER_IRQn,
+        .rcc_mask       = RCC_APB1ENR1_I2C2EN,
+        .irqn           = I2C2_ER_IRQn,
     }
 };
 
-#define I2C_0_ISR           isr_i2c1_erq
+#define I2C_1_ISR           isr_i2c2_er
 
 #define I2C_NUMOF           ARRAY_SIZE(i2c_config)
 /** @} */
