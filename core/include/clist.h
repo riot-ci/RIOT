@@ -111,7 +111,7 @@ typedef list_node_t clist_node_t;
  *
  * @param[in]   list        Pointer to clist
  *
- * @returns     true if list has any elements, false if not
+ * @returns     true if list contains no elements, false otherwise
  */
 static inline bool clist_is_empty(const clist_node_t *list)
 {
