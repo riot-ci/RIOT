@@ -73,7 +73,13 @@ extern "C" {
 #endif
 #ifndef CONFIG_CLOCK_PLL_N
 #if IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) && (CLOCK_HSE == MHZ(32))
+/* For STM32WL, VCO output frequency ((PLL input clock frequency / PLLM ) x PLLN )
+   must be between 96 and 344 MHz. PLLN can have values <=127 & >=6 */
+#if IS_ACTIVE(CPU_FAM_STM32WL)
+#define CONFIG_CLOCK_PLL_N              (12)
+#else
 #define CONFIG_CLOCK_PLL_N              (16)
+#endif /* CPU_FAM_STM32WL */
 #elif IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSI) || \
       (IS_ACTIVE(CONFIG_CLOCK_PLL_SRC_HSE) && (CLOCK_HSE == MHZ(16)))
 #define CONFIG_CLOCK_PLL_N              (32)
