@@ -33,14 +33,6 @@
 
 #define CLOCK_HSE                       MHZ(32)
 
-/* VCO output frequency ((PLL input clock frequency / PLLM ) x PLLN ) must be
-   between 96 and 344 MHz. PLLN can have values <=127 & >=6 */
-#ifndef CONFIG_CLOCK_PLL_N
-#define CONFIG_CLOCK_PLL_N              12
-#endif
-
-#define CLOCK_CORECLOCK_MAX             MHZ(48)
-
 #include "periph_cpu.h"
 #include "clk_conf.h"
 #include "cfg_timer_tim2.h"
