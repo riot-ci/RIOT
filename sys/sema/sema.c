@@ -158,7 +158,6 @@ int _sema_wait_ztimer(sema_t *sema, int block,
 }
 #endif
 
-
 int sema_post(sema_t *sema)
 {
     assert(sema != NULL);
