@@ -113,7 +113,7 @@ static inline unsigned sema_get_value(const sema_t *sema)
     return sema->value;
 }
 
-#if IS_USED(MODULE_XTIMER)
+#if IS_USED(MODULE_XTIMER) || !IS_USED(MODULE_ZTIMER)
 /**
  * @brief Wait for a semaphore, blocking or non-blocking.
  *
