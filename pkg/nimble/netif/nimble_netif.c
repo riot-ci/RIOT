@@ -429,7 +429,6 @@ static int _on_gap_master_evt(struct ble_gap_event *event, void *arg)
                 _notify(handle, NIMBLE_NETIF_ABORT_MASTER, addr);
                 return 0;
             }
-
             _on_gap_connected(conn, event->connect.conn_handle);
             conn->state |= NIMBLE_NETIF_GAP_MASTER;
 
