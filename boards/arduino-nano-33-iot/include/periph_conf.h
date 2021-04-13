@@ -149,7 +149,7 @@ static const uart_conf_t uart_config[] = {
 #if PWM_0_EN
 /* PWM0 channels */
 static const pwm_conf_chan_t pwm_chan0_config[] = {
-    // GPIO pin, MUX value, TCC channel
+    /* GPIO pin, MUX value, TCC channel */
     { GPIO_PIN(PA, 4), GPIO_MUX_E, 0},
     { GPIO_PIN(PA, 5), GPIO_MUX_E, 1},
 };
