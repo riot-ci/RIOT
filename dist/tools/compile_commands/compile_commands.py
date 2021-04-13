@@ -84,9 +84,10 @@ def detect_built_in_includes(compiler, args):
         includes, version = detect_includes_and_version_gcc(compiler)
         if args.add_libstdcxx_includes:
             detect_libstdcxx_includes(compiler, includes, version)
-    elif compiler in ('clang', 'clang++'):
+    elif compiler in ('clang', 'clang++', 'gcc', 'g++'):
         # clang / clang++ doesn't have any magic include search dirs built in, so we don't need
         # to detect them.
+        # for host gcc/g++ we don't need to detect magic include dirs either.
         includes = []
     else:
         msg = "Warning: Cannot detect default include search paths for {}\n".format(compiler)
@@ -232,7 +233,7 @@ def generate_module_compile_commands(path, state, args):
         if cdetails.target_arch_llvm:
             cdetails.cflags += ['-target', cdetails.target_arch_llvm]
             cdetails.cxxflags += ['-target', cdetails.target_arch_llvm]
-        else:
+        elif cdetails.target_arch:
             cdetails.cflags += ['-target', cdetails.target_arch]
             cdetails.cxxflags += ['-target', cdetails.target_arch]
 
