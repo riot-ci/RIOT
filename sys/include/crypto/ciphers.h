@@ -50,12 +50,9 @@ extern "C" {
  * Context sizes needed for the different ciphers.
  * Always order by number of bytes descending!!! <br><br>
  *
- * threedes     needs 24  bytes                           <br>
  * aes          needs CIPHERS_MAX_KEY_SIZE bytes          <br>
  */
-#if defined(MODULE_CRYPTO_3DES)
-    #define CIPHER_MAX_CONTEXT_SIZE 24
-#elif defined(MODULE_CRYPTO_AES)
+#if defined(MODULE_CRYPTO_AES)
     #define CIPHER_MAX_CONTEXT_SIZE CIPHERS_MAX_KEY_SIZE
 #else
 /* 0 is not a possibility because 0-sized arrays are not allowed in ISO C */
