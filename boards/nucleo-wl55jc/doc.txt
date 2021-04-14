@@ -43,7 +43,6 @@ and debug via GDB by simply typing
 make BOARD=nucleo-wl55jc debug
 ```
 
-
 ## Supported Toolchains
 
 For using the ST Nucleo-wl55jc board we strongly recommend the usage of the
