@@ -96,7 +96,7 @@ void *lwm2m_connect_server(uint16_t sec_obj_inst_id, void *user_data)
     lwm2m_client_data_t *client_data = (lwm2m_client_data_t *)user_data;
     lwm2m_client_connection_t *new_conn;
 
-    DEBUG("[lwm2m_connect_server] Connecting to server in sec. instance %d\n", sec_obj_inst_id);
+    DEBUG("[lwm2m_connect_server] Connecting to server in security instance %d\n", sec_obj_inst_id);
 
     new_conn = _connection_create(sec_obj_inst_id, client_data);
     if (new_conn) {
@@ -285,7 +285,7 @@ static lwm2m_client_connection_t *_connection_create(uint16_t sec_obj_inst_id,
         goto out;
     }
 
-    /* if no port specified, used the default server and BS-server ports */
+    /* if no port specified, use the default server or BS-server ports */
     if (!parsed_uri.port) {
         if (is_bootstrap) {
             port = CONFIG_LWM2M_BSSERVER_PORT;
