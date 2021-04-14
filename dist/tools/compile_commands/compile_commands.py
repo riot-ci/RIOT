@@ -263,7 +263,7 @@ def generate_compile_commands(args):
     sys.stdout.write("[\n")
 
     for module in os.scandir(args.path):
-        if module.is_dir() and module.name != 'riotbuild':
+        if module.is_dir() and os.path.isfile(os.path.join(module.path, 'compile_cmds.txt')):
             generate_module_compile_commands(module.path, state, args)
     sys.stdout.write("\n]\n")
 
