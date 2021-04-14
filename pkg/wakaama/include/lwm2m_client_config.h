@@ -233,13 +233,6 @@ extern "C" {
 #define CONFIG_LWM2M_DEVICE_BINDINGS "U"
 #endif
 
-/**
- * @brief Maximum length of an URI allowed.
- */
-#ifndef CONFIG_LWM2M_URI_MAX_SIZE
-#define CONFIG_LWM2M_URI_MAX_SIZE       (64U)
-#endif
-
 #ifdef __cplusplus
 }
 #endif

@@ -52,7 +52,7 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-#define URI_LENGTH 256
+#define MAX_URI_LENGTH 256
 
 /**
  * @brief Creates a new connection object based on the security instance
@@ -250,7 +250,7 @@ static lwm2m_client_connection_t *_connection_create(uint16_t sec_obj_inst_id,
                                                      lwm2m_client_data_t *client_data)
 {
     lwm2m_client_connection_t *conn = NULL;
-    char uri[CONFIG_LWM2M_URI_MAX_SIZE];
+    char uri[MAX_URI_LENGTH];
     char *port;
     bool is_bootstrap;
 
