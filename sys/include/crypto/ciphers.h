@@ -52,8 +52,10 @@ extern "C" {
  *
  * aes          needs CIPHERS_MAX_KEY_SIZE bytes          <br>
  */
-#if IS_USED(MODULE_CRYPTO_AES_256) || IS_USED(MODULE_CRYPTO_AES_192) || \
-    IS_USED(MODULE_CRYPTO_AES_128)
+#if defined(MODULE_CRYPTO_3DES)
+    #define CIPHER_MAX_CONTEXT_SIZE 24
+#elif IS_USED(MODULE_CRYPTO_AES_256) || IS_USED(MODULE_CRYPTO_AES_192) || \
+      IS_USED(MODULE_CRYPTO_AES_128)
     #define CIPHER_MAX_CONTEXT_SIZE CIPHERS_MAX_KEY_SIZE
 #else
 /* 0 is not a possibility because 0-sized arrays are not allowed in ISO C */
