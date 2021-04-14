@@ -48,6 +48,14 @@ ifneq (,$(filter crypto_%,$(USEMODULE)))
   USEMODULE += crypto
 endif
 
+ifneq (,$(filter cipher_modes,$(USEMODULE)))
+  USEMODULE += crypto
+endif
+
+ifneq (,$(filter crypto,$(USEMODULE)))
+  DEFAULT_MODULE += crypto_aes_128
+endif
+
 ifneq (,$(filter sys_bus_%,$(USEMODULE)))
   USEMODULE += sys_bus
   USEMODULE += core_msg_bus

@@ -16,7 +16,7 @@
  * @section ciphers Ciphers
  *
  * RIOT supports the following block ciphers:
- *  * AES-128
+ *  * AES-128, AES-192, AES-256
  *  * 3DES (deprecated)
  *  * NULL
  *
