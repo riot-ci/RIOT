@@ -11,7 +11,19 @@ menuconfig MODULE_CRYPTO
 
 if MODULE_CRYPTO
 
+config CRYPTO_AES
+    bool "AES"
+    select MODULE_CRYPTO
+
+config MODULE_CRYPTO_AES_128
+    bool "AES-128"
+    default y
+
+config MODULE_CRYPTO_AES_192
+    bool "AES-192"
+
 menu "Crypto AES options"
+depends on CRYPTO_AES
 
 config MODULE_CRYPTO_AES_128
     bool "AES-128"
