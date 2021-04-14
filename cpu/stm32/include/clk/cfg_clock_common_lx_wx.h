@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @name    Clock system configuration (L0/L1/L4/L5/WB)
+ * @name    Clock system configuration (L0/L1/L4/L5/WB/WL)
  * @{
  */
 /* Select the desired system clock source between PLL, HSE or HSI */
