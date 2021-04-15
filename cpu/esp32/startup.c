@@ -240,7 +240,7 @@ static void IRAM system_clk_init (void)
 
     /* determine configured CPU clock frequency from sdk_conf.h */
     rtc_cpu_freq_t freq;
-    switch (CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ) {
+    switch (CLOCK_CORECLOCK) {
         case 40:  freq = RTC_CPU_FREQ_XTAL; /* derived from external crystal */
                   break;                    /* normally 40 MHz */
         case 80:  freq = RTC_CPU_FREQ_80M;  /* derived from PLL */
@@ -255,12 +255,12 @@ static void IRAM system_clk_init (void)
 
     uint32_t freq_before = rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / MHZ ;
 
-    if (freq_before != CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ) {
+    if (freq_before != CLOCK_CORECLOCK) {
         /* set configured CPU frequency */
         rtc_clk_cpu_freq_set(freq);
 
         /* Recalculate the ccount to make time calculation correct. */
-        uint32_t freq_after = CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ;
+        uint32_t freq_after = CLOCK_CORECLOCK;
         XTHAL_SET_CCOUNT( XTHAL_GET_CCOUNT() * freq_after / freq_before );
     }
 }

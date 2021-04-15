@@ -72,7 +72,7 @@
 #define HW_TIMER_NUMOF        3
 #define HW_TIMER_CHANNELS     1
 #define HW_TIMER_CLK_DIV      (rtc_clk_apb_freq_get() / 1000000)
-#define HW_TIMER_CORRECTION   (RTC_PLL_320M / CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ)
+#define HW_TIMER_CORRECTION   (RTC_PLL_320M / CLOCK_CORECLOCK)
 #define HW_TIMER_DELTA_MIN    (MAX(HW_TIMER_CORRECTION << 1, 5))
 
 struct hw_timer_regs_t {
@@ -369,7 +369,7 @@ void IRAM timer_stop(tim_t dev)
 #define HW_TIMER_DELTA_MASK   0x00ffffff
 #define HW_TIMER_DELTA_RSHIFT 24
 
-#define HW_TIMER_CORRECTION   (RTC_PLL_480M / CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ)
+#define HW_TIMER_CORRECTION   (RTC_PLL_480M / CLOCK_CORECLOCK)
 #define HW_TIMER_DELTA_MIN    (MAX(HW_TIMER_CORRECTION, 5))
 
 #define US_TO_HW_TIMER_TICKS(t)    (t * system_get_cpu_freq())

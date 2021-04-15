@@ -31,8 +31,8 @@ extern "C" {
 /**
  * @brief   Defines the CPU frequency [values = 2, 40, 80, 160 and 240]
  */
-#ifndef CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ
-#define CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ   80
+#ifndef CLOCK_CORECLOCK
+#define CLOCK_CORECLOCK   80
 #endif
 
 /**
@@ -57,11 +57,11 @@ extern "C" {
 /**
  * ESP32 specific configuration
  *
- * CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ can be overridden by an application
+ * CLOCK_CORECLOCK can be overridden by an application
  * specific SDK configuration file.
  */
-#ifndef CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ
-#define CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ       80
+#ifndef CLOCK_CORECLOCK
+#define CLOCK_CORECLOCK       80
 #endif
 
 /**
