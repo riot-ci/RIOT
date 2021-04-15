@@ -576,7 +576,7 @@ void bootloader_clock_configure(void)
      */
     uint32_t chip_ver_reg = REG_READ(EFUSE_BLK0_RDATA3_REG);
     if ((chip_ver_reg & EFUSE_RD_CHIP_VER_REV1_M) == 0 &&
-            CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ == 240) {
+            CLOCK_CORECLOCK == 240) {
         cpu_freq = RTC_CPU_FREQ_240M;
     }
 #endif

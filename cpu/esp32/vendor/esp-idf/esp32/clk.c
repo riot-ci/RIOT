@@ -114,7 +114,7 @@ void esp_clk_init(void)
     select_rtc_slow_clk(RTC_SLOW_FREQ_RTC);
 #endif
 
-    uint32_t freq_mhz = CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ;
+    uint32_t freq_mhz = CLOCK_CORECLOCK;
     rtc_cpu_freq_t freq = RTC_CPU_FREQ_80M;
     switch(freq_mhz) {
         case 240:
@@ -146,7 +146,7 @@ void esp_clk_init(void)
     rtc_clk_cpu_freq_set(freq);
 
     // Re calculate the ccount to make time calculation correct.
-    uint32_t freq_after = CONFIG_ESP32_DEFAULT_CPU_FREQ_MHZ;
+    uint32_t freq_after = CLOCK_CORECLOCK;
     XTHAL_SET_CCOUNT( XTHAL_GET_CCOUNT() * freq_after / freq_before );
 }
 
