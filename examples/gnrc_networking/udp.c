@@ -30,7 +30,11 @@
 #include "net/gnrc/pktdump.h"
 #include "timex.h"
 #include "utlist.h"
+#if IS_USED(MODULE_ZTIMER_MSEC)
+#include "ztimer.h"
+#else
 #include "xtimer.h"
+#endif
 
 static gnrc_netreg_entry_t server =
                         GNRC_NETREG_ENTRY_INIT_PID(GNRC_NETREG_DEMUX_CTX_ALL,
@@ -109,7 +113,11 @@ static void send(char *addr_str, char *port_str, char *data, unsigned int num,
          * => use temporary variable for output */
         printf("Success: sent %u byte(s) to [%s]:%u\n", payload_size, addr_str,
                port);
+#if IS_USED(MODULE_ZTIMER_MSEC)
+        ztimer_sleep(ZTIMER_MSEC, delay / 1000);
+#else
         xtimer_usleep(delay);
+#endif
     }
 }
 
