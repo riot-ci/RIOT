@@ -71,8 +71,8 @@ void esp_riot_init(void)
 #endif
 
     /* set system frequency if not 80 MHz */
-    if (ESP8266_CPU_FREQUENCY != 80) {
-        system_update_cpu_freq(ESP8266_CPU_FREQUENCY);
+    if (CLOCK_CORECLOCK != 80) {
+        system_update_cpu_freq(CLOCK_CORECLOCK);
     }
 
     ets_printf("\n");

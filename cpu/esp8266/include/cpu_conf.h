@@ -34,8 +34,8 @@ extern "C" {
  *
  * Possible values are 80 and 160 MHz.
  */
-#ifndef ESP8266_CPU_FREQUENCY
-#define ESP8266_CPU_FREQUENCY   (80)
+#ifndef CLOCK_CORECLOCK
+#define CLOCK_CORECLOCK   (80)
 #endif
 
 /**
