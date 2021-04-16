@@ -15,9 +15,7 @@ config BOARD_NUCLEO_WL55JC
     select CPU_MODEL_STM32WL55JC
 
     # Put defined MCU peripherals here (in alphabetical order)
-    select HAS_PERIPH_ADC
     select HAS_PERIPH_I2C
-    select HAS_PERIPH_PWM
     select HAS_PERIPH_RTT
     select HAS_PERIPH_SPI
     select HAS_PERIPH_TIMER
@@ -25,8 +23,5 @@ config BOARD_NUCLEO_WL55JC
 
     # Put other features for this board (in alphabetical order)
     select HAS_RIOTBOOT
-
-    # Clock configuration
-    select BOARD_HAS_HSE
 
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"
