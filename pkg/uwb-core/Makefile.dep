@@ -3,9 +3,6 @@ USEMODULE += uwb-core_contrib
 
 DEFAULT_MODULE += auto_init_uwb-core
 
-USEMODULE += sema
-USEMODULE += event_callback
-USEMODULE += xtimer
 USEMODULE += fmt
 
 FEATURES_REQUIRED += periph_gpio_irq
@@ -23,6 +20,12 @@ endif
 
 ifneq (,$(filter uwb-core_uwbcfg,$(USEMODULE)))
   USEMODULE += uwb-core_config
+endif
+
+ifneq (,$(filter uwb-core_dpl,$(USEMODULE)))
+  USEPKG += mynewt-core
+  USEMODULE += mynewt-core_nrf5x_hal
+  USEMODULE += mynewt-core_os
 endif
 
 # Some stdlib functions used by the pkg are not in avr-gcc
