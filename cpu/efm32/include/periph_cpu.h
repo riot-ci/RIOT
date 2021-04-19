@@ -32,6 +32,7 @@
 #include "em_timer.h"
 #include "em_usart.h"
 #include "em_wdog.h"
+#include "em_rtc.h"
 #if defined(_SILICON_LABS_32B_SERIES_0)
 #include "em_dac.h"
 #endif
@@ -118,6 +119,18 @@ typedef struct {
     DAC_Ref_TypeDef ref;    /**< channel voltage reference */
 } dac_chan_conf_t;
 #endif
+
+/**
+ * @name    Real time counter configuration
+ * @{
+ */
+#define RTT_MAX_VALUE       _RTC_CNT_MASK        /* mask has all bits set ==> MAX*/
+                                                 /* some 24bit, some 32bit*/
+#define RTT_MAX_FREQUENCY   (32768U)             /* in Hz */
+#define RTT_MIN_FREQUENCY   (1U)                 /* in Hz */
+#define RTT_CLOCK_FREQUENCY (32768U)             /* in Hz, LFCLK*/
+
+/** @} */
 
 /**
  * @brief   Define a custom type for GPIO pins.
