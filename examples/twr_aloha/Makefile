@@ -28,6 +28,7 @@ USEMODULE += uwb-core_twr_ds_ext
 USEMODULE += shell
 USEMODULE += shell_commands
 USEMODULE += ps
+USEMODULE += ztimer_usec
 
 # Set the device role: 0x0 for tag, 0x4 for an anchor
 DW1000_ROLE ?= 0x00
@@ -52,6 +53,6 @@ CFLAGS += -DDW1000_RX_DIAGNOSTIC=1
 # - UWB_DATA_CODE_DS_TWR_EXT
 UWB_TWR_ALGORITHM_ONLY_ONE ?= UWB_DATA_CODE_SS_TWR
 # Uncomment to fix the TWR algoritm
-# CFLAGS += -DUWB_TWR_ALGORITHM_ONLY_ONE=$(UWB_TWR_ALGORITHM_ONLY_ONE)
+CFLAGS += -DUWB_TWR_ALGORITHM_ONLY_ONE=$(UWB_TWR_ALGORITHM_ONLY_ONE)
 
 include $(RIOTBASE)/Makefile.include
