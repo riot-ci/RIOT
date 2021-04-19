@@ -1,0 +1,13 @@
+USEMODULE += event_callback
+USEMODULE += sema
+USEMODULE += ztimer
+USEMODULE += ztimer_msec
+
+USEMODULE += mynewt-core
+
+DEFAULT_MODULE += auto_init_mynewt-core
+
+FEATURES_OPTIONAL += periph_rtt
+ifneq (,$(filter periph_rtt,$(FEATURES_USED)))
+  USEMODULE += ztimer_periph_rtt
+endif

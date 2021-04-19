@@ -1,0 +1,118 @@
+From 6504680abc5ed4c62221264a18426d7aa43f9d0b Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Mon, 19 Apr 2021 15:50:15 +0200
+Subject: [PATCH 3/4] kernel: fix header includes
+
+---
+ kernel/os/include/os/os_mbuf.h |  2 +-
+ kernel/os/src/endian.c         |  2 +-
+ kernel/os/src/os_mbuf.c        | 12 ++++++------
+ kernel/os/src/os_mempool.c     |  2 +-
+ kernel/os/src/os_msys.c        |  1 -
+ 5 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/os/include/os/os_mbuf.h b/kernel/os/include/os/os_mbuf.h
+index 53a16c5d2..2a4da9a12 100644
+--- a/kernel/os/include/os/os_mbuf.h
++++ b/kernel/os/include/os/os_mbuf.h
+@@ -30,7 +30,7 @@
+ #define _OS_MBUF_H
+ 
+ #include "os/queue.h"
+-#include "os/os_eventq.h"
++#include "os/eventq.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/kernel/os/src/endian.c b/kernel/os/src/endian.c
+index 9a41709fa..f61c90143 100644
+--- a/kernel/os/src/endian.c
++++ b/kernel/os/src/endian.c
+@@ -17,7 +17,7 @@
+  * under the License.
+  */
+ 
+-#include "os/mynewt.h"
++#include "os/os.h"
+ 
+ void
+ put_le16(void *buf, uint16_t x)
+diff --git a/kernel/os/src/os_mbuf.c b/kernel/os/src/os_mbuf.c
+index 494dedc32..7c8435760 100644
+--- a/kernel/os/src/os_mbuf.c
++++ b/kernel/os/src/os_mbuf.c
+@@ -40,7 +40,7 @@
+ #if !MYNEWT_VAL(OS_SYSVIEW_TRACE_MBUF)
+ #define OS_TRACE_DISABLE_FILE_API
+ #endif
+-#include "os/mynewt.h"
++#include "os/os.h"
+ 
+ int
+ os_mqueue_init(struct os_mqueue *mq, os_event_fn *ev_cb, void *arg)
+@@ -51,8 +51,8 @@ os_mqueue_init(struct os_mqueue *mq, os_event_fn *ev_cb, void *arg)
+ 
+     ev = &mq->mq_ev;
+     memset(ev, 0, sizeof(*ev));
+-    ev->ev_cb = ev_cb;
+-    ev->ev_arg = arg;
++    ev->e.callback = (void(*)(void *)) ev_cb;
++    ev->arg = arg;
+ 
+     return (0);
+ }
+@@ -966,7 +966,7 @@ os_mbuf_widen(struct os_mbuf *om, uint16_t off, uint16_t len)
+      */
+     edge_om = os_mbuf_off(om, off, &sub_off);
+     if (edge_om == NULL) {
+-        return SYS_EINVAL;
++        return OS_EINVAL;
+     }
+ 
+     /* If the mbuf has sufficient capacity for the gap, just make room within
+@@ -994,7 +994,7 @@ os_mbuf_widen(struct os_mbuf *om, uint16_t off, uint16_t len)
+         if (cur == NULL) {
+             /* Free only the mbufs that this function allocated. */
+             os_mbuf_free_chain(first_new);
+-            return SYS_ENOMEM;
++            return OS_ENOMEM;
+         }
+ 
+         /* Remember the start of the chain of new mbufs. */
+@@ -1022,7 +1022,7 @@ os_mbuf_widen(struct os_mbuf *om, uint16_t off, uint16_t len)
+                         edge_om->om_len - sub_off);
+     if (rc != 0) {
+         os_mbuf_free_chain(first_new);
+-        return SYS_ENOMEM;
++        return OS_ENOMEM;
+     }
+     edge_om->om_len = sub_off;
+ 
+diff --git a/kernel/os/src/os_mempool.c b/kernel/os/src/os_mempool.c
+index ce140531f..2202d6b83 100644
+--- a/kernel/os/src/os_mempool.c
++++ b/kernel/os/src/os_mempool.c
+@@ -24,7 +24,7 @@
+ #if !MYNEWT_VAL(OS_SYSVIEW_TRACE_MEMPOOL)
+ #define OS_TRACE_DISABLE_FILE_API
+ #endif
+-#include "os/mynewt.h"
++#include "os/os.h"
+ 
+ #define OS_MEM_TRUE_BLOCK_SIZE(bsize)   OS_ALIGN(bsize, OS_ALIGNMENT)
+ #if MYNEWT_VAL(OS_MEMPOOL_GUARD)
+diff --git a/kernel/os/src/os_msys.c b/kernel/os/src/os_msys.c
+index 67c118473..9a06db6fd 100644
+--- a/kernel/os/src/os_msys.c
++++ b/kernel/os/src/os_msys.c
+@@ -20,7 +20,6 @@
+ #include <assert.h>
+ #include "os/mynewt.h"
+ #include "mem/mem.h"
+-#include "os_priv.h"
+ 
+ static STAILQ_HEAD(, os_mbuf_pool) g_msys_pool_list =
+     STAILQ_HEAD_INITIALIZER(g_msys_pool_list);
+-- 
+2.28.0
+
