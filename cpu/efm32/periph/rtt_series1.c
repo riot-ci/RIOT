@@ -37,37 +37,37 @@ static rtt_state_t rtt_state;
 
 /* prescaler of 32768 = 1 s of resolution and overflow each 194 days */
 #if RTT_FREQUENCY == 1
-#define rtccCntPresc rtccCntPresc_32768
+#define RTT_CMU_CLK_DIV rtccCntPresc_32768
 #elif RTT_FREQUENCY == 2
-#define rtccCntPresc rtccCntPresc_16384
+#define RTT_CMU_CLK_DIV rtccCntPresc_16384
 #elif RTT_FREQUENCY == 4
-#define rtccCntPresc rtccCntPresc_8192
+#define RTT_CMU_CLK_DIV rtccCntPresc_8192
 #elif RTT_FREQUENCY == 8
-#define rtccCntPresc rtccCntPresc_4096
+#define RTT_CMU_CLK_DIV rtccCntPresc_4096
 #elif RTT_FREQUENCY == 16
-#define rtccCntPresc rtccCntPresc_2048
+#define RTT_CMU_CLK_DIV rtccCntPresc_2048
 #elif RTT_FREQUENCY == 32
-#define rtccCntPresc rtccCntPresc_1024
+#define RTT_CMU_CLK_DIV rtccCntPresc_1024
 #elif RTT_FREQUENCY == 64
-#define rtccCntPresc rtccCntPresc_512
+#define RTT_CMU_CLK_DIV rtccCntPresc_512
 #elif RTT_FREQUENCY == 128
-#define rtccCntPresc rtccCntPresc_256
+#define RTT_CMU_CLK_DIV rtccCntPresc_256
 #elif RTT_FREQUENCY == 256
-#define rtccCntPresc rtccCntPresc_128
+#define RTT_CMU_CLK_DIV rtccCntPresc_128
 #elif RTT_FREQUENCY == 512
-#define rtccCntPresc rtccCntPresc_64
+#define RTT_CMU_CLK_DIV rtccCntPresc_64
 #elif RTT_FREQUENCY == 1024
-#define rtccCntPresc rtccCntPresc_32
+#define RTT_CMU_CLK_DIV rtccCntPresc_32
 #elif RTT_FREQUENCY == 2048
-#define rtccCntPresc rtccCntPresc_16
+#define RTT_CMU_CLK_DIV rtccCntPresc_16
 #elif RTT_FREQUENCY == 4096
-#define rtccCntPresc rtccCntPresc_8
+#define RTT_CMU_CLK_DIV rtccCntPresc_8
 #elif RTT_FREQUENCY == 8192
-#define rtccCntPresc rtccCntPresc_4
+#define RTT_CMU_CLK_DIV rtccCntPresc_4
 #elif RTT_FREQUENCY == 16384
-#define rtccCntPresc rtccCntPresc_2
+#define RTT_CMU_CLK_DIV rtccCntPresc_2
 #elif RTT_FREQUENCY == 32768
-#define rtccCntPresc rtccCntPresc_1
+#define RTT_CMU_CLK_DIV rtccCntPresc_1
 #else
 #warning "no matching prescaler for RTT_FREQUENCY"
 #endif
@@ -82,7 +82,7 @@ void rtt_init(void)
     RTCC_Init_TypeDef init = RTCC_INIT_DEFAULT;
 
     init.enable = false;
-    init.presc = rtccCntPresc;
+    init.presc = RTT_CMU_CLK_DIV;
 
     RTCC_Reset();
     RTCC_Init(&init);
