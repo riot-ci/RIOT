@@ -114,7 +114,7 @@ static void send(char *addr_str, char *port_str, char *data, unsigned int num,
         printf("Success: sent %u byte(s) to [%s]:%u\n", payload_size, addr_str,
                port);
 #if IS_USED(MODULE_ZTIMER_MSEC)
-        ztimer_sleep(ZTIMER_MSEC, delay / 1000);
+        ztimer_sleep(ZTIMER_MSEC, delay);
 #else
         xtimer_usleep(delay);
 #endif
@@ -168,8 +168,13 @@ int udp_cmd(int argc, char **argv)
         uint32_t num = 1;
         uint32_t delay = 1000000;
         if (argc < 5) {
+#if IS_USED(MODULE_ZTIMER_MSEC)
+            printf("usage: %s send "
+                   "<addr> <port> <data> [<num> [<delay in ms>]]\n", argv[0]);
+#else
             printf("usage: %s send "
                    "<addr> <port> <data> [<num> [<delay in us>]]\n", argv[0]);
+#endif
             return 1;
         }
         if (argc > 5) {
