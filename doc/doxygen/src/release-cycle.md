@@ -21,7 +21,7 @@ RIOT follows a rolling release cycle, meaning, that support and bug fixes are
 only provided for the most current release.
 
 Download a release                                                   {#download}
-------------------
+==================
 
 You can download the source code of our releases [via Github][releases] as ZIP
 file or tarball. Alternatively, you can check them out if you already cloned
@@ -32,8 +32,8 @@ $ git pull --tags
 $ git checkout <YYYY.MM>
 ~~~~~~~~~~~~~~~~~~~~
 
-Point releases and hotfixes                                    {#point-releases}
----------------------------
+Point releases and hot fixes                                   {#point-releases}
+============================
 
 For major bug fixes, we may provide a point release `YYYY.MM.N` which results in
 a new ZIP file or tarball over at the [release page][releases]. However, minor
