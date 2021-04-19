@@ -124,8 +124,12 @@ typedef struct {
  * @name    Real time counter configuration
  * @{
  */
+/* RTT_MAX_VALUE some are 24bit, some are 32bit */
+#ifdef _RTC_CNT_MASK
 #define RTT_MAX_VALUE       _RTC_CNT_MASK        /* mask has all bits set ==> MAX*/
-                                                 /* some 24bit, some 32bit*/
+#else /*ifdef _RTCC_CNT_MASK*/
+#define RTT_MAX_VALUE       _RTCC_CNT_MASK       /* mask has all bits set ==> MAX*/
+#endif
 #define RTT_MAX_FREQUENCY   (32768U)             /* in Hz */
 #define RTT_MIN_FREQUENCY   (1U)                 /* in Hz */
 #define RTT_CLOCK_FREQUENCY (32768U)             /* in Hz, LFCLK*/
