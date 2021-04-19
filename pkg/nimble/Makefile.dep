@@ -1,11 +1,6 @@
 # RIOT specific dependencies
 USEMODULE += sema
 USEMODULE += event_callback
-USEMODULE += ztimer_msec
-# all nRF CPUs support hardware RTT, so we use it
-ifneq (,$(filter nrf5%,$(CPU_FAM)))
-  USEMODULE += ztimer_periph_rtt
-endif
 
 # Requires nimble feature
 FEATURES_REQUIRED += ble_nimble
@@ -15,7 +10,11 @@ USEMODULE += nimble_riot_contrib
 
 # RIOT port
 USEMODULE += nimble_porting_nimble
-USEMODULE += nimble_npl_riot
+
+USEPKG += mynewt-core
+USEMODULE += mynewt-core_os
+USEMODULE += mynewt-core_util
+USEMODULE += mynewt-core_nrf5x_hal
 
 # if nothing else is specified, we build the host and controller
 ifeq (,$(filter nimble_host nimble_controller,$(USEMODULE)))
