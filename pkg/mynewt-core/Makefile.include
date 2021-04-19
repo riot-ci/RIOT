@@ -1,0 +1,14 @@
+INCLUDES += -I$(PKGDIRBASE)/mynewt-core/riot/include \
+            -I$(RIOTPKG)/mynewt-core/include \
+            #
+
+DIRS += $(RIOTPKG)/mynewt-core/contrib \
+        #
+
+ifneq (,$(filter stm32 nrf52 sam%,$(CPU)))
+  RTT_FREQUENCY ?= RTT_MAX_FREQUENCY
+  CFLAGS += -DRTT_FREQUENCY=$(RTT_FREQUENCY)
+endif
+
+# OS_CPUTIME is set to 32.767 Hz
+CFLAGS += -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768
