@@ -11,7 +11,11 @@ USEMODULE += nimble_riot_contrib
 
 # RIOT port
 USEMODULE += nimble_porting_nimble
-USEMODULE += nimble_npl_riot
+
+USEPKG += mynewt-core
+USEMODULE += mynewt-core_os
+USEMODULE += mynewt-core_util
+USEMODULE += mynewt-core_nrf5x_hal
 
 # if nothing else is specified, we build the host and controller
 ifeq (,$(filter nimble_host nimble_controller,$(USEMODULE)))
