@@ -229,10 +229,6 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     bool data_cache = FLASH->ACR & FLASH_ACR_DCEN;
     if (data_cache) {
         FLASH->ACR &= ~FLASH_ACR_DCEN;
-#if defined(CPU_FAM_STM32WL)
-        /* Reset the data cache after it has been disabed */
-        FLASH->ACR |= FLASH_ACR_DCRST;
-#endif
     }
 #endif
 #ifdef FLASH_ACR_ICEN
@@ -241,8 +237,9 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     if (instruction_cache) {
         FLASH->ACR &= ~FLASH_ACR_ICEN;
 #if defined(CPU_FAM_STM32WL)
-        /* Reset the instruction cache after it has been disabed to avoid any
-           unintended operations later */
+        /* Reset the instruction cache after it has been disabed. This is
+           required for the proper working of flash I/O operations while LPUART
+           is active */
         FLASH->ACR |= FLASH_ACR_ICRST;
 #endif
     }
