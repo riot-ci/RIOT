@@ -16,6 +16,7 @@ config BOARD_NUCLEO_WL55JC
 
     # Put defined MCU peripherals here (in alphabetical order)
     select HAS_PERIPH_I2C
+    select HAS_PERIPH_LPUART
     select HAS_PERIPH_RTT
     select HAS_PERIPH_SPI
     select HAS_PERIPH_TIMER
