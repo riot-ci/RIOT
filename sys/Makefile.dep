@@ -99,6 +99,12 @@ ifneq (,$(filter dhcpv6_client,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter fuzzing,$(USEMODULE)))
+  USEMODULE += netdev_test
+  USEMODULE += gnrc_netif
+  USEMODULE += gnrc_pktbuf_malloc
+endif
+
 # include GNRC dependencies
 ifneq (,$(filter gnrc% %gnrc,$(USEMODULE)))
   include $(RIOTBASE)/sys/net/gnrc/Makefile.dep
@@ -292,12 +298,6 @@ ifneq (,$(filter cpp11-compat,$(USEMODULE)))
   USEMODULE += timex
   FEATURES_REQUIRED += cpp
   FEATURES_REQUIRED += libstdcpp
-endif
-
-ifneq (,$(filter fuzzing,$(USEMODULE)))
-  USEMODULE += netdev_test
-  USEMODULE += gnrc_netif
-  USEMODULE += gnrc_pktbuf_malloc
 endif
 
 ifneq (,$(filter netstats_%, $(USEMODULE)))
