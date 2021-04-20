@@ -1,7 +1,7 @@
 /**
 @defgroup    boards_nucleo-wl55jc STM32 Nucleo-wl55jc
 @ingroup     boards_common_nucleo64
-@brief       Support for the STM32 Nucleo-wl55jc
+@brief       Support for the STM32 Nucleo-W55JCg
 
 ### MCU
 
