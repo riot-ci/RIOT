@@ -237,9 +237,9 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     if (instruction_cache) {
         FLASH->ACR &= ~FLASH_ACR_ICEN;
 #if defined(CPU_FAM_STM32WL)
-        /* Reset the instruction cache after it has been disabed. This is
-           required for the proper working of flash I/O operations while LPUART
-           is active */
+        /* Reset the instruction cache after it has been disabled. This
+           operation is required as the cpu stalls after a flash write operation
+           for unknown reasons in STM32WL55JC */
         FLASH->ACR |= FLASH_ACR_ICRST;
 #endif
     }
