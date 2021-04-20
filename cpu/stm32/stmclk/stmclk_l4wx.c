@@ -437,7 +437,7 @@
 #elif (CLOCK_AHB <= 48000000)   /* VCORE range 1 */
 #define FLASH_WAITSTATES        ((CLOCK_AHB - 1) / 18000000U)
 #else
-#define FLASH_WAITSTATES        FLASH_ACR_LATENCY_1
+#define FLASH_WAITSTATES        FLASH_ACR_LATENCY_2
 #endif /* CPU_FAM_STM32WL */
 #elif defined(CPU_FAM_STM32WB)
 #if (CLOCK_AHB <= 64000000)
