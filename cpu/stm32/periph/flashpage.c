@@ -229,8 +229,10 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     bool data_cache = FLASH->ACR & FLASH_ACR_DCEN;
     if (data_cache) {
         FLASH->ACR &= ~FLASH_ACR_DCEN;
+#if defined(CPU_FAM_STM32WL)
         /* Reset the data cache after it has been disabed */
         FLASH->ACR |= FLASH_ACR_DCRST;
+#endif
     }
 #endif
 #ifdef FLASH_ACR_ICEN
@@ -238,9 +240,11 @@ void flashpage_write(void *target_addr, const void *data, size_t len)
     bool instruction_cache = FLASH->ACR & FLASH_ACR_ICEN;
     if (instruction_cache) {
         FLASH->ACR &= ~FLASH_ACR_ICEN;
+#if defined(CPU_FAM_STM32WL)
         /* Reset the instruction cache after it has been disabed to avoid any
            unintended operations later */
         FLASH->ACR |= FLASH_ACR_ICRST;
+#endif
     }
 #endif
 
