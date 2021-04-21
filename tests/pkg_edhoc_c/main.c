@@ -90,6 +90,7 @@ int main(void)
                   THREAD_CREATE_STACKTEST,
                   _nanocoap_server_thread, NULL, "nanocoap server");
 #endif
+
     /* the shell contains commands that receive packets via GNRC and thus
        needs a msg queue */
     msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);

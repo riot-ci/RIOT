@@ -66,6 +66,7 @@ static ssize_t _send(coap_pkt_t *pkt, size_t len, char *addr_str, uint16_t port)
     sock_udp_ep_t remote;
 
     remote.family = AF_INET6;
+    remote.port = port;
 
     /* parse for interface */
     char *iface = ipv6_addr_split_iface(addr_str);
@@ -97,8 +98,6 @@ static ssize_t _send(coap_pkt_t *pkt, size_t len, char *addr_str, uint16_t port)
         return 0;
     }
     memcpy(&remote.addr.ipv6[0], &addr.u8[0], sizeof(addr.u8));
-
-    remote.port = port;
 
     return nanocoap_request(pkt, NULL, &remote, len);
 }
@@ -153,7 +152,7 @@ int _handshake_cmd(int argc, char **argv)
     if ((msg_len = edhoc_create_msg1(&_ctx, corr, _method, _suite, msg, sizeof(msg))) > 0) {
         printf("[initiator]: sending msg1 (%d bytes):\n", msg_len);
         print_bstr(msg, msg_len);
-        len = _build_coap_pkt(&pkt, buf, sizeof(buf), msg, msg_len);
+        _build_coap_pkt(&pkt, buf, sizeof(buf), msg, msg_len);
         len = _send(&pkt, COAP_BUF_SIZE, argv[1], port);
     }
     else {
@@ -171,7 +170,7 @@ int _handshake_cmd(int argc, char **argv)
     if ((msg_len = edhoc_create_msg3(&_ctx, pkt.payload, pkt.payload_len, msg, sizeof(msg))) > 0) {
         printf("[initiator]: sending msg3 (%d bytes):\n", msg_len);
         print_bstr(msg, msg_len);
-        len = _build_coap_pkt(&pkt, buf, sizeof(buf), msg, msg_len);
+        _build_coap_pkt(&pkt, buf, sizeof(buf), msg, msg_len);
         len = _send(&pkt, COAP_BUF_SIZE, argv[1], port);
     }
     else {

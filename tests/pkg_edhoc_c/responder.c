@@ -61,7 +61,6 @@ struct tc_sha256_state_struct _sha_r;
 ssize_t _edhoc_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
 {
     (void)context;
-    uint8_t msg[COAP_BUF_SIZE];
     ssize_t msg_len = 0;
 
     printf("[responder]: received an EDHOC message (len %d):\n", pkt->payload_len);
@@ -72,6 +71,7 @@ ssize_t _edhoc_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
     }
 
     if (_ctx.state == EDHOC_WAITING) {
+        uint8_t msg[COAP_BUF_SIZE];
         if ((msg_len =
                  edhoc_create_msg2(&_ctx, pkt->payload, pkt->payload_len, msg, sizeof(msg))) >= 0) {
             printf("[responder]: sending msg2 (%d bytes):\n", msg_len);

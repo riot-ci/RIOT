@@ -39,7 +39,7 @@ int _cred_cb(const uint8_t *k, size_t k_len, const uint8_t **o, size_t *o_len)
             }
         }
     }
-    o = NULL;
+    *o = NULL;
     *o_len = 0;
     return EDHOC_ERR_INVALID_CRED_ID;
 }
