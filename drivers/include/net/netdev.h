@@ -277,9 +277,8 @@ typedef enum {
  * May be different for certain radios.
  */
 struct netdev_radio_rx_info {
-    uint32_t timestamp;     /**< Counter value of a received frame */
-    int16_t rssi;           /**< RSSI of a received frame in dBm */
-    uint8_t lqi;            /**< LQI of a received frame */
+    int16_t rssi;       /**< RSSI of a received frame in dBm */
+    uint8_t lqi;        /**< LQI of a received frame */
 };
 
 /**
