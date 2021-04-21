@@ -23,8 +23,6 @@
 #include "edhoc/edhoc.h"
 #include "edhoc_keys.h"
 
-#include <wolfssl/wolfcrypt/sha256.h>
-
 #define ENABLE_DEBUG        0
 #include "debug.h"
 
@@ -69,7 +67,6 @@ int edhoc_setup(edhoc_ctx_t *ctx, edhoc_conf_t *conf, edhoc_role_t role,
     cred_id_init(cred_id);
     cred_rpk_init(rpk);
     cose_key_init(auth_key);
-    wc_InitSha256(hash_ctx);
 
     /* only for testing load preset keys for role */
     const uint8_t *cbor_auth_key;

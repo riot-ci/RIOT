@@ -26,12 +26,19 @@
 
 #include "edhoc/edhoc.h"
 #include "edhoc_keys.h"
+
+#if IS_USED(MODULE_WOLFSSL)
 #include "wolfssl/wolfcrypt/sha256.h"
+#elif IS_USED(MODULE_TINYCRYPT)
+#include "tinycrypt/sha256.h"
+#endif
 
 #define ENABLE_DEBUG        0
 #include "debug.h"
 
 #define COAP_BUF_SIZE     (256U)
+
+#if IS_ACTIVE(CONFIG_RESPONDER)
 
 extern void print_bstr(const uint8_t *bstr, size_t bstr_len);
 extern int edhoc_setup(edhoc_ctx_t *ctx, edhoc_conf_t *conf, edhoc_role_t role,
@@ -45,7 +52,11 @@ static edhoc_conf_t _conf;
 static rpk_t _rpk;
 static cred_id_t _cred_id;
 static cose_key_t _auth_key;
-static wc_Sha256 _wc_sha256;
+#if IS_USED(MODULE_WOLFSSL)
+static wc_Sha256 _sha_r;
+#elif IS_USED(MODULE_TINYCRYPT)
+struct tc_sha256_state_struct _sha_r;
+#endif
 
 ssize_t _edhoc_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
 {
@@ -80,8 +91,7 @@ ssize_t _edhoc_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
         msg_len = coap_reply_simple(pkt, COAP_CODE_204, buf, len, COAP_FORMAT_OCTET, NULL, 0);
     }
 
-    if (_ctx.state == EDHOC_RECEIVED_MESSAGE_3) {
-        _ctx.state = EDHOC_FINALIZED;
+    if (_ctx.state == EDHOC_FINALIZED) {
         puts("[responder]: handshake successfully completed");
     }
 
@@ -121,7 +131,7 @@ int responder_cmd(int argc, char **argv)
 int responder_cli_init(void)
 {
     if (edhoc_setup(&_ctx, &_conf, EDHOC_IS_RESPONDER, &_auth_key, &_cred_id,
-                    &_rpk, &_wc_sha256)) {
+                    &_rpk, &_sha_r)) {
         puts("[responder]: error during setup");
         return -1;
     }
@@ -138,3 +148,5 @@ int responder_cli_init(void)
 
     return 0;
 }
+
+#endif /* CONFIG_RESEPONDER */

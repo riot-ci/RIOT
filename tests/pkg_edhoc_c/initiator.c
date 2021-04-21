@@ -17,6 +17,7 @@
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  */
 
+
 #include <stdio.h>
 
 #include "net/ipv6.h"
@@ -25,12 +26,19 @@
 
 #include "edhoc/edhoc.h"
 #include "edhoc_keys.h"
+
+#if IS_USED(MODULE_WOLFSSL)
 #include "wolfssl/wolfcrypt/sha256.h"
+#elif IS_USED(MODULE_TINYCRYPT)
+#include "tinycrypt/sha256.h"
+#endif
 
 #define ENABLE_DEBUG        0
 #include "debug.h"
 
-#define COAP_BUF_SIZE     (512U)
+#define COAP_BUF_SIZE     (256U)
+
+#if IS_ACTIVE(CONFIG_INITIATOR)
 
 extern void print_bstr(const uint8_t *bstr, size_t bstr_len);
 extern int edhoc_setup(edhoc_ctx_t *ctx, edhoc_conf_t *conf, edhoc_role_t role,
@@ -44,7 +52,11 @@ static edhoc_conf_t _conf;
 static rpk_t _rpk;
 static cred_id_t _cred_id;
 static cose_key_t _auth_key;
-static wc_Sha256 _wc_sha256;
+#if IS_USED(MODULE_WOLFSSL)
+static wc_Sha256 _sha_i;
+#elif IS_USED(MODULE_TINYCRYPT)
+struct tc_sha256_state_struct _sha_i;
+#endif
 static uint8_t _method;
 static uint8_t _suite;
 
@@ -88,8 +100,6 @@ static ssize_t _send(coap_pkt_t *pkt, size_t len, char *addr_str, uint16_t port)
 
     remote.port = port;
 
-    DEBUG("[initiator]: send %d bytes to %s on port %d\n\n",
-          pkt->payload_len, addr_str, port);
     return nanocoap_request(pkt, NULL, &remote, len);
 }
 
@@ -98,7 +108,6 @@ static ssize_t _build_coap_pkt(coap_pkt_t *pkt, uint8_t *buf, ssize_t buflen,
 {
     uint8_t token[2] = { 0xDA, 0xEC };
     ssize_t len;
-
     /* set pkt buffer */
     pkt->hdr = (coap_hdr_t *)buf;
     /* build header, confirmed message always post */
@@ -110,7 +119,7 @@ static ssize_t _build_coap_pkt(coap_pkt_t *pkt, uint8_t *buf, ssize_t buflen,
     len = coap_opt_finish(pkt, COAP_OPT_FINISH_PAYLOAD);
     /* copy msg payload */
     pkt->payload_len = payload_len;
-    memcpy(pkt->payload, payload, pkt->payload_len);
+    memcpy(pkt->payload, payload, payload_len);
     len += pkt->payload_len;
     return len;
 }
@@ -151,7 +160,6 @@ int _handshake_cmd(int argc, char **argv)
         puts("[initiator]: failed to create msg1");
         return -1;
     }
-
     if (len < 0) {
         puts("[initiator]: failed to send msg1");
         return -1;
@@ -160,7 +168,6 @@ int _handshake_cmd(int argc, char **argv)
         printf("[initiator]: received a message (%d bytes):\n", pkt.payload_len);
         print_bstr(pkt.payload, pkt.payload_len);
     }
-
     if ((msg_len = edhoc_create_msg3(&_ctx, pkt.payload, pkt.payload_len, msg, sizeof(msg))) > 0) {
         printf("[initiator]: sending msg3 (%d bytes):\n", msg_len);
         print_bstr(msg, msg_len);
@@ -269,9 +276,8 @@ int initiator_cli_init(void)
     /* default to static-static (method 3) since we are using RPK keys */
     _method = EDHOC_AUTH_STATIC_STATIC;
     _suite = EDHOC_CIPHER_SUITE_0;
-
     if (edhoc_setup(&_ctx, &_conf, EDHOC_IS_INITIATOR, &_auth_key, &_cred_id,
-                    &_rpk, &_wc_sha256)) {
+                    &_rpk, &_sha_i)) {
         puts("[initiator]: error during setup");
         return -1;
     }
@@ -287,3 +293,5 @@ int initiator_cli_init(void)
 
     return 0;
 }
+
+#endif /* CONFIG_INITIATOR */

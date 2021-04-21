@@ -29,21 +29,33 @@
 
 #define MAIN_QUEUE_SIZE     (4)
 static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
+
+#if IS_ACTIVE(CONFIG_RESPONDER)
 static char _nanocoap_server_stack[THREAD_STACKSIZE_MAIN];
 #define NANOCOAP_SERVER_QUEUE_SIZE     (4)
 static msg_t _nanocoap_server_msg_queue[NANOCOAP_SERVER_QUEUE_SIZE];
 #define NANOCOAP_BUF_SIZE   (512U)
-
-extern int initiator_cmd(int argc, char **argv);
-extern int responder_cmd(int argc, char **argv);
-extern int initiator_cli_init(void);
 extern int responder_cli_init(void);
+extern int responder_cmd(int argc, char **argv);
+#endif
+
+#if IS_ACTIVE(CONFIG_INITIATOR)
+extern int initiator_cmd(int argc, char **argv);
+extern int initiator_cli_init(void);
+#endif
 
 static const shell_command_t shell_commands[] = {
+
+#if IS_ACTIVE(CONFIG_INITIATOR)
     { "init", "EDHOC Initiator cli", initiator_cmd },
+#endif
+#if IS_ACTIVE(CONFIG_RESPONDER)
     { "resp", "EDHOC Responder cli", responder_cmd },
+#endif
     { NULL, NULL, NULL }
 };
+
+#if IS_ACTIVE(CONFIG_RESPONDER)
 static void *_nanocoap_server_thread(void *arg)
 {
     (void)arg;
@@ -58,12 +70,16 @@ static void *_nanocoap_server_thread(void *arg)
 
     return NULL;
 }
+#endif
 
 int main(void)
 {
+#if IS_ACTIVE(CONFIG_INITIATOR)
     if (initiator_cli_init()) {
         return -1;
     }
+#endif
+#if IS_ACTIVE(CONFIG_RESPONDER)
     if (responder_cli_init()) {
         return -1;
     }
@@ -73,7 +89,7 @@ int main(void)
                   THREAD_PRIORITY_MAIN - 1,
                   THREAD_CREATE_STACKTEST,
                   _nanocoap_server_thread, NULL, "nanocoap server");
-
+#endif
     /* the shell contains commands that receive packets via GNRC and thus
        needs a msg queue */
     msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
