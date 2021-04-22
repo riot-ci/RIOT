@@ -37,7 +37,7 @@ ifneq (,$(filter i2c_scan,$(USEMODULE)))
 endif
 
 ifneq (,$(filter prng_fortuna,$(USEMODULE)))
-  USEMODULE += crypto_aes
+  USEMODULE += crypto_aes_128
 endif
 
 ifneq (,$(filter crypto_aes_%,$(USEMODULE)))
@@ -48,6 +48,14 @@ ifneq (,$(filter crypto_%,$(USEMODULE)))
   USEMODULE += crypto
 endif
 
+ifneq (,$(filter cipher_modes,$(USEMODULE)))
+  USEMODULE += crypto
+endif
+
+ifneq (,$(filter crypto,$(USEMODULE)))
+  DEFAULT_MODULE += crypto_aes_128
+endif
+
 ifneq (,$(filter sys_bus_%,$(USEMODULE)))
   USEMODULE += sys_bus
   USEMODULE += core_msg_bus
@@ -55,7 +63,7 @@ endif
 
 ifneq (,$(filter ieee802154_security,$(USEMODULE)))
   USEMODULE += crypto
-  USEMODULE += crypto_aes
+  USEMODULE += crypto_aes_128
   USEMODULE += cipher_modes
 endif
 
@@ -120,7 +128,7 @@ ifneq (,$(filter gnrc_lorawan,$(USEMODULE)))
   USEMODULE += xtimer
   USEMODULE += random
   USEMODULE += hashes
-  USEMODULE += crypto_aes
+  USEMODULE += crypto_aes_128
   USEMODULE += netdev_layer
   USEMODULE += gnrc_nettype_lorawan
 endif
