@@ -111,7 +111,6 @@ jobs:
       timeout-minutes: 350
       run: |
         RIOTBASE="$GITHUB_WORKSPACE/RIOT"
-        TOX_ARGS=""
         if ! echo ${{ github.event.inputs.riot_version }} | \
               grep -q "[0-9]\{4\}.[0-9]\{2\}-RC[0-9]\+"; then
           TOX_ARGS+="--non-RC "
@@ -138,7 +137,7 @@ jobs:
           TTN_DEV_ID="riot_lorawan_1" \
           TTN_DEV_ID_ABP="riot_lorawan_1_abp" \
           RIOTBASE=${RIOTBASE} \
-          $(which tox) -- ${TOX_ARGS} -m "${{ matrix.pytest_mark }}"
+          $(which tox) -e test -- ${TOX_ARGS} -m "${{ matrix.pytest_mark }}" -k "spec01"
     - name: junit2html and XML deploy
       if: always()
       run: |
