@@ -10,10 +10,14 @@ BOOTLOADER_BIN = bootloader$(BOOTLOADER_COLOR)$(BOOTLOADER_INFO).bin
 ESPTOOL ?= $(RIOTTOOLS)/esptool/esptool.py
 
 # The ELFFILE is the base one used for flashing
+ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 FLASHFILE ?= $(ELFFILE)
 
-# Convert .elf to .bin before flashing
-FLASHDEPS += esp-image-convert
+# Convert .elf and .csv to .bin files at build time. These are needed for
+# flashing only, but if they are added to FLASHDEPS instead a "flash-only"
+# target would cause a rebuild of $(ELFFILE) since these files depend on it and
+# ELFFILE depends on FORCE.
+BUILD_FILES += $(FLASHFILE).bin $(BINDIR)/partitions.bin
 
 # flasher configuration
 ifneq (,$(filter esp_qemu,$(USEMODULE)))
@@ -31,19 +35,26 @@ else
   FFLAGS += 0x10000 $(FLASHFILE).bin
 endif
 
-.PHONY: esp-image-convert esp-qemu
-# prepare image to flash: convert .elf to .bin
-esp-image-convert:
+$(FLASHFILE).bin: $(FLASHFILE)
 	$(Q)$(ESPTOOL) --chip $(FLASH_CHIP) elf2image --flash_mode $(FLASH_MODE) \
 		--flash_size $(FLASH_SIZE)MB --flash_freq $(FLASH_FREQ) $(FLASH_OPTS) \
-		-o $(FLASHFILE).bin $(FLASHFILE)
+		-o $@ $<
+
+# Default partition table with no OTA. Can be replaced with a custom partition
+# table setting PARTITION_TABLE_CSV.
+PARTITION_TABLE_CSV ?= $(BINDIR)/partitions.csv
+
+$(BINDIR)/partitions.csv: $(FLASHFILE).bin
 	$(Q)printf "\n" > $(BINDIR)/partitions.csv
-	$(Q)printf "nvs, data, nvs, 0x9000, 0x6000\n" >> $(BINDIR)/partitions.csv
-	$(Q)printf "phy_init, data, phy, 0xf000, 0x1000\n" >> $(BINDIR)/partitions.csv
-	$(Q)printf "factory, app, factory, 0x10000, " >> $(BINDIR)/partitions.csv
-	$(Q)ls -l $(FLASHFILE).bin | awk '{ print $$5 }' >> $(BINDIR)/partitions.csv
-	$(Q)python3 $(RIOTTOOLS)/esptool/gen_esp32part.py --verify \
-		$(BINDIR)/partitions.csv $(BINDIR)/partitions.bin
+	$(Q)printf "nvs, data, nvs, 0x9000, 0x6000\n" >> $@
+	$(Q)printf "phy_init, data, phy, 0xf000, 0x1000\n" >> $@
+	$(Q)printf "factory, app, factory, 0x10000, " >> $@
+	$(Q)ls -l $(FLASHFILE).bin | awk '{ print $$5 }' >> $@
+
+$(BINDIR)/partitions.bin: $(PARTITION_TABLE_CSV)
+	$(Q)python3 $(RIOTTOOLS)/esptool/gen_esp32part.py --verify $< $@
+
+.PHONY: esp-qemu
 
 esp-qemu:
 	$(Q)dd if=/dev/zero bs=1M count=$(FLASH_SIZE) | \
