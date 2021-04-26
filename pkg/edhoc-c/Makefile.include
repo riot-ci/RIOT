@@ -6,6 +6,15 @@ INCLUDES += -I$(PKGDIRBASE)/EDHOC-C/include \
 ifneq (,$(filter edhoc-c_crypto_wolfssl,$(USEMODULE)))
   CFLAGS += -DHAVE_AESCCM
   CFLAGS += -DHAVE_HKDF
+  CFLAGS += -DWOLFSSL
+endif
+
+ifneq (,$(filter edhoc-c_crypto_tinycrypt,$(USEMODULE)))
+  CFLAGS += -DTINYCRYPT
+endif
+
+ifneq (,$(filter edhoc-c_cbor_nanocbor,$(USEMODULE)))
+  CFLAGS += -DNANOCBOR
 endif
 
 # EDHOC-C configuration file for RIOT

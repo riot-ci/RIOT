@@ -1,6 +1,6 @@
 PKG_NAME = EDHOC-C
 PKG_URL = https://github.com/openwsn-berkeley/EDHOC-C.git
-PKG_VERSION = fdd7f7682fc0934ac78cbc333e3f4552333ee277
+PKG_VERSION = 705e91318e7d5e00ad9b923fe9f7fa1e54a370e9
 PKG_LICENSE = BSD-3-Clause
 
 PKG_SOURCE_LOCAL ?= /home/francisco/workspace/EDHOC-C

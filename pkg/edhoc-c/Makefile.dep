@@ -14,7 +14,6 @@ ifneq (,$(filter edhoc-c_crypto_tinycrypt,$(USEMODULE)))
   USEPKG += c25519
 endif
 
-
 ifneq (,$(filter edhoc-c_cbor_nanocbor,$(USEMODULE)))
   USEPKG += nanocbor
 endif
