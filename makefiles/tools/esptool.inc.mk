@@ -14,13 +14,13 @@ ESPTOOL ?= $(RIOTTOOLS)/esptool/esptool.py
 # earlier. This is used to create new make rules in this file (based on
 # FLASHFILE) and can't be deferred.
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
-FLASHFILE ?= $(ELFFILE)
+FLASHFILE ?= $(ELFFILE).bin
 
 # Convert .elf and .csv to .bin files at build time, but make them available for
 # tests at flash time. These can't be added to FLASHDEPS because they depend on
 # on ELFFILE and would trigger a rebuild with "flash-only".
-BUILD_FILES += $(FLASHFILE).bin $(BINDIR)/partitions.bin
-TEST_EXTRA_FILES += $(FLASHFILE).bin $(BINDIR)/partitions.bin
+BUILD_FILES += $(FLASHFILE) $(BINDIR)/partitions.bin
+TEST_EXTRA_FILES += $(FLASHFILE) $(BINDIR)/partitions.bin
 
 # flasher configuration
 ifneq (,$(filter esp_qemu,$(USEMODULE)))
@@ -35,25 +35,25 @@ else
   FFLAGS += --flash_mode $(FLASH_MODE) --flash_freq $(FLASH_FREQ)
   FFLAGS += $(BOOTLOADER_POS) $(RIOTCPU)/$(CPU)/bin/$(BOOTLOADER_BIN)
   FFLAGS += 0x8000 $(BINDIR)/partitions.bin
-  FFLAGS += 0x10000 $(FLASHFILE).bin
+  FFLAGS += 0x10000 $(FLASHFILE)
 endif
 
 # This is the binary that ends up programmed in the flash.
-$(FLASHFILE).bin: $(FLASHFILE)
+$(ELFFILE).bin: $(ELFFILE)
 	$(Q)$(ESPTOOL) --chip $(FLASH_CHIP) elf2image --flash_mode $(FLASH_MODE) \
 		--flash_size $(FLASH_SIZE)MB --flash_freq $(FLASH_FREQ) $(FLASH_OPTS) \
-		-o $@ $(FLASHFILE)
+		-o $@ $<
 
 # Default partition table with no OTA. Can be replaced with a custom partition
 # table setting PARTITION_TABLE_CSV.
 PARTITION_TABLE_CSV ?= $(BINDIR)/partitions.csv
 
-$(BINDIR)/partitions.csv: $(FLASHFILE).bin
+$(BINDIR)/partitions.csv: $(FLASHFILE)
 	$(Q)printf "\n" > $(BINDIR)/partitions.csv
 	$(Q)printf "nvs, data, nvs, 0x9000, 0x6000\n" >> $@
 	$(Q)printf "phy_init, data, phy, 0xf000, 0x1000\n" >> $@
 	$(Q)printf "factory, app, factory, 0x10000, " >> $@
-	$(Q)ls -l $(FLASHFILE).bin | awk '{ print $$5 }' >> $@
+	$(Q)ls -l $(FLASHFILE) | awk '{ print $$5 }' >> $@
 
 $(BINDIR)/partitions.bin: $(PARTITION_TABLE_CSV)
 	$(Q)python3 $(RIOTTOOLS)/esptool/gen_esp32part.py --verify $< $@
@@ -68,7 +68,7 @@ esp-qemu:
 		head -c $$((0x8000)) | \
 		cat - $(BINDIR)/partitions.bin tmp.bin | \
 		head -c $$((0x10000)) | \
-		cat - $(FLASHFILE).bin tmp.bin | \
+		cat - $(FLASHFILE) tmp.bin | \
 		head -c $(FLASH_SIZE)MB > $(BINDIR)/$(CPU)flash.bin && rm tmp.bin
 ifeq (esp32,$(CPU_FAM))
 	$(Q)cp $(RIOTCPU)/$(CPU)/bin/rom_0x3ff90000_0x00010000.bin $(BINDIR)/rom1.bin
