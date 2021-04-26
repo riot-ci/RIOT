@@ -20,7 +20,7 @@
 #define PERIPH_CPU_H
 
 #include <stdint.h>
-#include <limits.h>  // UINT_MAX
+#include <limits.h>
 
 #include "eagle_soc.h"
 
