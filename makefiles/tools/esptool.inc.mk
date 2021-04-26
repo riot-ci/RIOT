@@ -9,12 +9,18 @@ BOOTLOADER_BIN = bootloader$(BOOTLOADER_COLOR)$(BOOTLOADER_INFO).bin
 
 ESPTOOL ?= $(RIOTTOOLS)/esptool/esptool.py
 
-# The ELFFILE is the base one used for flashing
+# The ELFFILE is defined by default in $(RIOTBASE)/Makefile.include but only
+# after the $(PROGRAMMER).inc.mk file is included, so we need ELFFILE defined
+# earlier. This is used to create new make rules in this file (based on
+# FLASHFILE) and can't be deferred.
 ELFFILE ?= $(BINDIR)/$(APPLICATION).elf
 FLASHFILE ?= $(ELFFILE)
 
-# Convert .elf and .csv to .bin files before flashing.
-FLASHDEPS += $(FLASHFILE).bin $(BINDIR)/partitions.bin
+# Convert .elf and .csv to .bin files at build time, but make them available for
+# tests at flash time. These can't be added to FLASHDEPS because they depend on
+# on ELFFILE and would trigger a rebuild with "flash-only".
+BUILD_FILES += $(FLASHFILE).bin $(BINDIR)/partitions.bin
+TEST_EXTRA_FILES += $(FLASHFILE).bin $(BINDIR)/partitions.bin
 
 # flasher configuration
 ifneq (,$(filter esp_qemu,$(USEMODULE)))
@@ -32,22 +38,11 @@ else
   FFLAGS += 0x10000 $(FLASHFILE).bin
 endif
 
-# This target actually depends on $(FLASHFILE), but if we add $(FLASHFILE) here
-# it will cause it to be rebuilt even in "flash-only" mode because ELFFILE is
-# FORCEd. To avoid that we either add the dependency when calling make with
-# "all" or "flash", or we make it a PHONY target when only doing "flash-only".
-$(FLASHFILE).bin:
+# This is the binary that ends up programmed in the flash.
+$(FLASHFILE).bin: $(FLASHFILE)
 	$(Q)$(ESPTOOL) --chip $(FLASH_CHIP) elf2image --flash_mode $(FLASH_MODE) \
 		--flash_size $(FLASH_SIZE)MB --flash_freq $(FLASH_FREQ) $(FLASH_OPTS) \
 		-o $@ $(FLASHFILE)
-
-ifneq (,$(filter all flash, $(MAKECMDGOALS)))
-$(FLASHFILE).bin: $(FLASHFILE)
-else
-ifneq (,$(filter flash-only, $(MAKECMDGOALS)))
-.PHONY: $(FLASHFILE).bin
-endif
-endif
 
 # Default partition table with no OTA. Can be replaced with a custom partition
 # table setting PARTITION_TABLE_CSV.
