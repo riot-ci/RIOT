@@ -3,9 +3,16 @@ PKG_URL = https://github.com/openwsn-berkeley/EDHOC-C.git
 PKG_VERSION = 705e91318e7d5e00ad9b923fe9f7fa1e54a370e9
 PKG_LICENSE = BSD-3-Clause
 
-PKG_SOURCE_LOCAL ?= /home/francisco/workspace/EDHOC-C
-
 include $(RIOTBASE)/pkg/pkg.mk
+
+CFLAGS += -Wno-unused-label
+CFLAGS += -Wno-unused-variable
+CFLAGS += -Wno-unused-but-set-variable
+CFLAGS += -Wno-unused-parameter
+CFLAGS += -Wno-incompatible-pointer-types
+CFLAGS += -Wno-type-limits
+CFLAGS += -Wno-uninitialized
+CFLAGS += -Wno-maybe-uninitialized
 
 .PHONY: edhoc-c_%
 
