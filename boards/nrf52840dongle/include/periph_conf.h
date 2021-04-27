@@ -91,9 +91,6 @@ static const spi_conf_t spi_config[] = {
         .sclk = GPIO_PIN(0, 20),
         .mosi = GPIO_PIN(0, 22),
         .miso = GPIO_PIN(0, 24),
-#ifdef ERRATA_SPI_SINGLE_BYTE_WORKAROUND
-        .ppi = 0,
-#endif
     }
 };
 
