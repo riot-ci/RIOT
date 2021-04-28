@@ -118,7 +118,7 @@ USEPKG_W_PREFIX = $(addprefix USEPKG_,$(USEPKG))
 # Opens the menuconfig interface for configuration of modules using the Kconfig
 # system. It will try to update the autoconf.h, which will update if needed
 # (i.e. out.config changed).
-menuconfig: $(MENUCONFIG) $(KCONFIG_OUT_CONFIG)
+menuconfig: $(MENUCONFIG) $(KCONFIG_OUT_CONFIG) pkg-prepare
 	$(Q)KCONFIG_CONFIG=$(KCONFIG_OUT_CONFIG) $(MENUCONFIG) $(KCONFIG)
 	$(MAKE) $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
 
