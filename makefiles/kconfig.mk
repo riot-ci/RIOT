@@ -118,7 +118,7 @@ USEPKG_W_PREFIX = $(addprefix USEPKG_,$(USEPKG))
 # Opens the menuconfig interface for configuration of modules using the Kconfig
 # system. It will try to update the autoconf.h, which will update if needed
 # (i.e. out.config changed).
-menuconfig: $(MENUCONFIG) $(KCONFIG_OUT_CONFIG) pkg-prepare
+menuconfig: $(MENUCONFIG) $(KCONFIG_OUT_CONFIG)
 	$(Q)KCONFIG_CONFIG=$(KCONFIG_OUT_CONFIG) $(MENUCONFIG) $(KCONFIG)
 	$(MAKE) $(KCONFIG_GENERATED_AUTOCONF_HEADER_C)
 
@@ -176,7 +176,7 @@ GENERATED_DIR_DEP := $(if $(CLEAN),,|) $(GENERATED_DIR)
 # Generates a .config file by merging multiple sources specified in
 # MERGE_SOURCES. This will also generate KCONFIG_OUT_DEP with the list of used
 # Kconfig files.
-$(KCONFIG_OUT_CONFIG): $(KCONFIG_EXTERNAL_CONFIGS)
+$(KCONFIG_OUT_CONFIG): $(KCONFIG_EXTERNAL_CONFIGS) | pkg-prepare
 $(KCONFIG_OUT_CONFIG): $(GENERATED_DEPENDENCIES_DEP) $(GENCONFIG) $(MERGE_SOURCES) $(GENERATED_DIR_DEP)
 	$(Q) $(GENCONFIG) \
 	  --config-out=$(KCONFIG_OUT_CONFIG) \
