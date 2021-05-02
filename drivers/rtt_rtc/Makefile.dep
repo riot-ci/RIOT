@@ -2,3 +2,6 @@
 ifeq (,$(UNIT_TESTS))
   FEATURES_REQUIRED += periph_rtt
 endif
+
+FEATURES_PROVIDED += periph_rtc
+FEATURES_PROVIDED += periph_rtc_ms
