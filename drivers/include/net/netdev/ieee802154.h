@@ -140,6 +140,9 @@ typedef struct netdev_ieee802154_rx_info {
     int16_t rssi;           /**< RSSI of a received frame in dBm */
     uint8_t lqi;            /**< LQI of a received frame */
     uint8_t flags;          /**< Flags e.g. used to mark other fields as valid */
+#if IS_USED(MODULE_SOCK_AUX_TIMESTAP)
+    uint64_t timestamp;     /**< Timestamp value of a received frame in ns */
+#endif
 } netdev_ieee802154_rx_info_t;
 
 /**
