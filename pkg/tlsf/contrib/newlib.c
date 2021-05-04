@@ -78,7 +78,7 @@ ATTR_CALLOCR void *_calloc_r(struct _reent *reent_ptr, size_t count, size_t byte
     void *result = _malloc_r(reent_ptr, size_total);
 
     if (result != NULL) {
-        memset(result, 0, count * bytes);
+        memset(result, 0, size_total);
     }
     return result;
 }
