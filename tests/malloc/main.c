@@ -117,7 +117,7 @@ int main(void)
     /* modern compilers warn about nonsense calls to calloc, but this is exactly what we want to
      * test */
 #pragma GCC diagnostic push
-#ifndef __clang__
+#if !defined(__clang__) && (__GNUC__ > 6)
 #pragma GCC diagnostic ignored "-Walloc-size-larger-than="
 #endif
     /* test if an overflow is correctly detected by calloc(): the size below overflows by 1 byte */
