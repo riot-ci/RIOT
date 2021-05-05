@@ -265,6 +265,7 @@ void cpu_init(void)
 #else
 #error "Please select a valid CPU frequency"
 #endif
+
     OSCCTRL->OSC16MCTRL.bit.ONDEMAND = 1;
     OSCCTRL->OSC16MCTRL.bit.RUNSTDBY = 0;
 
@@ -296,8 +297,13 @@ void cpu_init(void)
         }
     }
     /* clock used by timers */
+#if (CLOCK_CORECLOCK == 48000000U)
+#define CLOCK_OSC16M    16000000U
+#else
+#define CLOCK_OSC16M    CLOCK_CORECLOCK
+#endif
     _gclk_setup(SAM0_GCLK_TIMER, GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSC16M
-                | GCLK_GENCTRL_DIV(CLOCK_CORECLOCK/sam0_gclk_freq(SAM0_GCLK_TIMER)));
+                | GCLK_GENCTRL_DIV(CLOCK_OSC16M/sam0_gclk_freq(SAM0_GCLK_TIMER)));
 
 #ifdef MODULE_PERIPH_PM
     PM->CTRLA.reg = PM_CTRLA_MASK & (~PM_CTRLA_IORET);
