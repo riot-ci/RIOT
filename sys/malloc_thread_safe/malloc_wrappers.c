@@ -44,11 +44,15 @@ void __wrap_free(void *ptr)
 
 void *__wrap_calloc(size_t nmemb, size_t size)
 {
-    assert(!irq_is_in());
-    mutex_lock(&_lock);
-    void *ptr = __real_calloc(nmemb, size);
-    mutex_unlock(&_lock);
-    return ptr;
+    /* some c libs don't perform proper overflow check (e.g. newlib < 4.0.0). Hence, we
+     * just implement calloc on top of malloc ourselves. In addition to ensuring proper
+     * overflow checks, this like saves a bit of ROM */
+    size_t total_size;
+    if (__builtin_mul_overflow(nmemb, size, &total_size)) {
+        return NULL;
+    }
+
+    return __wrap_malloc(total_size);
 }
 
 void *__wrap_realloc(void *ptr, size_t size)
