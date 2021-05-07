@@ -77,6 +77,11 @@ typedef enum {
 /** @} */
 
 /**
+ * @brief Type definition of thread_flags_t
+ */
+typedef uint16_t thread_flags_t;
+
+/**
  * @brief Describes a message object which can be sent between threads.
  *
  * User can set type and one of content.ptr and content.value. (content is a union)
