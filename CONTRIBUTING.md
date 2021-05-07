@@ -190,7 +190,8 @@ into the source repository.
   preoccupied with other PRs. If it happens that your PR receives no review for
   a long time, don't hesitate to gently solicit a review by commenting or
   by explicitly mentioning a maintainer that you know is knowledgeable in the
-  area of the PR.
+  area of the PR. You can also advertise the PR on the [forum] and ask for a
+  review there.
 
 * Try to answer reviews as quickly as possible to speed up the review process
   and avoid stalled PRs.
