@@ -32,8 +32,8 @@ extern "C" {
  * @brief TCP offset value boundaries.
  * @{
  */
-#define TCP_HDR_OFFSET_MIN (0x05)
-#define TCP_HDR_OFFSET_MAX (0x0F)
+#define TCP_HDR_OFFSET_MIN (0x05) /**< Header offset minimum value */
+#define TCP_HDR_OFFSET_MAX (0x0F) /**< Header offset maximum value */
 /** @} */
 
 /**
