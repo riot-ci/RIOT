@@ -33,8 +33,10 @@
 #define MESSAGE_TO_ENCODE   "unknown"
 #endif
 
-static uint8_t qr0[qrcodegen_BUFFER_LEN_FOR_VERSION(2)];
-static uint8_t buffer[qrcodegen_BUFFER_LEN_FOR_VERSION(2)];
+/* Compute buffer sizes based on the message to encode len to avoid a
+ * failed assertion in qrcodegen */
+static uint8_t qr0[qrcodegen_BUFFER_LEN_FOR_VERSION(1 + sizeof(MESSAGE_TO_ENCODE) / 10)];
+static uint8_t buffer[qrcodegen_BUFFER_LEN_FOR_VERSION(1 + sizeof(MESSAGE_TO_ENCODE) / 10)];
 
 #ifdef MODULE_DISP_DEV
 #define DISPLAY_BUFFER_MAX_SIZE (320)
