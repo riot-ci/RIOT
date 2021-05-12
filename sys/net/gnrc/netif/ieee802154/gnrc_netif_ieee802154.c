@@ -203,9 +203,11 @@ static gnrc_pktsnip_t *_recv(gnrc_netif_t *netif)
 #endif
             hdr->lqi = rx_info.lqi;
             hdr->rssi = rx_info.rssi;
+#if IS_USED(MODULE_GNRC_NETIF_TIMESTAMP)
             if (rx_info.flags & NETDEV_RX_IEEE802154_INFO_FLAG_TIMESTAMP) {
                 gnrc_netif_hdr_set_timestamp(hdr, rx_info.timestamp);
             }
+#endif
             gnrc_netif_hdr_set_netif(hdr, netif);
             dev->driver->get(dev, NETOPT_PROTO, &pkt->type, sizeof(pkt->type));
             if (IS_ACTIVE(ENABLE_DEBUG)) {
