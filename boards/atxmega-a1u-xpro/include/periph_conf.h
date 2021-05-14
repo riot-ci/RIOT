@@ -165,7 +165,6 @@ static const ebi_conf_t ebi_config = {
                                   0x0UL,
                                 },
                               },
-    .max_sp_addr            = 0xffff, /* RAM_LEN = 64k - 1 */
 };
 /** @} */
 
