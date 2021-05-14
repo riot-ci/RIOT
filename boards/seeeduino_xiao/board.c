@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2021 Franz Freitag, Justus Krebs, Nick Weiler 
+ * Copyright (C)  2021 Franz Freitag, Justus Krebs, Nick Weiler
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,13 +7,16 @@
  */
 
 /**
- * @ingroup     boards_seeedurino_XIAO
+ * @ingroup     boards_seeeduino_xiao
  * @{
  *
  * @file
  * @brief       Board specific implementations for the Seeeduino XIAO board
  *
- * @author      Franz Freitag <franz.freitag@st.ovgu.de>, Justus Krebs <justus.krebs@st.ovgu.de>, Nick Weiler <nick.weiler@st.ovgu.de>, Benjamin Valentin <benpicco@googlemail.com>
+ * @author      Franz Freitag <franz.freitag@st.ovgu.de>
+ * @author	Justus Krebs <justus.krebs@st.ovgu.de>
+ * @author	Nick Weiler <nick.weiler@st.ovgu.de>
+ * @author	Benjamin Valentin <benpicco@googlemail.com>
  *
  * @}
  */
@@ -28,7 +31,7 @@
 
 #ifdef MODULE_MTD
 /* GD25Q32C */
-static const mtd_spi_nor_params_t _seeduino_XIAO_nor_params = {
+static const mtd_spi_nor_params_t _seeeduino_XIAO_nor_params = {
     .opcode = &mtd_spi_nor_opcode_default,
     .wait_chip_erase = 15LU * US_PER_SEC,
     .wait_32k_erase = 250LU * US_PER_MS,
@@ -38,7 +41,7 @@ static const mtd_spi_nor_params_t _seeduino_XIAO_nor_params = {
     .flag = SEEEDUINO_XIAO_NOR_FLAGS,
     .spi = SEEEDUINO_XIAO_NOR_SPI_DEV,
     .mode = SEEEDUINO_XIAO_NOR_SPI_MODE,
-    .cs = SEEEDUINI_XIAO_NOR_SPI_CS,
+    .cs = SEEEDUINO_XIAO_NOR_SPI_CS,
     .wp = GPIO_UNDEF,
     .hold = GPIO_UNDEF,
     .addr_width = 3,

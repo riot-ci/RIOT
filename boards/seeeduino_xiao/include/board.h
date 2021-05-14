@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Franz Freitag, Justus Krebs, Nick Weiler 
+ * Copyright (C) 2021 Franz Freitag, Justus Krebs, Nick Weiler
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,14 +7,17 @@
  */
 
 /**
- * @ingroup     boards_seeeduino_XIAO
+ * @ingroup     boards_seeeduino_xiao
  * @brief       Support for the Seeeduino XIAO board.
  * @{
  *
  * @file
  * @brief       Board specific definitions for the Seeeduino XIAO
  *
- * @author      Franz Freitag <franz.freitag@st.ovgu.de>, Justus Krebs <justus.krebs@st.ovgu.de>, Nick Weiler <nick.weiler@st.ovgu.de>, Benjamin Valentin <benpicco@googlemail.com>
+ * @author      Franz Freitag <franz.freitag@st.ovgu.de>
+ * @author      Justus Krebs <justus.krebs@st.ovgu.de>
+ * @author      Nick Weiler <nick.weiler@st.ovgu.de>
+ * @author      Benjamin Valentin <benpicco@googlemail.com>
  */
 
 #ifndef BOARD_H

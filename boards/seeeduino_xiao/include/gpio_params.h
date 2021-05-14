@@ -7,13 +7,16 @@
  */
 
 /**
- * @ingroup     boards_seeeduino_XIAO
+ * @ingroup     boards_seeeduino_xiao
  * @{
  *
  * @file
  * @brief       Board specific configuration of direct mapped GPIOs
  *
- * @author     Franz Freitag <franz.freitag@st.ovgu.de>, Justus Krebs <justus.krebs@st.ovgu.de>, Nick Weiler <nick.weiler@st.ovgu.de>, Benjamin Valentin <benpicco@googlemail.com>
+ * @author     Franz Freitag <franz.freitag@st.ovgu.de>
+ * @author     Justus Krebs <justus.krebs@st.ovgu.de>
+ * @author     Nick Weiler <nick.weiler@st.ovgu.de>
+ * @author     Benjamin Valentin <benpicco@googlemail.com>
  */
 
 #ifndef GPIO_PARAMS_H

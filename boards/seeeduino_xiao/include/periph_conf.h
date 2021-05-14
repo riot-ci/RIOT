@@ -7,13 +7,16 @@
  */
 
 /**
- * @ingroup     boards_seeeduino_XIAO
+ * @ingroup     boards_seeeduino_xiao
  * @{
  *
  * @file
  * @brief       Configuration of CPU peripherals for the Serpente board
  *
- * @author      Franz Freitag <franz.freitag@st.ovgu.de>, Justus Krebs <justus.krebs@st.ovgu.de>, Nick Weiler <nick.weiler@st.ovgu.de>, Benjamin Valentin <benpicco@googlemail.com>
+ * @author      Franz Freitag <franz.freitag@st.ovgu.de>
+ * @author      Justus Krebs <justus.krebs@st.ovgu.de>
+ * @author      Nick Weiler <nick.weiler@st.ovgu.de>
+ * @author      Benjamin Valentin <benpicco@googlemail.com>
  */
 
 #ifndef PERIPH_CONF_H
@@ -215,7 +218,6 @@ static const adc_conf_chan_t adc_channels[] = {
 
 #define ADC_NUMOF           ARRAY_SIZE(adc_channels)
 /** @} */
-
 
 /**
  * @name USB peripheral configuration

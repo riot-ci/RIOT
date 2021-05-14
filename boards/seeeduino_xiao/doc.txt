@@ -9,7 +9,7 @@ The Seeeduino XIAO is the smallest member of the Seeeduino family. It carries th
 
 Seeeduino XIAO has 14 GPIO PINs, which can be used for 11 digital interfaces, 11 mock interfaces, 10 PWM interfaces (d1-d10), 1 DAC output pin D0, 1 SWD pad interface, 1 I2C interface, 1 SPI interface, 1 UART interface, Serial communication indicator (T/R), Blink light (L). The colors of LEDs(Power,L,RX,TX) are green, yellow, blue and blue. Moreover, Seeeduino XIAO has a Type-C interface which can supply power and download code. There are two reset button, you can short connect them to reset the board.
 
--- General discription of the [wiki](https://wiki.seeedstudio.com/Seeeduino-XIAO/)
+-- General description of the [wiki](https://wiki.seeedstudio.com/Seeeduino-XIAO/)
 
 ### Pinout
 
@@ -17,10 +17,11 @@ Seeeduino XIAO has 14 GPIO PINs, which can be used for 11 digital interfaces, 11
 
 ### Flash the board
 
-Use `BOARD=seeeduino_XIAO` with the `make` command.<br/>
+Use `BOARD=seeeduino_xiao` with the `make` command.<br/>
+
 Example with `default` application:
 ```
-     make BOARD=seeeduino_XIAO -C examples/default flash
+     make BOARD=seeeduino_xiao -C examples/default flash
 ```
 
 RIOT will automatically trigger a reset to the bootloader, but this only works if RIOT is still
