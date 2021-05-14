@@ -252,7 +252,7 @@ void ebi_init(void)
             "out  __SP_L__,     %A[stack]          \n\t"
             "out  __SP_H__,     %B[stack]          \n\t"
             : /* no output */
-            : [stack]         "r"(ebi_config.max_sp_addr)
+            : [stack]         "r"(RAM_LEN)
             : "memory"
         );
     };

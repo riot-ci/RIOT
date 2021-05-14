@@ -457,25 +457,17 @@ typedef struct {
  * The external address space can be used to address external peripherals and
  * expand SRAM.  The ebi driver provide methods to read/write in external
  * address space.  The SRAM can be expanded up to 64k when one chip select
- * address have value equal to zero.
+ * address have value equal to zero. To allow expand external RAM both
+ * @b RAM_LEN and @b EXP_RAM variables should be override at board
+ * makefile.include file.
  *
- * To allow correct use of external RAM the @b max_sp_addr should be filled.
- * This sets Stack Pointer SP to new max value.  These means that max RAM size
- * that xmega can use with RIOT-OS will be expanded up to 64k.  The limit is
- * defined by the 16 bit SP register.  The board should define the new max RAM
- * size overriding RAM_LEN and instructing GCC with new @b end @b of @b heap
- * value at LDSCRIPT_EXTRA variable.  This should be configured at
- * board/Makefile.include.  The RAM start address for AVR GCC is 0x800000.
- * These means that RAM_LEN should be configured with max value that SP can
- * address, @b max_sp_addr should have RAM_LEN - 1 and LDSCRIPT_EXTRA should
- * define new HEAP end symbol -Wl,--defsym=__heap_end=<value>.  <value> is
- * RAM start address + max_sp_addr value.
+ * @note To avoid parser problems, @b RAM_LEN must be defined as decimal value.
  *
  * Example: Add 256K of external RAM
  *
  * The max addressable RAM by SP is 64K due to limit of 16 bits.  In this case,
- * RAM will be 64K.  The max SP should be set with MAX RAM - 1.  The remaining
- * RAM can be addressed only by ebi_mem methods and GCC doesn't see it.
+ * RAM will be 64K.  The remaining RAM can be addressed only by ebi_mem methods
+ * and GCC doesn't see it.
  *
  * At board/periph_conf.h:
  *
@@ -503,12 +495,11 @@ typedef struct {
  *                                0x0UL,
  *                              },
  *                            },
- *    .max_sp_addr            = 0xffff,
  * };
  *
  * At board/Makefile.include:
- * RAM_LEN = 64K
- * LDSCRIPT_EXTRA = -Wl,--defsym=__heap_end=0x80FFFF
+ * override RAM_LEN = 65536
+ * override EXP_RAM = 1
  *
  * Example: Add 32K of external RAM and a LCD
  *
@@ -538,12 +529,11 @@ typedef struct {
  *                                0x100000UL,
  *                              },
  *                            },
- *    .max_sp_addr            = 0x7fff,
  * };
  *
  * At board/Makefile.include:
- * RAM_LEN = 32K
- * LDSCRIPT_EXTRA = -Wl,--defsym=__heap_end=0x807FFF
+ * override RAM_LEN = 32768
+ * override EXP_RAM = 1
  *
  * This data structure a mandatory configuration for A1 variation. If no
  * external memory is used the module can be disabled defining data struct
@@ -566,7 +556,6 @@ typedef struct {
     uint8_t lpc_ale;                    /**< Number of ALE for LPC mode */
     ebi_sd_t sdram;                     /**< SDRAM configuration */
     ebi_cs_t cs[PERIPH_EBI_MAX_CS];     /**< Chip Select configuration */
-    uint16_t max_sp_addr;               /**< Max Stack Pointer value */
 } ebi_conf_t;
 /** @} */
 
