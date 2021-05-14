@@ -22,6 +22,7 @@
 #include "sched.h"
 #include "thread.h"
 #include "sched.h"
+#include "xtimer.h"
 
 #ifdef MODULE_SCHEDSTATISTICS
 #include "schedstatistics.h"
@@ -50,7 +51,7 @@ void ps(void)
            "| stack  ( used) ( free) | base addr  | current     "
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-           "| runtime  | switches"
+           "| runtime  | switches  | runtime_usec "
 #endif
            "\n",
 #ifdef CONFIG_THREAD_NAMES
@@ -102,6 +103,7 @@ void ps(void)
 #ifdef MODULE_SCHEDSTATISTICS
             /* multiply with 100 for percentage and to avoid floats/doubles */
             uint64_t runtime_ticks = sched_pidlist[i].runtime_ticks * 100;
+            xtimer_ticks32_t xtimer_ticks = {sched_pidlist[i].runtime_ticks};
             unsigned runtime_major = runtime_ticks / rt_sum;
             unsigned runtime_minor = ((runtime_ticks % rt_sum) * 1000) / rt_sum;
             unsigned switches = sched_pidlist[i].schedules;
@@ -115,7 +117,7 @@ void ps(void)
                    " | %6i (%5i) (%5i) | %10p | %10p "
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-                   " | %2d.%03d%% |  %8u"
+                   " | %2d.%03d%% |  %8u  | %8u "
 #endif
                    "\n",
                    p->pid,
@@ -128,7 +130,7 @@ void ps(void)
                    (void *)p->stack_start, (void *)p->sp
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-                   , runtime_major, runtime_minor, switches
+                   , runtime_major, runtime_minor, switches, (unsigned)xtimer_usec_from_ticks(xtimer_ticks)
 #endif
                   );
         }
