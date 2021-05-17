@@ -1,7 +1,7 @@
 name: pr-labeler
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -10,5 +10,5 @@ jobs:
     steps:
     - uses: actions/labeler@main
       with:
-        repo-token: ${{ secrets.RIOT_CI_ACCESS_TOKEN }}
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
         sync-labels: true
