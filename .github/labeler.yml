@@ -1,3 +1,11 @@
+"Area: arduino API":
+  - sys/arduino/**/*
+
+"Area: BLE":
+  - pkg/nimble/**/*
+  - sys/net/**/*
+  - sys/include/net/**/*
+
 "Area: boards":
   - boards/**/*
 
@@ -10,6 +18,10 @@
   - .circleci/**/*
   - .github/**/*.yml
   - .murdock
+
+"Area: CoAP":
+  - sys/net/application_layer/*coap/**/*
+  - sys/net/include/*coap*/**/*
 
 "Area: core":
   - core/**/*
@@ -29,8 +41,10 @@
   - examples/**/*
 
 "Area: Kconfig":
-  - ./**/Kconfig.*
-  - ./**/Kconfig
+  - dist/tools/kconfiglib/**/*
+  - makefiles/kconfig.mk
+  - kconfigs/*
+  - Kconfig
 
 "Area: network":
   - sys/net/**/*
@@ -48,11 +62,19 @@
 "Area: pkg":
   - pkg/**/*
 
+"Area: SAUL":
+  - drivers/saul/**/*
+  - drivers/include/saul/**/*
+  - drivers/include/saul.h
+  - sys/saul_reg/**/*
+  - sys/include/saul_reg.h
+
 "Area: sys":
   - sys/**/*
 
 "Area: tests":
   - tests/**/*
+  - fuzzing/**/*
   - dist/pythonlibs/**/*
   - makefiles/tests/**/*
 
@@ -68,3 +90,8 @@
   - dist/tools/**/*
   - dist/testbed-support/**/*
   - makefiles/tools/**/*
+
+"Area: USB":
+  - sys/usb/**/*
+  - sys/include/usb/**/*
+  - sys/include/usb.h
