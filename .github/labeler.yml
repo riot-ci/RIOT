@@ -1,0 +1,70 @@
+"Area: boards":
+  - boards/**/*
+
+"Area: build system":
+  - Makefile.*
+  - makefiles/**/*
+  - ./**/*.mk
+
+"Area: CI":
+  - .circleci/**/*
+  - .github/**/*.yml
+  - .murdock
+
+"Area: core":
+  - core/**/*
+
+"Area: cpu":
+  - cpu/**/*
+
+"Area: doc":
+  - ./**/*.txt
+  - doc/**/*
+  - ./*.md
+
+"Area: drivers":
+  - drivers/**/*
+
+"Area: examples":
+  - examples/**/*
+
+"Area: Kconfig":
+  - ./**/Kconfig.*
+  - ./**/Kconfig
+
+"Area: network":
+  - sys/net/**/*
+  - sys/include/net/**/*
+  - pkg/lwip/**/*
+  - pkg/openthread/**/*
+  - pkg/openwsn/**/*
+  - pkg/paho-mqtt/**/*
+
+"Area: OTA":
+  - sys/suit/**/*
+  - sys/include/suit/**/*
+  - sys/include/suit.h
+
+"Area: pkg":
+  - pkg/**/*
+
+"Area: sys":
+  - sys/**/*
+
+"Area: tests":
+  - tests/**/*
+  - dist/pythonlibs/**/*
+  - makefiles/tests/**/*
+
+"Area: timers":
+  - sys/*timer/**/*
+  - sys/include/*timer/**/*
+  - sys/include/*timer.h
+
+"Area: toolchain":
+  - makefiles/toolchain/**/*
+
+"Area: tools":
+  - dist/tools/**/*
+  - dist/testbed-support/**/*
+  - makefiles/tools/**/*
