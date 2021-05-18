@@ -24,3 +24,5 @@ info-applications-supported-boards:
 	done
 # BOARDS values from 'boards.inc.mk' to only evaluate it once
 info-applications-supported-boards: export BOARDS ?=
+
+# This is a test

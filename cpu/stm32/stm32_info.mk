@@ -1,3 +1,5 @@
+# This is a test
+
 # Extract STM32 infos from CPU_MODEL
 # Example for STM32L476RG:
 #  - STM32_TYPE: L

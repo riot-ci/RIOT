@@ -12,3 +12,5 @@ endif
 
 include $(RIOTBOARD)/common/nrf52/bootloader_nrfutil.dep.mk
 include $(RIOTBOARD)/common/nrf52/Makefile.dep
+
+# This is a test

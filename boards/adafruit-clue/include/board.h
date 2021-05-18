@@ -111,5 +111,7 @@ extern "C" {
 }
 #endif
 
+/* this is a test */
+
 #endif /* BOARD_H */
 /** @} */
