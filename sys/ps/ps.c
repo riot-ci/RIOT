@@ -20,12 +20,10 @@
 
 #include "thread.h"
 #include "sched.h"
-#include "thread.h"
-#include "sched.h"
-#include "xtimer.h"
 
 #ifdef MODULE_SCHEDSTATISTICS
 #include "schedstatistics.h"
+#include "xtimer.h"
 #endif
 
 #ifdef MODULE_TLSF_MALLOC
