@@ -229,6 +229,7 @@ GLOBAL_GOALS += buildtest \
                 info-boards-features-conflicting \
                 info-boards-features-missing \
                 info-boards-supported \
+                info-kconfig-boards-supported \
                 info-buildsizes info-buildsizes-diff \
                 #
 
