@@ -9,6 +9,7 @@
 
 : ${TEST_KCONFIG_BOARDS_AVAILABLE:="
 native
+nucleo-f103rb
 samr21-xpro
 "}
 
