@@ -12,6 +12,9 @@
  * @file
  * @brief   UNIX like ps command
  * @author  Kaspar Schleiser <kaspar@schleiser.de>
+ *
+ * @note    The entry 'runtime_usec' in 'MODULE_SCHEDSTATISTICS' is limited
+ *          to 2**32 microseconds. So the entry gets reset after ~1.2 hours.
  * @}
  */
 
@@ -88,11 +91,11 @@ void ps(void)
         thread_t *p = thread_get(i);
 
         if (p != NULL) {
-            thread_status_t state = thread_get_status(p);                          /* copy state */
-            const char *sname = thread_state_to_string(state);                     /* get state name */
-            const char *queued = thread_is_active(p) ? "Q" : "_";                  /* get queued flag */
+            thread_status_t state = thread_get_status(p);                   /* copy state */
+            const char *sname = thread_state_to_string(state);              /* get state name */
+            const char *queued = thread_is_active(p) ? "Q" : "_";           /* get queued flag */
 #ifdef DEVELHELP
-            int stacksz = p->stack_size;                                           /* get stack size */
+            int stacksz = p->stack_size;                                    /* get stack size */
             overall_stacksz += stacksz;
             int stack_free = thread_measure_stack_free(p->stack_start);
             stacksz -= stack_free;
@@ -115,7 +118,7 @@ void ps(void)
                    " | %6i (%5i) (%5i) | %10p | %10p "
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-                   " | %2d.%03d%% |  %8u  | %8u "
+                   " | %2d.%03d%% |  %8u  | %10"PRIu32" "
 #endif
                    "\n",
                    p->pid,
@@ -128,7 +131,7 @@ void ps(void)
                    (void *)p->stack_start, (void *)p->sp
 #endif
 #ifdef MODULE_SCHEDSTATISTICS
-                   , runtime_major, runtime_minor, switches, (unsigned)xtimer_usec_from_ticks(xtimer_ticks)
+                   , runtime_major, runtime_minor, switches, xtimer_usec_from_ticks(xtimer_ticks)
 #endif
                   );
         }
