@@ -10,6 +10,7 @@ if TEST_KCONFIG
 config MODULE_BOARDS_COMMON_NUCLEO
     bool
     default y
+    select MODULE_SAUL_GPIO if MODULE_SAUL_DEFAULT
     help
         stm32 common nucleo code.
 
