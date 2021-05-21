@@ -171,6 +171,16 @@ static const arduino_pwm_t arduino_pwm_list[] = {
 };
 
 /**
+ * @brief   Enables interrupts
+ */
+#define interrupts() sei()
+
+/**
+ * @brief   Disables interrupts
+ */
+#define noInterrupts() cli()
+
+/**
  * @brief F_CPU defines the CPU frequency in Hz.
  *
  * This is used in AVR's libc delay.h and setbaud.h
