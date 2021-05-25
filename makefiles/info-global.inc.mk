@@ -1,6 +1,7 @@
 .PHONY: info-buildsizes \
         info-buildsizes-diff \
         info-boards-supported \
+        info-kconfig-boards-supported \
         info-boards-features-missing \
         info-boards-features-blacklisted \
         info-boards-features-conflicting \
@@ -130,6 +131,14 @@ info-buildsizes-diff:
 	    for I in 0 1 2 3; do echo -ne "$${NEW[I]-$(COLOR_RED)ERR$(COLOR_RESET)}\t"; done; echo -e "$${NEWBIN}\n"; \
 	  done; \
 	done;
+
+ifeq (1, $(TEST_KCONFIG))
+info-kconfig-boards-supported:
+	@[ -f app.config.test ] && echo $(BOARDS) || echo none
+else
+info-kconfig-boards-supported:
+	@echo $(BOARDS)
+endif
 
 info-boards-supported:
 	@echo $(BOARDS)
