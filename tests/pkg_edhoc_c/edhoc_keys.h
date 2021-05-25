@@ -26,6 +26,7 @@
 #define EDHOC_C_KEYS_H
 
 #include <inttypes.h>
+
 #include "kernel_defines.h"
 
 #ifdef __cplusplus

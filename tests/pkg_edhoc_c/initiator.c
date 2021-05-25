@@ -106,7 +106,7 @@ static ssize_t _build_coap_pkt(coap_pkt_t *pkt, uint8_t *buf, ssize_t buflen,
                                uint8_t *payload, ssize_t payload_len)
 {
     uint8_t token[2] = { 0xDA, 0xEC };
-    ssize_t len;
+    ssize_t len = 0;
     /* set pkt buffer */
     pkt->hdr = (coap_hdr_t *)buf;
     /* build header, confirmed message always post */
@@ -125,12 +125,12 @@ static ssize_t _build_coap_pkt(coap_pkt_t *pkt, uint8_t *buf, ssize_t buflen,
 
 int _handshake_cmd(int argc, char **argv)
 {
-    uint8_t buf[COAP_BUF_SIZE];
+    uint8_t buf[COAP_BUF_SIZE] = { 0 };
     coap_pkt_t pkt;
-    ssize_t len;
-    uint16_t port;
+    ssize_t len = 0;
+    uint16_t port = COAP_PORT;
     uint8_t msg[COAP_BUF_SIZE];
-    ssize_t msg_len;
+    ssize_t msg_len = 0;
 
     /* correlation value is transport specifc */
     corr_t corr = CORR_1_2;
@@ -139,10 +139,7 @@ int _handshake_cmd(int argc, char **argv)
         printf("usage: %s <addr>[%%iface] <port>\n", argv[0]);
         return -1;
     }
-    if (argc < 3) {
-        port = COAP_PORT;
-    }
-    else {
+    if (argc == 3) {
         port = atoi(argv[2]);
     }
 
@@ -163,10 +160,10 @@ int _handshake_cmd(int argc, char **argv)
         puts("[initiator]: failed to send msg1");
         return -1;
     }
-    else {
-        printf("[initiator]: received a message (%d bytes):\n", pkt.payload_len);
-        print_bstr(pkt.payload, pkt.payload_len);
-    }
+
+    printf("[initiator]: received a message (%d bytes):\n", pkt.payload_len);
+    print_bstr(pkt.payload, pkt.payload_len);
+
     if ((msg_len = edhoc_create_msg3(&_ctx, pkt.payload, pkt.payload_len, msg, sizeof(msg))) > 0) {
         printf("[initiator]: sending msg3 (%d bytes):\n", msg_len);
         print_bstr(msg, msg_len);

@@ -30,7 +30,7 @@
 
 int _cred_cb(const uint8_t *k, size_t k_len, const uint8_t **o, size_t *o_len)
 {
-    for (uint8_t i = 0; i < CRED_DB_SIZE; i++) {
+    for (uint8_t i = 0; i < (uint8_t) CRED_DB_SIZE; i++) {
         if (cred_db[i].id_len == k_len) {
             if (memcmp(cred_db[i].id, k, k_len) == 0) {
                 *o = cred_db[i].cred;
@@ -69,11 +69,11 @@ int edhoc_setup(edhoc_ctx_t *ctx, edhoc_conf_t *conf, edhoc_role_t role,
     cose_key_init(auth_key);
 
     /* only for testing load preset keys for role */
-    const uint8_t *cbor_auth_key;
-    const uint8_t *cbor_rpk;
-    const uint8_t *cbor_rpk_id;
-    size_t cbor_auth_key_len;
-    size_t cbor_rpk_len;
+    const uint8_t *cbor_auth_key = NULL;
+    const uint8_t *cbor_rpk = NULL;
+    const uint8_t *cbor_rpk_id = NULL;
+    size_t cbor_auth_key_len = 0;
+    size_t cbor_rpk_len = 0;
     size_t cbor_rpk_id_len;
 
     if (role == EDHOC_IS_RESPONDER) {

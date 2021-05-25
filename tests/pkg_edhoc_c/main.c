@@ -19,10 +19,9 @@
 
 #include <stdio.h>
 
-#include "thread.h"
 #include "net/nanocoap_sock.h"
-
 #include "shell.h"
+#include "thread.h"
 
 #include "edhoc/edhoc.h"
 #include "edhoc_keys.h"
