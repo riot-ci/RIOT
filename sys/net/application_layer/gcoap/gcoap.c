@@ -928,7 +928,12 @@ static ssize_t _tl_send(coap_socket_t *sock, const void *data, size_t len,
 static ssize_t _tl_authenticate(coap_socket_t *sock, const sock_udp_ep_t *remote,
                                 uint32_t timeout)
 {
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if !IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+    (void)sock;
+    (void)remote;
+    (void)timeout;
+    return 0;
+#else
     int res;
 
     /* prepare session */
@@ -971,9 +976,8 @@ static ssize_t _tl_authenticate(coap_socket_t *sock, const sock_udp_ep_t *remote
         sock_dtls_session_destroy(sock->socket.dtls, &sock->ctx_dtls_session);
         return -ENOTCONN;
     }
-
-#endif
     return 0;
+#endif
 }
 
 
