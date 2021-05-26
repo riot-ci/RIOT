@@ -420,8 +420,12 @@ extern "C" {
 /**
  * @brief   Server port; use RFC 7252 default if not defined
  */
+#ifndef CONFIG_GCOAP_PORT
 #define CONFIG_GCOAP_PORT              (5683)
+#endif
+#ifndef CONFIG_GCOAPS_PORT
 #define CONFIG_GCOAPS_PORT             (5684)
+#endif
 
 /**
  * @brief   Timeout for the DTLS handshake process. Set to 0 for infinite time
@@ -872,6 +876,7 @@ static inline ssize_t gcoap_request(coap_pkt_t *pdu, uint8_t *buf, size_t len,
  * @param[in] context       User defined context passed to the response handler
  *
  * @return  length of the packet
+ * @return -ENOTCONN, if DTLS was used and session establishment failed
  * @return  0 if cannot send
  */
 ssize_t gcoap_req_send(const uint8_t *buf, size_t len,
