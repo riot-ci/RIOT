@@ -40,6 +40,7 @@ GCOAP_ENABLE_DTLS ?= 1
 ifeq (1,$(GCOAP_ENABLE_DTLS))
 	# Required by DTLS. Currently, only tinyDTLS is supported by sock_dtls.
 	USEPKG += tinydtls
+	USEMODULE += sock_dtls
 	USEMODULE += tinydtls_sock_dtls
 	USEMODULE += gcoap_dtls
 	# tinydtls needs crypto secure PRNG

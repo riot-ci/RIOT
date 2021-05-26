@@ -35,6 +35,7 @@
 #include "net/dsm.h"
 #include "tinydtls_keys.h"
 
+/* Example credential tag for credman. Tag together with the credential type needs to be unique. */
 #define GCOAP_DTLS_CREDENTIAL_TAG 10
 
 static const uint8_t psk_id_0[] = PSK_DEFAULT_IDENTITY;
