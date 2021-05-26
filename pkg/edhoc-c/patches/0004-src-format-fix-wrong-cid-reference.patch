@@ -1,0 +1,25 @@
+From 58bec2d0390010fae625ce201b0e48e9031dc63f Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Tue, 25 May 2021 13:19:40 +0200
+Subject: [PATCH 4/4] src/format: fix wrong cid reference
+
+---
+ src/format.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/format.c b/src/format.c
+index 0a6e0f9..31e961c 100644
+--- a/src/format.c
++++ b/src/format.c
+@@ -300,7 +300,7 @@ int format_msg2_decode(edhoc_msg2_t *msg2,
+             EDHOC_FAIL(EDHOC_ERR_CBOR_DECODING);
+         }
+     } else {
+-        msg2->data2.cidr.length = 0;
++        msg2->data2.cidi.length = 0;
+     }
+ 
+     if (suite == NULL) {
+-- 
+2.28.0
+

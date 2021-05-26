@@ -1,7 +1,7 @@
 From 45fb29481636d887ea77d4958cf83293cec7e652 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Mon, 26 Apr 2021 12:39:50 +0200
-Subject: [PATCH 3/3] src/cbor: patch types
+Subject: [PATCH 3/4] src/cbor: patch types
 
 ---
  src/cbor.h          | 2 +-

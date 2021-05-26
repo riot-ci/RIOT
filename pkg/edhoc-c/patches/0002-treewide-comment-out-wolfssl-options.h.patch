@@ -1,7 +1,7 @@
 From 169c3ae86ac9f9f745b697f4d682e91896b89dd7 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Wed, 21 Apr 2021 10:42:56 +0200
-Subject: [PATCH 2/3] treewide: comment out wolfssl/options.h
+Subject: [PATCH 2/4] treewide: comment out wolfssl/options.h
 
 ---
  src/crypto.h         | 2 +-
