@@ -44,7 +44,7 @@ ifeq (,$(IOTLAB_NODE))
   $(warning    Example: m3-380.grenoble.iot-lab.info or a8-1.grenoble.iot-lab.info)
   $(warning  * <type>-<number> when run from iot-lab frontend)
   $(warning    Example: m3-380 or a8-1)
-  $(warning  * 'auto' or 'auto-ssh' to try auto-detecting the node from your experiment
+  $(warning  * 'auto' to try auto-detecting the node from your experiment
   $(error)
 endif
 
