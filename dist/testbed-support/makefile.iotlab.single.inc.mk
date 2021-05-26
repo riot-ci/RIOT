@@ -49,7 +49,8 @@ ifeq (,$(IOTLAB_NODE))
 endif
 
 ifeq (auto-ssh,$(IOTLAB_NODE))
-  $(warning IOTLAB_NODE=auto-ssh is deprecated, use IOTLAB_NODE=auto instead)
+  $(info $(COLOR_YELLOW)IOTLAB_NODE=auto-ssh is deprecated and will be removed after \
+         2010.07 is released, use IOTLAB_NODE=auto instead$(COLOR_RESET))
   override IOTLAB_NODE := auto
 endif
 
@@ -124,10 +125,11 @@ ifeq (auto,$(IOTLAB_NODE))
   endif
   _NODES_FOR_BOARD = $(shell iotlab-experiment --jmespath="items[?archi=='$(IOTLAB_ARCHI)'].network_address" --format='" ".join' get $(_IOTLAB_EXP_ID) $(_NODES_LIST_OPTION))
 
-  override IOTLAB_NODE := $(word $(IOTLAB_NODE_AUTO_NUM),$(filter $(_NODES_DEPLOYED),$(_NODES_FOR_BOARD)))
-
+  _IOTLAB_NODE := $(word $(IOTLAB_NODE_AUTO_NUM),$(filter $(_NODES_DEPLOYED),$(_NODES_FOR_BOARD)))
   ifneq (,$(IOT_LAB_FRONTEND_FQDN))
-    override IOTLAB_NODE := $(firstword $(subst ., ,$(IOTLAB_NODE)))
+    override IOTLAB_NODE := $(firstword $(subst ., ,$(_IOTLAB_NODE)))
+  else
+    override IOTLAB_NODE := $(_IOTLAB_NODE)
   endif
 
   ifeq (,$(IOTLAB_NODE))
