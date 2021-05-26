@@ -1,5 +1,5 @@
-PKG_NAME=qDSA
-PKG_URL=https://github.com/RIOT-OS/qDSA.git
+PKG_NAME=qdsa
+PKG_URL=https://github.com/RIOT-OS/qdsa.git
 PKG_VERSION=dd2392b0c81ce4187fd3e1e2d3e0a4767f75782e
 PKG_LICENSE=PD
 
