@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-#include "os/sem.h"
+#include "os/os_sem.h"
 
 #ifdef __cplusplus
 extern "C" {

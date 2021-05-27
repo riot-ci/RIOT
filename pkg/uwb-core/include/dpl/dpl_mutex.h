@@ -20,7 +20,7 @@
 #ifndef DPL_DPL_MUTEX_H
 #define DPL_DPL_MUTEX_H
 
-#include "os/mutex.h"
+#include "os/os_mutex.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -20,7 +20,7 @@
 #ifndef DPL_DPL_TIME_H
 #define DPL_DPL_TIME_H
 
-#include "os/time.h"
+#include "os/os_time.h"
 
 #ifdef __cplusplus
 extern "C" {

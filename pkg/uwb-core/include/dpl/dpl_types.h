@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "os/types.h"
+#include "os/os_types.h"
 
 #ifdef __cplusplus
 extern "C" {

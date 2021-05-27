@@ -22,7 +22,7 @@
 
 #include <dpl/dpl_types.h>
 
-#include "os/eventq.h"
+#include "os/os_eventq.h"
 #include "uwb_core.h"
 
 #ifdef __cplusplus
