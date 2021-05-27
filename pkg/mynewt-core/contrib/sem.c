@@ -20,7 +20,7 @@
 #include <stdio.h>
 
 #include "irq.h"
-#include "os/sem.h"
+#include "os/os_sem.h"
 
 os_error_t os_sem_init(struct os_sem *sem, uint16_t tokens)
 {

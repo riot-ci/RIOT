@@ -18,7 +18,7 @@
  */
 
 #include "os/os_error.h"
-#include "os/tasks.h"
+#include "os/os_tasks.h"
 #include "thread.h"
 
 #ifndef LOG_LEVEL

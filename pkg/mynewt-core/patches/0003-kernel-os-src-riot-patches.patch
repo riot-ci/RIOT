@@ -1,0 +1,40 @@
+From 732d7c04306828d8e4c246b056442f77b1045879 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Thu, 27 May 2021 11:58:13 +0200
+Subject: [PATCH 3/4] kernel/os/src: riot patches
+
+---
+ kernel/os/src/os_mbuf.c | 4 +---
+ kernel/os/src/os_msys.c | 1 -
+ 2 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/kernel/os/src/os_mbuf.c b/kernel/os/src/os_mbuf.c
+index 494dedc32..ed9f1c693 100644
+--- a/kernel/os/src/os_mbuf.c
++++ b/kernel/os/src/os_mbuf.c
+@@ -50,9 +50,7 @@ os_mqueue_init(struct os_mqueue *mq, os_event_fn *ev_cb, void *arg)
+     STAILQ_INIT(&mq->mq_head);
+ 
+     ev = &mq->mq_ev;
+-    memset(ev, 0, sizeof(*ev));
+-    ev->ev_cb = ev_cb;
+-    ev->ev_arg = arg;
++    os_event_init(ev, ev_cb, arg);
+ 
+     return (0);
+ }
+diff --git a/kernel/os/src/os_msys.c b/kernel/os/src/os_msys.c
+index 67c118473..9a06db6fd 100644
+--- a/kernel/os/src/os_msys.c
++++ b/kernel/os/src/os_msys.c
+@@ -20,7 +20,6 @@
+ #include <assert.h>
+ #include "os/mynewt.h"
+ #include "mem/mem.h"
+-#include "os_priv.h"
+ 
+ static STAILQ_HEAD(, os_mbuf_pool) g_msys_pool_list =
+     STAILQ_HEAD_INITIALIZER(g_msys_pool_list);
+-- 
+2.28.0
+

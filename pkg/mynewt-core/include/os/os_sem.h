@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-#include "os/types.h"
+#include "os/os_types.h"
 #include "os/os_error.h"
 
 #include "sema.h"

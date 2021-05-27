@@ -20,7 +20,7 @@
 #ifndef OS_TASKS_H
 #define OS_TASKS_H
 
-#include "os/types.h"
+#include "os/os_types.h"
 
 #include "sched.h"
 #include "thread.h"

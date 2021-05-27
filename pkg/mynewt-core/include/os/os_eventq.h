@@ -20,7 +20,7 @@
 #ifndef OS_EVENTQ_H
 #define OS_EVENTQ_H
 
-#include <os/types.h>
+#include <os/os_types.h>
 
 #include "event/callback.h"
 

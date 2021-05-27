@@ -21,7 +21,7 @@
 
 #include "ztimer.h"
 #include "os/os.h"
-#include "os/callout.h"
+#include "os/os_callout.h"
 
 static void _os_callout_timer_cb(void* arg)
 {

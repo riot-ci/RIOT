@@ -1,5 +1,6 @@
-INCLUDES += -I$(PKGDIRBASE)/mynewt-core/riot/include \
-            -I$(RIOTPKG)/mynewt-core/include \
+INCLUDES += -I$(RIOTPKG)/mynewt-core/include \
+            -I$(PKGDIRBASE)/mynewt-core/riot/include \
+            -I$(PKGDIRBASE)/mynewt-core/util/mem/include \
             #
 
 DIRS += $(RIOTPKG)/mynewt-core/contrib \
