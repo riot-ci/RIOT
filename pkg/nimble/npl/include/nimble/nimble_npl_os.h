@@ -23,11 +23,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "os/os.h"
-#include "os/eventq.h"
-#include "os/mutex.h"
-#include "os/sem.h"
-#include "os/callout.h"
-#include "os/time.h"
 #include "mcu/mcu.h"
 
 #ifdef __cplusplus

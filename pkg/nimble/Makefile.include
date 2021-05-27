@@ -7,7 +7,11 @@ INCLUDES += -I$(RIOTPKG)/nimble/contrib/include
 INCLUDES += $(NIMIBASE)/nimble/include
 
 # include the RIOT NPL headers
-INCLUDES += -I$(RIOTPKG)/nimble/npl/include
+ifneq (,$(filter nimble_npl_riot,$(USEMODULE)))
+  INCLUDES += $(NIMIBASE)/porting/npl/riot/include
+else
+  INCLUDES += -I$(RIOTPKG)/nimble/npl/include
+endif
 INCLUDES += $(NIMIBASE)/porting/nimble/include
 
 # include nimble controller headers
@@ -15,7 +19,9 @@ ifneq (,$(filter nimble_controller,$(USEMODULE)))
   INCLUDES += $(NIMIBASE)/nimble/controller/include
   # set environment
   CFLAGS += -DNIMBLE_CFG_CONTROLLER=1
-
+  ifneq (,$(filter nimble_npl_riot,$(USEMODULE)))
+    CFLAGS += -DMYNEWT_VAL_OS_CPUTIME_FREQ=32768
+  endif
   ifneq (,$(filter nimble_drivers_nrf5x,$(USEMODULE)))
     INCLUDES += $(NIMIBASE)/nimble/drivers/$(CPU_FAM)/include
   endif
