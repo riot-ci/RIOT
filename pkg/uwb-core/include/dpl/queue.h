@@ -20,7 +20,7 @@
 #ifndef DPL_DPL_H
 #define DPL_DPL_H
 
-#include "os/queue.h"
+#include "os/os_queue.h"
 
 #ifdef __cplusplus
 extern "C" {

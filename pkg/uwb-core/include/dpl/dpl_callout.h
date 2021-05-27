@@ -23,7 +23,7 @@
 #ifndef DPL_DPL_CALLOUT_H
 #define DPL_DPL_CALLOUT_H
 
-#include "os/callout.h"
+#include "os/os_callout.h"
 
 #ifdef __cplusplus
 extern "C" {
