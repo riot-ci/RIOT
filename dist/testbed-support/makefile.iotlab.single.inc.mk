@@ -185,7 +185,6 @@ ifneq (iotlab-a8-m3,$(BOARD))
     TERMPROG  = socat
     TERMFLAGS = - tcp:$(IOTLAB_NODE):20000
   endif
-
 else
 
   # A8-M3 node
@@ -204,11 +203,18 @@ else
     TERMFLAGS =
   endif
   TERMFLAGS += -oStrictHostKeyChecking=no -t root@node-$(IOTLAB_NODE) 'socat - open:/dev/ttyA8_M3,b$(BAUD),echo=0,raw'
-
 endif
 
-# Debugger not supported
-DEBUGGER =
-DEBUGGER_FLAGS =
-DEBUGSERVER =
-DEBUGSERVER_FLAGS =
+ifneq (,$(filter firefly iotlab-a8-m3 zigduino,$(BOARD)))
+  # Debugger not supported on these boards
+  DEBUGGER =
+  DEBUGGER_FLAGS =
+  DEBUGSERVER =
+  DEBUGSERVER_FLAGS =
+else
+  DEBUGGER_COMMON_FLAGS = "$(firstword $(subst ., ,$(IOTLAB_NODE)))" "$(_IOTLAB_NODELIST)" "$(_IOTLAB_AUTHORITY)" "$(_IOTLAB_EXP_ID)"
+  DEBUGGER = $(RIOTBASE)/dist/testbed-support/iotlab-debug.sh
+  DEBUGGER_FLAGS = $(DEBUGGER_COMMON_FLAGS) "$(ELFFILE)"
+  DEBUGSERVER = $(DEBUGGER)
+  DEBUGSERVER_FLAGS = $(DEBUGGER_COMMON_FLAGS) "" "1"
+endif
