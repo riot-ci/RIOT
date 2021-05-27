@@ -25,8 +25,8 @@
 
 #include "ztimer.h"
 
-#include "os/types.h"
-#include "os/eventq.h"
+#include "os/os_types.h"
+#include "os/os_eventq.h"
 #include "os/os_error.h"
 
 #ifdef __cplusplus

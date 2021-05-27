@@ -20,7 +20,7 @@
 #ifndef OS_MUTEX_H
 #define OS_MUTEX_H
 
-#include "os/types.h"
+#include "os/os_types.h"
 #include "os/os_error.h"
 
 #include "mutex.h"

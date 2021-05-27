@@ -27,6 +27,14 @@ extern "C" {
 #endif
 
 /**
+ * @name    Error codes not abstracted in mynewt-core/kernel/os
+ * @{
+ */
+#define SYS_EINVAL      (-2)
+#define SYS_ENOMEM      (-1)
+/** @} */
+
+/**
  * @name    Macro to wait forever on events and mutexes
  * @{
  */
