@@ -17,7 +17,6 @@
  * @}
  */
 
-#include "mutex.h"
 #include "os/os_mutex.h"
 
 os_error_t os_mutex_init(struct os_mutex *mu)

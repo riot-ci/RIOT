@@ -44,6 +44,7 @@
 
 #include "irq.h"
 #include "os/os_types.h"
+#include "os/os_error.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -119,21 +120,20 @@ static inline bool os_hw_is_in_critical(void)
     return (irq_is_in() || __get_PRIMASK());
 }
 
+/* Mynewt components (not abstracted in NPL or DPL) */
+#include "os/endian.h"
 #include "os/os_callout.h"
+#include "os/os_cputime.h"
 #include "os/os_dev.h"
 #include "os/os_eventq.h"
-#include "os/os_mutex.h"
-#include "os/os_sem.h"
-#include "os/os_tasks.h"
-#include "os/os_time.h"
-/* Mynewt components (not abstracted in NPL or DPL) */
-#include "os/os_cputime.h"
-#include "os/endian.h"
-#include "os/queue.h"
-#include "os/os_error.h"
 #include "os/os_mbuf.h"
 #include "os/os_mempool.h"
+#include "os/os_mutex.h"
+#include "os/os_sem.h"
+#include "os/os_task.h"
+#include "os/os_time.h"
 #include "os/os_trace_api.h"
+#include "os/queue.h"
 
 #if IS_USED(MODULE_NIMBLE)
 #include "nimble/nimble_npl.h"

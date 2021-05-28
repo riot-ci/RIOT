@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       mynewt-core ) error types
+ * @brief       mynewt-core header
  *
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}
@@ -20,6 +20,7 @@
 #ifndef OS_MYNEWT_H
 #define OS_MYNEWT_H
 
+#include <stdlib.h>
 #include "syscfg/syscfg.h"
 #include "sysinit/sysinit.h"
 #include "os/os.h"
