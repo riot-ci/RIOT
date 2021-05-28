@@ -1,4 +1,4 @@
-From 684604503af2d39adc7e918ae86c49237f084340 Mon Sep 17 00:00:00 2001
+From 4ad15cd279474a25366434287d4e75037fa0f592 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 28 May 2021 15:44:21 +0200
 Subject: [PATCH 6/6] fixup! riot: add interested header symlinks
