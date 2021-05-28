@@ -34,14 +34,6 @@ os_error_t os_sem_release(struct os_sem *sem)
     return (ret) ? OS_ERROR : OS_OK;
 }
 
-uint16_t os_sem_get_count(struct os_sem *sem)
-{
-    unsigned state = irq_disable();
-    unsigned int value = sem->sema.value;
-    irq_restore(state);
-    return value;
-}
-
 os_error_t os_sem_pend(struct os_sem *sem, os_time_t timeout)
 {
     int ret = sema_wait_timed_ztimer(&sem->sema, ZTIMER_MSEC, timeout);

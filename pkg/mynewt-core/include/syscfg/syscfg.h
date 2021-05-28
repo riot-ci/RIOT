@@ -77,7 +77,7 @@
 /*** @mynewt-nimble */
 #undef MYNEWT_VAL
 #undef MYNEWT_VAL_CHOICE
-#include "npl_syscfg.h"
+#include "npl_sycfg.h"
 #endif
 
 #if IS_USED(MODULE_UWB_CORE)

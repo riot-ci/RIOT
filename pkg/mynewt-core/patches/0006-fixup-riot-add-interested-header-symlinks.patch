@@ -1,0 +1,51 @@
+From 684604503af2d39adc7e918ae86c49237f084340 Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Fri, 28 May 2021 15:44:21 +0200
+Subject: [PATCH 6/6] fixup! riot: add interested header symlinks
+
+---
+ riot/include/os/os_callout.h | 1 +
+ riot/include/os/os_mutex.h   | 1 +
+ riot/include/os/os_sem.h     | 1 +
+ riot/include/os/os_task.h    | 1 +
+ 4 files changed, 4 insertions(+)
+ create mode 120000 riot/include/os/os_callout.h
+ create mode 120000 riot/include/os/os_mutex.h
+ create mode 120000 riot/include/os/os_sem.h
+ create mode 120000 riot/include/os/os_task.h
+
+diff --git a/riot/include/os/os_callout.h b/riot/include/os/os_callout.h
+new file mode 120000
+index 000000000..13201a6a2
+--- /dev/null
++++ b/riot/include/os/os_callout.h
+@@ -0,0 +1 @@
++../../../kernel/os/include/os/os_callout.h
+\ No newline at end of file
+diff --git a/riot/include/os/os_mutex.h b/riot/include/os/os_mutex.h
+new file mode 120000
+index 000000000..421d2353c
+--- /dev/null
++++ b/riot/include/os/os_mutex.h
+@@ -0,0 +1 @@
++../../../kernel/os/include/os/os_mutex.h
+\ No newline at end of file
+diff --git a/riot/include/os/os_sem.h b/riot/include/os/os_sem.h
+new file mode 120000
+index 000000000..ddf70a24b
+--- /dev/null
++++ b/riot/include/os/os_sem.h
+@@ -0,0 +1 @@
++../../../kernel/os/include/os/os_sem.h
+\ No newline at end of file
+diff --git a/riot/include/os/os_task.h b/riot/include/os/os_task.h
+new file mode 120000
+index 000000000..7d81bc9c8
+--- /dev/null
++++ b/riot/include/os/os_task.h
+@@ -0,0 +1 @@
++../../../kernel/os/include/os/os_task.h
+\ No newline at end of file
+-- 
+2.28.0
+

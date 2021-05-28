@@ -427,7 +427,7 @@ static inline ble_npl_time_t ble_npl_callout_remaining_ticks(struct ble_npl_call
 static inline void ble_npl_callout_set_arg(struct ble_npl_callout *co,
                                            void *arg)
 {
-    co->co.c_e.arg = arg;
+    co->co.c_ev.arg = arg;
 }
 
 /**

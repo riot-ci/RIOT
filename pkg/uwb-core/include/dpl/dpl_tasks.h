@@ -20,7 +20,7 @@
 #ifndef DPL_DPL_TASKS_H
 #define DPL_DPL_TASKS_H
 
-#include "os/os_tasks.h"
+#include "os/os_task.h"
 
 #ifdef __cplusplus
 extern "C" {

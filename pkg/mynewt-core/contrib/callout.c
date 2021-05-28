@@ -30,23 +30,23 @@ static void _os_callout_timer_cb(void* arg)
 
     /* post the event if there is a queue, otherwise call the callback
        here */
-    if (c->c_q) {
-        os_eventq_put(c->c_q, &c->c_e);
+    if (c->c_evq) {
+        os_eventq_put(c->c_evq, &c->c_ev);
     } else {
-        c->c_e.e.callback(&c->c_e);
+        c->c_ev.e.callback(&c->c_ev);
     }
 }
 
 void os_callout_init(struct os_callout *c, struct os_eventq *q,
                       os_event_fn *e_cb, void *e_arg)
 {
-    os_event_init(&c->c_e, e_cb, e_arg);
-    c->c_q = q;
+    os_event_init(&c->c_ev, e_cb, e_arg);
+    c->c_evq = q;
     c->timer.callback = _os_callout_timer_cb;
     c->timer.arg = (void*) c;
 }
 
-os_error_t os_callout_reset(struct os_callout *c, os_time_t ticks)
+int os_callout_reset(struct os_callout *c, os_time_t ticks)
 {
     ztimer_set(ZTIMER_MSEC, &c->timer, ticks);
     return OS_OK;

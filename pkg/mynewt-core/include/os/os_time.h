@@ -20,6 +20,7 @@
 #ifndef OS_TIME_H
 #define OS_TIME_H
 
+#include "os/os_error.h"
 #include "ztimer.h"
 
 #ifdef __cplusplus
