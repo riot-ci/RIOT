@@ -1,0 +1,22 @@
+From 1c45a40184c41237a89e1d4d878cdfba8f3873ce Mon Sep 17 00:00:00 2001
+From: Francisco Molina <femolina@uc.cl>
+Date: Fri, 28 May 2021 15:20:01 +0200
+Subject: [PATCH 2/2] porting/npl/riot: add namespaced sysfg
+
+This allows including the header without name clash
+---
+ porting/npl/riot/include/npl_syscfg/npl_sycfg.h | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 porting/npl/riot/include/npl_syscfg/npl_sycfg.h
+
+diff --git a/porting/npl/riot/include/npl_syscfg/npl_sycfg.h b/porting/npl/riot/include/npl_syscfg/npl_sycfg.h
+new file mode 120000
+index 00000000..53c55a90
+--- /dev/null
++++ b/porting/npl/riot/include/npl_syscfg/npl_sycfg.h
+@@ -0,0 +1 @@
++../syscfg/syscfg.h
+\ No newline at end of file
+-- 
+2.28.0
+
