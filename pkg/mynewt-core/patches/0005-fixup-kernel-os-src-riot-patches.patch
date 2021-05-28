@@ -1,14 +1,14 @@
-From d04fedcdc63c57c92789469b6ce6c07610a46bc6 Mon Sep 17 00:00:00 2001
+From 4603f2f4e9ce92f77ea5dea04cd71365b77814ce Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 28 May 2021 15:44:07 +0200
 Subject: [PATCH 5/6] fixup! kernel/os/src: riot patches
 
 ---
- kernel/os/include/os/os_callout.h | 16 +++++-----
- kernel/os/include/os/os_mutex.h   | 16 ++++------
- kernel/os/include/os/os_sem.h     | 10 +++---
- kernel/os/include/os/os_task.h    | 52 ++-----------------------------
- 4 files changed, 20 insertions(+), 74 deletions(-)
+ kernel/os/include/os/os_callout.h | 16 ++++----
+ kernel/os/include/os/os_mutex.h   | 16 +++-----
+ kernel/os/include/os/os_sem.h     | 10 ++---
+ kernel/os/include/os/os_task.h    | 62 +++++--------------------------
+ 4 files changed, 28 insertions(+), 76 deletions(-)
 
 diff --git a/kernel/os/include/os/os_callout.h b/kernel/os/include/os/os_callout.h
 index b407f3f44..749e41a10 100644
@@ -152,20 +152,31 @@ index aa5456d42..32c5a0d12 100644
  
  #ifdef __cplusplus
 diff --git a/kernel/os/include/os/os_task.h b/kernel/os/include/os/os_task.h
-index b42f51ca2..c30a3b458 100644
+index b42f51ca2..ce6418941 100644
 --- a/kernel/os/include/os/os_task.h
 +++ b/kernel/os/include/os/os_task.h
-@@ -29,9 +29,8 @@
+@@ -28,10 +28,9 @@
+ #ifndef _OS_TASK_H
  #define _OS_TASK_H
  
- #include "os/os.h"
+-#include "os/os.h"
 -#include "os/os_sanity.h"
 -#include "os/os_arch.h"
++#include "os/os_types.h"
  #include "os/queue.h"
 +#include "thread.h"
  
  #ifdef __cplusplus
  extern "C" {
+@@ -76,7 +75,7 @@ typedef enum os_task_state {
+ /** Task waiting on a event queue */
+ #define OS_TASK_FLAG_EVQ_WAIT       (0x08U)
+ 
+-typedef void (*os_task_func_t)(void *);
++typedef thread_task_func_t os_task_func_t;
+ 
+ #define OS_TASK_MAX_NAME_LEN (32)
+ 
 @@ -84,54 +83,7 @@ typedef void (*os_task_func_t)(void *);
   * Structure containing information about a running task
   */
@@ -222,6 +233,19 @@ index b42f51ca2..c30a3b458 100644
  };
  
  /** @cond INTERNAL_HIDDEN */
+@@ -263,6 +215,12 @@ struct os_task *os_task_info_get_next(const struct os_task *,
+  */
+ void os_task_info_get(const struct os_task *task, struct os_task_info *oti);
+ 
++/**
++ *  * @brief   Lets current thread yield.
++ *
++ */
++void os_task_yield(void);
++
+ #ifdef __cplusplus
+ }
+ #endif
 -- 
 2.28.0
 
