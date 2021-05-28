@@ -1,5 +1,5 @@
 /**
-@defgroup    boards_seeeduino_XIAO Seeeduino_XIAO
+@defgroup    boards_seeeduino_xiao Seeeduino XIAO
 @ingroup     boards
 @brief       Support for the Seeeduino XIAO.
 
@@ -13,7 +13,7 @@ Seeeduino XIAO has 14 GPIO PINs, which can be used for 11 digital interfaces, 11
 
 ### Pinout
 
-\image https://files.seeedstudio.com/wiki/Seeeduino-XIAO/img/Seeeduino-XIAO-pinout.jpg width=66%
+![XIAO pinout](https://files.seeedstudio.com/wiki/Seeeduino-XIAO/img/Seeeduino-XIAO-pinout.jpg)
 
 ### Flash the board
 
@@ -31,7 +31,7 @@ If your application has crashed or got erased, `make flash` will not be able to 
 To manually enter the bootloader, short the RST pins with a short line or tweezers
 You know you've successfully entered the bootloader when the orange LED flickers on and light up.
 
-\image https://files.seeedstudio.com/wiki/Seeeduino-XIAO/img/XIAO-reset.gif width=66%
+![Reset Sequence](https://files.seeedstudio.com/wiki/Seeeduino-XIAO/img/XIAO-reset.gif)
 
 Sometimes flashing fails and the board gets stuck in the bootloader.
 In this case, just run `make flash` again when the device is not busy anymore.
