@@ -10,6 +10,7 @@ INCLUDES += $(NIMIBASE)/nimble/include
 ifneq (,$(filter nimble_npl_riot,$(USEMODULE)))
   INCLUDES += $(NIMIBASE)/porting/npl/riot/include
 else
+  INCLUDES += $(NIMIBASE)/porting/npl/riot/include/npl_syscfg
   INCLUDES += -I$(RIOTPKG)/nimble/npl/include
 endif
 INCLUDES += $(NIMIBASE)/porting/nimble/include
