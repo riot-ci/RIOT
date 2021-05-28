@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /**
- * @name    MyNewt os/*.h required macros
+ * @name    MyNewt os/%.h required macros
  * @{
  *
  * PLEASE NOTE: Following macro definitions where copied directly from
