@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Thomas Eichinger <thomas.eichinger@fu-berlin.de>
+ * Copyright (C) 2020 Inria
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     mynewt
+ * @ingroup     pkg_mynewt_core
  * @{
  *
  * @file
@@ -15,7 +15,7 @@
  *
  */
 
-#ifndef MYNEWT_H
+#ifndef MYNEWT_COMPAT_H
 #define MYNEWT_H
 
 #ifdef __cplusplus
@@ -33,4 +33,4 @@ extern "C" {
 }
 #endif
 
-#endif /* MYNEWT_H */
+#endif /* MYNEWT_COMPAT_H */

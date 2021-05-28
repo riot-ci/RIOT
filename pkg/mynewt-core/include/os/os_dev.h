@@ -19,13 +19,6 @@
 #ifndef OS_DEV_H
 #define OS_DEV_H
 
-#include "os/os.h"
-#include "os/queue.h"
-
-#include "net/ieee802154.h"
-#include "net/netdev.h"
-#include "net/netdev/ieee802154.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -34,7 +27,6 @@ extern "C" {
  * @brief Device structure.
  */
 struct os_dev {
-    netdev_ieee802154_t netdev;        /**< Netdev parent struct */
 };
 
 /**
