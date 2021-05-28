@@ -1,5 +1,5 @@
 /*
- * Copyright (C)  2021 Franz Freitag, Justus Krebs, Nick Weiler
+ * Copyright (C)  2021  Franz Freitag, Justus Krebs, Nick Weiler
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -16,7 +16,6 @@
  * @author      Franz Freitag <franz.freitag@st.ovgu.de>
  * @author      Justus Krebs <justus.krebs@st.ovgu.de>
  * @author      Nick Weiler <nick.weiler@st.ovgu.de>
- * @author      Benjamin Valentin <benpicco@googlemail.com>
  */
 
 #ifndef PERIPH_CONF_H

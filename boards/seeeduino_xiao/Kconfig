@@ -14,7 +14,6 @@ config BOARD_SEEEDUINO_XIAO
     select HAS_HIGHLEVEL_STDIO
     select HAS_PERIPH_ADC
     select HAS_PERIPH_I2C
-   # select HAS_PERIPH_PWM not implemented yet
     select HAS_PERIPH_RTC
     select HAS_PERIPH_RTT
     select HAS_PERIPH_SPI

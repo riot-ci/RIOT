@@ -13,10 +13,9 @@
  * @file
  * @brief       Board specific configuration of direct mapped GPIOs
  *
- * @author     Franz Freitag <franz.freitag@st.ovgu.de>
- * @author     Justus Krebs <justus.krebs@st.ovgu.de>
- * @author     Nick Weiler <nick.weiler@st.ovgu.de>
- * @author     Benjamin Valentin <benpicco@googlemail.com>
+ * @author      Franz Freitag <franz.freitag@st.ovgu.de>
+ * @author      Justus Krebs <justus.krebs@st.ovgu.de>
+ * @author      Nick Weiler <nick.weiler@st.ovgu.de>
  */
 
 #ifndef GPIO_PARAMS_H

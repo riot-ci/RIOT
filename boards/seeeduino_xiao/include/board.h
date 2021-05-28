@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Franz Freitag, Justus Krebs, Nick Weiler
+ * Copyright (C)    2021 Franz Freitag, Justus Krebs, Nick Weiler
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -17,7 +17,6 @@
  * @author      Franz Freitag <franz.freitag@st.ovgu.de>
  * @author      Justus Krebs <justus.krebs@st.ovgu.de>
  * @author      Nick Weiler <nick.weiler@st.ovgu.de>
- * @author      Benjamin Valentin <benpicco@googlemail.com>
  */
 
 #ifndef BOARD_H
@@ -25,7 +24,6 @@
 
 #include "cpu.h"
 #include "periph_conf.h"
-#include "mtd.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,28 +58,6 @@ extern "C" {
 #define LED2_OFF            (LED_PORT.OUTSET.reg = LED2_MASK)
 #define LED2_ON             (LED_PORT.OUTCLR.reg = LED2_MASK)
 #define LED2_TOGGLE         (LED_PORT.OUTTGL.reg = LED2_MASK)
-/** @} */
-
-/**
- * @name Seeeduino XIAO NOR flash hardware configuration
- * @{
- */
-#define SEEEDUINO_XIAO_NOR_PAGE_SIZE          (256)
-#define SEEEDUINO_XIAO_NOR_PAGES_PER_SECTOR   (16)
-#define SEEEDUINO_XIAO_NOR_SECTOR_COUNT       (1024)
-#define SEEEDUINO_XIAO_NOR_FLAGS              (SPI_NOR_F_SECT_4K | SPI_NOR_F_SECT_32K)
-#define SEEEDUINO_XIAO_NOR_SPI_DEV            SPI_DEV(0)
-#define SEEEDUINO_XIAO_NOR_SPI_CLK            SPI_CLK_10MHZ
-#define SEEEDUINO_XIAO_NOR_SPI_CS             GPIO_PIN(PA, 15)
-#define SEEEDUINO_XIAO_NOR_SPI_MODE           SPI_MODE_3
-/** @} */
-
-/**
- * @name MTD configuration
- * @{
- */
-extern mtd_dev_t *mtd0;
-#define MTD_0 mtd0
 /** @} */
 
 /**
