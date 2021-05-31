@@ -27,7 +27,7 @@
 #include "hm3301_params.h"
 #include "timex.h"
 
-#if IS_USED(ZTIMER_USEC)
+#if IS_USED(MODULE_ZTIMER_USEC)
 #include "ztimer.h"
 #endif
 
@@ -130,7 +130,7 @@ void hm3301_reset(hm3301_t *dev)
     if (gpio_is_valid(dev->params.reset_pin)) {
         gpio_clear(dev->params.reset_pin);
 #if IS_USED(MODULE_ZTIMER_USEC)
-        ztimer_usleep(ZTIMER_USEC, HM3301_RESET_TIME_US);
+        ztimer_sleep(ZTIMER_USEC, HM3301_RESET_TIME_US);
 #else
         for (uint32_t i = 0; i < HM3301_RESET_TIME_US * (CLOCK_CORECLOCK / US_PER_SEC) ; i++) {
             /* Make sure for loop is not optimized out */
