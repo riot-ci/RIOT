@@ -27,8 +27,15 @@
 #include "hm3301_params.h"
 #include "timex.h"
 
+#if IS_USED(ZTIMER_USEC)
+#include "ztimer.h"
+#endif
+
 #define ENABLE_DEBUG    0
 #include "debug.h"
+
+/*pull reset pin low for ~10 us */
+#define HM3301_RESET_TIME_US       (10)
 
 int _set_i2c_mode(hm3301_t *dev)
 {
@@ -122,10 +129,14 @@ void hm3301_reset(hm3301_t *dev)
 {
     if (gpio_is_valid(dev->params.reset_pin)) {
         gpio_clear(dev->params.reset_pin);
-        for (uint32_t i = 0; i < 10 * (CLOCK_CORECLOCK / US_PER_SEC) ; i++) {
+#if IS_USED(MODULE_ZTIMER_USEC)
+        ztimer_usleep(ZTIMER_USEC, HM3301_RESET_TIME_US);
+#else
+        for (uint32_t i = 0; i < HM3301_RESET_TIME_US * (CLOCK_CORECLOCK / US_PER_SEC) ; i++) {
             /* Make sure for loop is not optimized out */
             __asm__ ("");
         }
+#endif
         gpio_set(dev->params.reset_pin);
     }
 }
