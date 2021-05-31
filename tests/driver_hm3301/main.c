@@ -101,7 +101,7 @@ int main(void)
             print("|\n", 2);
         }
         else {
-            printf("Could not read data from sensor\n");
+            print_str("Could not read data from sensor\n");
         }
     }
 
