@@ -5,7 +5,7 @@
 # directory for more details.
 
 config BOARD
-    default "seeeduino_XIAO" if BOARD_SEEEDUINO_XIAO
+    default "seeeduino_xiao" if BOARD_SEEEDUINO_XIAO
 
 config BOARD_SEEEDUINO_XIAO
     bool
