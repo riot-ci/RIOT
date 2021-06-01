@@ -5,7 +5,6 @@ USEPKG += edhoc-c
 USEMODULE += edhoc-c_crypto_tinycrypt
 # USEMODULE += edhoc-c_crypto_wolfssl
 USEMODULE += edhoc-c_cbor_nanocbor
-# USEMODULE += edhoc-c_cbor_cn_cbor
 
 # Include packages that pull up and auto-init the link layer.
 # NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
@@ -37,10 +36,4 @@ CONFIG_RESPONDER ?= 1
 CFLAGS += -DCONFIG_RESPONDER=$(CONFIG_RESPONDER)
 
 include $(RIOTBASE)/Makefile.include
-
-.PHONY: host-tools
-
-host-tools:
-	$(Q)env -u CC -u CFLAGS $(MAKE) -C $(RIOTTOOLS)
-
 include $(RIOTMAKE)/default-radio-settings.inc.mk

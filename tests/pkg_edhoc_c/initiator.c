@@ -107,6 +107,7 @@ static ssize_t _build_coap_pkt(coap_pkt_t *pkt, uint8_t *buf, ssize_t buflen,
 {
     uint8_t token[2] = { 0xDA, 0xEC };
     ssize_t len = 0;
+
     /* set pkt buffer */
     pkt->hdr = (coap_hdr_t *)buf;
     /* build header, confirmed message always post */

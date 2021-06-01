@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "kernel_defines.h"
 #include "edhoc/edhoc.h"
 #include "edhoc_keys.h"
 
@@ -30,7 +31,7 @@
 
 int _cred_cb(const uint8_t *k, size_t k_len, const uint8_t **o, size_t *o_len)
 {
-    for (uint8_t i = 0; i < (uint8_t) CRED_DB_SIZE; i++) {
+    for (uint8_t i = 0; i < (uint8_t)CRED_DB_SIZE; i++) {
         if (cred_db[i].id_len == k_len) {
             if (memcmp(cred_db[i].id, k, k_len) == 0) {
                 *o = cred_db[i].cred;
