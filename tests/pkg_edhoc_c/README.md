@@ -1,8 +1,9 @@
 # EDHOC-C test application
 
 This test application sets up a RIOT node that can run as an EDHOC handshake
-initiator or responder. The handshake can be run between two RIOT nodes or
-between a RIOT node and a Linux host.
+initiator and/or responder. The handshake can be run between two RIOT nodes or
+between a RIOT node and a Linux host or for testing purposes the node can
+perform an auto-handshake.
 
 In this example credentials based on LAKE IETF WG are used. These are RPK keys.
 Normally different credentials should be used depending on the authentication
@@ -413,5 +414,5 @@ OSCORE salt:
 As long as a BOARD with a netdev interface is used is as simple as:
 
 ```
-$ make -C tests/pkg_edhoc_c flash test
+$ make -C tests/pkg_edhoc_c flash test-with-config
 ```
