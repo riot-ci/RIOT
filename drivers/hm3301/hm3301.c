@@ -29,7 +29,7 @@
 
 #if IS_USED(MODULE_ZTIMER_USEC)
 #include "ztimer.h"
-#if IS_USED(MODULE_XTIMER)
+#elif IS_USED(MODULE_XTIMER)
 #include "xtimer.h"
 #endif
 
