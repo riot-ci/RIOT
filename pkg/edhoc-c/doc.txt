@@ -18,22 +18,22 @@
  *
  * EDHOC-C does not implement crypographic algorithms, instead it uses external
  * libraries as a backend. Libaries that provide all requirements are
- * currently only @ref pkg_wolfssl, its selected through the following module:
+ * currently @ref pkg_tinycrypt and @ref pkg_wolfssl. Pick one through the
+ * following module:
  *
  * ```makefile
  * USEMODULE += edhoc-c_crypto_wolfssl
+ * USEMODULE += edhoc-c_crypto_tinycrypt
  * ```
  *
- * EDHOC-C does not implement a CBOR library either, possible backends are
- * @ref pkg_nanocbor and @ref pkg_cn-cbor. Pick one of them through the
- * following modules:
+ * EDHOC-C does not implement a CBOR library either, currently the only possible
+ * backend is @ref pkg_nanocbor. Select it through the following module:
  *
  * ```makefile
  * USEMODULE += edhoc-c_cbor_nanocbor
- * USEMODULE += edhoc-c_cbor_cn_cbor
  * ```
  *
- * And don't forget to include the header for the EDHOC-C public API:
+ * Don't forget to include the header for the EDHOC-C public API:
  *
  * ```c
  * #include <edhoc/edhoc.h>
@@ -41,8 +41,8 @@
  *
  * ### Current Support
  *
- * - EDHOC-C support @ref pkg_hacl as a crypto backend but its using a different
+ * - EDHOC-C supports @ref pkg_hacl as a crypto backend but it's using a different
  *   version than the one supported currently in RIOT
- * - x509 certificates required MBED-TLS, which is currently not supported in
- *   RIOT so only RPK and CBOR certificates are possible.
+ * - x509 certificates require MBED-TLS, which is currently not supported in
+ *   RIOT so only RPK and CBOR certificates are supported.
  */
