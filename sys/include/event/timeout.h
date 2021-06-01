@@ -43,6 +43,9 @@
 #else
 #include "xtimer.h"
 #endif
+#if IS_USED(MODULE_EVENT_PERIODIC_TIMEOUT)
+#include "ztimer/periodic.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,7 +65,18 @@ typedef struct {
     event_t *event;         /**< event to post after timeout    */
 } event_timeout_t;
 
-#if IS_USED(MODULE_EVENT_TIMEOUT_ZTIMER)
+#if IS_USED(MODULE_EVENT_PERIODIC_TIMEOUT) || DOXYGEN
+/**
+ * @brief   Timeout Event structure
+ */
+typedef struct {
+    ztimer_periodic_t timer;    /**< ztimer object used for timeout */
+    event_queue_t *queue;       /**< event queue to post event to   */
+    event_t *event;             /**< event to post after timeout    */
+} event_periodic_timeout_t;
+#endif
+
+#if IS_USED(MODULE_EVENT_TIMEOUT_ZTIMER) || DOXYGEN
 /**
  * @brief   Initialize timeout event object
  *
@@ -71,7 +85,7 @@ typedef struct {
  * @param[in]   queue           queue that the timed-out event will be added to
  * @param[in]   event           event to add to queue after timeout
  */
-void event_timeout_ztimer_init(event_timeout_t *event_timeout, ztimer_clock_t* clock,
+void event_timeout_ztimer_init(event_timeout_t *event_timeout, ztimer_clock_t *clock,
                                event_queue_t *queue, event_t *event);
 #endif
 
@@ -114,6 +128,54 @@ void event_timeout_set(event_timeout_t *event_timeout, uint32_t timeout);
  * @param[in]   event_timeout   event_timeout context object to use
  */
 void event_timeout_clear(event_timeout_t *event_timeout);
+
+#if IS_USED(MODULE_EVENT_PERIODIC_TIMEOUT) || DOXYGEN
+/**
+ * @brief    Initialize a periodic event timeout
+ *
+ * @param[in]       event_timeout   event_timeout object to initialize
+ * @param[in]       clock           the clock to configure this timer on
+ * @param[in]       queue           queue that the timed-out event will be
+ *                                  added to
+ * @param[in]       event           event to add to queue after timeout
+ */
+void event_periodic_timeout_init(event_periodic_timeout_t *event_timeout,
+                                 ztimer_clock_t *clock, event_queue_t *queue, event_t *event);
+
+/**
+ * @brief   Starts a periodic timeout
+ *
+ * This will make the event as configured in @p event_timeout be triggered
+ * evert interval ticks event_timeout->clock ticks.
+ *
+ * @note: the used event_timeout struct must stay valid until after the timeout
+ *        event has been processed!
+ *
+ * @param[in]   event_timeout   event_timout context object to use
+ * @param[in]   interval        period length for the event
+ */
+static inline void event_periodic_timeout_start(event_periodic_timeout_t *event_timeout,
+                                                uint32_t interval)
+{
+    event_timeout->timer.interval = interval;
+    ztimer_periodic_start(&event_timeout->timer);
+}
+
+/**
+ * @brief   Stop a periodic timeout event
+ *
+ * Calling this function will cancel the timeout by removing its underlying
+ * timer. If the timer has already fired before calling this function, the
+ * connected event will be put already into the given event queue and this
+ * function does not have any effect.
+ *
+ * @param[in]   event_timeout   event_periodic_timeout context object to use
+ */
+static inline void event_periodic_timeout_stop(event_periodic_timeout_t *event_timeout)
+{
+    ztimer_periodic_stop(&event_timeout->timer);
+}
+#endif
 
 #ifdef __cplusplus
 }
