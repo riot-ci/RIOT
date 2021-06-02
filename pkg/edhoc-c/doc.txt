@@ -17,7 +17,7 @@
  * ### Backends
  *
  * EDHOC-C does not implement crypographic algorithms, instead it uses external
- * libraries as a backend. Libaries that provide all requirements are
+ * libraries as a backend. Libraries that provide all requirements are
  * currently @ref pkg_tinycrypt and @ref pkg_wolfssl. Pick one through the
  * following module:
  *
