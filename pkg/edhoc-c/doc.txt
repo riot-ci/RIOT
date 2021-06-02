@@ -1,5 +1,5 @@
 /**
- * @defgroup pkg_edhoc-c EDHOC-C
+ * @defgroup pkg_edhoc_c EDHOC-C
  * @ingroup  pkg
  * @brief    Support for Ephemeral Diffie-Hellman Over COSE (EDHOC)
  * @see      https://github.com/openwsn-berkeley/EDHOC-C
