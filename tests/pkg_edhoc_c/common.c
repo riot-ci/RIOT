@@ -78,7 +78,7 @@ int edhoc_setup(edhoc_ctx_t *ctx, edhoc_conf_t *conf, edhoc_role_t role,
     size_t cbor_rpk_id_len;
 
     if (role == EDHOC_IS_RESPONDER) {
-        DEBUG_PUTS("[edhoc]: seting up responder");
+        DEBUG_PUTS("[edhoc]: setting up responder");
         cbor_auth_key = resp_cbor_auth_key;
         cbor_auth_key_len = sizeof(resp_cbor_auth_key);
         cbor_rpk = resp_cbor_rpk;

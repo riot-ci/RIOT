@@ -133,7 +133,7 @@ int _handshake_cmd(int argc, char **argv)
     uint8_t msg[COAP_BUF_SIZE];
     ssize_t msg_len = 0;
 
-    /* correlation value is transport specifc */
+    /* correlation value is transport specific */
     corr_t corr = CORR_1_2;
 
     if (argc < 2) {

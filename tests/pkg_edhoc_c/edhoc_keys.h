@@ -22,8 +22,8 @@
  * @}
  */
 
-#ifndef EDHOC_C_KEYS_H
-#define EDHOC_C_KEYS_H
+#ifndef EDHOC_KEYS_H
+#define EDHOC_KEYS_H
 
 #include <inttypes.h>
 
@@ -172,4 +172,4 @@ static const cred_db_entry_t cred_db[] = {
 }
 #endif
 
-#endif /* EDHOC_C_KEYS_H */
+#endif /* EDHOC_KEYS_H */
