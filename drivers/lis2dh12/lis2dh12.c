@@ -435,7 +435,7 @@ static uint32_t _merge_int_flags(const lis2dh12_t *dev, uint8_t events)
                               ((uint32_t)LIS2DH12_INT_SRC_IA <<  8) | \
                               ((uint32_t)LIS2DH12_INT_SRC_IA << 16))
 
-int lis2dh12_wait_event(const lis2dh12_t *dev, uint8_t line)
+int lis2dh12_wait_event(const lis2dh12_t *dev, uint8_t line, bool stale_events)
 {
     uint32_t int_src;
     uint8_t events = 0;
@@ -460,7 +460,7 @@ int lis2dh12_wait_event(const lis2dh12_t *dev, uint8_t line)
     _release(dev);
 
     /* return early if stale interrupt is present */
-    if (int_src & LIS2DH12_INT_SRC_ANY) {
+    if (stale_events && (int_src & LIS2DH12_INT_SRC_ANY)) {
         return int_src;
     }
 

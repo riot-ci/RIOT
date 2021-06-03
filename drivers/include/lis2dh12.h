@@ -304,11 +304,14 @@ void lis2dh12_cfg_disable_event(const lis2dh12_t *dev, uint8_t event, uint8_t pi
  *
  * @param[in] dev      device descriptor
  * @param[in] pin      Interrupt pin to monitor (LIS2DH12_INT1 or LIS2DH12_INT2)
+ * @param[in] state_events  If true, this also reports events that were generated
+ *                      before this function was called and which are still in the
+ *                      fifo buffer.
  *
  * @return  negative error
  * @return  positive LIS2DH12_INT_SRC bit mask on success
  */
-int lis2dh12_wait_event(const lis2dh12_t *dev, uint8_t pin);
+int lis2dh12_wait_event(const lis2dh12_t *dev, uint8_t pin, bool stale_events);
 #endif /* MODULE_LIS2DH12_INT */
 
 /**
