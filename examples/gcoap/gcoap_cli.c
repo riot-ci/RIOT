@@ -344,9 +344,9 @@ int gcoap_cli_cmd(int argc, char **argv)
             printf("CoAP server is listening on port %u\n", CONFIG_GCOAP_PORT);
         }
 #if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
-            printf("Connection secured with DTLS\n");
-            printf("Free DTLS session slots: %d/%d\n", dsm_get_num_available_slots(),
-                    dsm_get_num_maximum_slots());
+        printf("Connection secured with DTLS\n");
+        printf("Free DTLS session slots: %d/%d\n", dsm_get_num_available_slots(),
+                dsm_get_num_maximum_slots());
 #endif
         printf(" CLI requests sent: %u\n", req_count);
         printf("CoAP open requests: %u\n", open_reqs);
@@ -498,17 +498,17 @@ int gcoap_cli_cmd(int argc, char **argv)
 void gcoap_cli_init(void)
 {
 #if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
-        int res = credman_add(&credential);
-        if (res < 0 && res != CREDMAN_EXIST) {
-            /* ignore duplicate credentials */
-            printf("gcoap: cannot add credential to system: %d\n", res);
-            return;
-        }
-        sock_dtls_t *gcoap_sock_dtls = gcoap_get_sock_dtls();
-        res = sock_dtls_add_credential(gcoap_sock_dtls, GCOAP_DTLS_CREDENTIAL_TAG);
-        if (res < 0) {
-            printf("gcoap: cannot add credential to DTLS sock: %d\n", res);
-        }
+    int res = credman_add(&credential);
+    if (res < 0 && res != CREDMAN_EXIST) {
+        /* ignore duplicate credentials */
+        printf("gcoap: cannot add credential to system: %d\n", res);
+        return;
+    }
+    sock_dtls_t *gcoap_sock_dtls = gcoap_get_sock_dtls();
+    res = sock_dtls_add_credential(gcoap_sock_dtls, GCOAP_DTLS_CREDENTIAL_TAG);
+    if (res < 0) {
+        printf("gcoap: cannot add credential to DTLS sock: %d\n", res);
+    }
 #endif
 
     gcoap_register_listener(&_listener);
