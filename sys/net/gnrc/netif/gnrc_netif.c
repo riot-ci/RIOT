@@ -56,6 +56,10 @@ static void _check_netdev_capabilities(netdev_t *dev);
 static void *_gnrc_netif_thread(void *args);
 static void _event_cb(netdev_t *dev, netdev_event_t event);
 
+/* make sure gnrc_netif_create() only returns after the driver has been
+ * initialized and added to the interface list */
+static mutex_t _netif_init_done = MUTEX_INIT_LOCKED;
+
 int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
                       char priority, const char *name, netdev_t *netdev,
                       const gnrc_netif_ops_t *ops)
@@ -83,6 +87,10 @@ int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
 
     res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
                         _gnrc_netif_thread, (void *)netif, name);
+
+    /* wait for result of driver init */
+    mutex_lock(&_netif_init_done);
+
     (void)res;
     assert(res > 0);
     return 0;
@@ -1659,6 +1667,8 @@ static void *_gnrc_netif_thread(void *args)
     dev->context = netif;
     /* initialize low-level driver */
     res = dev->driver->init(dev);
+    /* signal that driver init is done */
+    mutex_unlock(&_netif_init_done);
     if (res < 0) {
         LOG_ERROR("gnrc_netif: netdev init failed: %d\n", res);
         return NULL;
