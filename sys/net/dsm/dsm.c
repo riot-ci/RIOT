@@ -30,7 +30,7 @@ typedef struct {
     sock_dtls_t *sock;
     sock_dtls_session_t session;
     dsm_state_t state;
-    uint64_t last_used;
+    uint32_t last_used_sec;
 } dsm_session_t;
 
 static int _find_session(sock_dtls_t *sock, sock_dtls_session_t *to_find,
@@ -68,7 +68,6 @@ dsm_state_t dsm_store(sock_dtls_t *sock, sock_dtls_session_t *session,
             sock_dtls_session_set_udp_ep(&session_slot->session, &ep);
             session_slot->sock = sock;
             _available_slots--;
-
         }
 
         /* existing session found and session should be restored */
@@ -76,7 +75,7 @@ dsm_state_t dsm_store(sock_dtls_t *sock, sock_dtls_session_t *session,
             DEBUG("dsm: existing session found, restoring\n")
             memcpy(session, &session_slot->session, sizeof(sock_dtls_session_t));
         }
-        session_slot->last_used = xtimer_now_usec64();
+        session_slot->last_used_sec = (uint32_t) (xtimer_now_usec64() / US_PER_SEC);
     } else {
         DEBUG("dsm: no space for session to store\n")
     }
@@ -123,7 +122,7 @@ ssize_t dsm_get_oldest_used_session(sock_dtls_t *sock, sock_dtls_session_t *sess
         if (_sessions[i].state == SESSION_STATE_ESTABLISHED
                 && _sessions[i].sock == sock) {
             if (session_slot == NULL
-                || session_slot->last_used > _sessions[i].last_used)
+                || session_slot->last_used_sec > _sessions[i].last_used_sec)
             {
                 session_slot = &_sessions[i];
             }
