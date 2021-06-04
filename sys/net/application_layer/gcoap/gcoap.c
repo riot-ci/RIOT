@@ -160,7 +160,6 @@ static void *_event_loop(void *arg)
     event_queue_init(&_queue);
     if (IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)) {
 #if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
-        sock_dtls_init();
         if (sock_dtls_create(&_sock_dtls, &_sock_udp,
                             CREDMAN_TAG_EMPTY,
                             SOCK_DTLS_1_2, SOCK_DTLS_SERVER) < 0) {
