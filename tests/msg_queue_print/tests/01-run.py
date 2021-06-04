@@ -22,7 +22,7 @@ def testfunc(child):
     if os.environ.get('BOARD') == 'native':
         child.expect_exact('type: 0x0000, content: 0 ((nil))')
     else:
-        child.expect_exact('type: 0x0000, content: 0 (0)')
+        child.expect(r'type: 0x0000, content: 0 \((0x)?0+\)')
     child.expect_exact('type: 0x0001, content: 1 (0x1)')
     child.expect_exact('type: 0x0002, content: 2 (0x2)')
     child.expect_exact('type: 0x0003, content: 3 (0x3)')
