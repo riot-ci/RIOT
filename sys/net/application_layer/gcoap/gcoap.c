@@ -189,7 +189,7 @@ static void _on_sock_dtls_evt(sock_dtls_t *sock, sock_async_flags_t type, void *
                             _listen_buf, sizeof(_listen_buf),
                             CONFIG_GCOAP_DTLS_HANDSHAKE_TIMEOUT_USEC);
         if (res != -SOCK_DTLS_HANDSHAKE) {
-            DEBUG("gcoap: could not establish DTLS session: %d\n", res);
+            DEBUG("gcoap: could not establish DTLS session: %zd\n", res);
             sock_dtls_session_destroy(sock, &socket.ctx_dtls_session);
             return;
         }
