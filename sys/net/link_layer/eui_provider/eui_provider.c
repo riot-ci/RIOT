@@ -23,8 +23,13 @@ void netdev_eui48_get(netdev_t *netdev, eui48_t *addr)
     unsigned i = EUI48_PROVIDER_NUMOF;
     while (i--) {
 #ifdef MODULE_NETDEV_REGISTER
-        if (eui48_conf[i].type != netdev->type &&
-            eui48_conf[i].type != NETDEV_ANY) {
+        /* using NETDEV_ANY causes conflicts if there is another interface
+         * of a different type. Require EUI  providers to be locked to an
+         * interface type for uniqueness.
+         */
+        assert(eui48_conf[i].type != NETDEV_ANY);
+
+        if (eui48_conf[i].type != netdev->type) {
             continue;
         }
 
@@ -48,8 +53,13 @@ void netdev_eui64_get(netdev_t *netdev, eui64_t *addr)
     unsigned i = EUI64_PROVIDER_NUMOF;
     while (i--) {
 #ifdef MODULE_NETDEV_REGISTER
-        if (eui64_conf[i].type != netdev->type &&
-            eui64_conf[i].type != NETDEV_ANY) {
+        /* using NETDEV_ANY causes conflicts if there is another interface
+         * of a different type. Require EUI  providers to be locked to an
+         * interface type for uniqueness.
+         */
+        assert(eui64_conf[i].type != NETDEV_ANY);
+
+        if (eui64_conf[i].type != netdev->type) {
             continue;
         }
 
