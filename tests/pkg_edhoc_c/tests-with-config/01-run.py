@@ -53,7 +53,7 @@ def get_ipv6_addr(child):
     child.sendline('ifconfig')
     # Get device local address
     child.expect(
-        r"inet6\s+addr:\s+(?P<lladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)\r\n"
+        r"inet6\s+addr:\s+(?P<lladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)"
         "  scope: link  VAL"
     )
 
