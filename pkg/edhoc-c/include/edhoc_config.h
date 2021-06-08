@@ -88,7 +88,7 @@ extern "C" {
  *
  * Sets the maximum number of COSE header elements
  */
-#define EDHOC_COSE_HEADER_SIZE          (5)
+#define EDHOC_COSE_HEADER_SIZE              (5)
 
 /**
  * @brief EDHOC_CREDENTIAL_MAX_SIZE
@@ -96,7 +96,7 @@ extern "C" {
  * Sets the maximum buffer size for credentials (raw keys or certificates)
  *
  */
-#define EDHOC_CRED_SIZE           (256)
+#define EDHOC_CRED_SIZE                     (256)
 
 /**
  * @brief EDHOC_CREDENTIAL_ID_MAX_SIZE
@@ -104,7 +104,7 @@ extern "C" {
  * Sets the maximum buffer size for credential identifiers
  *
  */
-#define EDHOC_CRED_ID_SIZE        (256)
+#define EDHOC_CRED_ID_SIZE                  (256)
 
 /**
  * @brief EDHOC_ADD_DATA_MAX_SIZE
@@ -112,7 +112,7 @@ extern "C" {
  * Maximum number of additional data bytes to piggy-back on the EDHOC exchange
  *
  */
-#define EDHOC_ADDITIONAL_DATA_SIZE             (64)
+#define EDHOC_ADDITIONAL_DATA_SIZE          (64)
 
 #ifdef __cplusplus
 }
