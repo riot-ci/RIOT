@@ -49,7 +49,7 @@ properly.
 
 ### Responder
 
-Find out what the IPv6 address of the device is by running the `ifconfig`
+Find out the ipv6 address of the device is by running the `ifconfig`
 command in the shell.
 
 ```
@@ -134,7 +134,7 @@ And on the device (responder):
 
 ### Initiator
 
-First find out what is the local ipv6 address of the tap interface:
+First find out the local ipv6 address of the tap interface:
 
 ```
 ifconfig tap0
@@ -223,7 +223,7 @@ INFO:root: - OSCORE secret : b'\xd8\x1e\xa3@\xec\xe3?3\xe1\xfe\x8a\x1d\x0c|\xd0\
 INFO:root: - OSCORE salt   : b'\x87\xf9J\xf7\x82Tq\xa3'
 ```
 
-Congratulations you have performed an EDHOC handshake form your HOST to
+Congratulations you have performed an EDHOC handshake fo your HOST to
 a RIOT node running as the initiator and responder. In all cases you can
 now derive symmetric encryption keys from the shared master secret, in this
 case a shell command `initiator/responder oscore` is available that derives

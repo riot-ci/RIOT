@@ -11,7 +11,7 @@ import sys
 
 from testrunner import run
 
-# Default COAP port on which the response server is running
+# Default COAP port on which the edhoc responder is running
 COAP_PORT = int(os.getenv("COAP_PORT", "5683"))
 
 LAKE_WG_EDHOC_TV_34900_MSG1 = \
@@ -53,7 +53,7 @@ def get_ipv6_addr(child):
     child.sendline('ifconfig')
     # Get device local address
     child.expect(
-        r"inet6\s+addr:\s+(?P<lladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)"
+        r"inet6\s+addr:\s+(?P<lladdr>[0-9a-fA-F:]+:[A-Fa-f:0-9]+)\r\n"
         "  scope: link  VAL"
     )
 

@@ -7,11 +7,11 @@
  */
 
 /**
- * @ingroup     examples
+ * @ingroup     tests
  * @{
  *
  * @file
- * @brief       EDHOC handhsake over COAP using EDHOC-C
+ * @brief       EDHOC handhshake over COAP using EDHOC-C
  *
  * @author      Timothy Claeys <timothy.claeys@inria.fr>
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>

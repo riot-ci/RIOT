@@ -149,4 +149,4 @@ int responder_cli_init(void)
     return 0;
 }
 
-#endif /* CONFIG_RESEPONDER */
+#endif /* CONFIG_RESPONDER */
