@@ -205,7 +205,6 @@ uint8_t cc110x_status(cc110x_t *dev);
  */
 int cc110x_power_on(cc110x_t *dev);
 
-
 #ifdef __cplusplus
 }
 #endif
