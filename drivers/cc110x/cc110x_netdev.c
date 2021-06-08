@@ -695,11 +695,7 @@ static int cc110x_set(netdev_t *netdev, netopt_t opt,
         switch (*((netopt_state_t *)val)) {
         case NETOPT_STATE_RESET:
         case NETOPT_STATE_IDLE:
-            if (cc110x_acquire(dev)) {
-                return -EIO;
-            }
-            cc110x_enter_rx_mode(dev);
-            cc110x_release(dev);
+            cc110x_wakeup(dev);
             return sizeof(netopt_state_t);
         case NETOPT_STATE_OFF:
         case NETOPT_STATE_SLEEP:
