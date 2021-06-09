@@ -89,6 +89,13 @@ int cc110x_apply_config(cc110x_t *dev, const cc110x_config_t *conf,
     return cc110x_full_calibration(dev);
 }
 
+static void _set_tx_power(cc110x_t *dev, cc110x_tx_power_t power)
+{
+    uint8_t frend0 = 0x10 | (uint8_t)power;
+    cc110x_write(dev, CC110X_REG_FREND0, frend0);
+    dev->tx_power = power;
+}
+
 int cc110x_set_tx_power(cc110x_t *dev, cc110x_tx_power_t power)
 {
     DEBUG("[cc110x] Applying TX power setting at index %u\n", (unsigned)power);
@@ -114,9 +121,8 @@ int cc110x_set_tx_power(cc110x_t *dev, cc110x_tx_power_t power)
             return -EAGAIN;
     }
 
-    uint8_t frend0 = 0x10 | (uint8_t)power;
-    cc110x_write(dev, CC110X_REG_FREND0, frend0);
-    dev->tx_power = power;
+    _set_tx_power(dev, power);
+
     cc110x_release(dev);
     return 0;
 }
@@ -185,9 +191,15 @@ int cc110x_wakeup(cc110x_t *dev)
         return -EIO;
     }
 
+    while (cc110x_state_from_status(cc110x_status(dev)) != CC110X_STATE_IDLE) {
+        cc110x_cmd(dev, CC110X_STROBE_IDLE);
+        xtimer_usleep(CC110X_WAKEUP_TIME_US);
+    }
+
     /* PA_TABLE is lost on SLEEP, see 10.6 in the CC1101 data sheet */
     cc110x_burst_write(dev, CC110X_MULTIREG_PATABLE,
                        dev->params.patable->data, CC110X_PATABLE_LEN);
+    _set_tx_power(dev, dev->tx_power);
 
     cc110x_enter_rx_mode(dev);
     cc110x_release(dev);
