@@ -27,6 +27,13 @@ extern "C" {
 #endif
 
 /**
+ * @name    Sub-GHz radio (LoRa) configuration
+ * @{
+ */
+#define SX126X_PARAM_SPI                    (SPI_DEV(1))
+/** @} */
+
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
@@ -68,6 +75,17 @@ extern "C" {
 #define BTN1_MODE           GPIO_IN_PU
 #define BTN2_PIN            GPIO_PIN(PORT_C, 6)
 #define BTN2_MODE           GPIO_IN_PU
+/** @} */
+
+/**
+ * @name    RF 3-port switch (SP3T) control
+ *
+ * Refer Section 6.6.3 RF Overview in User Manual (UM2592)
+ * @{
+ */
+#define FE_CTRL1            GPIO_PIN(PORT_C, 4)
+#define FE_CTRL2            GPIO_PIN(PORT_C, 5)
+#define FE_CTRL3            GPIO_PIN(PORT_C, 3)
 /** @} */
 
 #ifdef __cplusplus
