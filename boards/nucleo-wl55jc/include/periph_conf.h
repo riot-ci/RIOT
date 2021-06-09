@@ -95,6 +95,11 @@ static const spi_conf_t spi_config[] = {
         .cs_af    = GPIO_AF5,
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
+    },
+    {
+        .dev      = SUBGHZSPI, /* Internally connected to Sub-GHz radio Modem  */
+        .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
+        .apbbus   = APB3,
     }
 };
 
