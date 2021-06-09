@@ -185,15 +185,10 @@ int cc110x_set_channel(cc110x_t *dev, uint8_t channel)
 
 int cc110x_wakeup(cc110x_t *dev)
 {
-    cc110x_power_on(dev);
+    int err = cc110x_power_on_and_acquire(dev);
 
-    if (cc110x_acquire(dev) != SPI_OK) {
-        return -EIO;
-    }
-
-    while (cc110x_state_from_status(cc110x_status(dev)) != CC110X_STATE_IDLE) {
-        cc110x_cmd(dev, CC110X_STROBE_IDLE);
-        xtimer_usleep(CC110X_WAKEUP_TIME_US);
+    if (err) {
+        return err;
     }
 
     /* PA_TABLE is lost on SLEEP, see 10.6 in the CC1101 data sheet */
