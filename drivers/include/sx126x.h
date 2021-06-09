@@ -88,6 +88,7 @@ typedef struct {
     sx126x_mod_params_lora_t mod_params;    /**< Lora modulation parameters */
     uint32_t channel;                       /**< Current channel frequency (in Hz) */
     uint8_t rx_timeout;                     /**< Rx Timeout in terms of symbols */
+    bool radio_sleep;                       /**< Radio sleep status */
 } sx126x_t;
 
 /**
