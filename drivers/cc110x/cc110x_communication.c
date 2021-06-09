@@ -32,7 +32,7 @@ int cc110x_power_on(cc110x_t *dev)
         return -EIO;
     }
     gpio_clear(cs);
-    xtimer_usleep(150);
+    xtimer_usleep(CC110X_WAKEUP_TIME_US);
     gpio_set(cs);
     spi_init_cs(dev->params.spi, dev->params.cs);
     return 0;
