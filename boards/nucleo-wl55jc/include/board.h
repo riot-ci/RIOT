@@ -27,6 +27,13 @@ extern "C" {
 #endif
 
 /**
+ * @name    Sub-GHz radio (LoRa) configuration
+ * @{
+ */
+#define SX126X_PARAM_SPI                    (SPI_DEV(0))
+/** @} */
+
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
