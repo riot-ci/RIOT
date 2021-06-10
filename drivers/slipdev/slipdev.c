@@ -232,10 +232,12 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
             assert(max_len == sizeof(uint16_t));
             *((uint16_t *)value) = NETDEV_TYPE_SLIP;
             return sizeof(uint16_t);
+#if IS_USED(MODULE_SLIPDEV_HWADDR)
         case NETOPT_ADDRESS_LONG:
             assert(max_len == sizeof(eui64_t));
             netdev_eui64_get(netdev, value);
             return sizeof(eui64_t);
+#endif
         default:
             return -ENOTSUP;
     }

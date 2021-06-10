@@ -57,7 +57,7 @@ netopt_t gnrc_netif_get_l2addr_opt(const gnrc_netif_t *netif)
             }
             break;
 #endif
-#if defined(MODULE_SLIPDEV)
+#if defined(MODULE_SLIPDEV_HWADDR)
         case NETDEV_TYPE_SLIP:
             res = NETOPT_ADDRESS_LONG;
             break;
