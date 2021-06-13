@@ -27,6 +27,10 @@
 #include "thread.h"
 #include "fmt.h"
 
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
+#include "pm_layered.h"
+#endif
+
 #include "periph/rtc.h"
 
 #include "net/loramac.h"
@@ -44,25 +48,51 @@
 #include "sx126x_params.h"
 #endif
 
-/* Messages are sent every 20s to respect the duty cycle on each channel */
-#define PERIOD              (20U)
+/* By default, messages are sent every 20s to respect the duty cycle
+   on each channel */
+#ifndef SEND_PERIOD
+#ifndef
+#define SEND_PERIOD         (20U)
+#endif
+
+/* Low-power mode level */
+#define PM_LOCK_LEVEL       (1)
 
 #define SENDER_PRIO         (THREAD_PRIORITY_MAIN - 1)
 static kernel_pid_t sender_pid;
 static char sender_stack[THREAD_STACKSIZE_MAIN / 2];
 
 static semtech_loramac_t loramac;
+#if IS_USED(MODULE_SX127X)
 static sx127x_t sx127x;
+#endif
+#if IS_USED(MODULE_SX126X)
+static sx126x_t sx126x;
+#endif
 
 static const char *message = "This is RIOT!";
 
+#ifdef USE_OTAA
 static uint8_t deveui[LORAMAC_DEVEUI_LEN];
 static uint8_t appeui[LORAMAC_APPEUI_LEN];
 static uint8_t appkey[LORAMAC_APPKEY_LEN];
+#endif
+
+#ifdef USE_ABP
+static uint8_t devaddr[LORAMAC_DEVADDR_LEN];
+static uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];
+static uint8_t appskey[LORAMAC_APPSKEY_LEN];
+#endif
 
 static void rtc_cb(void *arg)
 {
     (void) arg;
+
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
+    /* block sleep level mode until the next sending cycle has completed */
+    pm_block(PM_LOCK_LEVEL);
+#endif
+
     msg_t msg;
     msg_send(&msg, sender_pid);
 }
@@ -72,7 +102,7 @@ static void _prepare_next_alarm(void)
     struct tm time;
     rtc_get_time(&time);
     /* set initial alarm */
-    time.tm_sec += PERIOD;
+    time.tm_sec += SEND_PERIOD;
     mktime(&time);
     rtc_set_alarm(&time, rtc_cb, NULL);
 }
@@ -105,6 +135,11 @@ static void *sender(void *arg)
 
         /* Schedule the next wake-up alarm */
         _prepare_next_alarm();
+
+#if defined(MODULE_PM_LAYERED) && defined(MODULE_PERIPH_EEPROM)
+        /* go back to sleep */
+        pm_unblock(PM_LOCK_LEVEL);
+#endif
     }
 
     /* this should never be reached */
@@ -136,6 +171,12 @@ int main(void)
 
     /* Initialize the loramac stack */
     semtech_loramac_init(&loramac);
+
+#ifdef USE_OTAA /* OTAA activation mode */
+    /* Convert identifiers and keys strings to byte arrays */
+    fmt_hex_bytes(deveui, DEVEUI);
+    fmt_hex_bytes(appeui, APPEUI);
+    fmt_hex_bytes(appkey, APPKEY);
     semtech_loramac_set_deveui(&loramac, deveui);
     semtech_loramac_set_appeui(&loramac, appeui);
     semtech_loramac_set_appkey(&loramac, appkey);
@@ -143,15 +184,49 @@ int main(void)
     /* Use a fast datarate, e.g. BW125/SF7 in EU868 */
     semtech_loramac_set_dr(&loramac, LORAMAC_DR_5);
 
-    /* Start the Over-The-Air Activation (OTAA) procedure to retrieve the
-     * generated device address and to get the network and application session
-     * keys.
-     */
-    puts("Starting join procedure");
-    if (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
-        puts("Join procedure failed");
-        return 1;
+    /* Join the network if not already joined */
+    if (!semtech_loramac_is_mac_joined(&loramac)) {
+        /* Start the Over-The-Air Activation (OTAA) procedure to retrieve the
+         * generated device address and to get the network and application session
+         * keys.
+         */
+        puts("Starting join procedure");
+        if (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
+            puts("Join procedure failed");
+            return 1;
+        }
+
+#ifdef MODULE_PERIPH_EEPROM
+        /* Save current MAC state to EEPROM */
+        semtech_loramac_save_config(&loramac);
+#endif
     }
+#endif
+
+#ifdef USE_ABP /* ABP activation mode */
+    /* Convert identifiers and keys strings to byte arrays */
+    fmt_hex_bytes(devaddr, DEVADDR);
+    fmt_hex_bytes(nwkskey, NWKSKEY);
+    fmt_hex_bytes(appskey, APPSKEY);
+    semtech_loramac_set_devaddr(&loramac, devaddr);
+    semtech_loramac_set_nwkskey(&loramac, nwkskey);
+    semtech_loramac_set_appskey(&loramac, appskey);
+
+    /* Configure RX2 parameters */
+    semtech_loramac_set_rx2_freq(&loramac, RX2_FREQ);
+    semtech_loramac_set_rx2_dr(&loramac, RX2_DR);
+
+#ifdef MODULE_PERIPH_EEPROM
+    /* Store ABP parameters to EEPROM */
+    semtech_loramac_save_config(&loramac);
+#endif
+
+    /* Use a fast datarate, e.g. BW125/SF7 in EU868 */
+    semtech_loramac_set_dr(&loramac, LORAMAC_DR_5);
+
+    /* ABP join procedure always succeeds */
+    semtech_loramac_join(&loramac, LORAMAC_JOIN_ABP);
+#endif
     puts("Join procedure succeeded");
 
     /* start the sender thread */
