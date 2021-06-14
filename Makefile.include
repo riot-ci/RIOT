@@ -229,6 +229,7 @@ GLOBAL_GOALS += buildtest \
                 info-boards-features-conflicting \
                 info-boards-features-missing \
                 info-boards-supported \
+                info-kconfig-boards-supported \
                 info-buildsizes info-buildsizes-diff \
                 #
 
@@ -623,7 +624,7 @@ else
 endif
 
 # variables used to compile and link c++
-ifneq (,$(filter cpp,$(FEATURES_USED)))
+ifneq (,$(filter cpp,$(USEMODULE)))
   CPPMIX ?= 1
 endif
 
