@@ -74,7 +74,7 @@ config MODULE_ZTIMER_SEC
 choice
     bool "Backend"
     depends on MODULE_ZTIMER_SEC
-    default ZTIMER_SEC_BACKEND_RTC
+    default ZTIMER_SEC_BACKEND_RTC if !BOARD_NATIVE
     default ZTIMER_SEC_BACKEND_RTT
 
 config ZTIMER_SEC_BACKEND_TIMER
