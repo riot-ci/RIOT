@@ -175,9 +175,7 @@ void cc2538_init(void)
     _cc2538_setup_mac_timer();
 
     /* Enable Auto ACK */
-    if (IS_USED(MODULE_IEEE802154_RADIO_HAL)) {
-        RFCORE->XREG_FRMCTRL0bits.AUTOACK = !IS_ACTIVE(CONFIG_IEEE802154_AUTO_ACK_DISABLE);
-    }
+    RFCORE->XREG_FRMCTRL0bits.AUTOACK = !IS_ACTIVE(CONFIG_IEEE802154_AUTO_ACK_DISABLE);
 
     /* Flush the receive and transmit FIFOs */
     RFCORE_SFR_RFST = ISFLUSHTX;
