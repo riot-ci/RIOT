@@ -16,7 +16,7 @@
  */
 
 #ifndef MYNEWT_COMPAT_H
-#define MYNEWT_H
+#define MYNEWT_COMPAT_H
 
 #ifdef __cplusplus
 extern "C" {

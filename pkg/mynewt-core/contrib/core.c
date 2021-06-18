@@ -24,7 +24,7 @@
 
 void mynewt_core_init(void)
 {
-#if (MYNEWT_VAL_OS_CPUTIME_TIMER_NUM >= 0)
+#if (MYNEWT_VAL_OS_CPUTIME_TIMER_NUM >= 0) && (defined(CPU_NRF51) || defined(CPU_NRF52))
     int rc = hal_timer_init(5, NULL);
     assert(rc == 0);
     rc = os_cputime_init(MYNEWT_VAL_OS_CPUTIME_FREQ);

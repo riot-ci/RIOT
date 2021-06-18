@@ -41,7 +41,7 @@ void nrf5x_hw_set_isr(int irqn, void (*addr)(void));
 #define __HAL_DISABLE_INTERRUPTS(x)                     \
     do {                                                \
         x = irq_disable();                              \
-    } while(0);
+    } while (0);
 
 #define __HAL_ENABLE_INTERRUPTS(x)                      \
     do {                                                \
@@ -51,7 +51,7 @@ void nrf5x_hw_set_isr(int irqn, void (*addr)(void));
         else {                                          \
             irq_enable();                              \
         }                                               \
-    } while(0);
+    } while (0);
 /** @} */
 
 #ifdef __cplusplus

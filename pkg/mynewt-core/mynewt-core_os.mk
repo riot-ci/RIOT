@@ -5,8 +5,11 @@ SRC := \
   os_mbuf.c \
   os_mempool.c \
   os_msys.c \
-  os_cputime.c \
   os_cputime_pwr2.c \
   #
+
+ifneq (,$(filter nrf%,$(CPU)))
+  SRC += os_cputime.c
+endif
 
 include $(RIOTBASE)/Makefile.base
