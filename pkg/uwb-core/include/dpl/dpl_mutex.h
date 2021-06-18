@@ -30,7 +30,7 @@ extern "C" {
  * @brief dpl mutex wrapper
  */
 struct dpl_mutex {
-    struct os_mutex mu;
+    struct os_mutex mu;     /**< the mutex */
 };
 
 /**

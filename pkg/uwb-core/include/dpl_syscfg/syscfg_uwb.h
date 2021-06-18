@@ -18,8 +18,8 @@
  * @}
  */
 
-#ifndef SYSCFG_SYSCFG_UWB_H
-#define SYSCFG_SYSCFG_UWB_H
+#ifndef DPL_SYSCFG_SYSCFG_UWB_H
+#define DPL_SYSCFG_SYSCFG_UWB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -141,4 +141,4 @@ extern "C" {
 }
 #endif
 
-#endif /* SYSCFG_SYSCFG_UWB_H */
+#endif /* DPL_SYSCFG_SYSCFG_UWB_H */

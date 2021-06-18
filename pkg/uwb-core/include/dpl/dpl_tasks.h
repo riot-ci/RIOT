@@ -30,7 +30,7 @@ extern "C" {
  * @brief dpl task wrapper
  */
 struct dpl_task {
-    struct os_task t;
+    struct os_task t;   /** os task */
 };
 
 /**
