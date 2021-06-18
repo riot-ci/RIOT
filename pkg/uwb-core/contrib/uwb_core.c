@@ -36,7 +36,6 @@ static char _stack_uwb_core[UWB_CORE_STACKSIZE];
 
 static event_queue_t _queue;
 
-
 static void *_uwb_core_thread(void *arg)
 {
     (void)arg;

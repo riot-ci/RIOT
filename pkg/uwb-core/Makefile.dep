@@ -24,8 +24,10 @@ endif
 
 ifneq (,$(filter uwb-core_dpl,$(USEMODULE)))
   USEPKG += mynewt-core
-  USEMODULE += mynewt-core_nrf5x_hal
   USEMODULE += mynewt-core_os
+  ifneq (,$(filter nrf%,$(CPU)))
+    USEMODULE += mynewt-core_nrf5x_hal
+  endif
 endif
 
 # Some stdlib functions used by the pkg are not in avr-gcc
