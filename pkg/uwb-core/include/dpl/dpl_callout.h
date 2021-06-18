@@ -33,7 +33,7 @@ extern "C" {
  * @brief dpl callout wrapper
  */
 struct dpl_callout {
-    struct os_callout co;
+    struct os_callout co;   /**< the callout */
 };
 
 /**

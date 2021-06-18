@@ -33,14 +33,14 @@ extern "C" {
  * @brief dpl event wrapper
  */
 struct dpl_event {
-    struct os_event ev;
+    struct os_event ev;     /**< the envent */
 };
 
 /**
  * @brief dpl event queue wrapper
  */
 struct dpl_eventq {
-    struct os_eventq evq;
+    struct os_eventq evq;   /**< the event queue */
 };
 
 /**

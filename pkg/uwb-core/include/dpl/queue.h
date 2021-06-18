@@ -17,8 +17,8 @@
  * @}
  */
 
-#ifndef DPL_DPL_H
-#define DPL_DPL_H
+#ifndef DPL_QUEUE_H
+#define DPL_QUEUE_H
 
 #include "os/os_queue.h"
 
@@ -30,4 +30,4 @@ extern "C" {
 }
 #endif
 
-#endif /* DPL_DPL_H */
+#endif /* DPL_QUEUE_H */

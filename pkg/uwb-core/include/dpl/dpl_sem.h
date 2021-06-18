@@ -32,7 +32,7 @@ extern "C" {
  * @brief dpl semaphore wrapper
  */
 struct dpl_sem {
-    struct os_sem sem;
+    struct os_sem sem;      /**< the semaphore */
 };
 
 /**
