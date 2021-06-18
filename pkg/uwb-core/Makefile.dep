@@ -36,6 +36,3 @@ FEATURES_BLACKLIST += arch_avr8
 # libraries these introduce additional compilation issues that have not
 # been addressed in this port
 FEATURES_BLACKLIST += arch_native
-
-# LLVM ARM shows issues with missing definitions for stdatomic
-TOOLCHAINS_BLACKLIST += llvm
