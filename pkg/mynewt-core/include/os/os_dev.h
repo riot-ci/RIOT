@@ -16,8 +16,8 @@
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}
  */
-#ifndef OS_DEV_H
-#define OS_DEV_H
+#ifndef OS_OS_DEV_H
+#define OS_OS_DEV_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,4 +41,4 @@ struct os_dev {
 }
 #endif
 
-#endif /* OS_DEV_H */
+#endif /* OS_OS_DEV_H */

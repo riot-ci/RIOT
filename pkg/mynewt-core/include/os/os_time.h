@@ -17,8 +17,8 @@
  * @}
  */
 
-#ifndef OS_TIME_H
-#define OS_TIME_H
+#ifndef OS_OS_TIME_H
+#define OS_OS_TIME_H
 
 #include "os/os_error.h"
 #include "ztimer.h"
@@ -113,4 +113,4 @@ static inline void os_time_delay(os_time_t ticks)
 }
 #endif
 
-#endif /* OS_TIME_H */
+#endif /* OS_OS_TIME_H */

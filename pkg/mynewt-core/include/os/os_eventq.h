@@ -1,7 +1,24 @@
+/*
+ * Copyright (C) 2020 Inria
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
 
+/**
+ * @ingroup     pkg_mynewt_core
+ * @{
+ *
+ * @file
+ * @brief       mynewt-core event and event queue abstraction
+ *
+ * @author      Francisco Molina <francois-xavier.molina@inria.fr>
+ * @}
+ */
 
-#ifndef OS_EVENTQ_H
-#define OS_EVENTQ_H
+#ifndef OS_OS_EVENTQ_H
+#define OS_OS_EVENTQ_H
 
 #include <os/os_types.h>
 
@@ -12,7 +29,7 @@ extern "C" {
 #endif
 
 /**
- * @brief dpl event wrapper
+ * @brief Event wrapper
  */
 struct os_event
 {
@@ -21,7 +38,7 @@ struct os_event
 };
 
 /**
- * @brief dpl event queue wrapper
+ * @brief Event queue wrapper
  */
 struct os_eventq
 {
@@ -29,7 +46,7 @@ struct os_eventq
 };
 
 /**
- * @brief dpl event callback function
+ * @brief Event callback function
  */
 typedef void os_event_fn(struct os_event *ev);
 
@@ -65,9 +82,9 @@ static inline bool os_event_is_queued(struct os_event *ev)
 }
 
 /**
- * @brief   Runs an event
+ * @brief   Returns event argument
  *
- * @param[in]   ev      event to run
+ * @param[in]   ev      event
  */
 static inline void *os_event_get_arg(struct os_event *ev)
 {
@@ -75,7 +92,7 @@ static inline void *os_event_get_arg(struct os_event *ev)
 }
 
 /**
- * @brief   Set the vent arg
+ * @brief   Set the event argument
  *
  * @param[in]   ev      event
  * @param[in]   arg     arg to set event
@@ -129,9 +146,10 @@ static inline void os_eventq_deinit(struct os_eventq *evq)
 }
 
 /**
- * @brief   Get next event from event queue, blocking.
+* @brief   Get next event from event queue
  *
  * @param[in]   evq     the event queue to pull an event from
+ * @param[in]   tmo     timeout, OS_WAIT_FOREVER to block, 0 to return immediately
  *
  * @return  the event from the queue
  */
@@ -215,4 +233,4 @@ static inline bool os_eventq_is_empty(struct os_eventq *evq)
 }
 #endif
 
-#endif /* OS_EVENTQ_H */
+#endif /* OS_OS_EVENTQ_H */

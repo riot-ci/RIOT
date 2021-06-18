@@ -26,6 +26,12 @@
 extern "C" {
 #endif
 
+/**
+ * @brief   Set nrf5x radio ISR callback
+ *
+ * @param[in]   irqn    IRQ number
+ * @param[in]   addr    the ISR callback
+ */
 void nrf5x_hw_set_isr(int irqn, void (*addr)(void));
 
 /**

@@ -34,4 +34,3 @@ extern "C" {
 #endif
 
 #endif /* OS_MYNEWT_H */
-
