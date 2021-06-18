@@ -96,6 +96,7 @@ int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
     res = thread_create(stack, stacksize, priority, THREAD_CREATE_STACKTEST,
                         _gnrc_netif_thread, &ctx, name);
     assert(res > 0);
+    (void)res;
 
     /* wait for result of driver init */
     mutex_lock(&ctx.init_done);
