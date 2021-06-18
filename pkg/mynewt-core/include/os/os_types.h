@@ -17,8 +17,8 @@
  * @}
  */
 
-#ifndef OS_TYPES_H
-#define OS_TYPES_H
+#ifndef OS_OS_TYPES_H
+#define OS_OS_TYPES_H
 
 #include <stdint.h>
 
@@ -56,4 +56,4 @@ typedef char os_stack_t;
 }
 #endif
 
-#endif /* OS_TYPES_H */
+#endif /* OS_OS_TYPES_H */

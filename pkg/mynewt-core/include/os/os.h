@@ -72,8 +72,8 @@ extern "C" {
             (__n)                                      : \
             ((__n) + ((__a) - ((__n) & ((__a) - 1))))    \
         )
-/** @} */
 #define OS_ALIGNMENT    (4)
+/** @} */
 
 /**
  * @brief   CPU status register
