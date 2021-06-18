@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       cputime implementaiton for non nrf5%*BOARDs
+ * @brief       cputime implementation for non nrf5%*BOARDs
  *
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}
