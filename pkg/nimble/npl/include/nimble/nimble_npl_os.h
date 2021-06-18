@@ -79,7 +79,7 @@ struct ble_npl_mutex {
  * @brief ble_npl semaphore wrapper
  */
 struct ble_npl_sem {
-    struct os_sem sem;      /**< sempahore */
+    struct os_sem sem;      /**< semaphore */
 };
 
 /**
@@ -568,4 +568,4 @@ static inline void ble_npl_hw_set_isr(int irqn, void (*addr)(void))
 }
 #endif
 
-#endif  /* NIMBLE_NIMBLE_NPL_OS_H */
+#endif /* NIMBLE_NIMBLE_NPL_OS_H */
