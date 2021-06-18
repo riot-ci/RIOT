@@ -17,8 +17,8 @@
  * @}
  */
 
-#ifndef NPL_NIMBLE_NIMBLE_NPL_OS
-#define NPL_NIMBLE_NIMBLE_NPL_OS
+#ifndef NIMBLE_NIMBLE_NPL_OS_H
+#define NIMBLE_NIMBLE_NPL_OS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -29,52 +29,63 @@
 extern "C" {
 #endif
 
+/**
+ * @name    BLE NPL layer macros
+ * @{
+ */
 #define BLE_NPL_OS_ALIGNMENT    (OS_ALIGNMENT)
 #define BLE_NPL_TIME_FOREVER    (OS_WAIT_FOREVER)
+/** @} */
 
+/**
+ * @brief time type
+ */
 typedef uint32_t ble_npl_time_t;
+/**
+ * @brief time type
+ */
 typedef int32_t ble_npl_stime_t;
 
 /**
  * @brief ble_npl event wrapper
  */
 struct ble_npl_event {
-    struct os_event ev;
+    struct os_event ev;     /**< the event */
 };
 
 /**
  * @brief ble_npl event queue wrapper
  */
 struct ble_npl_eventq {
-    struct os_eventq evq;
+    struct os_eventq evq;   /**< the event queue */
 };
 
 /**
  * @brief ble_npl callout wrapper
  */
 struct ble_npl_callout {
-    uint32_t ticks;
-    struct os_callout co;
+    uint32_t ticks;         /**< the callout set timeout */
+    struct os_callout co;   /**< the callout */
 };
 
 /**
  * @brief ble_npl mutex wrapper
  */
 struct ble_npl_mutex {
-    struct os_mutex mu;
+    struct os_mutex mu;     /**< mutex */
 };
 
 /**
  * @brief ble_npl semaphore wrapper
  */
 struct ble_npl_sem {
-    struct os_sem sem;
+    struct os_sem sem;      /**< sempahore */
 };
 
 /**
  * @brief   Not used in RIOT
  *
- * @return  Allways true
+ * @return  Always true
  */
 static inline bool ble_npl_os_started(void)
 {
@@ -88,10 +99,10 @@ static inline bool ble_npl_os_started(void)
  * @param[in]   fn      event callback function
  * @param[in]   arg     event argument
  */
-static inline void ble_npl_event_init(struct ble_npl_event *ev, ble_npl_event_fn * fn,
-                                 void *arg)
+static inline void ble_npl_event_init(struct ble_npl_event *ev, ble_npl_event_fn *fn,
+                                      void *arg)
 {
-    os_event_init(&ev->ev, (os_event_fn*) fn, arg);
+    os_event_init(&ev->ev, (os_event_fn *)fn, arg);
 }
 
 /**
@@ -134,7 +145,7 @@ static inline void ble_npl_event_set_arg(struct ble_npl_event *ev, void *arg)
  */
 static inline void ble_npl_event_run(struct ble_npl_event *ev)
 {
-   os_event_run(&ev->ev);
+    os_event_run(&ev->ev);
 }
 
 /**
@@ -166,7 +177,7 @@ static inline int ble_npl_eventq_inited(struct ble_npl_eventq *evq)
  */
 static inline void ble_npl_eventq_deinit(struct ble_npl_eventq *evq)
 {
-    (void) evq;
+    (void)evq;
     /* Can't deinit an eventq in RIOT */
 }
 
@@ -174,23 +185,26 @@ static inline void ble_npl_eventq_deinit(struct ble_npl_eventq *evq)
  * @brief   Get next event from event queue, blocking.
  *
  * @param[in]   evq     the event queue to pull an event from
+ * @param[in]   tmo     timeout, NPL_TIME_FOREVER to block, 0 to return immediately
  *
  * @return  the event from the queue
  */
-static inline struct ble_npl_event * ble_npl_eventq_get(struct ble_npl_eventq *evq,
-                                                        ble_npl_time_t tmo)
+static inline struct ble_npl_event *ble_npl_eventq_get(struct ble_npl_eventq *evq,
+                                                       ble_npl_time_t tmo)
 {
-    return (struct ble_npl_event *) os_eventq_get(&evq->evq, tmo);
+    return (struct ble_npl_event *)os_eventq_get(&evq->evq, tmo);
 }
 
 /**
  * @brief   Get next event from event queue, non-blocking
  *
+ * @param[in]   evq     the event queue to pull an event from
+ *
  * @return  event from the queue, or NULL if none available.
  */
-static inline struct ble_npl_event * ble_npl_eventq_get_no_wait(struct ble_npl_eventq *evq)
+static inline struct ble_npl_event *ble_npl_eventq_get_no_wait(struct ble_npl_eventq *evq)
 {
-    return (struct ble_npl_event *) os_eventq_get_no_wait(&evq->evq);
+    return (struct ble_npl_event *)os_eventq_get_no_wait(&evq->evq);
 }
 
 /**
@@ -244,7 +258,7 @@ static inline bool ble_npl_eventq_is_empty(struct ble_npl_eventq *evq)
  */
 static inline ble_npl_error_t ble_npl_mutex_init(struct ble_npl_mutex *mu)
 {
-    return (ble_npl_error_t) os_mutex_init(&mu->mu);
+    return (ble_npl_error_t)os_mutex_init(&mu->mu);
 }
 
 /**
@@ -261,7 +275,7 @@ static inline ble_npl_error_t ble_npl_mutex_init(struct ble_npl_mutex *mu)
  */
 static inline ble_npl_error_t ble_npl_mutex_pend(struct ble_npl_mutex *mu, ble_npl_time_t timeout)
 {
-    return (ble_npl_error_t) os_mutex_pend(&mu->mu, timeout);
+    return (ble_npl_error_t)os_mutex_pend(&mu->mu, timeout);
 }
 
 /**
@@ -274,7 +288,7 @@ static inline ble_npl_error_t ble_npl_mutex_pend(struct ble_npl_mutex *mu, ble_n
  */
 static inline ble_npl_error_t ble_npl_mutex_release(struct ble_npl_mutex *mu)
 {
-    return (ble_npl_error_t) os_mutex_release(&mu->mu);
+    return (ble_npl_error_t)os_mutex_release(&mu->mu);
 }
 
 /**
@@ -289,7 +303,7 @@ static inline ble_npl_error_t ble_npl_mutex_release(struct ble_npl_mutex *mu)
  */
 static inline ble_npl_error_t ble_npl_sem_init(struct ble_npl_sem *sem, uint16_t tokens)
 {
-    return (ble_npl_error_t) os_sem_init(&sem->sem, tokens);
+    return (ble_npl_error_t)os_sem_init(&sem->sem, tokens);
 }
 
 /**
@@ -308,7 +322,7 @@ static inline ble_npl_error_t ble_npl_sem_init(struct ble_npl_sem *sem, uint16_t
  */
 static inline ble_npl_error_t ble_npl_sem_pend(struct ble_npl_sem *sem, ble_npl_time_t timeout)
 {
-    return (ble_npl_error_t) os_sem_pend(&sem->sem, timeout);
+    return (ble_npl_error_t)os_sem_pend(&sem->sem, timeout);
 }
 
 /**
@@ -322,7 +336,7 @@ static inline ble_npl_error_t ble_npl_sem_pend(struct ble_npl_sem *sem, ble_npl_
  */
 static inline ble_npl_error_t ble_npl_sem_release(struct ble_npl_sem *sem)
 {
-    return (ble_npl_error_t) os_sem_release(&sem->sem);
+    return (ble_npl_error_t)os_sem_release(&sem->sem);
 }
 
 /**
@@ -348,9 +362,9 @@ static inline uint16_t ble_npl_sem_get_count(struct ble_npl_sem *sem)
  * @param[in]   e_arg   callback function argument
  */
 static inline void ble_npl_callout_init(struct ble_npl_callout *c, struct ble_npl_eventq *q,
-                      ble_npl_event_fn *e_cb, void *e_arg)
+                                        ble_npl_event_fn *e_cb, void *e_arg)
 {
-    os_callout_init(&c->co, &q->evq, (os_event_fn *) e_cb, e_arg);
+    os_callout_init(&c->co, &q->evq, (os_event_fn *)e_cb, e_arg);
 }
 
 /**
@@ -364,6 +378,7 @@ static inline void ble_npl_callout_init(struct ble_npl_callout *c, struct ble_np
 static inline ble_npl_error_t ble_npl_callout_reset(struct ble_npl_callout *c, ble_npl_time_t ticks)
 {
     uint32_t state = os_hw_enter_critical();
+
     c->ticks = ztimer_now(ZTIMER_MSEC) + ticks;
     os_callout_reset(&c->co, ticks);
     os_hw_exit_critical(state);
@@ -395,7 +410,7 @@ static inline bool ble_npl_callout_is_active(struct ble_npl_callout *c)
 /**
  * @brief   Get the callout set ticks
  *
- * @param[in]   c   the callout to check
+ * @param[in]   co   the callout to check
  */
 static inline ble_npl_time_t ble_npl_callout_get_ticks(struct ble_npl_callout *co)
 {
@@ -405,15 +420,15 @@ static inline ble_npl_time_t ble_npl_callout_get_ticks(struct ble_npl_callout *c
 /**
  * @brief   Get the remaining ticks for callout expire
  *
- * @param[in]   c       the callout to check
+ * @param[in]   co      the callout to check
  * @param[in]   time    ignored
  *
  * @return      remaining ticks
  */
 static inline ble_npl_time_t ble_npl_callout_remaining_ticks(struct ble_npl_callout *co,
-                                               ble_npl_time_t time)
+                                                             ble_npl_time_t time)
 {
-    (void) time;
+    (void)time;
     ztimer_now_t now = ztimer_now(ZTIMER_MSEC);
     return (ble_npl_time_t)(co->ticks - now);
 }
@@ -421,11 +436,10 @@ static inline ble_npl_time_t ble_npl_callout_remaining_ticks(struct ble_npl_call
 /**
  * @brief   Set the callout event argument
  *
- * @param[in]   c       the callout
- * @param[in]   e_arg   callback function argument
+ * @param[in]   co      the callout
+ * @param[in]   arg   callback function argument
  */
-static inline void ble_npl_callout_set_arg(struct ble_npl_callout *co,
-                                           void *arg)
+static inline void ble_npl_callout_set_arg(struct ble_npl_callout *co, void *arg)
 {
     co->co.c_ev.arg = arg;
 }
@@ -450,7 +464,7 @@ static inline ble_npl_time_t ble_npl_time_get(void)
  */
 static inline ble_npl_error_t ble_npl_time_ms_to_ticks(uint32_t ms, ble_npl_time_t *out_ticks)
 {
-    return (ble_npl_error_t) os_time_ms_to_ticks(ms, out_ticks);
+    return (ble_npl_error_t)os_time_ms_to_ticks(ms, out_ticks);
 }
 
 /**
@@ -463,7 +477,7 @@ static inline ble_npl_error_t ble_npl_time_ms_to_ticks(uint32_t ms, ble_npl_time
  */
 static inline ble_npl_error_t  ble_npl_time_ticks_to_ms(ble_npl_time_t ticks, uint32_t *out_ms)
 {
-    return (ble_npl_error_t) os_time_ticks_to_ms(ticks, out_ms);
+    return (ble_npl_error_t)os_time_ticks_to_ms(ticks, out_ms);
 }
 
 /**
@@ -534,11 +548,17 @@ static inline bool ble_npl_hw_is_in_critical(void)
  *
  * @return PID
  */
-static inline void * ble_npl_get_current_task_id(void)
+static inline void *ble_npl_get_current_task_id(void)
 {
     return (void *)(uint32_t)thread_getpid();
 }
 
+/**
+ * @brief   Set nrf5x radio ISR callback
+ *
+ * @param[in]   irqn    IRQ number
+ * @param[in]   addr    the ISR callback
+ */
 static inline void ble_npl_hw_set_isr(int irqn, void (*addr)(void))
 {
     nrf5x_hw_set_isr(irqn, addr);
@@ -548,4 +568,4 @@ static inline void ble_npl_hw_set_isr(int irqn, void (*addr)(void))
 }
 #endif
 
-#endif  /* NPL_NIMBLE_NIMBLE_NPL_OS */
+#endif  /* NIMBLE_NIMBLE_NPL_OS_H */
