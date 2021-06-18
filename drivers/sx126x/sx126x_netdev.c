@@ -59,14 +59,17 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
     }
 
     DEBUG("[sx126x] netdev: sending packet now (size: %d).\n", size);
+    int pos = 0;
     /* Write payload buffer */
     for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         if (iol->iol_len > 0) {
-            sx126x_set_lora_payload_length(dev, iol->iol_len);
-            sx126x_write_buffer(dev, 0, iol->iol_base, iol->iol_len);
+            sx126x_write_buffer(dev, pos, iol->iol_base, iol->iol_len);
             DEBUG("[sx126x] netdev: send: wrote data to payload buffer.\n");
+            pos += iol_len;
         }
     }
+
+    sx126x_set_lora_payload_length(dev, size);
 
     state = NETOPT_STATE_TX;
     netdev->driver->set(netdev, NETOPT_STATE, &state, sizeof(uint8_t));
