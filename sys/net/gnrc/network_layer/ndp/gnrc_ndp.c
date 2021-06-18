@@ -333,11 +333,14 @@ void gnrc_ndp_nbr_adv_send(const ipv6_addr_t *tgt, gnrc_netif_t *netif,
         int tgt_idx;
         gnrc_netif_t *tgt_netif = gnrc_netif_get_by_ipv6_addr(tgt);
 
-        if ((tgt_netif == NULL) ||
-            (tgt_idx = gnrc_netif_ipv6_addr_idx(tgt_netif, tgt)) < 0) {
+        if (tgt_netif == NULL) {
             DEBUG("ndp: tgt not assigned to interface. Abort sending\n");
             break;
         }
+
+        tgt_idx = gnrc_netif_ipv6_addr_idx(tgt_netif, tgt);
+        assert(tgt_idx >= 0);
+
         if (gnrc_netif_is_rtr(netif) && gnrc_netif_is_rtr_adv(netif)) {
             adv_flags |= NDP_NBR_ADV_FLAGS_R;
         }
