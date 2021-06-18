@@ -1,0 +1,8 @@
+USEMODULE += event_callback
+USEMODULE += sema
+USEMODULE += ztimer
+USEMODULE += ztimer_msec
+
+USEMODULE += mynewt-core
+
+DEFAULT_MODULE += auto_init_mynewt-core
