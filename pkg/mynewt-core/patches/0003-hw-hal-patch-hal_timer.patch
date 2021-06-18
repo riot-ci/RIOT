@@ -1,4 +1,4 @@
-From d7bb4e3462321d5e1859c7814832cdc01b1c368e Mon Sep 17 00:00:00 2001
+From 26855dc1a62afb1f2225bdd516da668678a9ed17 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Fri, 18 Jun 2021 12:24:27 +0200
 Subject: [PATCH 3/3] hw/hal: patch hal_timer
@@ -11,14 +11,14 @@ and therefore ztimer as the base timer.
  1 file changed, 8 insertions(+)
 
 diff --git a/hw/hal/include/hal/hal_timer.h b/hw/hal/include/hal/hal_timer.h
-index be41c6095..b93d4053c 100644
+index be41c6095..7d8de9fb4 100644
 --- a/hw/hal/include/hal/hal_timer.h
 +++ b/hw/hal/include/hal/hal_timer.h
 @@ -31,6 +31,10 @@
  #include <inttypes.h>
  #include "os/queue.h"
  
-+#if !IS_ACTIVE(CPU_NRF52) && !IS_ACTIVE(CPU_NRF51)
++#if !defined(CPU_NRF52) && !defined(CPU_NRF51)
 +#include "ztimer.h"
 +#include "ztimer/config.h"
 +#endif
@@ -29,7 +29,7 @@ index be41c6095..b93d4053c 100644
   * structure; the hal timer API should be used.
   */
  struct hal_timer {
-+#if !IS_ACTIVE(CPU_NRF52) && !IS_ACTIVE(CPU_NRF51)
++#if !defined(CPU_NRF52) && !defined(CPU_NRF51)
 +    ztimer_t timer;
 +#else
      /** Internal platform specific pointer */

@@ -1,7 +1,7 @@
 From 34fb6cbeda27df8267168ab3787f5891da712665 Mon Sep 17 00:00:00 2001
 From: Francisco Molina <femolina@uc.cl>
 Date: Thu, 27 May 2021 11:58:13 +0200
-Subject: [PATCH 2/2] kernel/os/src: riot patches
+Subject: [PATCH 2/3] kernel/os/src: riot patches
 
 ---
  kernel/os/include/os/os_callout.h | 16 ++++----
