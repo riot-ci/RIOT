@@ -13,4 +13,4 @@ DEFAULT_MODULE += auto_init_mynewt-core
 # is provided for other arch, this port is currently only enabled for those arch.
 # Note: that this should not be a hindrance since nimble only works on nordic
 # and uwb-core breakouts are all arm.
-FEATURES_REQUIRED_ANT += arch_arm|arch_arm7
+FEATURES_REQUIRED_ANY += arch_arm|arch_arm7
