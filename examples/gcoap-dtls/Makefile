@@ -49,8 +49,6 @@ ifeq (1,$(GCOAP_ENABLE_DTLS))
 	CFLAGS += -DCONFIG_GCOAP_ENABLE_DTLS=1
 	# Maximum number of DTLS sessions
 	CFLAGS += -DDTLS_PEER_MAX=1
-	# increase main stack
-	CFLAGS += -DTHREAD_STACKSIZE_MAIN=2*THREAD_STACKSIZE_DEFAULT
 endif
 
 # Instead of simulating an Ethernet connection, we can also simulate
