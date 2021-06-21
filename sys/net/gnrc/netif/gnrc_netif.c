@@ -60,14 +60,14 @@ typedef struct {
     gnrc_netif_t *netif;
     mutex_t init_done;
     int result;
-} netif_ctx_t;
+} _netif_ctx_t;
 
 int gnrc_netif_create(gnrc_netif_t *netif, char *stack, int stacksize,
                       char priority, const char *name, netdev_t *netdev,
                       const gnrc_netif_ops_t *ops)
 {
     int res;
-    netif_ctx_t ctx;
+    _netif_ctx_t ctx;
 
     if (IS_ACTIVE(DEVELHELP) && gnrc_netif_highlander() && netif_iter(NULL)) {
         LOG_WARNING("gnrc_netif: gnrc_netif_highlander() returned true but "
@@ -1649,7 +1649,7 @@ static void _send(gnrc_netif_t *netif, gnrc_pktsnip_t *pkt, bool push_back)
 
 static void *_gnrc_netif_thread(void *args)
 {
-    netif_ctx_t *ctx = args;
+    _netif_ctx_t *ctx = args;
     gnrc_netapi_opt_t *opt;
     gnrc_netif_t *netif;
     netdev_t *dev;
