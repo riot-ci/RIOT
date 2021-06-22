@@ -222,7 +222,7 @@ static void submac_tx_done(ieee802154_submac_t *submac, int status,
     netdev_ieee802154_submac_t *netdev_submac = container_of(submac,
                                                              netdev_ieee802154_submac_t,
                                                              submac);
-    netdev_t *netdev = &netdev_submac->dev->netdev;
+    netdev_t *netdev = &netdev_submac->dev.netdev;
 
     if (info) {
         netdev_submac->retrans = info->retrans;
@@ -251,7 +251,7 @@ static void submac_rx_done(ieee802154_submac_t *submac)
     netdev_ieee802154_submac_t *netdev_submac = container_of(submac,
                                                              netdev_ieee802154_submac_t,
                                                              submac);
-    netdev_t *netdev = &netdev_submac->dev->netdev;
+    netdev_t *netdev = &netdev_submac->dev.netdev;
 
     netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
 }
@@ -268,7 +268,7 @@ static void _hal_radio_cb(ieee802154_dev_t *dev, ieee802154_trx_ev_t status)
     netdev_ieee802154_submac_t *netdev_submac = container_of(submac,
                                                              netdev_ieee802154_submac_t,
                                                              submac);
-    netdev_t *netdev = &netdev_submac->dev->netdev;
+    netdev_t *netdev = &netdev_submac->dev.netdev;
 
     switch (status) {
     case IEEE802154_RADIO_CONFIRM_TX_DONE:
@@ -301,7 +301,7 @@ static int _init(netdev_t *netdev)
 int netdev_ieee802154_submac_init(netdev_ieee802154_submac_t *netdev_submac,
                                   ieee802154_dev_t *dev)
 {
-    netdev_t *netdev = &netdev_submac->dev->netdev;
+    netdev_t *netdev = &netdev_submac->dev.netdev;
 
     netdev->driver = &netdev_submac_driver;
     ieee802154_submac_t *submac = &netdev_submac->submac;
