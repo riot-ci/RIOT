@@ -31,7 +31,7 @@
 
 static void _setup_interface(at86rf215_t *dev, const at86rf215_params_t *params, uint8_t index)
 {
-    netdev_t *netdev = (netdev_t *)dev;
+    netdev_t *netdev = dev->netdev;
 
     netdev->driver = &at86rf215_driver;
     dev->params = *params;

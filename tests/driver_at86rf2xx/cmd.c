@@ -35,7 +35,7 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst_addr,
 int ifconfig_list(int idx)
 {
     int res;
-    netdev_ieee802154_t *dev = (netdev_ieee802154_t *)(&devs[idx]);
+    netdev_ieee802154_t *dev = &devs[idx]->netdev;
 
     int (*get)(netdev_t *, netopt_t, void *, size_t) = dev->netdev.driver->get;
     netopt_enable_t enable_val;
@@ -258,7 +258,7 @@ static int send(int iface, le_uint16_t dst_pan, uint8_t *dst, size_t dst_len,
         .iol_len = strlen(data)
     };
 
-    dev = (netdev_ieee802154_t *)&devs[iface];
+    netdev_ieee802154_t *dev = &devs[iface]->netdev;
     flags = (uint8_t)(dev->flags & NETDEV_IEEE802154_SEND_MASK);
     flags |= IEEE802154_FCF_TYPE_DATA;
     src_pan = byteorder_btols(byteorder_htons(dev->pan));
