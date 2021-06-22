@@ -653,7 +653,7 @@ void _on_dio2_irq(void *arg)
 {
     /* Get interrupt context */
     sx127x_t *dev = arg;
-    netdev_t *netdev = dev;
+    netdev_t *netdev = &dev->netdev;
 
     switch (dev->settings.state) {
     case SX127X_RF_RX_RUNNING:
@@ -706,7 +706,7 @@ void _on_dio3_irq(void *arg)
 {
     /* Get interrupt context */
     sx127x_t *dev = arg;
-    netdev_t *netdev = dev;
+    netdev_t *netdev = &dev->netdev;
 
     switch (dev->settings.state) {
     case SX127X_RF_CAD:
