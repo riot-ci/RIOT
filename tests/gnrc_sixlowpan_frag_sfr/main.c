@@ -917,7 +917,7 @@ static void test_sixlo_recv_fwd__1st_frag_comp__only_iphc_no_nhc(void)
                                                           netdev);
     netdev_test_t *netdev_test = container_of(netdev_ieee802154, netdev_test_t,
                                               netdev);
-    netdev_test_set_send_cb((netdev_test,
+    netdev_test_set_send_cb(netdev_test,
                             _mock_netdev_send);
     TEST_ASSERT(0 < gnrc_netapi_dispatch_receive(GNRC_NETTYPE_SIXLOWPAN,
                                                  GNRC_NETREG_DEMUX_CTX_ALL,
