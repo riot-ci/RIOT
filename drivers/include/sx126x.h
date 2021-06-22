@@ -33,6 +33,20 @@ extern "C" {
 #endif
 
 /**
+ * @note Forward declare the device descriptor, used by `set_rf_mode`
+ */
+typedef struct sx126x sx126x_t;
+
+/**
+ * @brief RF switch states
+ */
+typedef enum {
+    SX126X_RF_MODE_RX,
+    SX126X_RF_MODE_TX_LPA,
+    SX126X_RF_MODE_TX_HPA,
+} sx126x_rf_mode_t;
+
+/**
  * @brief   Device initialization parameters
  */
 typedef struct {
@@ -42,19 +56,21 @@ typedef struct {
     gpio_t busy_pin;                    /**< Busy pin */
     gpio_t dio1_pin;                    /**< Dio1 pin */
     sx126x_reg_mod_t regulator;         /**< Power regulator mode */
+    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode); /**< Interface
+    to set RF switch parameters */
 } sx126x_params_t;
 
 /**
  * @brief   Device descriptor for the driver
  */
-typedef struct {
+struct sx126x {
     netdev_t netdev;                        /**< Netdev parent struct */
     sx126x_params_t *params;                /**< Initialization parameters */
     sx126x_pkt_params_lora_t pkt_params;    /**< Lora packet parameters */
     sx126x_mod_params_lora_t mod_params;    /**< Lora modulation parameters */
     uint32_t channel;                       /**< Current channel frequency (in Hz) */
     uint32_t rx_timeout;                    /**< RX timeout in ms */
-} sx126x_t;
+};
 
 /**
  * @brief   Setup the radio device
