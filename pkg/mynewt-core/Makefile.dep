@@ -14,3 +14,4 @@ DEFAULT_MODULE += auto_init_mynewt-core
 # Note: that this should not be a hindrance since nimble only works on nordic
 # and uwb-core breakouts are all arm.
 FEATURES_REQUIRED += arch_arm
+FEATURES_BLACKLIST += arch_arm7
