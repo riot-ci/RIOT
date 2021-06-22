@@ -24,6 +24,8 @@
 #include "board.h"
 #include "periph/gpio.h"
 
+#include "sx126x.h"
+
 void board_init(void)
 {
     /* initialize the CPU */
@@ -62,5 +64,38 @@ void board_init(void)
         gpio_init_af(GPIO_PIN(PORT_B, 4), GPIO_AF13);
         gpio_init(GPIO_PIN(PORT_A, 10), GPIO_OUT); /* DEBUG_RF_HSE32RDY */
         gpio_init_af(GPIO_PIN(PORT_A, 10), GPIO_AF13);
+    }
+}
+
+/**
+ * @brief Callback to set RF switch mode
+ *
+ * This function sets the GPIO's wired to the SP3T RF Switch. Nucleo-WL55JC
+ * supports three modes of operation.
+ */
+void nucleo_wl55jc_sx126x_set_rf_mode (sx126x_t *dev, sx126x_rf_mode_t rf_mode)
+{
+    (void) dev;
+    switch (rf_mode) {
+    case SX126X_RF_MODE_RX:
+        gpio_set(FE_CTRL1);
+        gpio_clear(FE_CTRL2);
+        gpio_set(FE_CTRL3);
+        break;
+
+    case SX126X_RF_MODE_TX_LPA:
+        gpio_set(FE_CTRL1);
+        gpio_set(FE_CTRL2);
+        gpio_set(FE_CTRL3);
+        break;
+
+    case SX126X_RF_MODE_TX_HPA:
+        gpio_clear(FE_CTRL1);
+        gpio_set(FE_CTRL2);
+        gpio_set(FE_CTRL3);
+        break;
+
+    default:
+        break;
     }
 }
