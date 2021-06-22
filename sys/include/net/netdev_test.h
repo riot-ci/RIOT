@@ -46,7 +46,7 @@
  *     ipv6_addr_t dst = IPV6_ADDR_UNSPECIFIED;
  *
  *     netdev_test_setup(&dev, NULL);
- *     dev->driver->init((netdev_t *)&dev)
+ *     dev->driver->init(&dev->netdev->netdev)
  *     // initialize stack and connect `dev` to it
  *     // ...
  *     mutex_lock(&wait);
