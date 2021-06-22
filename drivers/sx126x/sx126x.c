@@ -134,10 +134,12 @@ static void sx126x_init_default_config(sx126x_t *dev)
     sx126x_set_lora_pkt_params(dev, &dev->pkt_params);
 }
 
+#if IS_USED(MODULE_SX126X_SPI)
 static void _dio1_isr(void *arg)
 {
     netdev_trigger_event_isr((netdev_t *)arg);
 }
+#endif
 
 int sx126x_init(sx126x_t *dev)
 {
@@ -152,6 +154,7 @@ int sx126x_init(sx126x_t *dev)
 
     DEBUG("[sx126x] init: SPI_%i initialized with success\n", dev->params->spi);
 
+#if IS_USED(MODULE_SX126X_SPI)
     gpio_init(dev->params->reset_pin, GPIO_OUT);
     gpio_init(dev->params->busy_pin, GPIO_IN_PD);
 
@@ -167,7 +170,7 @@ int sx126x_init(sx126x_t *dev)
         DEBUG("[sx126x] error: no DIO1 pin defined\n");
         return -EIO;
     }
-
+#endif
     /* Reset the device */
     sx126x_reset(dev);
 
@@ -182,6 +185,7 @@ int sx126x_init(sx126x_t *dev)
         SX126X_IRQ_TX_DONE |
         SX126X_IRQ_RX_DONE |
         SX126X_IRQ_PREAMBLE_DETECTED |
+        SX126X_IRQ_SYNC_WORD_VALID |
         SX126X_IRQ_HEADER_VALID |
         SX126X_IRQ_HEADER_ERROR |
         SX126X_IRQ_CRC_ERROR |
