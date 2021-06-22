@@ -307,6 +307,12 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
     case NETOPT_STATE_IDLE:
     case NETOPT_STATE_RX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_RX state\n");
+#if IS_USED(MODULE_SX126X_STM32WL)
+        /* Refer Section 4.2 RF Switch in Application Note (AN5406) */
+        if (dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_RX);
+        }
+#endif
         sx126x_cfg_rx_boosted(dev, true);
         if (dev->rx_timeout != 0) {
             sx126x_set_rx(dev, dev->rx_timeout);
@@ -318,6 +324,11 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
 
     case NETOPT_STATE_TX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_TX state\n");
+#if IS_USED(MODULE_SX126X_STM32WL)
+        if (dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_TX_LPA);
+        }
+#endif
         sx126x_set_tx(dev, 0);
         break;
 
