@@ -307,7 +307,7 @@ static void _isr(netdev_t *netdev)
 
     /* Finally schedule a _recv method call */
     DEBUG("dose _isr(): NETDEV_EVENT_RX_COMPLETE\n");
-    ctx->netdev.event_callback((ctx->netdev, NETDEV_EVENT_RX_COMPLETE);
+    ctx->netdev.event_callback(ctx->netdev, NETDEV_EVENT_RX_COMPLETE);
 }
 
 static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
