@@ -75,7 +75,7 @@ static void sx127x_on_dio3_isr(void *arg);
 
 void sx127x_setup(sx127x_t *dev, const sx127x_params_t *params, uint8_t index)
 {
-    netdev_t *netdev = dev->netdev;
+    netdev_t *netdev = &dev->netdev;
 
     netdev->driver = &sx127x_driver;
     dev->params = *params;
