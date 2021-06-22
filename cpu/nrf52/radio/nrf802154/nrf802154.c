@@ -524,8 +524,8 @@ void isr_radio(void)
 
 void nrf802154_setup(nrf802154_t *dev)
 {
-    netdev_t *netdev = (netdev_t*) dev;
-    netdev_ieee802154_t *netdev_ieee802154 = (netdev_ieee802154_t*) dev;
+    netdev_ieee802154_t *netdev_ieee802154 = dev->netdev;
+    netdev_t *netdev = netdev_ieee802154->netdev;
     nrf802154_dev = netdev_ieee802154;
 
     netdev->driver = &nrf802154_netdev_driver;

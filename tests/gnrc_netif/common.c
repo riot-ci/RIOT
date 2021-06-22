@@ -27,8 +27,8 @@
 
 static netdev_test_t _devs[NETIF_NUMOF];
 
-netdev_t *ethernet_dev = (netdev_t *)&_devs[0];
-netdev_t *ieee802154_dev = (netdev_t *)&_devs[1];
+netdev_t *ethernet_dev = &_devs[0]->netdev;
+netdev_t *ieee802154_dev = &_devs[1]->netdev;
 netdev_t *devs[DEFAULT_DEVS_NUMOF];
 
 #define MSG_QUEUE_SIZE  (8)
@@ -116,7 +116,7 @@ static int _get_netdev_device_type(netdev_t *netdev, void *value, size_t max_len
     expect(max_len == sizeof(uint16_t));
     (void)max_len;
 
-    netdev_test_t *dev = (netdev_test_t *)netdev;
+    netdev_test_t *dev = container_of(netdev, netdev_test_t, netdev);
 
     if (dev->state == 0x0) {
         *((uint16_t *)value) = NETDEV_TYPE_ETHERNET;
@@ -143,7 +143,7 @@ static int _get_netdev_max_packet_size(netdev_t *netdev, void *value, size_t max
     expect(max_len == sizeof(uint16_t));
     (void)max_len;
 
-    netdev_test_t *dev = (netdev_test_t *)netdev;
+    netdev_test_t *dev = container_of(netdev, netdev_test_t, netdev);
 
     if (dev->state == 0x0) {
         *((uint16_t *)value) = ETHERNET_DATA_LEN;
@@ -180,7 +180,7 @@ void _tests_init(void)
     netdev_test_set_get_cb((netdev_test_t *)ieee802154_dev,
                            NETOPT_MAX_PDU_SIZE, _get_netdev_max_packet_size);
     for (intptr_t i = SPECIAL_DEVS; i < NETIF_NUMOF; i++) {
-        devs[i - SPECIAL_DEVS] = (netdev_t *)&_devs[i];
+        devs[i - SPECIAL_DEVS] = &_devs[i]->netdev;
         netdev_test_setup(&_devs[i], (void *)i);
         netdev_test_set_get_cb(&_devs[i], NETOPT_DEVICE_TYPE,
                                _get_netdev_device_type);
