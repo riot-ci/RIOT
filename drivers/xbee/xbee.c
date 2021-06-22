@@ -233,7 +233,7 @@ static void _rx_cb(void *arg, uint8_t c)
             dev->rx_buf[dev->rx_count++] = c;
             if (dev->rx_count == dev->rx_limit) {
                 /* packet is complete */
-                netdev_trigger_event_isr((netdev_t*) dev);
+                netdev_trigger_event_isr(&dev->netdev);
                 dev->int_state = XBEE_INT_STATE_IDLE;
             }
             break;
