@@ -98,7 +98,7 @@ static int cmd_set_trim(int argc, char **argv)
         return 1;
     }
 
-    at86rf215_t* dev = (at86rf215_t*)netif->dev;
+    at86rf215_t* dev = netif->dev;
 
     printf("setting trim to %u fF\n", 300U * trim);
     at86rf215_set_trim(dev, trim);
@@ -151,7 +151,7 @@ static int cmd_set_clock_out(int argc, char **argv)
         return 1;
     }
 
-    at86rf215_t *dev = (at86rf215_t *)netif->dev;
+    at86rf215_t *dev = netif->dev;
 
     printf("Clock output set to %s %s\n", keys[freq], freq ? "MHz" : "");
     at86rf215_set_clock_output(dev, AT86RF215_CLKO_4mA, freq);
@@ -183,7 +183,7 @@ static int cmd_get_random(int argc, char **argv)
         return 1;
     }
 
-    at86rf215_t *dev = (at86rf215_t *)netif->dev;
+    at86rf215_t *dev = netif->dev;
 
     at86rf215_get_random(dev, buffer, values);
 

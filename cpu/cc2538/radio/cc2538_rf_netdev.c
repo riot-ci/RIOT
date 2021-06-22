@@ -44,7 +44,7 @@ void cc2538_irq_handler(void)
 
 static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *)netdev;
+    cc2538_rf_t *dev = container_of(netdev, cc2538_rf_t, netdev);
 
     if (dev == NULL) {
         return -ENODEV;
@@ -151,7 +151,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 
 static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_len)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *)netdev;
+    cc2538_rf_t *dev = container_of(netdev, cc2538_rf_t, netdev);
     int res = -ENOTSUP;
 
     if (dev == NULL) {
@@ -390,7 +390,7 @@ static void _isr(netdev_t *netdev)
 
 static int _init(netdev_t *netdev)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *) netdev;
+    cc2538_rf_t *dev = container_of(netdev, cc2538_rf_t, netdev);
     _dev = netdev;
 
     uint16_t chan = cc2538_get_chan();

@@ -50,7 +50,7 @@
 
 void sx126x_setup(sx126x_t *dev, const sx126x_params_t *params, uint8_t index)
 {
-    netdev_t *netdev = (netdev_t *)dev;
+    netdev_t *netdev = dev;
 
     netdev->driver = &sx126x_driver;
     dev->params = (sx126x_params_t *)params;
