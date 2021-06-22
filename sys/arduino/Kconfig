@@ -21,7 +21,6 @@ menuconfig MODULE_ARDUINO
     depends on TEST_KCONFIG
     select MODULE_PERIPH_GPIO
     select MODULE_CPP
-    select MODULE_LIBSTDCPP
     select MODULE_ARDUINO_SKETCHES
     select MODULE_FMT
 
