@@ -3,8 +3,6 @@ INCLUDES += -I$(RIOTPKG)/mynewt-core/include \
             -I$(PKGDIRBASE)/mynewt-core/hw/hal/include \
             -I$(PKGDIRBASE)/mynewt-core/util/mem/include \
             -I$(PKGDIRBASE)/mynewt-core/sys/stats/stub/include \
-            -I$(PKGDIRBASE)/mynewt-core/sys/log/common/include \
-            -I$(PKGDIRBASE)/mynewt-core/sys/log/stub/include \
             #
 
 DIRS += $(RIOTPKG)/mynewt-core/contrib \
