@@ -494,7 +494,7 @@ void isr_radio(void)
                     (NRF_RADIO->CRCSTATUS == 1) &&
                     (ieee802154_dst_filter(&rxbuf[1],
                                            nrf802154_dev->pan,
-                                           nrf802154_dev->short_addr,
+                                           (network_uint16_t*) nrf802154_dev->short_addr,
                                            nrf802154_dev->long_addr) == 0)) {
                     _state |= RX_COMPLETE;
                 }
