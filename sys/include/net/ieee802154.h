@@ -412,7 +412,8 @@ int ieee802154_get_dst(const uint8_t *mhr, uint8_t *dst, le_uint16_t *dst_pan);
  * @return 0            if frame passes the frame filter.
  * @return 1            if frame doesn't pass the frame filter.
  */
-int ieee802154_dst_filter(const uint8_t *mhr, uint16_t pan, uint16_t short_addr, const eui64_t *ext_addr);
+int ieee802154_dst_filter(const uint8_t *mhr, uint16_t pan,
+                          network_uint16_t short_addr, const eui64_t *ext_addr);
 
 /**
  * @brief   Gets sequence number from MAC header.
