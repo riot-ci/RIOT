@@ -241,7 +241,8 @@ int ieee802154_get_dst(const uint8_t *mhr, uint8_t *dst, le_uint16_t *dst_pan)
     return 0;
 }
 
-int ieee802154_dst_filter(const uint8_t *mhr, uint16_t pan, uint16_t short_addr, const eui64_t *ext_addr)
+int ieee802154_dst_filter(const uint8_t *mhr, uint16_t pan,
+                          network_uint16_t short_addr, const eui64_t *ext_addr)
 {
     uint8_t dst_addr[IEEE802154_LONG_ADDRESS_LEN];
     le_uint16_t dst_pan;
@@ -257,7 +258,7 @@ int ieee802154_dst_filter(const uint8_t *mhr, uint16_t pan, uint16_t short_addr,
 
     /* check destination address */
     if (((addr_len == IEEE802154_SHORT_ADDRESS_LEN) &&
-          (memcmp(&short_addr, dst_addr, addr_len) == 0 ||
+          (memcmp(&short_addr.u8, dst_addr, addr_len) == 0 ||
            memcmp(ieee802154_addr_bcast, dst_addr, addr_len) == 0)) ||
         ((addr_len == IEEE802154_LONG_ADDRESS_LEN) &&
           (memcmp(ext_addr->uint8, dst_addr, addr_len) == 0))) {
