@@ -91,6 +91,19 @@ extern "C" {
 #define FE_CTRL3            GPIO_PIN(PORT_C, 3)
 /** @} */
 
+/**
+ * @defgroup boards_nucleo-wl55jc_config     Nucleo-WL55JC compile time configs
+ * @ingroup  config_boards
+ * @{
+ */
+/**
+ * @brief Enable this to enable HW debug pins. Refer board.c for more info.
+ */
+#ifdef DOXYGEN
+#define CONFIG_WL55JC_SUBGHZ_DEBUG
+#endif
+/** @} */
+
 #ifdef __cplusplus
 }
 #endif
