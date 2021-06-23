@@ -57,6 +57,12 @@ extern "C" {
 #define SX126X_PARAM_REGULATOR              SX126X_REG_MODE_DCDC
 #endif
 
+#ifndef SX126X_PARAM_SET_RF_MODE_CB
+#define SX126X_PARAM_SET_RF_MODE_CB         NULL
+#else
+extern void SX126X_PARAM_SET_RF_MODE_CB(sx126x_t *dev, sx126x_rf_mode_t rf_mode);
+#endif
+
 #ifndef SX126X_PARAM_TYPE
 #    if IS_USED(MODULE_SX1261)
 #        define SX126X_PARAM_TYPE SX126X_TYPE_SX1261
@@ -79,7 +85,9 @@ extern "C" {
                                     .busy_pin = SX126X_PARAM_BUSY,      \
                                     .dio1_pin = SX126X_PARAM_DIO1,      \
                                     .type     = SX126X_PARAM_TYPE,      \
-                                    .regulator = SX126X_PARAM_REGULATOR }
+                                    .regulator = SX126X_PARAM_REGULATOR, \
+                                    .set_rf_mode = SX126X_PARAM_SET_RF_MODE_CB }
+
 /**@}*/
 
 /**
