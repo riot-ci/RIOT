@@ -101,7 +101,6 @@ static const spi_conf_t spi_config[] = {
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
     }
-
 };
 
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
