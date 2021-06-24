@@ -53,7 +53,7 @@ void auto_init_xbee(void)
 
         xbee_setup(&xbee_devs[i], &xbee_params[i]);
         gnrc_netif_xbee_create(&_netif[i], stacks[i], XBEE_MAC_STACKSIZE, XBEE_MAC_PRIO,
-                               "xbee", (netdev_t *)&xbee_devs[i]);
+                               "xbee", &xbee_devs[i].netdev);
     }
 }
 /** @} */
