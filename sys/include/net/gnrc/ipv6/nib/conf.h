@@ -142,6 +142,8 @@ extern "C" {
  * @brief   Handle route information option in neighbor advertisements
  *          This is a non-standard extension proposed by
  *          draft-templin-6man-rio-redirect-08
+ *
+ *          Requires the `gnrc_ipv6_nib_rio` module.
  */
 #ifndef CONFIG_GNRC_IPV6_NIB_NA_RIO
 #define CONFIG_GNRC_IPV6_NIB_NA_RIO                   0

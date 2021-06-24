@@ -1599,6 +1599,10 @@ static const char *_prio_string(uint8_t prio)
 static uint32_t _handle_rio(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                             const ndp_opt_ri_t *rio)
 {
+    if (!IS_USED(MODULE_GNRC_IPV6_NIB_RIO)) {
+        return 0;
+    }
+
     uint32_t route_ltime = byteorder_ntohl(rio->route_ltime);
 
     if (ipv6_addr_is_link_local(&rio->prefix)) {
