@@ -88,7 +88,7 @@ void openthread_bootstrap(void)
 #endif
 #ifdef MODULE_NRF802154
     nrf802154_setup(&nrf802154_dev);
-    netdev_t *netdev = nrf802154_get_netdev(&nrf802154_dev);
+    netdev_t *netdev = nrf802154_to_netdev(&nrf802154_dev);
 #endif
 
     openthread_radio_init(netdev, tx_buf, rx_buf);
