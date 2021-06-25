@@ -25,4 +25,4 @@ config MODULE_PERIPH_CAN
     select MODULE_PERIPH_GPIO_IRQ
     select MODULE_PERIPH_I2C
     help
-        stm32 can bus peripheral.
+        STM32 CAN peripheral controller.
