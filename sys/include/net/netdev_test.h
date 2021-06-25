@@ -80,10 +80,7 @@
 
 #include "mutex.h"
 
-#ifdef MODULE_NETDEV_IEEE802154
 #include "net/netdev/ieee802154.h"
-#endif
-
 #include "net/netdev.h"
 
 #ifdef __cplusplus
