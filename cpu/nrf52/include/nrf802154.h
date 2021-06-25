@@ -114,7 +114,7 @@ void nrf802154_setup(nrf802154_t *dev);
  *
  * @return  pointer to the netdev descriptor. NULL if there's none.
  */
-static inline netdev_t *nrf802154_get_netdev(nrf802154_t *dev)
+static inline netdev_t *nrf802154_to_netdev(nrf802154_t *dev)
 {
 #if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
     return &dev->netdev.dev.netdev;
