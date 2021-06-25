@@ -45,6 +45,8 @@
 #include "net/netdev/ieee802154.h"
 #endif
 
+#include "net/netdev.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -104,6 +106,25 @@ int nrf802154_init(void);
  * @param[out] dev          Device descriptor
  */
 void nrf802154_setup(nrf802154_t *dev);
+
+/**
+ * @brief   Get the netdev descriptor from NRF802154 driver descriptor
+ *
+ * @param[out] dev          Device descriptor
+ *
+ * @return  pointer to the netdev descriptor. NULL if there's none.
+ */
+static inline netdev_t *nrf802154_to_netdev(nrf802154_t *dev)
+{
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
+    return &dev->netdev.dev.netdev;
+#elif IS_USED(MODULE_NRF802154_NETDEV_LEGACY)
+    return &dev->netdev.netdev;
+#else
+    (void) dev;
+    return NULL;
+#endif
+}
 
 #endif /* NRF802154_H */
 /** @} */

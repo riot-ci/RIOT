@@ -50,7 +50,7 @@
 
 void sx126x_setup(sx126x_t *dev, const sx126x_params_t *params, uint8_t index)
 {
-    netdev_t *netdev = (netdev_t *)dev;
+    netdev_t *netdev = &dev->netdev;
 
     netdev->driver = &sx126x_driver;
     dev->params = (sx126x_params_t *)params;
@@ -132,7 +132,7 @@ static void sx126x_init_default_config(sx126x_t *dev)
 
 static void _dio1_isr(void *arg)
 {
-    netdev_trigger_event_isr((netdev_t *)arg);
+    netdev_trigger_event_isr(arg);
 }
 
 int sx126x_init(sx126x_t *dev)
