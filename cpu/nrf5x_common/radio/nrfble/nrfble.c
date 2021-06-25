@@ -346,7 +346,7 @@ static int _nrfble_set(netdev_t *dev, netopt_t opt, const void *val, size_t len)
 
     switch (opt) {
         case NETOPT_BLE_CTX:
-            _set_context(val);
+            _set_context((netdev_ble_ctx_t *)val);
             return sizeof(netdev_ble_ctx_t);
         case NETOPT_TX_POWER:
             assert(len == sizeof(int16_t));
