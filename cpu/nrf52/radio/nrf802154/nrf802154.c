@@ -438,7 +438,7 @@ static int _get(netdev_t *dev, netopt_t opt, void *value, size_t max_len)
             *((int8_t*)value) = _hwval_to_ieee802154_dbm(_get_cca_thresh());
             return sizeof(netopt_enable_t);
         default:
-            return netdev_ieee802154_get((netdev_ieee802154_t *)dev,
+            return netdev_ieee802154_get(container_of(dev, netdev_ieee802154_t, netdev),
                                           opt, value, max_len);
     }
 }
@@ -474,7 +474,7 @@ static int _set(netdev_t *dev, netopt_t opt,
             _set_cca_thresh(_dbm_to_ieee802154_hwval(tmp));
             return sizeof(int8_t);
         default:
-            return netdev_ieee802154_set((netdev_ieee802154_t *)dev,
+            return netdev_ieee802154_set(container_of(dev, netdev_ieee802154_t, netdev),
                                           opt, value, value_len);
     }
 }
@@ -524,8 +524,8 @@ void isr_radio(void)
 
 void nrf802154_setup(nrf802154_t *dev)
 {
-    netdev_t *netdev = (netdev_t*) dev;
-    netdev_ieee802154_t *netdev_ieee802154 = (netdev_ieee802154_t*) dev;
+    netdev_ieee802154_t *netdev_ieee802154 = dev->netdev;
+    netdev_t *netdev = netdev_ieee802154->netdev;
     nrf802154_dev = netdev_ieee802154;
 
     netdev->driver = &nrf802154_netdev_driver;
