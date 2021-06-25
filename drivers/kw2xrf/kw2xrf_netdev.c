@@ -121,7 +121,7 @@ static void kw2xrf_wait_idle(kw2xrf_t *dev)
         while (1) {
             /* TX in progress */
             /* Handle any outstanding IRQ first */
-            _isr(&dev->netdev);
+            _isr(&dev->netdev.netdev);
             /* _isr() will switch the transceiver back to idle after
              * handling the TX complete IRQ */
             if (kw2xrf_can_switch_to_idle(dev)) {
