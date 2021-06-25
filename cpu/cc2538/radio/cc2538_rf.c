@@ -224,7 +224,7 @@ void cc2538_setup(cc2538_rf_t *dev)
 #endif
     cc2538_init();
 #else
-    netdev_t *netdev = dev->netdev;
+    netdev_t *netdev = cc2538_rf_to_netdev(dev);
 
     netdev->driver = &cc2538_rf_driver;
 
