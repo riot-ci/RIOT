@@ -35,10 +35,10 @@
 #include "net/netdev/ieee802154_submac.h"
 #endif
 #else
-#include "net/netdev.h"
 #include "net/netdev/ieee802154.h"
 #endif
 
+#include "net/netdev.h"
 #include "net/netopt.h"
 
 #ifdef __cplusplus
@@ -447,6 +447,56 @@ void cc2538_set_state(cc2538_rf_t *dev, netopt_state_t state);
  * @param[in] dBm          Transmission power to set in dBm
  */
 void cc2538_set_tx_power(int dBm);
+
+/**
+ * @brief   Get the netdev descriptor from CC2538 RF driver descriptor
+ *
+ * @param[out] dev          Device descriptor
+ *
+ * @return  pointer to the netdev descriptor. NULL if there's none.
+ */
+static inline netdev_t *cc2538_rf_to_netdev(cc2538_rf_t *dev)
+{
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
+    return &dev->netdev.dev.netdev;
+#elif IS_USED(MODULE_CC2538_RF_NETDEV_LEGACY)
+    return &dev->netdev.netdev;
+#else
+    (void) dev;
+    return NULL;
+#endif
+}
+
+/**
+ * @brief   Get the CC2538 RF driver descriptor from its netdev descriptor
+ *
+ * @pre     Either `netdev_ieee802154_submac` or `cc2538_rf_netdev_legacy`
+ *          modules are present.
+ * @param[out] dev          Device descriptor
+ *
+ * @return  pointer to the netdev descriptor. NULL if there's none.
+ */
+static inline cc2538_rf_t *netdev_to_cc2538_rf(netdev_t *netdev)
+{
+    /* Ugly... but at least type safe */
+#if IS_USED(MODULE_NETDEV_IEEE802154_SUBMAC)
+    return container_of(container_of(container_of(netdev,
+                                                  netdev_ieee802154_t,
+                                                  netdev),
+                                     netdev_ieee802154_submac_t,
+                                     dev
+                                     ),
+                        cc2538_rf_t,
+                        netdev);
+#elif IS_USED(MODULE_CC2538_RF_NETDEV_LEGACY)
+    return container_of(container_of(netdev, netdev_ieee802154_t, netdev),
+                        cc2538_rf_t,
+                        netdev);
+#else
+    (void) netdev;
+    return NULL;
+#endif
+}
 
 #ifdef __cplusplus
 }
