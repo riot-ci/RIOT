@@ -118,7 +118,7 @@ static void _end_of_frame(ethos_t *dev)
             if (dev->framesize) {
                 assert(dev->last_framesize == 0);
                 dev->last_framesize = dev->framesize;
-                netdev_trigger_event_isr(dev->netdev);
+                netdev_trigger_event_isr(&dev->netdev);
 
             }
             break;
