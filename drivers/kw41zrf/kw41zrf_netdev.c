@@ -188,7 +188,7 @@ static void kw41zrf_wait_idle(kw41zrf_t *dev)
         /* Block until we get an IRQ */
         thread_flags_wait_any(KW41ZRF_THREAD_FLAG_ISR);
         /* Handle the IRQ */
-        kw41zrf_netdev_isr(&dev->netdev);
+        kw41zrf_netdev_isr(&dev->netdev.netdev);
         /* kw41zrf_netdev_isr() will switch the transceiver back to idle
          * after handling the sequence complete IRQ */
         if (kw41zrf_can_switch_to_idle(dev) && dev->backoff_delay == 0) {
