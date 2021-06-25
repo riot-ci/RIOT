@@ -84,7 +84,7 @@ void openthread_bootstrap(void)
 #endif
 #ifdef MODULE_CC2538_RF
     cc2538_setup(&cc2538_rf_dev);
-    netdev_t *netdev = &cc2538_rf_dev.netdev.netdev;
+    netdev_t *netdev = cc2538_rf_to_netdev(&cc2538_rf_dev);
 #endif
 #ifdef MODULE_NRF802154
     nrf802154_setup(&nrf802154_dev);
