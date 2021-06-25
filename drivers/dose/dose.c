@@ -70,7 +70,7 @@ static dose_signal_t state_transit_blocked(dose_t *ctx, dose_signal_t signal)
          * if this frame should be processed. By queuing NETDEV_EVENT_ISR,
          * the netif thread will call _isr at some time. */
         SETBIT(ctx->flags, DOSE_FLAG_RECV_BUF_DIRTY);
-        netdev_trigger_event_isr(ctx->netdev);
+        netdev_trigger_event_isr(&ctx->netdev);
     }
 
     if (gpio_is_valid(ctx->sense_pin)) {
@@ -307,7 +307,7 @@ static void _isr(netdev_t *netdev)
 
     /* Finally schedule a _recv method call */
     DEBUG("dose _isr(): NETDEV_EVENT_RX_COMPLETE\n");
-    ctx->netdev.event_callback(ctx->netdev, NETDEV_EVENT_RX_COMPLETE);
+    ctx->netdev.event_callback(&ctx->netdev, NETDEV_EVENT_RX_COMPLETE);
 }
 
 static int _recv(netdev_t *dev, void *buf, size_t len, void *info)
@@ -438,7 +438,7 @@ send:
     }
 
     /* We probably sent the whole packet?! */
-    netdev.event_callback(netdev, NETDEV_EVENT_TX_COMPLETE);
+    dev->event_callback(dev, NETDEV_EVENT_TX_COMPLETE);
 
     /* Get out of the SEND state */
     state(ctx, DOSE_SIGNAL_END);
@@ -448,7 +448,7 @@ send:
 collision:
     DEBUG("dose _send(): collision!\n");
     if (--retries < 0) {
-        netdev.event_callback(netdev, NETDEV_EVENT_TX_MEDIUM_BUSY);
+        dev->event_callback(dev, NETDEV_EVENT_TX_MEDIUM_BUSY);
         return 0;
     }
     goto send;
