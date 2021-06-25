@@ -46,7 +46,7 @@
  *     ipv6_addr_t dst = IPV6_ADDR_UNSPECIFIED;
  *
  *     netdev_test_setup(&dev, NULL);
- *     dev->driver->init((netdev_t *)&dev)
+ *     dev->driver->init(&dev->netdev->netdev)
  *     // initialize stack and connect `dev` to it
  *     // ...
  *     mutex_lock(&wait);
@@ -164,18 +164,14 @@ typedef int (*netdev_test_set_cb_t)(netdev_t *dev, const void *value,
 /**
  * @brief   Device descriptor for @ref sys_netdev_test devices
  *
- * @extends netdev_t
+ * @extends netdev_ieee802154_t
  */
 typedef struct {
     /**
      * @brief   netdev fields
      * @{
      */
-#ifdef  MODULE_NETDEV_IEEE802154
     netdev_ieee802154_t netdev;     /**< superclass */
-#else                               /* MODULE_NETDEV_IEEE802154 */
-    netdev_t netdev;                /**< superclass */
-#endif  /* MODULE_NETDEV_IEEE802154 */
     /** @} */
 
     /**
