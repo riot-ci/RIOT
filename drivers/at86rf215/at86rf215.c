@@ -256,7 +256,7 @@ static void _block_while_busy(at86rf215_t *dev)
 
     do {
         if (gpio_read(dev->params.int_pin) || dev->timeout) {
-            at86rf215_driver.isr(&dev->netdev);
+            at86rf215_driver.isr(&dev->netdev.netdev);
         }
         /* allow the other interface to process events */
         thread_yield();
