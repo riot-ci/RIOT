@@ -180,7 +180,8 @@ static void IRAM_ATTR esp_now_scan_peers_timer_cb(void* arg)
 {
     DEBUG("%s\n", __func__);
 
-    esp_now_netdev_t *dev = container_of(arg, esp_now_netdev_t, netdev);
+    netdev_t *netdev = arg;
+    esp_now_netdev_t *dev = container_of(netdev, esp_now_netdev_t, netdev);
 
     if (dev->netdev.event_callback) {
         dev->scan_event++;
