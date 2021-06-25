@@ -187,7 +187,7 @@ static void ethos_isr(void *arg, uint8_t c)
 
 static void _isr(netdev_t *netdev)
 {
-    netdev.event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
+    netdev->event_callback(netdev, NETDEV_EVENT_RX_COMPLETE);
 }
 
 static int _init(netdev_t *encdev)
