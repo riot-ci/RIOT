@@ -131,11 +131,24 @@ extern "C" {
  */
 #ifndef CONFIG_GNRC_IPV6_NIB_ADV_ROUTER
 #if CONFIG_GNRC_IPV6_NIB_ROUTER && \
-    (!CONFIG_GNRC_IPV6_NIB_6LR || CONFIG_GNRC_IPV6_NIB_6LBR)
+    (!CONFIG_GNRC_IPV6_NIB_6LR || CONFIG_GNRC_IPV6_NIB_6LBR) && \
+    !IS_USED(MODULE_GNRC_DHCPV6_CLIENT_SIMPLE_PD)
 #define CONFIG_GNRC_IPV6_NIB_ADV_ROUTER               1
 #else
 #define CONFIG_GNRC_IPV6_NIB_ADV_ROUTER               0
 #endif
+#endif
+
+/**
+ * @brief   Handle route information option in neighbor advertisements
+ *          This is a non-standard extension proposed by
+ *          [draft-templin-6man-rio-redirect-08]
+ *          (https://tools.ietf.org/html/draft-templin-6man-rio-redirect-08)
+ *
+ *          Requires the `gnrc_ipv6_nib_rio` module.
+ */
+#ifndef CONFIG_GNRC_IPV6_NIB_NA_RIO
+#define CONFIG_GNRC_IPV6_NIB_NA_RIO                   0
 #endif
 
 /**
