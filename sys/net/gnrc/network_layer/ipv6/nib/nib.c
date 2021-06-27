@@ -577,7 +577,6 @@ static void _configure_subnets(gnrc_netif_t *upstream, const ndp_opt_pi_t *pio)
     }
 
     gnrc_netif_t *downstream = NULL;
-    gnrc_pktsnip_t *ext_opts = NULL;
     const ipv6_addr_t *prefix = &pio->prefix;
     uint32_t valid_ltime = byteorder_ntohl(pio->valid_ltime);
     uint32_t pref_ltime = byteorder_ntohl(pio->pref_ltime);
@@ -587,12 +586,6 @@ static void _configure_subnets(gnrc_netif_t *upstream, const ndp_opt_pi_t *pio)
 
     const uint8_t prefix_len = pio->prefix_len;
     uint8_t new_prefix_len;
-
-    /* Disable router advertisements on upstream interface. With this, the router
-     * does not confuse the upstream router to add the border router to its default
-     * router list.
-     */
-    gnrc_ipv6_nib_change_rtr_adv_iface(upstream, false);
 
     if (subnets == 0) {
         return;
@@ -626,13 +619,6 @@ static void _configure_subnets(gnrc_netif_t *upstream, const ndp_opt_pi_t *pio)
 
         /* start advertising subnet */
         gnrc_ipv6_nib_change_rtr_adv_iface(downstream, true);
-
-        /* add route information option with new subnet */
-        ext_opts = gnrc_ndp_opt_ri_build(&new_prefix, new_prefix_len, valid_ltime,
-                   NDP_OPT_RI_FLAGS_PRF_NONE, ext_opts);
-        if (ext_opts == NULL) {
-            DEBUG("nib: No space left in packet buffer. Not adding RIO\n");
-        }
     }
 
     /* find source address */
@@ -649,15 +635,8 @@ static void _configure_subnets(gnrc_netif_t *upstream, const ndp_opt_pi_t *pio)
         }
     }
 
-    if (tgt == NULL) {
-        DEBUG("nib: can't find source address for neighbor advertisement on %u\n",
-              upstream->pid);
-        gnrc_pktbuf_release(ext_opts);
-        return;
-    }
-
-    /* inform upstream about new downstream routes */
-    gnrc_ndp_nbr_adv_send(tgt, upstream, &ipv6_addr_unspecified, false, ext_opts);
+    /* inform upstream hosts about the subnet(s) that we now manage */
+    gnrc_ipv6_nib_change_rtr_adv_rio_iface(upstream, true);
 }
 
 static inline uint32_t _min(uint32_t a, uint32_t b)
