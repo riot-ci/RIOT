@@ -73,6 +73,12 @@ ifneq (1,$(TEST_KCONFIG))
       $(error Found C++ source, but feature "cpp" is not used. Add "FEATURES_REQUIRED += cpp")
     endif
   endif
+else
+  ifneq (,$(SRCXX))
+    ifeq (,$(filter cpp,$(USEMODULE)))
+      $(error Found C++ source, but "cpp" module is not used. Enable the MODULE_CPP in Kconfig)
+    endif
+  endif
 endif
 
 compile-commands: | $(DIRS:%=COMPILE-COMMANDS--%)

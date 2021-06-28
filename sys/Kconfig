@@ -59,12 +59,12 @@ rsource "xtimer/Kconfig"
 rsource "ztimer/Kconfig"
 
 config MODULE_CPP
-    bool
+    bool "Use CPP compiler"
     depends on TEST_KCONFIG
     depends on HAS_CPP
 
 config MODULE_LIBSTDCPP
-    bool
+    bool "Use the CPP standard library"
     depends on TEST_KCONFIG
     depends on HAS_LIBSTDCPP
 
