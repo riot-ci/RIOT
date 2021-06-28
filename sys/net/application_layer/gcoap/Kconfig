@@ -14,13 +14,6 @@ menuconfig KCONFIG_USEMODULE_GCOAP
 if KCONFIG_USEMODULE_GCOAP
 
 menu "DTLS options"
-config GCOAP_ENABLE_DTLS
-    bool "Enable DTLS"
-    default 0
-    help
-        Enables DTLS-secured CoAP messaging. All requests and responses are
-        sent over DTLS.
-
 config GCOAP_DTLS_CREDENTIAL_TAG
     int "Credential tag"
     default 5

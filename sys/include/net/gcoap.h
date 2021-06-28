@@ -342,7 +342,7 @@
  * ## DTLS as transport security ##
  *
  * Gcoap allows to use DTLS for transport security by using the @ref net_sock_dtls
- * "DTLS sock API". To enable support set CONFIG_GCOAP_ENABLE_DTLS to 1. Gcoap
+ * "DTLS sock API". Using the module gcoap_dtls enables the support. Gcoap
  * listens for requests on CONFIG_GCOAPS_PORT, 5684 by default when DTLS is enabled.
  *
  * Credentials have to been configured before use. See @ref net_credman "Credman"
@@ -401,7 +401,7 @@
 #include "event/timeout.h"
 #include "net/ipv6/addr.h"
 #include "net/sock/udp.h"
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 #include "net/sock/dtls.h"
 #endif
 #include "net/nanocoap.h"
@@ -423,6 +423,9 @@ extern "C" {
 #ifndef CONFIG_GCOAP_PORT
 #define CONFIG_GCOAP_PORT              (5683)
 #endif
+/**
+ * @brief   Secure Server port; use RFC 7252 default if not defined
+ */
 #ifndef CONFIG_GCOAPS_PORT
 #define CONFIG_GCOAPS_PORT             (5684)
 #endif
@@ -614,13 +617,14 @@ extern "C" {
  * @brief Stack size for module thread
  */
 #ifndef GCOAP_STACK_SIZE
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
-#define GCOAP_STACK_SIZE (2*THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
-                          + sizeof(coap_pkt_t))
+#if IS_USED(MODULE_GCOAP_DTLS)
+#define GCOAP_DTLS_EXTRA_STACKSIZE  (THREAD_STACKSIZE_DEFAULT)
 #else
-#define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
-                          + sizeof(coap_pkt_t))
+#define GCOAP_DTLS_EXTRA_STACKSIZE  (0)
 #endif
+
+#define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
+                          + sizeof(coap_pkt_t) + GCOAP_DTLS_EXTRA_STACKSIZE)
 #endif
 
 /**
@@ -785,15 +789,17 @@ typedef enum {
  * @brief   Coap socket to handle multiple transport types
  */
 typedef struct {
-    coap_socket_type_t type;
+    coap_socket_type_t type;                /**< Type of stored socket */
     union {
         sock_udp_t *udp;
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS) || defined(DOXYGEN)
+#if IS_USED(MODULE_GCOAP_DTLS) || defined(DOXYGEN)
         sock_dtls_t *dtls;
 #endif
-    } socket;
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS) || defined(DOXYGEN)
-    sock_dtls_session_t ctx_dtls_session;
+    } socket;                               /**< Stored socket */
+#if IS_USED(MODULE_GCOAP_DTLS) || defined(DOXYGEN)
+    sock_dtls_session_t ctx_dtls_session;   /**< Session object for the stored socket.
+                                                 Used for exchanging a session between
+                                                 functions. */
 #endif
 } coap_socket_t;
 
@@ -997,7 +1003,7 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
                           size_t maxlen, coap_link_encoder_ctx_t *context);
 
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS) || defined(DOXYGEN)
+#if IS_USED(MODULE_GCOAP_DTLS) || defined(DOXYGEN)
 /**
  * @brief   Get the underlying DTLS socket of gcoap.
  *

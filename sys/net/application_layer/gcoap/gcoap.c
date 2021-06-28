@@ -33,7 +33,7 @@
 #include "random.h"
 #include "thread.h"
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 #include "net/sock/dtls.h"
 #include "net/credman.h"
 #include "net/dsm.h"
@@ -78,7 +78,7 @@ static int _request_matcher_default(gcoap_listener_t *listener,
                                     const coap_resource_t **resource,
                                     const coap_pkt_t *pdu);
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 static void _on_sock_dtls_evt(sock_dtls_t *sock, sock_async_flags_t type, void *arg);
 static void _dtls_free_up_session(void *arg);
 #endif
@@ -126,7 +126,7 @@ static event_queue_t _queue;
 static uint8_t _listen_buf[CONFIG_GCOAP_PDU_BUF_SIZE];
 static sock_udp_t _sock_udp;
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 /* DTLS variables and definitions */
 #define SOCK_DTLS_CLIENT_TAG (2)
 
@@ -146,7 +146,7 @@ static void *_event_loop(void *arg)
     memset(&local, 0, sizeof(sock_udp_ep_t));
     local.family = AF_INET6;
     local.netif  = SOCK_ADDR_ANY_NETIF;
-    if (IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)) {
+    if (IS_USED(MODULE_GCOAP_DTLS)) {
         local.port = CONFIG_GCOAPS_PORT;
     } else {
         local.port = CONFIG_GCOAP_PORT;
@@ -158,8 +158,8 @@ static void *_event_loop(void *arg)
     }
 
     event_queue_init(&_queue);
-    if (IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)) {
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+    if (IS_USED(MODULE_GCOAP_DTLS)) {
+#if IS_USED(MODULE_GCOAP_DTLS)
         if (sock_dtls_create(&_sock_dtls, &_sock_udp,
                             CREDMAN_TAG_EMPTY,
                             SOCK_DTLS_1_2, SOCK_DTLS_SERVER) < 0) {
@@ -178,7 +178,7 @@ static void *_event_loop(void *arg)
     return 0;
 }
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 /* Handles DTLS socket events from the event queue */
 static void _on_sock_dtls_evt(sock_dtls_t *sock, sock_async_flags_t type, void *arg) {
     (void)arg;
@@ -275,7 +275,7 @@ static void _dtls_free_up_session(void *arg) {
         }
     }
 }
-#endif /* CONFIG_GCOAP_ENABLE_DTLS */
+#endif /* MODULE_GCOAP_DTLS */
 
 /* Handles UDP socket events from the event queue. */
 static void _on_sock_udp_evt(sock_udp_t *sock, sock_async_flags_t type, void *arg)
@@ -884,7 +884,7 @@ static void _find_obs_memo_resource(gcoap_observe_memo_t **memo,
 
 static void _tl_init_coap_socket(coap_socket_t *sock)
 {
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
     sock->type = COAP_SOCKET_TYPE_DTLS;
     sock->socket.dtls = &_sock_dtls;
 #else
@@ -898,7 +898,7 @@ static ssize_t _tl_send(coap_socket_t *sock, const void *data, size_t len,
 {
     ssize_t res = -1;
     if (sock->type == COAP_SOCKET_TYPE_DTLS) {
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
         /* prepare session */
         sock_dtls_session_set_udp_ep(&sock->ctx_dtls_session, remote);
         dsm_state_t session_state = dsm_store(sock->socket.dtls, &sock->ctx_dtls_session,
@@ -927,7 +927,7 @@ static ssize_t _tl_send(coap_socket_t *sock, const void *data, size_t len,
 static ssize_t _tl_authenticate(coap_socket_t *sock, const sock_udp_ep_t *remote,
                                 uint32_t timeout)
 {
-#if !IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if !IS_USED(MODULE_GCOAP_DTLS)
     (void)sock;
     (void)remote;
     (void)timeout;
@@ -1139,7 +1139,7 @@ ssize_t gcoap_req_send(const uint8_t *buf, size_t len,
     coap_socket_t socket = { 0 };
 
     _tl_init_coap_socket(&socket);
-    if (IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS) && socket.type == COAP_SOCKET_TYPE_DTLS) {
+    if (IS_USED(MODULE_GCOAP_DTLS) && socket.type == COAP_SOCKET_TYPE_DTLS) {
         res = _tl_authenticate(&socket, remote, CONFIG_GCOAP_DTLS_HANDSHAKE_TIMEOUT_USEC);
     }
 
@@ -1326,7 +1326,7 @@ ssize_t gcoap_encode_link(const coap_resource_t *resource, char *buf,
     return exp_size;
 }
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 sock_dtls_t *gcoap_get_sock_dtls(void)
 {
     return &_sock_dtls;
