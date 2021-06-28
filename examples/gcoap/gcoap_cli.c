@@ -30,7 +30,7 @@
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
 #include "net/credman.h"
 #include "net/dsm.h"
 #include "tinydtls_keys.h"
@@ -338,12 +338,12 @@ int gcoap_cli_cmd(int argc, char **argv)
     if (strcmp(argv[1], "info") == 0) {
         uint8_t open_reqs = gcoap_op_state();
 
-        if (IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)) {
+        if (IS_USED(MODULE_GCOAP_DTLS)) {
             printf("CoAP server is listening on port %u\n", CONFIG_GCOAPS_PORT);
         } else {
             printf("CoAP server is listening on port %u\n", CONFIG_GCOAP_PORT);
         }
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
         printf("Connection secured with DTLS\n");
         printf("Free DTLS session slots: %d/%d\n", dsm_get_num_available_slots(),
                 dsm_get_num_maximum_slots());
@@ -497,7 +497,7 @@ int gcoap_cli_cmd(int argc, char **argv)
 
 void gcoap_cli_init(void)
 {
-#if IS_ACTIVE(CONFIG_GCOAP_ENABLE_DTLS)
+#if IS_USED(MODULE_GCOAP_DTLS)
     int res = credman_add(&credential);
     if (res < 0 && res != CREDMAN_EXIST) {
         /* ignore duplicate credentials */

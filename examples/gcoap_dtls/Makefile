@@ -46,7 +46,6 @@ ifeq (1,$(GCOAP_ENABLE_DTLS))
 	# tinydtls needs crypto secure PRNG
 	USEMODULE += prng_sha1prng
 
-	CFLAGS += -DCONFIG_GCOAP_ENABLE_DTLS=1
 	# Maximum number of DTLS sessions
 	CFLAGS += -DDTLS_PEER_MAX=1
 endif
