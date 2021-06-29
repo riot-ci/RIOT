@@ -1138,11 +1138,6 @@ static void _handle_nbr_adv(gnrc_netif_t *netif, const ipv6_hdr_t *ipv6,
                                              opt, nce);
                     break;
 #endif  /* CONFIG_GNRC_IPV6_NIB_6LN */
-#if IS_ACTIVE(CONFIG_GNRC_IPV6_NIB_NA_RIO)
-                case NDP_OPT_RI:
-                    _handle_rio(netif, ipv6, (ndp_opt_ri_t *)opt);
-                    break;
-#endif /* CONFIG_GNRC_IPV6_NIB_NA_RIO */
                 default:
                     DEBUG("nib: Ignoring unrecognized option type %u for NA\n",
                           opt->type);
