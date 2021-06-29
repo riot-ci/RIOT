@@ -112,6 +112,30 @@ uint32_t sx126x_get_channel(const sx126x_t *dev);
 void sx126x_set_channel(sx126x_t *dev, uint32_t freq);
 
 /**
+ * @brief   Check if onboard SUBGHZ Radio is being used
+ *
+ * @param[in] dev                      Device descriptor of the driver
+ *
+ * @return True, if onboard SUBGHZ Radio is being used
+ */
+static inline bool IS_SUBGHZ(sx126x_t *dev)
+{
+    (void) dev;
+    if (IS_USED(MODULE_SX126X_STM32WL) && (!IS_USED(MODULE_SX126X_SPI))){
+        return true;
+    }
+    else if ((!IS_USED(MODULE_SX126X_STM32WL)) && IS_USED(MODULE_SX126X_SPI)){
+        return false;
+    }
+#if (IS_USED(MODULE_SX126X_STM32WL) && IS_USED(MODULE_SX126X_SPI))
+    else if (IS_USED(MODULE_SX126X_STM32WL) && IS_USED(MODULE_SX126X_SPI)) {
+        return (dev->params->subghz_enable == 1);
+    }
+#endif
+    return false;
+}
+
+/**
  * @brief   Gets the LoRa bandwidth
  *
  * @param[in] dev                      Device descriptor of the driver
