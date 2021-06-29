@@ -200,11 +200,13 @@ uint8_t cc110x_status(cc110x_t *dev);
  * of messing with the SPI interface, this driver simply waits for this upper
  * bound, as suggested in the note below Table 22 on page 30 in the data sheet.
  *
+ * @pre     The device was not acquired and in low power mode
+ * @post    The device is in IDLE mode and acquired
+ *
  * @retval  0       Success
  * @retval  -EIO    Couldn't pull the CS pin down (@ref cc110x_params_t::cs)
  */
-int cc110x_power_on(cc110x_t *dev);
-
+int cc110x_power_on_and_acquire(cc110x_t *dev);
 
 #ifdef __cplusplus
 }
