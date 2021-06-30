@@ -7,7 +7,7 @@
  */
 
 /**
- * @ingroup     examples
+ * @ingroup     sys_shell_commands
  * @{
  *
  * @file
@@ -156,7 +156,7 @@ static void stop_server(void)
     puts("Success: stopped UDP server");
 }
 
-int udp_cmd(int argc, char **argv)
+int _gnrc_udp_cmd(int argc, char **argv)
 {
     if (argc < 2) {
         printf("usage: %s [send|server]\n", argv[0]);
