@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Inria
+ * Copyright (C) 2021 HAW Hamburg
  *
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
@@ -31,11 +31,12 @@ extern "C" {
  *
  * @param[in] dev                      Device descriptor of the driver
  *
- * @return    true if the device is sx1261
- * @return    false otherwise
+ * @retval    true if the device is sx1261
+ * @retval    false otherwise
  */
 static inline bool sx126x_is_sx1261(sx126x_t *dev)
 {
+    assert(dev);
     if (SX126X_SINGLE) {
         return IS_USED(MODULE_SX1261);
     }
@@ -49,11 +50,12 @@ static inline bool sx126x_is_sx1261(sx126x_t *dev)
  *
  * @param[in] dev                      Device descriptor of the driver
  *
- * @return    true if the device is sx1262
- * @return    false otherwise
+ * @retval    true if the device is sx1262
+ * @retval    false otherwise
  */
 static inline bool sx126x_is_sx1262(sx126x_t *dev)
 {
+    assert(dev);
     if (SX126X_SINGLE) {
         return IS_USED(MODULE_SX1262);
     }
@@ -67,11 +69,12 @@ static inline bool sx126x_is_sx1262(sx126x_t *dev)
  *
  * @param[in] dev                      Device descriptor of the driver
  *
- * @return    true if the device is llcc68
- * @return    false otherwise
+ * @retval    true if the device is llcc68
+ * @retval    false otherwise
  */
 static inline bool sx126x_is_llcc68(sx126x_t *dev)
 {
+    assert(dev);
     if (SX126X_SINGLE) {
         return IS_USED(MODULE_LLCC68);
     }
@@ -85,11 +88,12 @@ static inline bool sx126x_is_llcc68(sx126x_t *dev)
  *
  * @param[in] dev                      Device descriptor of the driver
  *
- * @return    true if the device is sx1268
- * @return    false otherwise
+ * @retval    true if the device is sx1268
+ * @retval    false otherwise
  */
 static inline bool sx126x_is_sx1268(sx126x_t *dev)
 {
+    assert(dev);
     if (SX126X_SINGLE) {
         return IS_USED(MODULE_SX1268);
     }
