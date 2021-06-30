@@ -76,6 +76,23 @@ void sx126x_setup(sx126x_t *dev, const sx126x_params_t *params, uint8_t index);
 int sx126x_init(sx126x_t *dev);
 
 /**
+ * @brief   Converts symbol value to time in milliseconds.
+ *
+ * @param[in] dev                      Device descriptor of the driver
+ * @param[in] symbols                  Symbols
+ *
+ * @return Time for symbol(s) in milliseconds
+ */
+static inline int sx126x_symbol_to_msec(sx126x_t *dev, uint16_t symbols)
+{
+    assert(dev && (dev->mod_params.bw <= SX126X_LORA_BW_500) && \
+           (dev->mod_params.bw >= SX126X_LORA_BW_125));
+
+    /* Refer section 4.1.1.7  Time on air in SX1276/77/78/79 datasheet */
+    return (symbols * (1 << (dev->mod_params.sf + 7 - dev->mod_params.bw)) / 1000);
+}
+
+/**
  * @brief   Gets the channel RF frequency.
  *
  * @param[in]  dev                     Device descriptor of the driver
