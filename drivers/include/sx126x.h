@@ -47,10 +47,10 @@ extern "C" {
  * @brief   Variant of the SX126x driver.
  */
 typedef enum {
-    SX126X_SX1261,
-    SX126X_SX1262,
-    SX126X_SX1268,
-    SX126X_LLCC68,
+    SX126X_TYPE_SX1261,
+    SX126X_TYPE_SX1262,
+    SX126X_TYPE_SX1268,
+    SX126X_TYPE_LLCC68,
 } sx126x_type_t;
 
 /**
