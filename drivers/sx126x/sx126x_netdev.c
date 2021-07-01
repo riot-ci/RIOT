@@ -30,6 +30,10 @@
 #include "sx126x.h"
 #include "sx126x_netdev.h"
 
+#if IS_USED(MODULE_SX126X_STM32WL)
+#include "board.h"
+#endif
+
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
@@ -37,6 +41,19 @@
 #define SX126X_MAX_SF       LORA_SF11
 #else
 #define SX126X_MAX_SF       LORA_SF12
+#endif
+
+#if IS_USED(MODULE_SX126X_STM32WL)
+static netdev_t *_dev;
+
+void isr_subghz_radio(void)
+{
+    /* Disable NVIC to avoid ISR conflict in CPU. */
+    NVIC_DisableIRQ(SUBGHZ_Radio_IRQn);
+    NVIC_ClearPendingIRQ(SUBGHZ_Radio_IRQn);
+    netdev_trigger_event_isr(_dev);
+    cortexm_isr_end();
+}
 #endif
 
 static int _send(netdev_t *netdev, const iolist_t *iolist)
@@ -113,7 +130,9 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 static int _init(netdev_t *netdev)
 {
     sx126x_t *dev = (sx126x_t *)netdev;
-
+#if IS_USED(MODULE_SX126X_STM32WL)
+    _dev = netdev;
+#endif
     /* Launch initialization of driver and device */
     DEBUG("[sx126x] netdev: initializing driver...\n");
     if (sx126x_init(dev) != 0) {
@@ -132,6 +151,9 @@ static void _isr(netdev_t *netdev)
     sx126x_irq_mask_t irq_mask;
 
     sx126x_get_and_clear_irq_status(dev, &irq_mask);
+#if IS_USED(MODULE_SX126X_STM32WL)
+    NVIC_EnableIRQ(SUBGHZ_Radio_IRQn);
+#endif
 
     if (irq_mask & SX126X_IRQ_TX_DONE) {
         DEBUG("[sx126x] netdev: SX126X_IRQ_TX_DONE\n");
@@ -288,6 +310,11 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
     case NETOPT_STATE_IDLE:
     case NETOPT_STATE_RX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_RX state\n");
+        /* Refer Section 4.2 RF Switch in Application Note (AN5406) */
+        if(dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_RX);
+        }
+
         sx126x_cfg_rx_boosted(dev, true);
         if (dev->rx_timeout != 0) {
             sx126x_set_rx(dev, dev->rx_timeout);
@@ -299,6 +326,10 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
 
     case NETOPT_STATE_TX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_TX state\n");
+        if(dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_TX_LPA);
+        }
+
         sx126x_set_tx(dev, 0);
         break;
 

@@ -245,6 +245,7 @@ PSEUDOMODULES += sx1261
 PSEUDOMODULES += sx1262
 PSEUDOMODULES += sx1268
 PSEUDOMODULES += llcc68
+PSEUDOMODULES += sx126x_stm32wl
 
 # include variants of SX127X drivers as pseudo modules
 PSEUDOMODULES += sx1272
