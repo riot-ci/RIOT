@@ -1,0 +1,55 @@
+diff --git a/examples/hello-world/Makefile b/examples/hello-world/Makefile
+index 258d8e9baf..f389bea7ca 100644
+--- a/examples/hello-world/Makefile
++++ b/examples/hello-world/Makefile
+@@ -15,4 +15,11 @@ DEVELHELP ?= 1
+ # Change this to 0 show compiler invocation lines by default:
+ QUIET ?= 1
+ 
++USEMODULE += xtimer
++USEMODULE += prng_fortuna
++USEMODULE += fortuna_reseed
++USEMODULE += random
++
++CFLAGS=-DFORTUNA_RESEED_INTERVAL_MS=1000
++
+ include $(RIOTBASE)/Makefile.include
+diff --git a/examples/hello-world/main.c b/examples/hello-world/main.c
+index f51bf8c0a0..168cbdcfdc 100644
+--- a/examples/hello-world/main.c
++++ b/examples/hello-world/main.c
+@@ -20,6 +20,8 @@
+  */
+ 
+ #include <stdio.h>
++#include "xtimer.h"
++#include "random.h"
+ 
+ int main(void)
+ {
+@@ -28,5 +30,10 @@ int main(void)
+     printf("You are running RIOT on a(n) %s board.\n", RIOT_BOARD);
+     printf("This board features a(n) %s MCU.\n", RIOT_MCU);
+ 
++    while(1) {
++        printf("random number: %"PRIu32"\n", random_uint32());
++        xtimer_usleep(2000000);
++    }
++
+     return 0;
+ }
+diff --git a/sys/random/fortuna/fortuna.c b/sys/random/fortuna/fortuna.c
+index ac096eb360..5f9bcc2a58 100644
+--- a/sys/random/fortuna/fortuna.c
++++ b/sys/random/fortuna/fortuna.c
+@@ -199,8 +199,8 @@ int fortuna_random_data(fortuna_state_t *state, uint8_t *out, size_t bytes)
+ 
+     /* reseed the generator if needed, before returning data */
+ #if FORTUNA_RESEED_INTERVAL_MS > 0 && IS_USED(MODULE_FORTUNA_RESEED)
+-    if (state->pools[0].len >= FORTUNA_MIN_POOL_SIZE &&
+-        atomic_load_u8(&state->reseed)) {
++    if (state-atomic_load_u8(&state->reseed)) {
++        puts("reseed");
+ #else
+     if (state->pools[0].len >= FORTUNA_MIN_POOL_SIZE) {
+ #endif

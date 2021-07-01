@@ -61,19 +61,19 @@ void uwb_core_init(void)
 #endif
 
     /* ranging algorithms */
-#if IS_USED(MODULE_UWB_CORE_RNG)
+#if IS_USED(MODULE_UWB_CORE_TWR_SS)
     twr_ss_pkg_init();
 #endif
-#if IS_USED(MODULE_UWB_CORE_RNG)
+#if IS_USED(MODULE_UWB_CORE_TWR_SS_ACK)
     twr_ss_ack_pkg_init();
 #endif
-#if IS_USED(MODULE_UWB_CORE_RNG)
+#if IS_USED(MODULE_UWB_CORE_TWR_SS_EXT)
     twr_ss_ext_pkg_init();
 #endif
-#if IS_USED(MODULE_UWB_CORE_RNG)
+#if IS_USED(MODULE_UWB_CORE_TWR_DS)
     twr_ds_pkg_init();
 #endif
-#if IS_USED(MODULE_UWB_CORE_RNG)
+#if IS_USED(MODULE_UWB_CORE_TWR_DS_EXT)
     twr_ds_ext_pkg_init();
 #endif
 }
