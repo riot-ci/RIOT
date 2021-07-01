@@ -50,7 +50,7 @@ extern "C" {
  * @brief Enable init messages showing each package has been initialised
  */
 #ifndef MYNEWT_VAL_UWB_PKG_INIT_LOG
-#define MYNEWT_VAL_UWB_PKG_INIT_LOG (1)
+#define MYNEWT_VAL_UWB_PKG_INIT_LOG (0)
 #endif
 
 /**
