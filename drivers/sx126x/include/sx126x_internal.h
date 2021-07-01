@@ -20,6 +20,7 @@
 #ifndef SX126X_INTERNAL_H
 #define SX126X_INTERNAL_H
 
+#include <assert.h>
 #include "sx126x.h"
 
 #ifdef __cplusplus
