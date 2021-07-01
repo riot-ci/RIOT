@@ -42,11 +42,9 @@
 #endif
 
 #if IS_USED(MODULE_SX126X_STM32WL)
-static bool subghz_radio_sleepstatus = false;
-
-static uint8_t sx126x_radio_wait_until_ready(void)
+static uint8_t sx126x_radio_wait_until_ready(sx126x_t *dev)
 {
-  if (subghz_radio_sleepstatus == true)
+  if (dev->radio_sleep == true)
   {
     DEBUG("[sx126x_radio] : Wakeup radio \n");
     sx126x_hal_wakeup(NULL);
@@ -68,15 +66,15 @@ sx126x_hal_status_t sx126x_hal_write(const void *context,
 
     if (IS_SUBGHZ(dev)) {
 #if IS_USED(MODULE_SX126X_STM32WL)
-        sx126x_radio_wait_until_ready();
+        sx126x_radio_wait_until_ready(dev);
         spi_acquire(dev->params->spi, SPI_CS_UNDEF, SX126X_SPI_MODE, SX126X_SPI_SPEED);
 
         /* Check if radio is set to sleep or `RxDutyCycle` mode */
         if (command[0] == 0x84 || command[0] == 0x94) {
-            subghz_radio_sleepstatus = true;
+            dev->radio_sleep = true;
         }
         else {
-            subghz_radio_sleepstatus = false;
+            dev->radio_sleep = false;
         }
 
         /* Pull NSS low */
@@ -117,7 +115,7 @@ sx126x_hal_status_t sx126x_hal_read(const void *context,
 
     if (IS_SUBGHZ(dev)) {
 #if IS_USED(MODULE_SX126X_STM32WL)
-        sx126x_radio_wait_until_ready();
+        sx126x_radio_wait_until_ready(dev);
 
         spi_acquire(dev->params->spi, SPI_CS_UNDEF, SX126X_SPI_MODE, SX126X_SPI_SPEED);
         /* Pull NSS low */
@@ -174,7 +172,7 @@ sx126x_hal_status_t sx126x_hal_reset(const void *context)
         /* Clear Pending Flag */
         PWR->SCR = PWR_SCR_CWRFBUSYF;
 
-        subghz_radio_sleepstatus = true;
+        dev->radio_sleep = true;
 #endif
     }
     else {
