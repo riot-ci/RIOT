@@ -87,10 +87,8 @@ static const spi_conf_t spi_config[] = {
         .dev      = SUBGHZSPI, /* Internally connected to Sub-GHz radio Modem  */
         .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
         .apbbus   = APB3,
-    }
-/* SUBGHZ DEBUG PINS use the SPI1 pins */
-#if !IS_ACTIVE(CONFIG_WL55JC_SUBGHZ_DEBUG)
-    ,{
+    },
+    {
         .dev      = SPI1,
         .mosi_pin = GPIO_PIN(PORT_A, 7),
         .miso_pin = GPIO_PIN(PORT_A, 6),
@@ -103,7 +101,6 @@ static const spi_conf_t spi_config[] = {
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
     }
-#endif
 };
 
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
