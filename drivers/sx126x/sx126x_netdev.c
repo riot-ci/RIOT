@@ -30,10 +30,6 @@
 #include "sx126x.h"
 #include "sx126x_netdev.h"
 
-#if IS_USED(MODULE_SX126X_STM32WL)
-#include "board.h"
-#endif
-
 #define ENABLE_DEBUG 0
 #include "debug.h"
 
