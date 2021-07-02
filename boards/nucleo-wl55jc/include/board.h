@@ -27,6 +27,14 @@ extern "C" {
 #endif
 
 /**
+ * @name    Sub-GHz radio (LoRa) configuration
+ * @{
+ */
+#define SX126X_PARAM_SPI                    (SPI_DEV(0))
+#define SX126X_PARAM_SET_RF_MODE_CB         nucleo_wl55jc_sx126x_set_rf_mode
+/** @} */
+
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
@@ -52,7 +60,10 @@ extern "C" {
 #define LED2_TOGGLE         (LED0_PORT->ODR  ^= LED2_MASK)
 /** @} */
 
-/* nucleo-wl55jc always use LED0, as there is no dual use of its pin */
+/**
+ * @brief   Nucleo-wl55jc always use LED0, as there is no dual use of its pin
+ * @{
+ */
 #ifndef AUTO_INIT_LED0
 #define AUTO_INIT_LED0
 #endif
@@ -68,6 +79,30 @@ extern "C" {
 #define BTN1_MODE           GPIO_IN_PU
 #define BTN2_PIN            GPIO_PIN(PORT_C, 6)
 #define BTN2_MODE           GPIO_IN_PU
+/** @} */
+
+/**
+ * @name    RF 3-port switch (SP3T) control
+ *
+ * Refer Section 6.6.3 RF Overview in User Manual (UM2592)
+ * @{
+ */
+#define FE_CTRL1            GPIO_PIN(PORT_C, 4)
+#define FE_CTRL2            GPIO_PIN(PORT_C, 5)
+#define FE_CTRL3            GPIO_PIN(PORT_C, 3)
+/** @} */
+
+/**
+ * @defgroup boards_nucleo-wl55jc_config     Nucleo-WL55JC compile time configs
+ * @ingroup  config_boards
+ * @{
+ */
+/**
+ * @brief Enable this to enable HW debug pins. Refer board.c for more info.
+ */
+#ifdef DOXYGEN
+#define CONFIG_WL55JC_SUBGHZ_DEBUG
+#endif
 /** @} */
 
 #ifdef __cplusplus

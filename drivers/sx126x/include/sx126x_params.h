@@ -57,12 +57,20 @@ extern "C" {
 #define SX126X_PARAM_REGULATOR              SX126X_REG_MODE_DCDC
 #endif
 
+#ifndef SX126X_PARAM_SET_RF_MODE_CB
+#define SX126X_PARAM_SET_RF_MODE_CB         NULL
+#else
+extern void SX126X_PARAM_SET_RF_MODE_CB(sx126x_t *dev, sx126x_rf_mode_t rf_mode);
+#endif
+
 #define SX126X_PARAMS             { .spi = SX126X_PARAM_SPI,      \
                                     .nss_pin = SX126X_PARAM_SPI_NSS,  \
                                     .reset_pin = SX126X_PARAM_RESET,    \
                                     .busy_pin = SX126X_PARAM_BUSY,      \
                                     .dio1_pin = SX126X_PARAM_DIO1,      \
-                                    .regulator = SX126X_PARAM_REGULATOR }
+                                    .regulator = SX126X_PARAM_REGULATOR, \
+                                    .set_rf_mode = SX126X_PARAM_SET_RF_MODE_CB }
+
 /**@}*/
 
 /**
