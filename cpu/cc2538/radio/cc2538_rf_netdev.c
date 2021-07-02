@@ -44,7 +44,7 @@ void cc2538_irq_handler(void)
 
 static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *)netdev;
+    cc2538_rf_t *dev = netdev_to_cc2538_rf(netdev);
 
     if (dev == NULL) {
         return -ENODEV;
@@ -141,8 +141,9 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 
     int res;
 
-    if (((res = netdev_ieee802154_get((netdev_ieee802154_t *)netdev, opt, value,
-                                      max_len)) >= 0) || (res != -ENOTSUP)) {
+    if (((res = netdev_ieee802154_get(container_of(netdev, netdev_ieee802154_t, netdev),
+                                      opt, value, max_len)) >= 0)
+        || (res != -ENOTSUP)) {
         return res;
     }
 
@@ -151,7 +152,7 @@ static int _get(netdev_t *netdev, netopt_t opt, void *value, size_t max_len)
 
 static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_len)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *)netdev;
+    cc2538_rf_t *dev = netdev_to_cc2538_rf(netdev);
     int res = -ENOTSUP;
 
     if (dev == NULL) {
@@ -250,8 +251,8 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *value, size_t value_
     }
 
     if (res == -ENOTSUP) {
-        res = netdev_ieee802154_set((netdev_ieee802154_t *)netdev, opt,
-                                    value, value_len);
+        res = netdev_ieee802154_set(container_of(netdev, netdev_ieee802154_t, netdev),
+                                     opt, value, value_len);
     }
 
     return res;
@@ -390,7 +391,7 @@ static void _isr(netdev_t *netdev)
 
 static int _init(netdev_t *netdev)
 {
-    cc2538_rf_t *dev = (cc2538_rf_t *) netdev;
+    cc2538_rf_t *dev = netdev_to_cc2538_rf(netdev);
     _dev = netdev;
 
     uint16_t chan = cc2538_get_chan();
