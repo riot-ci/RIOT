@@ -185,7 +185,7 @@ int gnrc_tcp_listen_cmd(int argc, char **argv)
     gnrc_tcp_ep_t local;
     gnrc_tcp_ep_from_str(&local, argv[1]);
 
-    int err = gnrc_tcp_listen(&queue, tcbs, sizeof(tcbs)/sizeof(tcbs[0]), &local);
+    int err = gnrc_tcp_listen(&queue, tcbs, ARRAY_SIZE(tcbs), &local);
     switch (err) {
         case -EAFNOSUPPORT:
             printf("%s: returns -EAFNOSUPPORT\n", argv[0]);
