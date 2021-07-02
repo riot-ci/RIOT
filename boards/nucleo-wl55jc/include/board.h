@@ -30,7 +30,7 @@ extern "C" {
  * @name    Sub-GHz radio (LoRa) configuration
  * @{
  */
-#define SX126X_PARAM_SPI                    (SPI_DEV(1))
+#define SX126X_PARAM_SPI                    (SPI_DEV(0))
 /** @} */
 
 /**
