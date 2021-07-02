@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 /**
- * @note Forward declare the device descriptor, used by `set_rf_mode`
+ * @note Forward declaration of the SX126x device descriptor
  */
 typedef struct sx126x sx126x_t;
 
@@ -56,7 +56,10 @@ typedef struct {
     gpio_t busy_pin;                    /**< Busy pin */
     gpio_t dio1_pin;                    /**< Dio1 pin */
     sx126x_reg_mod_t regulator;         /**< Power regulator mode */
-    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode); /**< RF switch interface */
+    /**
+     * @ brief  Interface to set RF switch parameters
+     */
+    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode);
 } sx126x_params_t;
 
 /**
