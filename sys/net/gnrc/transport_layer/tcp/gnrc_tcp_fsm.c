@@ -213,7 +213,8 @@ static int _transition_to(gnrc_tcp_tcb_t *tcb, _gnrc_tcp_fsm_state_t state)
         case FSM_STATE_SYN_RCVD:
             /* Setup timeout for listening TCBs */
             if (tcb->status & STATUS_LISTENING) {
-                _gnrc_tcp_eventloop_sched(&tcb->event_timeout, CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION_MS,
+                _gnrc_tcp_eventloop_sched(&tcb->event_timeout,
+                                          CONFIG_GNRC_TCP_CONNECTION_TIMEOUT_DURATION_MS,
                                           MSG_TYPE_CONNECTION_TIMEOUT, tcb);
             }
             break;

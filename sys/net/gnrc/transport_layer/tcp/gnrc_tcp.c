@@ -508,6 +508,7 @@ int gnrc_tcp_listen(gnrc_tcp_tcb_queue_t *queue, gnrc_tcp_tcb_t *tcbs, size_t tc
                 tcb->status &= ~(STATUS_LISTENING);
                 _abort(tcb);
             }
+            break;
         }
     }
 
@@ -547,16 +548,17 @@ int gnrc_tcp_accept(gnrc_tcp_tcb_queue_t *queue, gnrc_tcp_tcb_t **tcb,
     for (size_t i = 0; i < queue->tcbs_len; ++i) {
         tmp = &(queue->tcbs[i]);
 
-        if (!(tmp->status & STATUS_ACCEPTED)) {
-
-            state = _gnrc_tcp_fsm_get_state(tmp);
-            if (state == FSM_STATE_ESTABLISHED || state == FSM_STATE_CLOSE_WAIT) {
-                tmp->status |= STATUS_ACCEPTED;
-                *tcb = tmp;
-                break;
-            }
-            ++avail_tcbs;
+        if (tmp->status & STATUS_ACCEPTED) {
+            continue;
         }
+
+        state = _gnrc_tcp_fsm_get_state(tmp);
+        if (state == FSM_STATE_ESTABLISHED || state == FSM_STATE_CLOSE_WAIT) {
+            tmp->status |= STATUS_ACCEPTED;
+            *tcb = tmp;
+            break;
+        }
+        ++avail_tcbs;
     }
 
     /* Return if a connection was found, accept was called as non-blocking or all
