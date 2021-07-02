@@ -64,8 +64,10 @@ extern "C" {
 #        define SX126X_PARAM_TYPE SX126X_TYPE_SX1262
 #    elif IS_USED(MODULE_SX1268)
 #        define SX126X_PARAM_TYPE SX126X_TYPE_SX1268
-#    else /* IS_USED(MODULE_LLCC68) */
+#    elif IS_USED(MODULE_LLCC68)
 #        define SX126X_PARAM_TYPE SX126X_TYPE_LLCC68
+#    else
+#        error "You should select at least one of the SX126x variants."
 #    endif
 #endif
 
