@@ -56,8 +56,7 @@ typedef struct {
     gpio_t busy_pin;                    /**< Busy pin */
     gpio_t dio1_pin;                    /**< Dio1 pin */
     sx126x_reg_mod_t regulator;         /**< Power regulator mode */
-    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode); /**< Interface
-    to set RF switch parameters */
+    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode); /**< RF switch interface */
 } sx126x_params_t;
 
 /**
