@@ -84,6 +84,11 @@ static const uart_conf_t uart_config[] = {
  */
 static const spi_conf_t spi_config[] = {
     {
+        .dev      = SUBGHZSPI, /* Internally connected to Sub-GHz radio Modem  */
+        .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
+        .apbbus   = APB3,
+    },
+    {
         .dev      = SPI1,
 /* SUBGHZ DEBUG PINS use the SPI1 pins */
 #if !IS_ACTIVE(CONFIG_WL55JC_SUBGHZ_DEBUG)
@@ -98,12 +103,8 @@ static const spi_conf_t spi_config[] = {
 #endif
         .rccmask  = RCC_APB2ENR_SPI1EN,
         .apbbus   = APB2,
-    },
-    {
-        .dev      = SUBGHZSPI, /* Internally connected to Sub-GHz radio Modem  */
-        .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
-        .apbbus   = APB3,
     }
+
 };
 
 #define SPI_NUMOF           ARRAY_SIZE(spi_config)
