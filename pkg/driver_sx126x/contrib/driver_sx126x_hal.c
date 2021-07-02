@@ -20,6 +20,7 @@
 
 #include "ztimer.h"
 
+#include "cpu.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
@@ -28,7 +29,6 @@
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
-#include "cpu.h"
 
 #define SX126X_SPI_SPEED    (SPI_CLK_1MHZ)
 #define SX126X_SPI_MODE     (SPI_MODE_0)
