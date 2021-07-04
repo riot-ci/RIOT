@@ -30,6 +30,7 @@
 #include "periph/pm.h"
 #include "periph/gpio.h"
 #include "periph/usbdev.h"
+#include "pm_layered.h"
 #include "usbdev_stm32.h"
 
 /**
