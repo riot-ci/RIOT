@@ -111,7 +111,7 @@ static void sx126x_init_default_config(sx126x_t *dev)
     else if (sx126x_is_sx1268(dev)) {
         sx126x_set_pa_cfg(dev, &sx1268_pa_cfg);
     }
-    else { /* sx126x_is_sx1261(dev) */
+    else { /* sx126x_is_sx1261(dev) or sx126x_is_stm32wl(dev)  */
         sx126x_set_pa_cfg(dev, &sx1261_pa_cfg);
     }
     sx126x_set_tx_params(dev, CONFIG_SX126X_TX_POWER_DEFAULT, CONFIG_SX126X_RAMP_TIME_DEFAULT);
