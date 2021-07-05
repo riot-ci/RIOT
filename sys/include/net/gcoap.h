@@ -615,6 +615,7 @@ extern "C" {
 
 /**
  * @brief Stack size for module thread
+ * @{
  */
 #ifndef GCOAP_STACK_SIZE
 #if IS_USED(MODULE_GCOAP_DTLS)
@@ -626,6 +627,7 @@ extern "C" {
 #define GCOAP_STACK_SIZE (THREAD_STACKSIZE_DEFAULT + DEBUG_EXTRA_STACKSIZE \
                           + sizeof(coap_pkt_t) + GCOAP_DTLS_EXTRA_STACKSIZE)
 #endif
+/** @} */
 
 /**
  * @ingroup net_gcoap_conf
