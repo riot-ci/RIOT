@@ -268,7 +268,7 @@ static void _dtls_free_up_session(void *arg) {
 
     uint8_t minimum_free = CONFIG_GCOAP_DTLS_MINIMUM_AVAILABLE_SESSIONS;
     if (dsm_get_num_available_slots() < minimum_free) {
-        if(dsm_get_oldest_used_session(&_sock_dtls, &session) != -1) {
+        if(dsm_get_least_recently_used_session(&_sock_dtls, &session) != -1) {
             /* free up session */
             dsm_remove(&_sock_dtls, &session);
             sock_dtls_session_destroy(&_sock_dtls, &session);
@@ -962,6 +962,7 @@ static ssize_t _tl_authenticate(coap_socket_t *sock, const sock_udp_ep_t *remote
         uint32_t start = xtimer_now_usec();
         res = xtimer_msg_receive_timeout(&msg, timeout);
 
+        /* ensure whole timeout time for the case we receive other messages than DTLS_EVENT_CONNECTED */
         if (timeout != SOCK_NO_TIMEOUT) {
             uint32_t diff = (xtimer_now_usec() - start);
             timeout = (diff > timeout) ? 0: timeout - diff;
