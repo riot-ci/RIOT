@@ -55,31 +55,33 @@ dsm_state_t dsm_store(sock_dtls_t *sock, sock_dtls_session_t *session,
     mutex_lock(&_lock);
 
     ssize_t res = _find_session(sock, session, &session_slot);
-    if (res != -1) {
-        prev_state = session_slot->state;
-        if (session_slot->state != SESSION_STATE_ESTABLISHED) {
-            session_slot->state = new_state;
-        }
-
-        /* no existing session found */
-        if (res == 0) {
-            DEBUG("dsm: no existing session found, storing as new session\n")
-            sock_dtls_session_get_udp_ep(session, &ep);
-            sock_dtls_session_set_udp_ep(&session_slot->session, &ep);
-            session_slot->sock = sock;
-            _available_slots--;
-        }
-
-        /* existing session found and session should be restored */
-        if (res == 1 && restore) {
-            DEBUG("dsm: existing session found, restoring\n")
-            memcpy(session, &session_slot->session, sizeof(sock_dtls_session_t));
-        }
-        session_slot->last_used_sec = (uint32_t)(xtimer_now_usec64() / US_PER_SEC);
-    } else {
-        DEBUG("dsm: no space for session to store\n")
+    if (res < 0) {
+        DEBUG("dsm: no space for session to store\n");
+        goto out;
     }
 
+    prev_state = session_slot->state;
+    if (session_slot->state != SESSION_STATE_ESTABLISHED) {
+        session_slot->state = new_state;
+    }
+
+    /* no existing session found */
+    if (res == 0) {
+        DEBUG("dsm: no existing session found, storing as new session\n")
+        sock_dtls_session_get_udp_ep(session, &ep);
+        sock_dtls_session_set_udp_ep(&session_slot->session, &ep);
+        session_slot->sock = sock;
+        _available_slots--;
+    }
+
+    /* existing session found and session should be restored */
+    if (res == 1 && restore) {
+        DEBUG("dsm: existing session found, restoring\n")
+        memcpy(session, &session_slot->session, sizeof(sock_dtls_session_t));
+    }
+    session_slot->last_used_sec = (uint32_t)(xtimer_now_usec64() / US_PER_SEC);
+
+out:
     mutex_unlock(&_lock);
     return prev_state;
 }
@@ -108,7 +110,7 @@ uint8_t dsm_get_num_maximum_slots(void)
     return DTLS_PEER_MAX;
 }
 
-ssize_t dsm_get_oldest_used_session(sock_dtls_t *sock, sock_dtls_session_t *session)
+ssize_t dsm_get_least_recently_used_session(sock_dtls_t *sock, sock_dtls_session_t *session)
 {
     int res = -1;
     dsm_session_t *session_slot = NULL;
@@ -119,13 +121,16 @@ ssize_t dsm_get_oldest_used_session(sock_dtls_t *sock, sock_dtls_session_t *sess
 
     mutex_lock(&_lock);
     for (uint8_t i=0; i < DTLS_PEER_MAX; i++) {
-        if (_sessions[i].state == SESSION_STATE_ESTABLISHED
-                && _sessions[i].sock == sock) {
-            if (session_slot == NULL
-                || session_slot->last_used_sec > _sessions[i].last_used_sec)
-            {
-                session_slot = &_sessions[i];
-            }
+        if (_sessions[i].state != SESSION_STATE_ESTABLISHED) {
+            continue;
+        }
+        if (_sessions[i].sock != sock) {
+            continue;
+        }
+
+        if (session_slot == NULL ||
+            session_slot->last_used_sec > _sessions[i].last_used_sec) {
+            session_slot = &_sessions[i];
         }
     }
 

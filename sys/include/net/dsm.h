@@ -105,7 +105,7 @@ uint8_t dsm_get_num_maximum_slots(void);
 uint8_t dsm_get_num_available_slots(void);
 
 /**
- * @brief   Returns the oldest used session
+ * @brief   Returns the least recently used session
  *
  * @param[in]   sock        @ref sock_dtls_t, which the session is created on
  * @param[out]  session     Oldest used session
@@ -113,7 +113,7 @@ uint8_t dsm_get_num_available_slots(void);
  * @return   1, on success
  * @return   -1, when no session is stored
  */
-ssize_t dsm_get_oldest_used_session(sock_dtls_t *sock, sock_dtls_session_t *session);
+ssize_t dsm_get_least_recently_used_session(sock_dtls_t *sock, sock_dtls_session_t *session);
 
 #ifdef __cplusplus
 }
