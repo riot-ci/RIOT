@@ -154,7 +154,6 @@ static int _find_session(sock_dtls_t *sock, sock_dtls_session_t *to_find,
     sock_udp_ep_t to_find_ep, curr_ep;
     dsm_session_t *empty_session = NULL;
 
-
     sock_dtls_session_get_udp_ep(to_find, &to_find_ep);
     for (uint8_t i=0; i < DTLS_PEER_MAX; i++) {
         sock_dtls_session_get_udp_ep(&_sessions[i].session, &curr_ep);
