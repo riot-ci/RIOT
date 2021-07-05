@@ -1,0 +1,21 @@
+# Copyright (c) 2021 Freie Universitaet Berlin
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+menuconfig KCONFIG_USEMODULE_CPU_FAM_STM32WL_DEBUG
+    bool "STM2WL Debugging"
+    depends on CPU_MODEL_STM32WL55JC
+
+if KCONFIG_USEMODULE_CPU_FAM_STM32WL_DEBUG
+
+config STM32_WL55JC_SUBGHZ_DEBUG
+     bool "Enable Hardware Debug Pins"
+     help
+        Enable Hardware debug pins. This would affect onboard peripherals such as SPI
+        as the pins are multiplexed. For more information check Alternate Functions
+        column in Table 19. STM32WL55/54xx pin definition of STM32WL55/54xx
+        datasheet.
+
+endif # KCONFIG_USEMODULE_CPU_FAM_STM32WL_DEBUG

@@ -26,19 +26,4 @@ config BOARD_NUCLEO_WL55JC
     select HAS_ARDUINO
     select HAS_RIOTBOOT
 
-menuconfig KCONFIG_USEMODULE_NUCLEO_WL55JC
-    bool "Configure NUCLEO_WL55JC"
-    depends on BOARD_NUCLEO_WL55JC
-    help
-        Configure Nucleo WL55JC board using Kconfig.
-
-if KCONFIG_USEMODULE_NUCLEO_WL55JC
-
-config WL55JC_SUBGHZ_DEBUG
-    bool "Enable Hardware Debug Pins"
-    help
-        Enable this to enable HW debug pins. Refer board.c for more info.
-
-endif # KCONFIG_USEMODULE_NUCLEO_WL55JC
-
 source "$(RIOTBOARD)/common/nucleo64/Kconfig"

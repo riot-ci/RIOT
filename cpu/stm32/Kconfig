@@ -45,3 +45,7 @@ rsource "vectors/Kconfig"
 endif # TEST_KCONFIG
 
 source "$(RIOTCPU)/cortexm_common/Kconfig"
+
+menu "STM32WL"
+rsource "include/periph/wl/Kconfig"
+endmenu # STM32WL
