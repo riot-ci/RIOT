@@ -43,6 +43,7 @@ extern "C" {
                         + IS_USED(MODULE_SX1262) \
                         + IS_USED(MODULE_SX1268) \
                         + IS_USED(MODULE_LLCC68) \
+                        + IS_USED(MODULE_SX126X_STM32WL) \
                         ) == 1)
 
 /**
@@ -53,6 +54,7 @@ typedef enum {
     SX126X_TYPE_SX1262,
     SX126X_TYPE_SX1268,
     SX126X_TYPE_LLCC68,
+    SX126X_TYPE_STM32WL,
 } sx126x_type_t;
 
 /**
