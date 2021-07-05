@@ -22,12 +22,12 @@
 
 static uint32_t demux = GNRC_NETREG_DEMUX_CTX_ALL;
 static gnrc_nettype_t ntype = GNRC_NETTYPE_TCP;
+static gnrc_tcp_tcb_queue_t queue = GNRC_TCP_TCB_QUEUE_INIT;
+static gnrc_tcp_tcb_t tcbs[TCB_QUEUE_SIZE];
 
 static void *tcploop(void *arg)
 {
     mutex_t *tcpmtx = arg;
-    gnrc_tcp_tcb_queue_t queue = GNRC_TCP_TCB_QUEUE_INIT;
-    gnrc_tcp_tcb_t tcbs[TCB_QUEUE_SIZE];
     gnrc_tcp_ep_t ep;
 
     if (gnrc_tcp_ep_from_str(&ep, "[" SERVER_ADDR "]")) {
