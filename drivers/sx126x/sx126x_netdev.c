@@ -39,6 +39,19 @@
 #define SX126X_MAX_SF       LORA_SF12
 #endif
 
+#if IS_USED(MODULE_SX126X_STM32WL)
+static netdev_t *_dev;
+
+void isr_subghz_radio(void)
+{
+    /* Disable NVIC to avoid ISR conflict in CPU. */
+    NVIC_DisableIRQ(SUBGHZ_Radio_IRQn);
+    NVIC_ClearPendingIRQ(SUBGHZ_Radio_IRQn);
+    netdev_trigger_event_isr(_dev);
+    cortexm_isr_end();
+}
+#endif
+
 static int _send(netdev_t *netdev, const iolist_t *iolist)
 {
     sx126x_t *dev = (sx126x_t *)netdev;
@@ -51,22 +64,23 @@ static int _send(netdev_t *netdev, const iolist_t *iolist)
         return -ENOTSUP;
     }
 
-    uint8_t size = iolist_size(iolist);
-
-    /* Ignore send if packet size is 0 */
-    if (!size) {
-        return 0;
-    }
-
-    DEBUG("[sx126x] netdev: sending packet now (size: %d).\n", size);
+    size_t pos = 0;
     /* Write payload buffer */
     for (const iolist_t *iol = iolist; iol; iol = iol->iol_next) {
         if (iol->iol_len > 0) {
-            sx126x_set_lora_payload_length(dev, iol->iol_len);
-            sx126x_write_buffer(dev, 0, iol->iol_base, iol->iol_len);
+            sx126x_write_buffer(dev, pos, iol->iol_base, iol->iol_len);
             DEBUG("[sx126x] netdev: send: wrote data to payload buffer.\n");
+            pos += iol->iol_len;
         }
     }
+
+    /* Ignore send if packet size is 0 */
+    if (!pos) {
+        return 0;
+    }
+
+    DEBUG("[sx126x] netdev: sending packet now (size: %d).\n", pos);
+    sx126x_set_lora_payload_length(dev, pos);
 
     state = NETOPT_STATE_TX;
     netdev->driver->set(netdev, NETOPT_STATE, &state, sizeof(uint8_t));
@@ -107,13 +121,15 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
 
     sx126x_read_buffer(dev, rx_buffer_status.buffer_start_pointer, buf, size);
 
-    return 0;
+    return size;
 }
 
 static int _init(netdev_t *netdev)
 {
     sx126x_t *dev = (sx126x_t *)netdev;
-
+#if IS_USED(MODULE_SX126X_STM32WL)
+    _dev = netdev;
+#endif
     /* Launch initialization of driver and device */
     DEBUG("[sx126x] netdev: initializing driver...\n");
     if (sx126x_init(dev) != 0) {
@@ -132,6 +148,9 @@ static void _isr(netdev_t *netdev)
     sx126x_irq_mask_t irq_mask;
 
     sx126x_get_and_clear_irq_status(dev, &irq_mask);
+#if IS_USED(MODULE_SX126X_STM32WL)
+    NVIC_EnableIRQ(SUBGHZ_Radio_IRQn);
+#endif
 
     if (irq_mask & SX126X_IRQ_TX_DONE) {
         DEBUG("[sx126x] netdev: SX126X_IRQ_TX_DONE\n");
@@ -288,6 +307,12 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
     case NETOPT_STATE_IDLE:
     case NETOPT_STATE_RX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_RX state\n");
+#if IS_USED(MODULE_SX126X_STM32WL)
+        /* Refer Section 4.2 RF Switch in Application Note (AN5406) */
+        if (dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_RX);
+        }
+#endif
         sx126x_cfg_rx_boosted(dev, true);
         if (dev->rx_timeout != 0) {
             sx126x_set_rx(dev, dev->rx_timeout);
@@ -299,6 +324,11 @@ static int _set_state(sx126x_t *dev, netopt_state_t state)
 
     case NETOPT_STATE_TX:
         DEBUG("[sx126x] netdev: set NETOPT_STATE_TX state\n");
+#if IS_USED(MODULE_SX126X_STM32WL)
+        if (dev->params->set_rf_mode) {
+            dev->params->set_rf_mode(dev, SX126X_RF_MODE_TX_LPA);
+        }
+#endif
         sx126x_set_tx(dev, 0);
         break;
 

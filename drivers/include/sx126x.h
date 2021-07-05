@@ -33,6 +33,20 @@ extern "C" {
 #endif
 
 /**
+ * @note Forward declaration of the SX126x device descriptor
+ */
+typedef struct sx126x sx126x_t;
+
+/**
+ * @brief RF switch states
+ */
+typedef enum {
+    SX126X_RF_MODE_RX,
+    SX126X_RF_MODE_TX_LPA,
+    SX126X_RF_MODE_TX_HPA,
+} sx126x_rf_mode_t;
+
+/**
  * @brief   Device initialization parameters
  */
 typedef struct {
@@ -42,19 +56,24 @@ typedef struct {
     gpio_t busy_pin;                    /**< Busy pin */
     gpio_t dio1_pin;                    /**< Dio1 pin */
     sx126x_reg_mod_t regulator;         /**< Power regulator mode */
+    /**
+     * @ brief  Interface to set RF switch parameters
+     */
+    void(*set_rf_mode)(sx126x_t *dev, sx126x_rf_mode_t rf_mode);
 } sx126x_params_t;
 
 /**
  * @brief   Device descriptor for the driver
  */
-typedef struct {
+struct sx126x {
     netdev_t netdev;                        /**< Netdev parent struct */
     sx126x_params_t *params;                /**< Initialization parameters */
     sx126x_pkt_params_lora_t pkt_params;    /**< Lora packet parameters */
     sx126x_mod_params_lora_t mod_params;    /**< Lora modulation parameters */
     uint32_t channel;                       /**< Current channel frequency (in Hz) */
     uint32_t rx_timeout;                    /**< RX timeout in ms */
-} sx126x_t;
+    bool radio_sleep;                       /**< Radio sleep status */
+};
 
 /**
  * @brief   Setup the radio device
@@ -91,6 +110,30 @@ uint32_t sx126x_get_channel(const sx126x_t *dev);
  * @param[in] freq                     Channel RF frequency
  */
 void sx126x_set_channel(sx126x_t *dev, uint32_t freq);
+
+/**
+ * @brief   Check if onboard SUBGHZ Radio is being used
+ *
+ * @param[in] dev                      Device descriptor of the driver
+ *
+ * @return True, if onboard SUBGHZ Radio is being used
+ */
+static inline bool IS_SUBGHZ(sx126x_t *dev)
+{
+    (void) dev;
+    if (IS_USED(MODULE_SX126X_STM32WL) && (!IS_USED(MODULE_SX126X_SPI))){
+        return true;
+    }
+    else if ((!IS_USED(MODULE_SX126X_STM32WL)) && IS_USED(MODULE_SX126X_SPI)){
+        return false;
+    }
+#if (IS_USED(MODULE_SX126X_STM32WL) && IS_USED(MODULE_SX126X_SPI))
+    else if (IS_USED(MODULE_SX126X_STM32WL) && IS_USED(MODULE_SX126X_SPI)) {
+        return (dev->params->subghz_enable == 1);
+    }
+#endif
+    return false;
+}
 
 /**
  * @brief   Gets the LoRa bandwidth
