@@ -18,7 +18,7 @@ config MBEDTLS_SELF_TEST
 config MBEDTLS_ENTROPY_C
     bool "Enable the platform-specific entropy code."
     default y
-    depends on MBEDTLS_SHA256_C || MBEDTLS_SHA512_C
+    depends on MBEDTLS_SHA256_C # || MBEDTLS_SHA512_C
     help
         This module provides a generic entropy pool.
 
