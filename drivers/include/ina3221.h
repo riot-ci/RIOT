@@ -874,7 +874,7 @@ int ina3221_get_latch(const ina3221_t *dev, bool *warn, bool *crit);
  *
  * @param[in]       dev     Device handle
  * @param[in]       ch      Channel flags @ref ina3221_channel_t
- * @param[in]       in_uv   Critical shunt voltage limit in uv
+ * @param[in]       in_uv   Critical shunt voltage limit in uV
  *
  * @return      Flags of which channel´s limits could be updated
  */
@@ -948,7 +948,7 @@ int ina3221_get_shunt_voltage_sum_alert_limit(const ina3221_t *dev,
  * @brief Set bus voltage power valid upper limit to @p in_mv
  *
  * @param[in]       dev     Device handle
- * @param[in]       in_mv   Bus voltage power valid upper limit in mv
+ * @param[in]       in_mv   Bus voltage power valid upper limit in mV
  *
  * @return      0, on success
  * @return      -ERANGE, if @p in_mv was not in [INA3221_MIN_BUS_MV; INA3221_MAX_BUS_MV]
@@ -1050,14 +1050,14 @@ ina3221_ch_t ina3221_read_bus_mv(const ina3221_t *dev,
  * @brief Calculate current for each channel in @p ch
  *
  * @param[in]       ch      Flags of which values in @p in_mohm and @p in_uv are valid
- * @param[in]       in_mohm Array of input shunt resistors
- * @param[in]       in_uv   Array of input shunt voltage values
- * @param[out]      out_ma  Array of output current values
+ * @param[in]       in_mohm Array of input shunt resistors in mOhm
+ * @param[in]       in_uv   Array of input shunt voltage values in uV
+ * @param[out]      out_ua  Array of output current values in uA
  */
 void ina3221_calculate_current_ua(ina3221_ch_t ch,
                                   const uint16_t in_mohm[INA3221_NUM_CH],
                                   const int32_t in_uv[INA3221_NUM_CH],
-                                  int32_t out_ma[INA3221_NUM_CH]);
+                                  int32_t out_ua[INA3221_NUM_CH]);
 
 /**
  * @brief Calculate power from bus voltage and current values
