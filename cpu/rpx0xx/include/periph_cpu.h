@@ -293,13 +293,13 @@ typedef enum {
  */
 typedef struct {
     uint32_t function_select        : 5;    /**< select GPIO function */
-    uint32_t                        : 3;
-    uint32_t output_overide         : 2;    /**< output value override */
-    uint32_t                        : 2;
-    uint32_t output_enable_overide  : 2;    /**< output enable override */
-    uint32_t                        : 2;
+    uint32_t                        : 3;    /**< 3 bits reserved for future use */
+    uint32_t output_override        : 2;    /**< output value override */
+    uint32_t                        : 2;    /**< 2 bits reserved for future use */
+    uint32_t output_enable_override : 2;    /**< output enable override */
+    uint32_t                        : 2;    /**< 2 bits reserved for future use */
     uint32_t input_override         : 2;    /**< input value override */
-    uint32_t                        : 10;
+    uint32_t                        : 10;   /**< 10 bits reserved for future use */
     uint32_t irq_override           : 2;    /**< interrupt inversion override */
     uint32_t                        : 2;
 } gpio_io_ctrl_t;
