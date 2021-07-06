@@ -117,7 +117,7 @@ make BOARD=rpi-pico debug
 
 ***Beware:*** The `rpi-pico` virtual debugger is not persistent and needs to be "flashed" into RAM
 again after each cold boot. The initialization code of RIOT now seems to play well with the
-debugger, so it remains persistent on soft reboots. If you face issues with loosing connection to
+debugger, so it remains persistent on soft reboots. If you face issues with losing connection to
 the debugger on reboot, try `monitor reset init` in GDB to soft-reboot instead.
 
 ## Known Issues / Problems
