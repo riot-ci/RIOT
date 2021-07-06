@@ -251,7 +251,7 @@ enum {
 };
 
 /**
- * @brief   Possible function values for @ref gpio_io_ctrl_t::irqw_override
+ * @brief   Possible function values for @ref gpio_io_ctrl_t::irq_override
  */
 enum {
     IRQ_OVERRIDE_NORMAL,            /**< don't mess with IRQ signal */
