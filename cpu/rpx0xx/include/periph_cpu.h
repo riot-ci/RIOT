@@ -555,12 +555,13 @@ void pll_reset_usb(void);
  * @{
  */
 /**
- * @brief   Configues the Crstal to run.
- *          Should be configured to 12 MHz which is the default as
- *          described in the hardware manual.
- *          The minimum is 1 MHz and the maximum is 15 MHz.
+ * @brief   Configures the Crystal to run.
  *
- * @param   f_ref       Desired frequency
+ * @param   f_ref       Desired frequency in Hz
+ *
+ * @pre     1 MHz <= @p f_ref <= 15 MHz.
+ *
+ * The reference hardware manual suggests to use a 12 MHz crystal.
  */
 void xosc_start(uint32_t f_ref);
 
@@ -578,9 +579,9 @@ void xosc_stop(void);
 
 /**
  * @brief   Start the ring oscillator in default mode.
- *          The ROSC is running at boot time but may be turned off
- *          to save power when switching to the accurate XOSC.
- *          The default ROSC provides an instable frequency of 1.8 MHz to 12 MHz.
+ *
+ * The ROSC is running at boot time but may be turned off to save power when switching to the
+ * accurate XOSC. The default ROSC provides an instable frequency of 1.8 MHz to 12 MHz.
  */
 void rosc_start(void);
 
