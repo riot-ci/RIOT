@@ -182,8 +182,6 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
     }
 }
 
-
-
 void isr_handler(uint8_t num)
 {
     UART0_Type *dev = uart_config[num].dev;
