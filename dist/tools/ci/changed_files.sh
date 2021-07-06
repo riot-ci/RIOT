@@ -8,7 +8,7 @@
 
 changed_files() {
     : ${FILEREGEX:='\.([CcHh]|[ch]pp)$'}
-    : ${EXCLUDE:='^(.+/vendor/|dist/tools/coccinelle/include|dist/tools/fixdep/fixdep.c|dist/tools/lpc2k_pgm/src)'}
+    : ${EXCLUDE:='^(.+/vendor/|dist/tools/coccinelle/include|dist/tools/fixdep/fixdep.c|dist/tools/lpc2k_pgm/src|pkg/mbedtls/include/riot_config.h)'}
     : ${DIFFFILTER:='ACMR'}
 
     DIFFFILTER="--diff-filter=${DIFFFILTER}"
