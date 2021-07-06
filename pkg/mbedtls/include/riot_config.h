@@ -32,10 +32,12 @@
 #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 
+#include "kernel_defines.h"
+
 /**
  * @def MBEDTLS_SHA256_ALT
  *
- * MBEDTLS__MODULE_NAME__ALT: Uncomment a macro to let mbed TLS use your
+ * MBEDTLS__MODULE_NAME__ALT: Enable a macro to let mbed TLS use your
  * alternate core implementation of a symmetric crypto, an arithmetic or hash
  * module (e.g. platform specific assembly optimized implementations). Keep
  * in mind that the function prototypes should remain the same.
@@ -43,12 +45,12 @@
  * This replaces the whole module. If you only want to replace one of the
  * functions, use one of the MBEDTLS__FUNCTION_NAME__ALT flags.
  *
- * Example: In case you uncomment MBEDTLS_SHA256_ALT, mbed TLS will no longer
- * provide the "struct mbedtls_aes_context" definition and omit the base
- * function declarations and implementations. "aes_alt.h" will be included from
- * "aes.h" to include the new function definitions.
+ * Example: In case you enable MBEDTLS_SHA256_ALT, mbed TLS will no longer
+ * provide the "struct mbedtls_sha256_context" definition and omit the base
+ * function declarations and implementations. "sha256_alt.h" will be included from
+ * "sha256.h" to include the new function definitions.
  *
- * Uncomment a macro to enable alternate implementation of the corresponding
+ * Enable a macro to enable alternate implementation of the corresponding
  * module.
  *
  * @warning   MD2, MD4, MD5, ARC4, DES and SHA-1 are considered weak and their
@@ -57,20 +59,24 @@
  *            digests and ciphers instead.
  *
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_SHA256_ALT)
 #define MBEDTLS_SHA256_ALT 1
+#endif
 
 /**
  * @def MBEDTLS_ENTROPY_HARDWARE_ALT
  *
- * Uncomment this macro to let mbed TLS use your own implementation of a
+ * Enable this macro to let mbed TLS use your own implementation of a
  * hardware entropy collector.
  *
- * Your function must be called \c mbedtls_hardware_poll(), have the same
+ * Your function must be called mbedtls_hardware_poll(), have the same
  * prototype as declared in entropy_poll.h, and accept NULL as first argument.
  *
- * Uncomment to use your own hardware entropy collector.
+ * Enable to use your own hardware entropy collector.
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_HARDWARE_ALT)
 #define MBEDTLS_ENTROPY_HARDWARE_ALT 1
+#endif
 
 /**
  * @def MBEDTLS_NO_PLATFORM_ENTROPY
@@ -79,9 +85,11 @@
  * This is useful if your platform does not support
  * standards like the /dev/urandom or Windows CryptoAPI.
  *
- * Uncomment this macro to disable the built-in platform entropy functions.
+ * Enable this macro to disable the built-in platform entropy functions.
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY)
 #define MBEDTLS_NO_PLATFORM_ENTROPY 1
+#endif
 
 /**
  * @def MBEDTLS_ENTROPY_FORCE_SHA256
@@ -97,14 +105,18 @@
  * This option is only useful if both MBEDTLS_SHA256_C and
  * MBEDTLS_SHA512_C are defined. Otherwise the available hash module is used.
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256)
 #define MBEDTLS_ENTROPY_FORCE_SHA256 1
+#endif
 
 /**
  * @def MBEDTLS_SELF_TEST
  *
  * Enable the checkup functions (*_self_test).
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_SELF_TEST)
 #define MBEDTLS_SELF_TEST 1
+#endif
 
 /**
  * @def MBEDTLS_ENTROPY_C
@@ -118,7 +130,9 @@
  *
  * This module provides a generic entropy pool
  */
-#define MBEDTLS_ENTROPY_C
+#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_C)
+#define MBEDTLS_ENTROPY_C 1
+#endif
 
 /**
  * @def MBEDTLS_SHA256_C
@@ -135,19 +149,8 @@
  * This module adds support for SHA-224 and SHA-256.
  * This module is required for the SSL/TLS 1.2 PRF function.
  */
+#if IS_ACTIVE(CONFIG_MBEDTLS_SHA256_C)
 #define MBEDTLS_SHA256_C 1
-
-/* Target and application specific configurations
- *
- * Allow user to override any previous default.
- *
- */
-#if defined(MBEDTLS_USER_CONFIG_FILE)
-#include MBEDTLS_USER_CONFIG_FILE
-#endif
-
-#if defined(MBEDTLS_PSA_CRYPTO_CONFIG)
-#include "mbedtls/config_psa.h"
 #endif
 
 #include "mbedtls/check_config.h"
