@@ -74,16 +74,16 @@ static bool _bootdelay(unsigned tries, volatile bool *boot_default)
     return *boot_default;
 }
 
-__attribute__ ((aligned (4)))
+__attribute__ ((aligned(4)))
 static struct {
-    uint8_t pos;            /* current pos in rx buffer */
-    uint8_t remaining;      /* remaining bytes to read  */
+    uint8_t pos;                /* current pos in rx buffer */
+    uint8_t remaining;          /* remaining bytes to read  */
     union {
         uint8_t u8[RX_BUF_LEN]; /* rx buffer */
         struct {
-            uint8_t type;   /* command type */
-            uint8_t len;    /* length of data (without checksum) */
-            uint8_t data[]; /* data is aligned at word boundary  */
+            uint8_t type;       /* command type */
+            uint8_t len;        /* length of data (without checksum) */
+            uint8_t data[];     /* data is aligned at word boundary  */
         } val;
     } rx;
 } ctx;
@@ -143,7 +143,7 @@ static void _uart_rx_cmd(void *arg, uint8_t data)
             goto error;
         }
 
-        /* fall-through */
+    /* fall-through */
     default:
 
         /* end of data block not reached */
@@ -151,13 +151,13 @@ static void _uart_rx_cmd(void *arg, uint8_t data)
             break;
         }
 
-        /* fall-through */
+    /* fall-through */
     case (RX_BUF_LEN - 1):
 
         /* calculate checksum */
         crc = crc8(ctx.rx.u8, ctx.pos, RIOTBOOT_CRC8_POLY, 0xFF);
 
-    error:
+error:
         ctx.remaining = 0;
         ctx.pos = 0;
 
@@ -181,8 +181,8 @@ static void _uart_rx_cmd(void *arg, uint8_t data)
 static void _get_page(uintptr_t addr)
 {
     uart_write_byte(RIOTBOOT_UART_DEV, RIOTBOOT_STAT_OK);
-    uint32_t page = flashpage_page((void*)addr);
-    uart_write(RIOTBOOT_UART_DEV, (void*)&page, sizeof(page));
+    uint32_t page = flashpage_page((void *)addr);
+    uart_write(RIOTBOOT_UART_DEV, (void *)&page, sizeof(page));
 }
 
 static void _erase(uint16_t sector)
@@ -206,7 +206,7 @@ static void _write(uint32_t addr, uint8_t len, const uint8_t *data)
         return;
     }
 
-    flashpage_write((void*)addr, data, len);
+    flashpage_write((void *)addr, data, len);
 
     uart_write_byte(RIOTBOOT_UART_DEV, RIOTBOOT_STAT_OK);
 }
@@ -216,7 +216,7 @@ int riotboot_serial_loader(void)
     volatile bool reading = true;
 
     uart_init(RIOTBOOT_UART_DEV, RIOTBOOT_UART_BAUDRATE,
-              _uart_rx_cmd, (void*)&reading);
+              _uart_rx_cmd, (void *)&reading);
 
     /* give the user some time to interrupt auto boot */
     if (_bootdelay(RIOTBOOT_DELAY, &reading)) {
