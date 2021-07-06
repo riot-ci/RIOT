@@ -229,6 +229,12 @@ extern "C" {
      RESETS_RESET_busctrl_Msk       |   \
      RESETS_RESET_adc_Msk)
 
+/**
+ * @brief   Convert (port, pin) tuple to a @ref gpio_t value
+ *
+ * @note    The RPX0XX MCU family only has a single GPIO port. Still the API requires a
+ *          port parameter, which is currently ignored.
+ */
 #define GPIO_PIN(port, pin)     (pin)
 
 /**
