@@ -100,7 +100,7 @@ void clock_ref_configure_source(uint32_t f_in, uint32_t f_out, CLOCKS_CLK_REF_CT
     /* apply divider */
     CLOCKS->CLK_REF_DIV.reg = div & CLOCKS_CLK_REF_DIV_INT_Msk;
     /* poll SELECTED until the switch is completed */
-    while(!(CLOCKS->CLK_REF_SELECTED & (1U << source))) { }
+    while (!(CLOCKS->CLK_REF_SELECTED & (1U << source))) { }
 }
 
 void clock_ref_configure_aux_source(uint32_t f_in, uint32_t f_out,

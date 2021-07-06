@@ -252,7 +252,8 @@ typedef struct {
     uint32_t pull_up_enable         : 1;    /**< enable pull up resistor */
     uint32_t drive_strength         : 2;    /**< GPIO driver strength */
     uint32_t input_enable           : 1;    /**< enable as input */
-    uint32_t output_disable         : 1;    /**< disable output, overwrite output enable from peripherals */
+    uint32_t output_disable         : 1;    /**< disable output, overwrite output enable from
+                                             *   peripherals */
     uint32_t                        : 24;   /**< 24 bits reserved for future use */
 } gpio_pad_ctrl_t;
 
@@ -562,7 +563,7 @@ void clock_gpout3_configure(uint32_t f_in, uint32_t f_out, CLOCKS_CLK_GPOUT3_CTR
 
 /**
  * @brief   Start the PLL for the system clock
- *          output[MHz] = @p f_ref / @p ref_div * @p vco_feedback_scale / @p post_div_1 / @p post_div_2
+ *          output[MHz] = f_ref / @p ref_div * @p vco_feedback_scale / @p post_div_1 / @p post_div_2
  *
  * @note    Usual setting should be (12 MHz, 1, 125, 6, 2) to get a 125 MHz system clock signal
  *
@@ -577,7 +578,7 @@ void pll_start_sys(uint8_t ref_div,
 
 /**
  * @brief   Start the PLL for the system clock
- *          output[MHz] = @p f_ref / @p ref_div * @p vco_feedback_scale / @p post_div_1 / @p post_div_2
+ *          output[MHz] = f_ref / @p ref_div * @p vco_feedback_scale / @p post_div_1 / @p post_div_2
  *
  * @note    Usual setting should be (12 MHz, 1, 40, 5, 2) to get a 48 MHz USB clock signal
  *
