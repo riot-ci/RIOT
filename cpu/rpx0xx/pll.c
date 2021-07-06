@@ -26,34 +26,22 @@
 #include "vendor/RP2040.h"
 #include "io_reg.h"
 
-#define RP2040_REF_CLOCK_MIN        (MHZ(5U))
-#define RP2040_REF_CLOCK_MAX        (MHZ(15U))
-#define RP2040_REF_CLOCK_DIV_MIN    (1U)
-#define RP2040_REF_CLOCK_DIV_MAX    (63U)
-#define RP2040_VCO_FEEDBACK_DIV_MIN (16U)
-#define RP2040_VCO_FEEDBACK_DIV_MAX (320U)
-#define RP2040_POST_DIV_MIN         (1U)
-#define RP2040_POST_DIV_MAX         (7U)
-
 /**
  * @brief   Start the PLL for the system clock (@p pll = PLL_SYS) or
  *          the USB clock (@p pll = PLL_USB)
  */
-static void _pll_start(PLL_SYS_Type *pll,
-                       uint32_t f_ref, uint8_t ref_div,
+static void _pll_start(PLL_SYS_Type *pll, uint8_t ref_div,
                        uint16_t vco_feedback_scale,
                        uint8_t post_div_1, uint8_t post_div_2)
 {
-    assert(RP2040_REF_CLOCK_MIN <= f_ref);
-    assert(f_ref <= RP2040_REF_CLOCK_MAX);
-    assert(RP2040_REF_CLOCK_DIV_MIN <= ref_div);
-    assert(ref_div <= RP2040_REF_CLOCK_DIV_MAX);
-    assert(RP2040_VCO_FEEDBACK_DIV_MIN <= vco_feedback_scale);
-    assert(vco_feedback_scale <= RP2040_VCO_FEEDBACK_DIV_MAX);
-    assert(RP2040_POST_DIV_MIN <= post_div_1);
-    assert(post_div_1 <= RP2040_POST_DIV_MAX);
-    assert(RP2040_POST_DIV_MIN <= post_div_2);
-    assert(post_div_2 <= RP2040_POST_DIV_MAX);
+    assert(PLL_REF_DIV_MIN <= ref_div);
+    assert(ref_div <= PLL_REF_DIV_MAX);
+    assert(PLL_VCO_FEEDBACK_SCALE_MIN <= vco_feedback_scale);
+    assert(vco_feedback_scale <= PLL_VCO_FEEDBACK_SCALE_MAX);
+    assert(PLL_POSTDIV_MIN <= post_div_1);
+    assert(post_div_1 <= PLL_POSTDIV_MAX);
+    assert(PLL_POSTDIV_MIN <= post_div_2);
+    assert(post_div_2 <= PLL_POSTDIV_MAX);
 
     /* program reference clock divider */
     io_reg_write_dont_corrupt(&pll->CS.reg, ref_div << PLL_SYS_CS_REFDIV_Pos,
@@ -88,18 +76,18 @@ static void _pll_stop(PLL_SYS_Type *pll)
     io_reg_atomic_set(&pll->PWR.reg, reg);
 }
 
-void pll_start_sys(uint32_t f_ref, uint8_t ref_div,
+void pll_start_sys(uint8_t ref_div,
                    uint16_t vco_feedback_scale,
                    uint8_t post_div_1, uint8_t post_div_2)
 {
-    _pll_start(PLL_SYS, f_ref, ref_div, vco_feedback_scale, post_div_1, post_div_2);
+    _pll_start(PLL_SYS, ref_div, vco_feedback_scale, post_div_1, post_div_2);
 }
 
-void pll_start_usb(uint32_t f_ref, uint8_t ref_div,
+void pll_start_usb(uint8_t ref_div,
                    uint16_t vco_feedback_scale,
                    uint8_t post_div_1, uint8_t post_div_2)
 {
-    _pll_start(PLL_USB, f_ref, ref_div, vco_feedback_scale, post_div_1, post_div_2);
+    _pll_start(PLL_USB, ref_div, vco_feedback_scale, post_div_1, post_div_2);
 }
 
 void pll_stop_sys(void)

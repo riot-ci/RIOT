@@ -63,8 +63,7 @@ static void _cpu_reset(void)
     /* reset system PLL */
     pll_reset_sys();
     /* start the system PLL (typically takes the 12 MHz XOSC to generate 125 MHz) */
-    pll_start_sys(CLOCK_XOSC, PLL_REF_DIV, PLL_SYS_VCO_FEEDBACK_SCALE, PLL_SYS_POSTDIV1,
-                  PLL_SYS_POSTDIV2);
+    pll_start_sys(PLL_SYS_REF_DIV, PLL_SYS_VCO_FEEDBACK_SCALE, PLL_SYS_POSTDIV1, PLL_SYS_POSTDIV2);
     /* configure reference clock to run from XOSC (typically 12 MHz) */
     clock_ref_configure_source(CLOCK_XOSC, CLOCK_XOSC,
                                CLOCKS_CLK_REF_CTRL_SRC_xosc_clksrc);
