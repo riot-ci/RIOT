@@ -157,6 +157,7 @@ static void _gpio_init_ain(void)
  */
 void _wl55jc_init_subghz_debug_pins(void)
 {
++#if IS_ACTIVE(CONFIG_STM32_WL55JC_SUBGHZ_DEBUG)
     /* SUBGHZSPI Debug */
     gpio_init(CPU_STM32WL_SUBGHZSPI_DEBUG_MOSIOUT, GPIO_OUT);
     gpio_init_af(CPU_STM32WL_SUBGHZSPI_DEBUG_MOSIOUT,
