@@ -195,6 +195,7 @@ void _wl55jc_init_subghz_debug_pins(void)
     gpio_init(CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY, GPIO_OUT);
     gpio_init_af(CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY,
                  CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY_AF);
++#endif
 }
 
 void cpu_init(void)
