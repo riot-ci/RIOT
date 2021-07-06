@@ -28,17 +28,7 @@ SUBMODS := $(filter-out $(IGNORE),$(filter nimble_%,$(USEMODULE)))
 
 .PHONY: all
 
-ifneq (,$(filter mynewt-core,$(USEPKG)))
-all: nimble_namespace_syscfg
-endif
-
 all: $(SUBMODS)
-
-# copy the syscfg file under a different directory to avoid header inclusion
-# path conflicts
-nimble_namespace_syscfg:
-	$(QQ) mkdir -p $(PDIR)/porting/npl/riot/include/npl_syscfg
-	$(QQ) cp -f $(PDIR)/porting/npl/riot/include/syscfg/syscfg.h $(PDIR)/porting/npl/riot/include/npl_syscfg/npl_sycfg.h
 
 # glue code and RIOT port modules
 nimble_riot_contrib:
