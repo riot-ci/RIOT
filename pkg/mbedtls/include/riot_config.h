@@ -132,7 +132,7 @@
  * This is useful if your platform does not support
  * standards like the /dev/urandom or Windows CryptoAPI.
  *
- * Enable this macro to disable the built-in platform entropy functions.
+ * Disable the built-in platform entropy functions.
  */
 #ifndef CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY
 #define CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY 1

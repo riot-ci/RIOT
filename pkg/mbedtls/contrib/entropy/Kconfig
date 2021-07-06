@@ -21,7 +21,7 @@ config MBEDTLS_ENTROPY_HARDWARE_ALT
         first argument.
 
 config MBEDTLS_NO_PLATFORM_ENTROPY
-    bool "Enable this macro to disable the built-in platform entropy functions"
+    bool "Disable the built-in platform entropy functions"
     default y if !CPU_NATIVE
     help
         Do not use built-in platform entropy functions.
