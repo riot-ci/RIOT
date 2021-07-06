@@ -24,8 +24,8 @@
  * @author          Fabian Hüßler <fabian.huessler@ovgu.de>
  */
 
-#ifndef CPU_REG_ATOMIC_H
-#define CPU_REG_ATOMIC_H
+#ifndef IO_REG_H
+#define IO_REG_H
 
 #include <stdint.h>
 
@@ -134,5 +134,5 @@ static inline void io_reg_write_dont_corrupt(volatile uint32_t *reg, uint32_t va
 }
 #endif
 
-#endif /* CPU_REG_ATOMIC_H */
+#endif /* IO_REG_H */
 /** @} */
