@@ -56,7 +56,7 @@ static inline void uart_write_byte(uart_t uart, uint8_t data)
 /* send 'hello' byte until we get enter bootloader byte or timeout */
 static bool _bootdelay(unsigned tries, volatile bool *boot_default)
 {
-    uint32_t *magic = (void*)(uintptr_t)RIOTBOOT_MAGIC_ADDR;
+    uint32_t *magic = (void *)(uintptr_t)RIOTBOOT_MAGIC_ADDR;
 
     if (*magic == RIOTBOOT_MAGIC) {
         *magic = 0;

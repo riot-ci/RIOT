@@ -24,7 +24,7 @@
 __attribute__((weak))
 void usb_board_reset_in_bootloader(void)
 {
-    uint32_t *magic = (void*)(uintptr_t)RIOTBOOT_MAGIC_ADDR;
+    uint32_t *magic = (void *)(uintptr_t)RIOTBOOT_MAGIC_ADDR;
 
     irq_disable();
     *magic = RIOTBOOT_MAGIC;
