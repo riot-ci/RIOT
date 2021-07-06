@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       mynewt-core ) time abstraction
+ * @brief       mynewt-core time abstraction
  *
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}

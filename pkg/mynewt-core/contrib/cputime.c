@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       cputime implementation for non nrf5%*BOARDs
+ * @brief       cputime implementation for non nrf5x BOARDs
  *
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}
@@ -53,7 +53,10 @@ int os_cputime_timer_start(struct hal_timer *timer, uint32_t cputime)
 {
     uint32_t now = ztimer_now(ZTIMER_MSEC_BASE);
 
-    if (now > cputime) {
+    /* taken from mynewt-core 'hal_timer' implementations, this will
+       only work with timeouts at most 2**32-1 away, so it will have the same
+       limitations as their implementation does */
+    if ((int32_t)(cputime - now) <= 0) {
         ztimer_set(ZTIMER_MSEC_BASE, &timer->timer, 0);
     }
     else {
@@ -64,7 +67,7 @@ int os_cputime_timer_start(struct hal_timer *timer, uint32_t cputime)
 
 int os_cputime_timer_relative(struct hal_timer *timer, uint32_t usecs)
 {
-    ztimer_set(ZTIMER_MSEC_BASE, &timer->timer, usecs);
+    ztimer_set(ZTIMER_MSEC_BASE, &timer->timer, os_cputime_usecs_to_ticks(usecs));
     return 0;
 }
 

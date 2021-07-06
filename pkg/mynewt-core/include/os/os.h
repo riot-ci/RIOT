@@ -31,7 +31,7 @@
  * @{
  *
  * @file
- * @brief       mynewt-core ) error types
+ * @brief       mynewt-core error types
  *
  * @}
  */

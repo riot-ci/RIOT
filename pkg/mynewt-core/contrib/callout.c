@@ -11,7 +11,7 @@
  * @{
  *
  * @file
- * @brief       mynewt-core ) callout
+ * @brief       mynewt-core callout
  *
  * @author      Francisco Molina <francois-xavier.molina@inria.fr>
  * @}
