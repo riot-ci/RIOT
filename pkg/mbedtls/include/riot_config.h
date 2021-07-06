@@ -1,5 +1,7 @@
 /**
  * @ingroup pkg_mbedtls
+ *
+ * @{
  * @file
  *
  * @brief Configuration options (set of defines)
@@ -35,9 +37,8 @@
 #include "kernel_defines.h"
 
 /**
- * @def MBEDTLS_SHA256_ALT
  *
- * MBEDTLS__MODULE_NAME__ALT: Enable a macro to let mbed TLS use your
+ * @brief MBEDTLS__MODULE_NAME__ALT: Enable a macro to let mbed TLS use your
  * alternate core implementation of a symmetric crypto, an arithmetic or hash
  * module (e.g. platform specific assembly optimized implementations). Keep
  * in mind that the function prototypes should remain the same.
@@ -64,9 +65,8 @@
 #endif
 
 /**
- * @def MBEDTLS_ENTROPY_HARDWARE_ALT
  *
- * Enable this macro to let mbed TLS use your own implementation of a
+ * @brief Enable this macro to let mbed TLS use your own implementation of a
  * hardware entropy collector.
  *
  * Your function must be called mbedtls_hardware_poll(), have the same
@@ -79,9 +79,8 @@
 #endif
 
 /**
- * @def MBEDTLS_NO_PLATFORM_ENTROPY
  *
- * Do not use built-in platform entropy functions.
+ * @brief Do not use built-in platform entropy functions.
  * This is useful if your platform does not support
  * standards like the /dev/urandom or Windows CryptoAPI.
  *
@@ -92,9 +91,8 @@
 #endif
 
 /**
- * @def MBEDTLS_ENTROPY_FORCE_SHA256
  *
- * Force the entropy accumulator to use a SHA-256 accumulator instead of the
+ * @brief Force the entropy accumulator to use a SHA-256 accumulator instead of the
  * default SHA-512 based one (if both are available).
  *
  * Requires: MBEDTLS_SHA256_C
@@ -110,18 +108,16 @@
 #endif
 
 /**
- * @def MBEDTLS_SELF_TEST
  *
- * Enable the checkup functions (*_self_test).
+ * @brief Enable the checkup functions (*_self_test).
  */
 #if IS_ACTIVE(CONFIG_MBEDTLS_SELF_TEST)
 #define MBEDTLS_SELF_TEST 1
 #endif
 
 /**
- * @def MBEDTLS_ENTROPY_C
  *
- * Enable the platform-specific entropy code.
+ * @brief Enable the platform-specific entropy code.
  *
  * Module:  mbedtls/library/entropy.c
  * Caller:
@@ -135,9 +131,8 @@
 #endif
 
 /**
- * @def MBEDTLS_SHA256_C
  *
- * Enable the SHA-224 and SHA-256 cryptographic hash algorithms.
+ * @brief Enable the SHA-224 and SHA-256 cryptographic hash algorithms.
  *
  * Module:  mbedtls/library/sha256.c
  * Caller:  mbedtls/library/entropy.c
@@ -156,3 +151,4 @@
 #include "mbedtls/check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */
+/** @} */
