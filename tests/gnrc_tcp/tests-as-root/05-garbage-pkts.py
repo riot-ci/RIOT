@@ -39,7 +39,7 @@ def testfunc(func):
                      r'argv\[1\] = \[::\]:(\d+)\r\n')
         assert int(child.match.group(1)) == port
 
-        child.sendline('gnrc_tcp_accept 2000')
+        child.sendline('gnrc_tcp_accept 4000')
 
         try:
             print("- {} ".format(func.__name__), end="")
