@@ -31,7 +31,10 @@ extern "C" {
  * @{
  */
 #define SX126X_PARAM_SPI                    (SPI_DEV(0))
+
+#if IS_USED(MODULE_SX126X_RF_SWITCH)
 #define SX126X_PARAM_SET_RF_MODE_CB         nucleo_wl55jc_sx126x_set_rf_mode
+#endif
 /** @} */
 
 /**
