@@ -1,4 +1,5 @@
 /**
+ * @defgroup pkg_mbedtls_config Mbed TLS package compile configurations
  * @ingroup pkg_mbedtls
  *
  * @{
@@ -36,6 +37,49 @@
 
 #include "kernel_defines.h"
 
+#if !IS_ACTIVE(CONFIG_KCONFIG_USEMODULE_MBEDTLS) || defined(DOXYGEN)
+
+/**
+ *
+ * @brief Enable the checkup functions (*_self_test).
+ */
+#ifndef CONFIG_MBEDTLS_SELF_TEST
+#define CONFIG_MBEDTLS_SELF_TEST 1
+#endif
+
+/**
+ *
+ * @brief Enable the platform-specific entropy code.
+ *
+ * Module:  mbedtls/library/entropy.c
+ * Caller:
+ *
+ * Requires: MBEDTLS_SHA512_C or MBEDTLS_SHA256_C
+ *
+ * This module provides a generic entropy pool
+ */
+#ifndef CONFIG_MBEDTLS_ENTROPY_C
+#define CONFIG_MBEDTLS_ENTROPY_C 1
+#endif
+
+/**
+ *
+ * @brief Enable the SHA-224 and SHA-256 cryptographic hash algorithms.
+ *
+ * Module:  mbedtls/library/sha256.c
+ * Caller:  mbedtls/library/entropy.c
+ *          mbedtls/library/md.c
+ *          mbedtls/library/ssl_cli.c
+ *          mbedtls/library/ssl_srv.c
+ *          mbedtls/library/ssl_tls.c
+ *
+ * This module adds support for SHA-224 and SHA-256.
+ * This module is required for the SSL/TLS 1.2 PRF function.
+ */
+#ifndef CONFIG_MBEDTLS_SHA256_C
+#define CONFIG_MBEDTLS_SHA256_C 1
+#endif
+
 /**
  *
  * @brief MBEDTLS__MODULE_NAME__ALT: Enable a macro to let mbed TLS use your
@@ -60,9 +104,13 @@
  *            digests and ciphers instead.
  *
  */
-#if IS_ACTIVE(CONFIG_MBEDTLS_SHA256_ALT) || defined(DOXYGEN)
-#define MBEDTLS_SHA256_ALT 1
+#ifndef CONFIG_MBEDTLS_SHA256_ALT
+#define CONFIG_MBEDTLS_SHA256_ALT 1
 #endif
+
+#endif /* !CONFIG_KCONFIG_USEMODULE_MBEDTLS || DOXYGEN */
+
+#if !IS_ACTIVE(CONFIG_KCONFIG_USEMODULE_MBEDTLS_ENTROPY) || defined(DOXYGEN)
 
 /**
  *
@@ -74,8 +122,8 @@
  *
  * Enable to use your own hardware entropy collector.
  */
-#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_HARDWARE_ALT) || defined(DOXYGEN)
-#define MBEDTLS_ENTROPY_HARDWARE_ALT 1
+#ifndef CONFIG_MBEDTLS_ENTROPY_HARDWARE_ALT
+#define CONFIG_MBEDTLS_ENTROPY_HARDWARE_ALT 1
 #endif
 
 /**
@@ -86,8 +134,8 @@
  *
  * Enable this macro to disable the built-in platform entropy functions.
  */
-#if IS_ACTIVE(CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY) || defined(DOXYGEN)
-#define MBEDTLS_NO_PLATFORM_ENTROPY 1
+#ifndef CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY
+#define CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY 1
 #endif
 
 /**
@@ -103,50 +151,39 @@
  * This option is only useful if both MBEDTLS_SHA256_C and
  * MBEDTLS_SHA512_C are defined. Otherwise the available hash module is used.
  */
-#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256) || defined(DOXYGEN)
+#ifndef CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256
+#define CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256 1
+#endif
+
+#endif /* !CONFIG_KCONFIG_USEMODULE_MBEDTLS_ENTROPY || DOXYGEN */
+
+/**
+ * @cond
+ * This translates RIOT exposed options to Mbed TLS macros, it is hidden from Doxygen.
+ */
+#if CONFIG_MBEDTLS_SHA256_ALT
+#define MBEDTLS_SHA256_ALT 1
+#endif
+#if CONFIG_MBEDTLS_ENTROPY_HARDWARE_ALT
+#define MBEDTLS_ENTROPY_HARDWARE_ALT 1
+#endif
+#if CONFIG_MBEDTLS_NO_PLATFORM_ENTROPY
+#define MBEDTLS_NO_PLATFORM_ENTROPY 1
+#endif
+#if CONFIG_MBEDTLS_ENTROPY_FORCE_SHA256
 #define MBEDTLS_ENTROPY_FORCE_SHA256 1
 #endif
-
-/**
- *
- * @brief Enable the checkup functions (*_self_test).
- */
-#if IS_ACTIVE(CONFIG_MBEDTLS_SELF_TEST) || defined(DOXYGEN)
+#if CONFIG_MBEDTLS_SELF_TEST
 #define MBEDTLS_SELF_TEST 1
 #endif
-
-/**
- *
- * @brief Enable the platform-specific entropy code.
- *
- * Module:  mbedtls/library/entropy.c
- * Caller:
- *
- * Requires: MBEDTLS_SHA512_C or MBEDTLS_SHA256_C
- *
- * This module provides a generic entropy pool
- */
-#if IS_ACTIVE(CONFIG_MBEDTLS_ENTROPY_C) || defined(DOXYGEN)
+#if CONFIG_MBEDTLS_ENTROPY_C
 #define MBEDTLS_ENTROPY_C 1
 #endif
-
-/**
- *
- * @brief Enable the SHA-224 and SHA-256 cryptographic hash algorithms.
- *
- * Module:  mbedtls/library/sha256.c
- * Caller:  mbedtls/library/entropy.c
- *          mbedtls/library/md.c
- *          mbedtls/library/ssl_cli.c
- *          mbedtls/library/ssl_srv.c
- *          mbedtls/library/ssl_tls.c
- *
- * This module adds support for SHA-224 and SHA-256.
- * This module is required for the SSL/TLS 1.2 PRF function.
- */
-#if IS_ACTIVE(CONFIG_MBEDTLS_SHA256_C) || defined(DOXYGEN)
+#if CONFIG_MBEDTLS_SHA256_C
 #define MBEDTLS_SHA256_C 1
 #endif
+/** @endcond */
+
 
 #include "mbedtls/check_config.h"
 
