@@ -171,7 +171,7 @@ extern "C" {
 #define GPIO_PIN(port, pin)     (pin)
 
 /**
- * @brief   Possible drive strength values for @ref gpio_pad_ctrl_t::driver_strength
+ * @brief   Possible drive strength values for @ref gpio_pad_ctrl_t::drive_strength
  */
 enum {
     DRIVE_STRENGTH_2MA,         /**< set driver strength to 2 mA */
@@ -192,7 +192,7 @@ typedef struct {
     uint32_t drive_strength         : 2;    /**< GPIO driver strength */
     uint32_t input_enable           : 1;    /**< enable as input */
     uint32_t output_disable         : 1;    /**< disable output, overwrite output enable from peripherals */
-    uint32_t                        : 24;
+    uint32_t                        : 24;   /**< 24 bits reserved for future use */
 } gpio_pad_ctrl_t;
 
 /**
@@ -301,7 +301,7 @@ typedef struct {
     uint32_t input_override         : 2;    /**< input value override */
     uint32_t                        : 10;   /**< 10 bits reserved for future use */
     uint32_t irq_override           : 2;    /**< interrupt inversion override */
-    uint32_t                        : 2;
+    uint32_t                        : 2;    /**< 2 bits reserved for future use */
 } gpio_io_ctrl_t;
 
 /**
