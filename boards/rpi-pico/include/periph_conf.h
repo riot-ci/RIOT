@@ -27,10 +27,6 @@
 extern "C" {
 #endif
 
-#ifdef __cplusplus
-}
-#endif
-
 static const uart_conf_t uart_config[] = {
     {
         .dev = UART0,
@@ -50,6 +46,10 @@ static const uart_conf_t uart_config[] = {
 #define UART_1_ISR      (isr_uart1)
 
 #define UART_NUMOF      ARRAY_SIZE(uart_config)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PERIPH_CONF_H */
 /** @} */
