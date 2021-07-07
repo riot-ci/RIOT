@@ -155,7 +155,7 @@ void _net_init(void)
     netdev_test_set_recv_cb(&netdev, _netdev_recv);
     netdev_test_set_isr_cb(&netdev, _netdev_isr);
     /* netdev needs to be set-up */
-    expect(netdev.netdev.driver);
+    expect(netdev.netdev.netdev.driver);
 #if LWIP_IPV4
     ip4_addr_t local4, mask4, gw4;
     local4.addr = _TEST_ADDR4_LOCAL;
