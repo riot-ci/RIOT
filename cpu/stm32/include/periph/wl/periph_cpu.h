@@ -104,7 +104,7 @@ extern "C" {
  */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY    GPIO_PIN(PORT_A, 10)
 /*!
- * RF HSE32RDY debug pin alternate function 
+ * RF HSE32RDY debug pin alternate function
  */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY_AF GPIO_AF13
 /** @} */
