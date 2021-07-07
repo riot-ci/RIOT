@@ -85,6 +85,14 @@ static const uart_conf_t uart_config[] = {
 static const spi_conf_t spi_config[] = {
     {
         .dev      = SUBGHZSPI, /* Internally connected to Sub-GHz radio Modem  */
+        .mosi_pin = GPIO_UNDEF,
+        .miso_pin = GPIO_UNDEF,
+        .sclk_pin = GPIO_UNDEF,
+        .cs_pin   = GPIO_UNDEF,
+        .mosi_af  = GPIO_AF0, /* Dummy value */
+        .miso_af  = GPIO_AF0, /* Dummy value */
+        .sclk_af  = GPIO_AF0, /* Dummy value */
+        .cs_af    = GPIO_AF0, /* Dummy value */
         .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
         .apbbus   = APB3,
     }
