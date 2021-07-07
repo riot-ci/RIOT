@@ -134,7 +134,7 @@ static void sx126x_init_default_config(sx126x_t *dev)
     sx126x_set_lora_pkt_params(dev, &dev->pkt_params);
 }
 
-#if defined(SX126X_SPI)
+#if IS_ACTIVE(SX126X_SPI)
 static void _dio1_isr(void *arg)
 {
     netdev_trigger_event_isr((netdev_t *)arg);
@@ -154,7 +154,7 @@ int sx126x_init(sx126x_t *dev)
 
     DEBUG("[sx126x] init: SPI_%i initialized with success\n", dev->params->spi);
 
-#if defined(SX126X_SPI)
+#if IS_ACTIVE(SX126X_SPI)
     gpio_init(dev->params->reset_pin, GPIO_OUT);
     gpio_init(dev->params->busy_pin, GPIO_IN_PD);
 
