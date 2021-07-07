@@ -8,6 +8,7 @@
 config CPU_FAM_RPX0XX
     bool
     select CPU_CORE_CORTEX_M0PLUS
+    select HAS_CPU_RPX0XX
     select HAS_PERIPH_GPIO
     select HAS_PERIPH_GPIO_IRQ
 
@@ -23,5 +24,10 @@ config CPU_MODEL
 
 config CPU
     default "rpx0xx" if CPU_FAM_RPX0XX
+
+config HAS_CPU_RPX0XX
+    bool
+    help
+        Indicates that a RPX0XX CPU (e.g. the RP2040) is used
 
 source "$(RIOTCPU)/cortexm_common/Kconfig"
