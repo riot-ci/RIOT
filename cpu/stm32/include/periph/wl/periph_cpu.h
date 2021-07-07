@@ -63,29 +63,29 @@ extern "C" {
  * @ingroup         cpu_stm32_wl_debug
  * @{
  */
-/* RF BUSY debug pin definition */
+/*!< RF BUSY debug pin definition */
 #define CPU_STM32WL_SUBGHZ_RF_BUSY              GPIO_PIN(PORT_A, 12)
-/* RF BUSY debug pin alternate function */
+/*!< RF BUSY debug pin alternate function */
 #define CPU_STM32WL_SUBGHZ_RF_BUSY_AF           GPIO_AF6
 
-/* RF NRESET debug pin definition */
+/*!< RF NRESET debug pin definition */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_NRESET      GPIO_PIN(PORT_A, 11)
-/* RF NRESET debug pin alternate function */
+/*!< RF NRESET debug pin alternate function */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_NRESET_AF   GPIO_AF13
 
-/* RF SMPSRDY debug pin definition */
+/*!< RF SMPSRDY debug pin definition */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_SMPSRDY     GPIO_PIN(PORT_B, 2)
-/* RF SMPSRDY debug pin alternate function */
+/*!< RF SMPSRDY debug pin alternate function */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_SMPSRDY_AF  GPIO_AF13
 
-/* RF LDORDY debug pin definition */
+/*!< RF LDORDY debug pin definition */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_LDORDY      GPIO_PIN(PORT_B, 4)
-/* RF LDORDY debug pin alternate function */
+/*!< RF LDORDY debug pin alternate function */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_LDORDY_AF   GPIO_AF13
 
-/* RF HSE32RDY debug pin definition */
+/*!< RF HSE32RDY debug pin definition */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY    GPIO_PIN(PORT_A, 10)
-/* RF HSE32RDY debug pin alternate function */
+/*!< RF HSE32RDY debug pin alternate function */
 #define CPU_STM32WL_SUBGHZ_DEBUG_RF_HSE32RDY_AF GPIO_AF13
 /** @} */
 
