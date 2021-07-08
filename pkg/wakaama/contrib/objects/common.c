@@ -40,8 +40,11 @@ typedef struct {
  * @param[out] out               Pointer where to store the data.
  * @param[in]  out_len           Length of @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
+ * @retval -ENOTSUP when the resource expected type is not known
  */
 static int _get_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
                               lwm2m_data_type_t expected_type, void *out, size_t out_len)
@@ -58,19 +61,24 @@ static int _get_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_
     lwm2m_object_t *object = lwm2m_get_object_by_id(client_data, uri->objectId);
     if (!object || !object->readFunc) {
         DEBUG("[lwm2m:get_data] could not find object with ID %d\n", uri->objectId);
-        result = -1;
+        result = -ENOENT;
         goto out;
     }
 
     /* prepare a new data structure */
     data = lwm2m_data_new(1);
+    if (!data) {
+        DEBUG("[lwm2m:get_data] could not allocate data structure\n");
+        result = -ENOMEM;
+        goto out;
+    }
     data->id = uri->resourceId;
 
     /* read the resource from the specified instance */
     uint8_t res = object->readFunc(uri->instanceId, &data_num, &data, object);
     if (res != COAP_205_CONTENT || data->type != expected_type) {
-        result = -1;
-        goto free_out;
+        result = -EINVAL;
+        goto out;
     }
 
     /* process the data according to the type */
@@ -99,7 +107,7 @@ static int _get_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_
     case LWM2M_TYPE_OPAQUE:
         if (data->value.asBuffer.length > out_len) {
             DEBUG("[lwm2m:get_data] not enough space in buffer\n");
-            result = -1;
+            result = -ENOMEM;
         }
         else {
             memcpy(out, data->value.asBuffer.buffer, data->value.asBuffer.length);
@@ -108,18 +116,19 @@ static int _get_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_
 
     default:
         DEBUG("[lwm2m:get_data] not supported type\n");
-        result = -1;
+        result = -ENOTSUP;
         break;
     }
 
-free_out:
-    lwm2m_data_free(1, data);
 out:
+    if (data) {
+        lwm2m_data_free(1, data);
+    }
     return result;
 }
 
 /**
- * @brief Get the value of a string-type resource, specified by a path @p path.
+ * @brief Get the value of a resource, specified by a path @p path.
  *
  * Convenience function to call @ref _get_resource_data with a string representing the resource's
  * path.
@@ -131,8 +140,10 @@ out:
  * @param[out] out               Pointer where to store the data.
  * @param[in]  out_len           Length of @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
  */
 static int _get_resource_data_by_path(lwm2m_client_data_t *client_data, const char *path,
                                       size_t path_len, lwm2m_data_type_t expected_type, void *out,
@@ -143,12 +154,27 @@ static int _get_resource_data_by_path(lwm2m_client_data_t *client_data, const ch
     lwm2m_uri_t uri;
     if (!lwm2m_stringToUri(path, path_len, &uri)) {
         DEBUG("[lwm2m:get_resource] malformed path\n");
-        return -1;
+        return -EINVAL;
     }
 
     return _get_resource_data(client_data, &uri, expected_type, out, out_len);
 }
 
+/**
+ * @brief Set data of a given type to an object's instance.
+ *
+ * @param[in] client_data       Pointer to the LwM2M client data.
+ * @param[in] uri               Initialized URI structure specifying the resource to set.
+ * @param[in] type              Type of data of the specified resource.
+ * @param[in] in                Pointer to the data to set.
+ * @param[in] in_len            Length of @p in.
+ *
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOTSUP when the resource type is not known
+ * @retval -EINVAL when the value can not be set
+ */
 static int _set_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
                               lwm2m_data_type_t type, void *in, size_t in_len)
 {
@@ -163,12 +189,17 @@ static int _set_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_
     lwm2m_object_t *object = lwm2m_get_object_by_id(client_data, uri->objectId);
     if (!object || !object->writeFunc) {
         DEBUG("[lwm2m:get_data] could not find object with ID %d\n", uri->objectId);
-        result = -1;
+        result = -ENOENT;
         goto out;
     }
 
     /* prepare a new data structure */
     data = lwm2m_data_new(1);
+    if (!data) {
+        DEBUG("[lwm2m:set_data] could not allocate data structure\n");
+        result = -ENOMEM;
+        goto out;
+    }
     data->id = uri->resourceId;
     data->type = type;
 
@@ -202,25 +233,26 @@ static int _set_resource_data(lwm2m_client_data_t *client_data, const lwm2m_uri_
 
     default:
         DEBUG("[lwm2m:get_data] not supported type\n");
-        result = -1;
-        goto free_out;
+        result = -ENOTSUP;
+        goto out;
         break;
     }
 
     /* write the resource of the specified instance */
     uint8_t res = object->writeFunc(uri->instanceId, 1, data, object);
     if (res != COAP_204_CHANGED) {
-        result = -1;
+        result = -EINVAL;
     }
 
-free_out:
-    /* NOTE: lwm2m_data_free will try to free strings and opaques if set, assuming they were
-       allocated, so empty the pointer first */
-    if (type == LWM2M_TYPE_STRING || type == LWM2M_TYPE_OPAQUE) {
-        data->value.asBuffer.buffer = NULL;
-    }
-    lwm2m_data_free(1, data);
 out:
+    if (data) {
+        /* NOTE: lwm2m_data_free will try to free strings and opaques if set, assuming they were
+        allocated, so empty the pointer first */
+        if (type == LWM2M_TYPE_STRING || type == LWM2M_TYPE_OPAQUE) {
+            data->value.asBuffer.buffer = NULL;
+        }
+        lwm2m_data_free(1, data);
+    }
     return result;
 }
 
@@ -237,8 +269,11 @@ out:
  * @param[in]  in               Pointer where to store the data.
  * @param[in]  in_len           Length of @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOTSUP when the resource type is not known
+ * @retval -ENOMEM when data structure can not be allocated
  */
 static int _set_resource_data_by_path(lwm2m_client_data_t *client_data, const char *path,
                                       size_t path_len, lwm2m_data_type_t type, void *in,
@@ -249,7 +284,7 @@ static int _set_resource_data_by_path(lwm2m_client_data_t *client_data, const ch
     lwm2m_uri_t uri;
     if (!lwm2m_stringToUri(path, path_len, &uri)) {
         DEBUG("[lwm2m:set_resource] malformed path\n");
-        return -1;
+        return -EINVAL;
     }
 
     return _set_resource_data(client_data, &uri, type, in, in_len);

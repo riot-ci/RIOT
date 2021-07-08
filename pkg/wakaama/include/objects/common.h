@@ -53,8 +53,10 @@ static inline lwm2m_object_t *lwm2m_get_object_by_id(lwm2m_client_data_t *client
  * @param[out] out               Buffer to place the resource in. Must not be NULL.
  * @param[in]  out_len           Available space in @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_string(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, char *out,
                      size_t out_len);
@@ -73,8 +75,10 @@ int lwm2m_get_string(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, c
  * @param[out] out               Buffer to place the resource in. Must not be NULL.
  * @param[in]  out_len           Available space in @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_string_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                              char *out, size_t out_len);
@@ -89,8 +93,10 @@ int lwm2m_get_string_by_path(lwm2m_client_data_t *client_data, const char *path,
  * @param[out] out               Buffer to place the resource in. Must not be NULL.
  * @param[in]  out_len           Available space in @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_opaque(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, uint8_t *out,
                      size_t out_len);
@@ -109,8 +115,10 @@ int lwm2m_get_opaque(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, u
  * @param[out] out               Buffer to place the resource in. Must not be NULL.
  * @param[in]  out_len           Available space in @p out.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_opaque_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                              uint8_t *out, size_t out_len);
@@ -124,8 +132,10 @@ int lwm2m_get_opaque_by_path(lwm2m_client_data_t *client_data, const char *path,
  * @param[in]  uri               Initialized URI structure specifying the resource to get.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_int(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, int64_t *out);
 
@@ -142,8 +152,10 @@ int lwm2m_get_int(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, int6
  * @param[in]  path_len          Length of @p path.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_int_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                           int64_t *out);
@@ -157,8 +169,10 @@ int lwm2m_get_int_by_path(lwm2m_client_data_t *client_data, const char *path, si
  * @param[in]  uri               Initialized URI structure specifying the resource to get.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_float(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, double *out);
 
@@ -175,8 +189,10 @@ int lwm2m_get_float(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, do
  * @param[in]  path_len          Length of @p path.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_float_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                             double *out);
@@ -190,8 +206,10 @@ int lwm2m_get_float_by_path(lwm2m_client_data_t *client_data, const char *path, 
  * @param[in]  uri               Initialized URI structure specifying the resource to get.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_bool(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, bool *out);
 
@@ -208,8 +226,10 @@ int lwm2m_get_bool(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, boo
  * @param[in]  path_len          Length of @p path.
  * @param[out] out               Pointer where to place the value.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_bool_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                            bool *out);
@@ -225,8 +245,10 @@ int lwm2m_get_bool_by_path(lwm2m_client_data_t *client_data, const char *path, s
  * @param[out] object_id_out     Pointer where to place the object ID.
  * @param[out] instance_id_out   Pointer where to place the instance ID.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_objlink(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
                       uint16_t *object_id_out, uint16_t *instance_id_out);
@@ -246,8 +268,10 @@ int lwm2m_get_objlink(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
  * @param[out] object_id_out     Pointer where to place the object ID.
  * @param[out] instance_id_out   Pointer where to place the instance ID.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when there is not enough space in buffer or can not allocate a data structure
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL if the path is malformed, the resource cannot be read or has an unexpected type
  */
 int lwm2m_get_objlink_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                               uint16_t *object_id_out, uint16_t *instance_id_out);
@@ -262,8 +286,10 @@ int lwm2m_get_objlink_by_path(lwm2m_client_data_t *client_data, const char *path
  * @param[in]  val               Buffer with the value to set. Must not be NULL.
  * @param[in]  val_len           Length of @p val.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_string(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, char *val,
                      size_t val_len);
@@ -282,8 +308,10 @@ int lwm2m_set_string(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, c
  * @param[in]  val               Buffer with the value to set. Must not be NULL.
  * @param[in]  val_len           Length of @p val.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_string_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                              char *val, size_t val_len);
@@ -298,8 +326,10 @@ int lwm2m_set_string_by_path(lwm2m_client_data_t *client_data, const char *path,
  * @param[in]  val               Buffer with the value to set. Must not be NULL.
  * @param[in]  val_len           Length of @p val.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_opaque(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, uint8_t *val,
                      size_t val_len);
@@ -318,8 +348,10 @@ int lwm2m_set_opaque(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, u
  * @param[in]  val               Buffer with the value to set. Must not be NULL.
  * @param[in]  val_len           Length of @p val.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_opaque_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                              uint8_t *val, size_t val_len);
@@ -333,8 +365,10 @@ int lwm2m_set_opaque_by_path(lwm2m_client_data_t *client_data, const char *path,
  * @param[in]  uri               Initialized URI structure specifying the resource to set.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_int(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, int64_t val);
 
@@ -351,8 +385,10 @@ int lwm2m_set_int(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, int6
  * @param[in]  path_len          Length of @p path.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_int_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                           int64_t val);
@@ -366,8 +402,10 @@ int lwm2m_set_int_by_path(lwm2m_client_data_t *client_data, const char *path, si
  * @param[in]  uri               Initialized URI structure specifying the resource to set.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_float(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, double val);
 
@@ -384,8 +422,10 @@ int lwm2m_set_float(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, do
  * @param[in]  path_len          Length of @p path.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_float_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                             double val);
@@ -399,8 +439,10 @@ int lwm2m_set_float_by_path(lwm2m_client_data_t *client_data, const char *path, 
  * @param[in]  uri               Initialized URI structure specifying the resource to set.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_bool(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, bool val);
 
@@ -417,8 +459,10 @@ int lwm2m_set_bool(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri, boo
  * @param[in]  path_len          Length of @p path.
  * @param[in]  val               Value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_bool_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                            bool val);
@@ -433,8 +477,10 @@ int lwm2m_set_bool_by_path(lwm2m_client_data_t *client_data, const char *path, s
  * @param[in]  object_id_in      Object ID value to set.
  * @param[in]  instance_id_in    Instance ID value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -ENOMEM when data structure can not be allocated
+ * @retval -ENOENT when the resource is not found
+ * @retval -EINVAL when the value can not be set
  */
 int lwm2m_set_objlink(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
                       uint16_t object_id_in, uint16_t instance_id_in);
@@ -453,8 +499,10 @@ int lwm2m_set_objlink(lwm2m_client_data_t *client_data, const lwm2m_uri_t *uri,
  * @param[in]  object_id_in      Object ID value to set.
  * @param[in]  instance_id_in    Instance ID value to set.
  *
- * @return 0 on success
- * @return <0 otherwise
+ * @retval 0 on success
+ * @retval -EINVAL when the path is malformed, the value can not be set
+ * @retval -ENOENT when the resource is not found
+ * @retval -ENOMEM when data structure can not be allocated
  */
 int lwm2m_set_objlink_by_path(lwm2m_client_data_t *client_data, const char *path, size_t path_len,
                               uint16_t object_id_in, uint16_t instance_id_in);
