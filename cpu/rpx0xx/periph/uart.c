@@ -36,7 +36,7 @@
 #include "assert.h"
 
 static uart_isr_ctx_t ctx[UART_NUMOF];
-static mutex_t tx_lock = MUTEX_INIT_LOCKED;
+static mutex_t tx_locks[UART_NUMOF];
 
 void _irq_enable(uart_t uart)
 {
@@ -151,6 +151,10 @@ int uart_init(uart_t uart, uint32_t baud, uart_rx_cb_t rx_cb, void *arg)
     UART0_Type *dev = uart_config[uart].dev;
     ctx[uart].rx_cb = rx_cb;
     ctx[uart].arg = arg;
+    {
+        static const mutex_t locked = MUTEX_INIT_LOCKED;
+        tx_locks[uart] = locked;
+    }
 
     uart_poweron(uart);
     _set_symbolrate(uart, baud);
@@ -178,7 +182,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 
     for (size_t i = 0; i < len; i++) {
         dev->UARTDR.reg = data[i];
-        mutex_lock(&tx_lock);
+        mutex_lock(&tx_locks[uart]);
     }
 }
 
@@ -190,7 +194,7 @@ void isr_handler(uint8_t num)
     dev->UARTICR.reg = status;
 
     if (status & UART0_UARTMIS_TXMIS_Msk) {
-        mutex_unlock(&tx_lock);
+        mutex_unlock(&tx_locks[num]);
     }
 
     if (status & UART0_UARTMIS_RXMIS_Msk) {
