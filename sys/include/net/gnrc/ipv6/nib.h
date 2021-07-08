@@ -396,6 +396,8 @@ void gnrc_ipv6_nib_change_rtr_adv_iface(gnrc_netif_t *netif, bool enable);
  * @brief   Changes the state if an interface advertises itself as a router
  *          with downstream networks on other interfaces
  *
+ *          Requires the `gnrc_ipv6_nib_rio` module to be active.
+ *
  * @param[in] netif     The interface for which the state should be changed.
  * @param[in] enable    `true`, to enable advertising the interface as a router
  *                      with additional downstream routes.
