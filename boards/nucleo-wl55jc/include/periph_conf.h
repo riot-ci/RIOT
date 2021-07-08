@@ -89,10 +89,10 @@ static const spi_conf_t spi_config[] = {
         .miso_pin = GPIO_UNDEF,
         .sclk_pin = GPIO_UNDEF,
         .cs_pin   = GPIO_UNDEF,
-        .mosi_af  = GPIO_AF0, /* Dummy value */
-        .miso_af  = GPIO_AF0, /* Dummy value */
-        .sclk_af  = GPIO_AF0, /* Dummy value */
-        .cs_af    = GPIO_AF0, /* Dummy value */
+        .mosi_af  = GPIO_AF_UNDEF,
+        .miso_af  = GPIO_AF_UNDEF,
+        .sclk_af  = GPIO_AF_UNDEF,
+        .cs_af    = GPIO_AF_UNDEF,
         .rccmask  = RCC_APB3ENR_SUBGHZSPIEN,
         .apbbus   = APB3,
     }
