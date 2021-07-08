@@ -65,7 +65,7 @@ typedef enum {
  */
 #if (IS_USED(MODULE_SX1261) || IS_USED(MODULE_SX1262) || \
      IS_USED(MODULE_SX1268) || IS_USED(MODULE_LLCC68))
-#define SX126X_SPI      (1U)
+#define SX126X_SPI    1
 #endif
 
 /**
