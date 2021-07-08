@@ -30,14 +30,14 @@ extern "C" {
 static const uart_conf_t uart_config[] = {
     {
         .dev = UART0,
-        .rx_pin = GPIO_PIN(0,1),
-        .tx_pin = GPIO_PIN(0,0),
+        .rx_pin = GPIO_PIN(0, 1),
+        .tx_pin = GPIO_PIN(0, 0),
         .irqn = UART0_IRQ_IRQn
     },
     {
         .dev = UART1,
-        .rx_pin = GPIO_PIN(0,9),
-        .tx_pin = GPIO_PIN(0,8),
+        .rx_pin = GPIO_PIN(0, 9),
+        .tx_pin = GPIO_PIN(0, 8),
         .irqn = UART1_IRQ_IRQn
     }
 };
