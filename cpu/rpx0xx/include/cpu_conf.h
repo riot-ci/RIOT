@@ -35,7 +35,7 @@ extern "C" {
  * @{
  */
 #define CPU_DEFAULT_IRQ_PRIO            (1U)
-#define CPU_FLASH_BASE                  (0x10000000)
+#define CPU_FLASH_BASE                  ROM_START_ADDR
 #define CPU_IRQ_NUMOF                   (32U)
 /** @} */
 
