@@ -189,7 +189,7 @@ void lwip_bootstrap(void)
 #elif defined(MODULE_MRF24J40)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
         mrf24j40_setup(&mrf24j40_devs[i], &mrf24j40_params[i], i);
-        if (netif_add_noaddr(&netif[i], &mrf24j40_devs[i].netdev, lwip_netdev_init,
+        if (netif_add_noaddr(&netif[i], &mrf24j40_devs[i].netdev.netdev, lwip_netdev_init,
                              tcpip_6lowpan_input) == NULL) {
             DEBUG("Could not add mrf24j40 device\n");
             return;
@@ -198,7 +198,7 @@ void lwip_bootstrap(void)
 #elif defined(MODULE_AT86RF2XX)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
         at86rf2xx_setup(&at86rf2xx_devs[i], &at86rf2xx_params[i], i);
-        if (netif_add_noaddr(&netif[i], &at86rf2xx_devs[i].netdev, lwip_netdev_init,
+        if (netif_add_noaddr(&netif[i], &at86rf2xx_devs[i].netdev.netdev, lwip_netdev_init,
                              tcpip_6lowpan_input) == NULL) {
             DEBUG("Could not add at86rf2xx device\n");
             return;
@@ -225,7 +225,7 @@ void lwip_bootstrap(void)
 #elif defined(MODULE_SOCKET_ZEP)
     for (unsigned i = 0; i < LWIP_NETIF_NUMOF; i++) {
         socket_zep_setup(&socket_zep_devs[i], &socket_zep_params[i], i);
-        if (netif_add_noaddr(&netif[i], &socket_zep_devs[i].netdev, lwip_netdev_init,
+        if (netif_add_noaddr(&netif[i], &socket_zep_devs[i].netdev.netdev, lwip_netdev_init,
                              tcpip_6lowpan_input) == NULL) {
             DEBUG("Could not add socket_zep device\n");
             return;
@@ -250,14 +250,14 @@ void lwip_bootstrap(void)
 #endif
 #elif defined(MODULE_SAM0_ETH)
     sam0_eth_setup(&sam0_eth);
-    if (netif_add_noaddr(&netif[0], &sam0_eth.netdev, lwip_netdev_init,
+    if (netif_add_noaddr(&netif[0], &sam0_eth, lwip_netdev_init,
                          tcpip_input) == NULL) {
         DEBUG("Could not add sam0_eth device\n");
         return;
     }
 #elif defined(MODULE_STM32_ETH)
     stm32_eth_netdev_setup(&stm32_eth);
-    if (netif_add_noaddr(&netif[0], &stm32_eth.netdev, lwip_netdev_init,
+    if (netif_add_noaddr(&netif[0], &stm32_eth, lwip_netdev_init,
                          tcpip_input) == NULL) {
         DEBUG("Could not add stm32_eth device\n");
         return;
