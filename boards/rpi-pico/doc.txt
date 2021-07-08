@@ -69,8 +69,11 @@ Currently (June 2021), only two methods for debugging via OpenOCD are supported:
 
 Since option 2 requires no additional hardware, this is currently the default. However, you need to
 first "flash" the gimme-cache variant of [pico-debug](https://github.com/majbthrd/pico-debug)
-into RAM using the UF2 bootloader. This will result in the Raspberry Pi Pico showing up as
-CMSIS-DAP debugger. Afterwards run:
+into RAM using the UF2 bootloader. For this, plug in the USB cable while holding down the BOOTSEL
+button of the Pico and copy the `pico-debug-gimmecache.uf2` from the
+[latest pico-debug release](https://github.com/majbthrd/pico-debug/releases) into the virtual FAT
+formatted drive the bootloader provides. Once this drive is unmounted again, this will result in
+the Raspberry Pi Pico showing up as CMSIS-DAP debugger. Afterwards run:
 
 ```
 make BOARD=rpi-pico flash
@@ -134,5 +137,6 @@ Currently no support for the following peripherals is implemented:
 - PIO
 - RTC
 - Watchdog
+- SMP support (multi CPU support is not implemented in RIOT)
 
  */
