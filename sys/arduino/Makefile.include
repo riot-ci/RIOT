@@ -19,6 +19,7 @@ endif
 
 # include the Arduino headers
 INCLUDES += -I$(RIOTBASE)/sys/arduino/include
+INCLUDES += -I$(RIOTBASE)/sys/arduino/vendor/include
 
 # Arduino provices C++11, which is not enabled by default in Ubuntu's avr-gcc
 # package, which is __horrible__ out of date. However, we cannot simply ignore
