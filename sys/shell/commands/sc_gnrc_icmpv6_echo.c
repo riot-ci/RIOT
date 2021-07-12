@@ -177,7 +177,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
         char *arg = argv[i];
         if (arg[0] != '-') {
             data->hostname = arg;
-            res = gnrc_netif_parse_hostname(arg, &data->host, &data->netif);
+            res = netif_parse_hostname(arg, &data->host, (netif_t **)&data->netif);
         }
         else {
             switch (arg[1]) {
