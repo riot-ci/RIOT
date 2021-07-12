@@ -42,6 +42,7 @@
 #endif
 #include "net/icmpv6.h"
 #include "net/ipv6.h"
+#include "net/utils.h"
 #include "timex.h"
 #include "unaligned.h"
 #include "utlist.h"
@@ -177,7 +178,7 @@ static int _configure(int argc, char **argv, _ping_data_t *data)
         char *arg = argv[i];
         if (arg[0] != '-') {
             data->hostname = arg;
-            res = netif_parse_hostname(arg, &data->host, (netif_t **)&data->netif);
+            res = netutil_parse_hostname(arg, &data->host, (netif_t **)&data->netif);
         }
         else {
             switch (arg[1]) {
