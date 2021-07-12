@@ -256,14 +256,14 @@ static ssize_t _riot_board_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, vo
 static bool _parse_endpoint(sock_udp_ep_t *remote,
                             const char *addr_str, const char *port_str)
 {
-    gnrc_netif_t *netif;
+    netif_t *netif;
 
     /* parse hostname */
-    if (gnrc_netif_parse_hostname(addr_str, (ipv6_addr_t *)&remote->addr, &netif) < 0) {
+    if (netif_parse_hostname(addr_str, (ipv6_addr_t *)&remote->addr, &netif) < 0) {
         puts("gcoap_cli: unable to parse destination address");
         return false;
     }
-    remote->netif = netif ? netif->pid : SOCK_ADDR_ANY_NETIF;
+    remote->netif = netif ? netif_get_id(netif) : SOCK_ADDR_ANY_NETIF;
     remote->family = AF_INET6;
 
     /* parse port */
