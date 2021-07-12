@@ -260,6 +260,7 @@ ifneq (,$(filter gnrc_icmpv6_echo,$(USEMODULE)))
   USEMODULE += gnrc_icmpv6
   USEMODULE += gnrc_ipv6_hdr
   USEMODULE += gnrc_netif_hdr
+  USEMODULE += netutils
 endif
 
 ifneq (,$(filter gnrc_icmpv6_error,$(USEMODULE)))
