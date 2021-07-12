@@ -28,6 +28,7 @@
 #include "net/gnrc/netif/hdr.h"
 #include "net/gnrc/udp.h"
 #include "net/gnrc/pktdump.h"
+#include "net/utils.h"
 #include "timex.h"
 #include "utlist.h"
 #if IS_USED(MODULE_ZTIMER_MSEC)
@@ -48,7 +49,7 @@ static void send(char *addr_str, char *port_str, char *data, unsigned int num,
     ipv6_addr_t addr;
 
     /* parse destination address */
-    if (netif_parse_hostname(addr_str, &addr, &netif) < 0) {
+    if (netutil_parse_hostname(addr_str, &addr, &netif) < 0) {
         puts("Error: unable to parse destination address");
         return;
     }
