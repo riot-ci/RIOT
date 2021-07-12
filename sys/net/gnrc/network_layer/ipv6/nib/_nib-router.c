@@ -189,16 +189,6 @@ static gnrc_pktsnip_t *_build_ext_opts(gnrc_netif_t *netif,
             if ((ext_opts = _offl_to_pio(pfx, ext_opts)) == NULL) {
                 return NULL;
             }
-        } else if ((netif->flags & GNRC_NETIF_FLAGS_IPV6_RTR_ADV_RIO) &&
-                   (pfx->flags & _PFX_ON_LINK)) {
-            DEBUG("nib: adding downstream subnet as RIO\n");
-            if ((ext_opts = gnrc_ndp_opt_ri_build(&pfx->pfx,
-                                                 pfx->pfx_len,
-                                                 pfx->valid_until,
-                                                 NDP_OPT_RI_FLAGS_PRF_NONE,
-                                                 ext_opts)) == NULL) {
-                return NULL;
-            }
         }
     }
     ltime = (gnrc_netif_is_6lbr(netif)) ?
@@ -215,21 +205,8 @@ static gnrc_pktsnip_t *_build_ext_opts(gnrc_netif_t *netif,
 #else   /* CONFIG_GNRC_IPV6_NIB_MULTIHOP_P6C */
     (void)abr;
     while ((pfx = _nib_offl_iter(pfx))) {
-        if (!(pfx->mode & _PL)) {
-            continue;
-        }
-        if (_nib_onl_get_if(pfx->next_hop) == id) {
+        if ((pfx->mode & _PL) && (_nib_onl_get_if(pfx->next_hop) == id)) {
             if ((ext_opts = _offl_to_pio(pfx, ext_opts)) == NULL) {
-                return NULL;
-            }
-        } else if ((netif->flags & GNRC_NETIF_FLAGS_IPV6_RTR_ADV_RIO) &&
-                   (pfx->flags & _PFX_ON_LINK)) {
-            DEBUG("nib: adding downstream subnet as RIO\n");
-            if ((ext_opts = gnrc_ndp_opt_ri_build(&pfx->pfx,
-                                                  pfx->pfx_len,
-                                                  pfx->valid_until,
-                                                  NDP_OPT_RI_FLAGS_PRF_NONE,
-                                                  ext_opts)) == NULL) {
                 return NULL;
             }
         }
