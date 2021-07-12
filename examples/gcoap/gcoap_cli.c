@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "net/gcoap.h"
+#include "net/utils.h"
 #include "od.h"
 #include "fmt.h"
 
@@ -259,7 +260,7 @@ static bool _parse_endpoint(sock_udp_ep_t *remote,
     netif_t *netif;
 
     /* parse hostname */
-    if (netif_parse_hostname(addr_str, (ipv6_addr_t *)&remote->addr, &netif) < 0) {
+    if (netutil_parse_hostname(addr_str, (ipv6_addr_t *)&remote->addr, &netif) < 0) {
         puts("gcoap_cli: unable to parse destination address");
         return false;
     }
