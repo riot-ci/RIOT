@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "net/netif.h"
+#include "net/utils.h"
 #ifdef MODULE_SOCK_DNS
 #include "net/sock/dns.h"
 #endif
@@ -32,7 +33,7 @@ static bool _netif_get(netif_t **current_netif)
     return netif_iter(netif);
 }
 
-int netif_parse_hostname(const char *hostname, ipv6_addr_t *addr, netif_t **netif)
+int netutil_parse_hostname(const char *hostname, ipv6_addr_t *addr, netif_t **netif)
 {
     *netif = NULL;
 

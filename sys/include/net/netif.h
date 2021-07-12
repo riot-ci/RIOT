@@ -35,9 +35,6 @@
 
 #include <stdint.h>
 
-#include <stddef.h>
-#include "net/ipv6/addr.h"
-
 #include "list.h"
 #include "net/netopt.h"
 
@@ -186,19 +183,6 @@ int netif_set_opt(netif_t *netif, netopt_t opt, uint16_t context,
  * @return  -EINVAL if @p netif is NULL.
  */
 int netif_register(netif_t *netif);
-
-/**
- * @brief   Parse an IP address / hostname string.
- *          If the @ref net_sock_dns module is used, this will
- *          attempt to resolve hostnames via DNS.
- *
- * @param[in]   hostname    IP address string or hostname
- * @param[out]  addr        IP address of the host
- * @param[out]  netif       Interface if address is link-local
- *
- * @return  0 on success, error otherwise
- */
-int netif_parse_hostname(const char *hostname, ipv6_addr_t *addr, netif_t **netif);
 
 #ifdef __cplusplus
 }
