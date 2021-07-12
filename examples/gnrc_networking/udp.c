@@ -43,12 +43,12 @@ static gnrc_netreg_entry_t server =
 static void send(char *addr_str, char *port_str, char *data, unsigned int num,
                  unsigned int delay)
 {
-    gnrc_netif_t *netif;
+    netif_t *netif;
     uint16_t port;
     ipv6_addr_t addr;
 
     /* parse destination address */
-    if (gnrc_netif_parse_hostname(addr_str, &addr, &netif) < 0) {
+    if (netif_parse_hostname(addr_str, &addr, &netif) < 0) {
         puts("Error: unable to parse destination address");
         return;
     }
@@ -88,7 +88,7 @@ static void send(char *addr_str, char *port_str, char *data, unsigned int num,
         if (netif != NULL) {
             gnrc_pktsnip_t *netif_hdr = gnrc_netif_hdr_build(NULL, 0, NULL, 0);
 
-            gnrc_netif_hdr_set_netif(netif_hdr->data, netif);
+            gnrc_netif_hdr_set_netif(netif_hdr->data, (gnrc_netif_t *)netif);
             ip = gnrc_pkt_prepend(ip, netif_hdr);
         }
         /* send packet */
