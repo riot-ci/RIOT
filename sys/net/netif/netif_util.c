@@ -13,23 +13,26 @@
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
  */
 
-#include "net/gnrc/netif.h"
+#include <errno.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+#include "net/netif.h"
 #ifdef MODULE_SOCK_DNS
 #include "net/sock/dns.h"
 #endif
 
 /* get the next netif, returns true if there are more */
-static bool _netif_get(gnrc_netif_t **current_netif)
+static bool _netif_get(netif_t **current_netif)
 {
-    gnrc_netif_t *netif = *current_netif;
-    netif = gnrc_netif_iter(netif);
+    netif_t *netif = *current_netif;
+    netif = netif_iter(netif);
 
     *current_netif = netif;
-    return !gnrc_netif_highlander() && gnrc_netif_iter(netif);
+    return netif_iter(netif);
 }
 
-int gnrc_netif_parse_hostname(const char *hostname, ipv6_addr_t *addr,
-                              gnrc_netif_t **netif)
+int netif_parse_hostname(const char *hostname, ipv6_addr_t *addr, netif_t **netif)
 {
     *netif = NULL;
 
@@ -48,7 +51,7 @@ int gnrc_netif_parse_hostname(const char *hostname, ipv6_addr_t *addr,
     size_t len = strlen(hostname);
     char *iface = strchr(hostname, '%');
     if (iface) {
-        *netif = gnrc_netif_get_by_pid(atoi(iface + 1));
+        *netif = netif_get_by_id(atoi(iface + 1));
         len -= strlen(iface);
     }
     /* preliminary select the first interface */
